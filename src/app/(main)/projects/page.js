@@ -8,17 +8,16 @@ import { Plus } from 'lucide-react';
 import '../../App.css';
 
 import VirtualGridPage from '@/components/VirtualGridPage';
+import useFeedStore from '@/store/useFeedStore';
 
 const CATEGORIES = ['All', 'Design', 'Illustration', 'Photography', 'Branding', '3D', 'Motion', 'UI/UX', 'Typography', 'Other'];
 const PAGE_SIZE = 24;
 
 export default function ProjectsPage() {
-  const [projects, setProjects] = useState([]); // Now an array of arrays (pages)
-  const [category, setCategory] = useState('All');
-  const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
-  const [loading, setLoading] = useState(true);
+  const { projects, page, category, hasMore, scrollPosition, setFeedState, setScrollPosition } = useFeedStore();
+  const [loading, setLoading] = useState(projects.length === 0);
   const [loadingMore, setLoadingMore] = useState(false);
+  const isHydrated = useRef(false);
   const [currentUserId, setCurrentUserId] = useState(null);
   
   const observerRef = useRef(null);
@@ -34,6 +33,12 @@ export default function ProjectsPage() {
 
   // Load data
   useEffect(() => {
+    if (projects.length > 0 && !isHydrated.current) {
+      isHydrated.current = true;
+      return;
+    }
+    isHydrated.current = true;
+
     async function load() {
       if (page === 1) setLoading(true);
       else setLoadingMore(true);
@@ -54,18 +59,17 @@ export default function ProjectsPage() {
       
       const newProjects = data || [];
       if (newProjects.length < PAGE_SIZE) {
-        setHasMore(false);
+        setFeedState({ hasMore: false });
       }
       
       if (page === 1) {
-        setProjects([newProjects]);
+        setFeedState({ projects: [newProjects] });
       } else {
-        setProjects(prev => {
-          // flatten prev to check existing ids
-          const existingIds = new Set(prev.flat().map(p => p.id));
-          const filtered = newProjects.filter(p => !existingIds.has(p.id));
-          return filtered.length > 0 ? [...prev, filtered] : prev;
-        });
+        const existingIds = new Set(projects.flat().map(p => p.id));
+        const filtered = newProjects.filter(p => !existingIds.has(p.id));
+        if (filtered.length > 0) {
+          setFeedState({ projects: [...projects, filtered] });
+        }
       }
       
       setLoading(false);
@@ -73,6 +77,16 @@ export default function ProjectsPage() {
     }
     load();
   }, [category, page]);
+
+  // Scroll restoration
+  useEffect(() => {
+    if (projects.length > 0 && scrollPosition > 0) {
+      setTimeout(() => {
+        window.scrollTo({ top: scrollPosition, behavior: 'instant' });
+      }, 10);
+    }
+    return () => setScrollPosition(window.scrollY);
+  }, []);
 
   // Infinite scroll observer
   const lastElementRef = useCallback((node) => {
@@ -82,7 +96,7 @@ export default function ProjectsPage() {
     observerRef.current = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting && hasMore) {
-          setPage((prev) => prev + 1);
+          setFeedState({ page: page + 1 });
         }
       },
       { rootMargin: '300px' }
@@ -131,10 +145,7 @@ export default function ProjectsPage() {
                 active={category === cat} 
                 onClick={() => {
                   if (category === cat) return;
-                  setCategory(cat);
-                  setPage(1);
-                  setHasMore(true);
-                  setProjects([]);
+                  setFeedState({ category: cat, page: 1, hasMore: true, projects: [] });
                 }} 
               />
             ))}

@@ -268,9 +268,9 @@ export default function ProjectDetailPage() {
 
         {/* Back bar */}
         <div className="project-detail__topbar">
-          <Link href="/projects" className="project-detail__back">
+          <button onClick={() => router.back()} className="project-detail__back" style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: 0 }}>
             <ArrowLeft size={14} /> Back to Projects
-          </Link>
+          </button>
           <div style={{ marginLeft: 'auto', display: 'flex', gap: '0.5rem' }}>
             <button 
               onClick={handleShare} 

@@ -30,7 +30,8 @@
     "react-easy-crop": "^5.5.7",
     "stripe": "^22.2.0",
     "uuid": "^14.0.0",
-    "ws": "^8.21.0"
+    "ws": "^8.21.0",
+    "zustand": "^5.0.14"
   },
   "devDependencies": {
     "eslint": "^9",
