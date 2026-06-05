@@ -29,7 +29,7 @@ export default function UserAvatar({ src, name = '', size = 32, className = '' }
   if (src) {
     return (
       <div style={{ ...style, position: 'relative' }} className={className}>
-        <Image src={src} alt={name} fill sizes={`${size}px`} style={{ objectFit: 'cover' }} unoptimized={src.includes('res.cloudinary.com')} />
+        <Image src={src} alt={name} fill sizes={`${size}px`} style={{ objectFit: 'cover' }} unoptimized={true} />
       </div>
     );
   }

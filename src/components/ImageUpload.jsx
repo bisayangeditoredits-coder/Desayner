@@ -2,16 +2,19 @@
 import { useState, useRef, useCallback } from 'react';
 import { Upload, X, Loader2, ImageIcon } from 'lucide-react';
 import imageCompression from 'browser-image-compression';
+import ImageCropperModal from './ImageCropperModal';
 
 /**
- * ImageUpload
+ * ImageUpload — upgraded with image cropping support
  * Props:
  *   onUploaded(url)  — called with the public R2 URL after successful upload
  *   onRemove()       — called when the user removes the image
  *   value            — current URL (controlled)
  *   label            — field label text
  *   folder           — R2 sub-folder (default "uploads")
- *   accept           — MIME types string (default "image/*")
+ *   accept           — MIME types string
+ *   cropAspect       — aspect ratio for crop (e.g. 1 for avatar, 3 for cover banner)
+ *   cropShape        — shape of the crop box ('round' or 'rect')
  */
 export default function ImageUpload({
   onUploaded,
@@ -20,10 +23,13 @@ export default function ImageUpload({
   label = 'Image',
   folder = 'uploads',
   accept = 'image/jpeg,image/png,image/webp,image/gif',
+  cropAspect,
+  cropShape = 'rect',
 }) {
   const [dragging, setDragging] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState('');
+  const [cropImageSrc, setCropImageSrc] = useState('');
   const inputRef = useRef(null);
 
   async function uploadFile(file) {
@@ -35,25 +41,35 @@ export default function ImageUpload({
       return;
     }
 
+    // If cropping is enabled, read file locally and open cropper instead of direct upload
+    if (cropAspect) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setCropImageSrc(reader.result);
+      };
+      reader.readAsDataURL(file);
+      setError('');
+      return;
+    }
+
     setUploading(true);
     setError('');
 
     try {
       // 0. Compress Image
       const options = {
-        maxSizeMB: 1, // Max 1MB to save bandwidth/storage
-        maxWidthOrHeight: 1920, // Limit resolution
+        maxSizeMB: 1, 
+        maxWidthOrHeight: 1920, 
         useWebWorker: true,
-        fileType: 'image/webp' // Convert to WebP for better compression
+        fileType: 'image/webp' 
       };
       
       const compressedFile = await imageCompression(file, options);
-      // Give it the same name but ensure it matches the new type if it was converted
       const finalFile = new File([compressedFile], file.name.replace(/\.[^/.]+$/, "") + ".webp", {
         type: 'image/webp',
       });
 
-      // 1. Get presigned URL from our API
+      // 1. Get presigned URL
       const res = await fetch('/api/upload', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -79,10 +95,39 @@ export default function ImageUpload({
     }
   }
 
+  async function handleCroppedSave(croppedBlob) {
+    setCropImageSrc('');
+    setUploading(true);
+    setError('');
+
+    try {
+      const filename = `cropped_${Date.now()}.webp`;
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ filename, contentType: 'image/webp', folder }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to get upload URL');
+
+      const putRes = await fetch(data.uploadUrl, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'image/webp' },
+        body: croppedBlob,
+      });
+      if (!putRes.ok) throw new Error('Upload to storage failed');
+
+      onUploaded(data.publicUrl);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setUploading(false);
+    }
+  }
+
   function handleFileChange(e) {
     const file = e.target.files?.[0];
     if (file) uploadFile(file);
-    // Reset input so same file can be re-selected
     e.target.value = '';
   }
 
@@ -93,7 +138,7 @@ export default function ImageUpload({
     setDragging(false);
     const file = e.dataTransfer.files?.[0];
     if (file) uploadFile(file);
-  }, [folder]);
+  }, [cropAspect]);
 
   // ── Already has an image ──────────────────────────────────────────
   if (value) {
@@ -104,7 +149,7 @@ export default function ImageUpload({
           <img
             src={value}
             alt="Uploaded"
-            style={{ width: '100%', maxHeight: '320px', objectFit: 'cover', border: '1px solid #e8e8e8', display: 'block' }}
+            style={{ width: '100%', maxHeight: '320px', objectFit: 'cover', border: '1px solid #e8e8e8', display: 'block', borderRadius: '8px' }}
           />
           <button
             type="button"
@@ -113,7 +158,7 @@ export default function ImageUpload({
               position: 'absolute', top: '8px', right: '8px',
               background: 'rgba(0,0,0,0.7)', color: 'white', border: 'none',
               width: '28px', height: '28px', display: 'flex', alignItems: 'center',
-              justifyContent: 'center', cursor: 'pointer',
+              justifyContent: 'center', cursor: 'pointer', borderRadius: '50%'
             }}
           >
             <X size={14} />
@@ -141,16 +186,17 @@ export default function ImageUpload({
           cursor: uploading ? 'not-allowed' : 'pointer',
           transition: 'all 0.15s',
           userSelect: 'none',
+          borderRadius: '8px',
         }}
       >
         {uploading ? (
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.75rem' }}>
             <Loader2 size={24} color="#9b9b9b" style={{ animation: 'spin 1s linear infinite' }} />
-            <p style={{ fontSize: '0.85rem', color: '#9b9b9b' }}>Uploading…</p>
+            <p style={{ fontSize: '0.85rem', color: '#9b9b9b' }}>Uploading and processing…</p>
           </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.6rem' }}>
-            <div style={{ width: '40px', height: '40px', border: '1px solid #e8e8e8', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'white' }}>
+            <div style={{ width: '40px', height: '40px', border: '1px solid #e8e8e8', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'white', borderRadius: '8px' }}>
               {dragging ? <Upload size={18} color="#0a0a0a" /> : <ImageIcon size={18} color="#9b9b9b" />}
             </div>
             <div>
@@ -174,6 +220,16 @@ export default function ImageUpload({
         onChange={handleFileChange}
         style={{ display: 'none' }}
       />
+
+      {cropImageSrc && (
+        <ImageCropperModal
+          imageSrc={cropImageSrc}
+          aspect={cropAspect}
+          cropShape={cropShape}
+          onClose={() => setCropImageSrc('')}
+          onCropSave={handleCroppedSave}
+        />
+      )}
 
       <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
     </div>

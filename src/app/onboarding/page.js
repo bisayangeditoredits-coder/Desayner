@@ -15,7 +15,7 @@ import { CREATIVE_TOOLS } from '@/lib/constants';
 
 const STEPS = [
   { id: 1, title: 'Your Brand', desc: 'Photos & Identity' },
-  { id: 2, title: 'Your Creative Focus', desc: 'Bio & Specialties' },
+  { id: 2, title: 'Creative Focus', desc: 'Bio & Specialties' },
   { id: 3, title: 'Welcome', desc: 'Setup Complete' }
 ];
 
@@ -142,10 +142,6 @@ export default function OnboardingPage() {
     setStep(s => s + 1);
   }
 
-  function prevStep() {
-    setStep(s => s - 1);
-  }
-
   // Save profile and finish onboarding
   async function handleFinish() {
     setSubmitting(true);
@@ -186,10 +182,13 @@ export default function OnboardingPage() {
 
   if (loadingUser) {
     return (
-      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#fafafa' }}>
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
-          <Loader2 size={36} color="#0009fa" style={{ animation: 'spin 1s linear infinite' }} />
-          <p style={{ fontSize: '0.9rem', color: '#64748b', fontWeight: 600 }}>Loading setup wizard...</p>
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'radial-gradient(at top left, #f8fafc 0%, #eff6ff 100%)' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.25rem' }}>
+          <div style={{ position: 'relative' }}>
+            <div style={{ position: 'absolute', inset: -6, background: 'rgba(0, 9, 250, 0.15)', filter: 'blur(8px)', borderRadius: '50%' }} />
+            <Loader2 size={40} color="#0009fa" style={{ animation: 'spin 1s linear infinite', position: 'relative' }} />
+          </div>
+          <p style={{ fontSize: '0.9rem', color: '#64748b', fontWeight: 700 }}>Loading setup wizard...</p>
         </div>
         <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       </div>
@@ -197,56 +196,59 @@ export default function OnboardingPage() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#f8fafc', fontFamily: 'var(--font-body)', position: 'relative' }}>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: 'radial-gradient(at top left, #f8fafc 0%, #eff6ff 100%)', fontFamily: 'var(--font-body)', position: 'relative' }}>
       
       {/* Header */}
-      <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1.25rem 2rem', borderBottom: '1px solid #e2e8f0', background: 'white' }}>
+      <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1.25rem 2rem', borderBottom: '1px solid rgba(226, 232, 240, 0.8)', background: 'rgba(255, 255, 255, 0.8)', backdropFilter: 'blur(8px)', zIndex: 10 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
           <Image src="/Main_logo.png" alt="Desayner" width={120} height={28} style={{ width: '120px', height: 'auto' }} />
           <span style={{ height: '18px', width: '1px', background: '#cbd5e1' }} />
-          <span style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748b' }}>Creator Onboarding</span>
+          <span style={{ fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#64748b' }}>Creator Onboarding</span>
         </div>
         <button 
           onClick={handleSignOut}
-          style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', background: 'none', border: 'none', cursor: 'pointer', color: '#ef4444', fontSize: '0.8rem', fontWeight: 700 }}
+          style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', background: 'none', border: 'none', cursor: 'pointer', color: '#ef4444', fontSize: '0.8rem', fontWeight: 800, transition: 'opacity 0.2s' }}
+          onMouseOver={e => e.currentTarget.style.opacity = '0.8'}
+          onMouseOut={e => e.currentTarget.style.opacity = '1'}
         >
           <LogOut size={14} /> Log Out
         </button>
       </header>
 
       {/* Main Container */}
-      <main style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem 1rem' }}>
-        <div style={{ width: '100%', maxWidth: '640px', display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+      <main style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '3rem 1.5rem' }}>
+        <div style={{ width: '100%', maxWidth: '640px', display: 'flex', flexDirection: 'column', gap: '2.5rem' }}>
           
           {/* Step Indicators */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', position: 'relative', padding: '0 0.5rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', position: 'relative', padding: '0 1rem' }}>
             {/* Background line */}
-            <div style={{ position: 'absolute', top: '16px', left: '32px', right: '32px', height: '2px', background: '#e2e8f0', zIndex: 1 }} />
+            <div style={{ position: 'absolute', top: '17px', left: '40px', right: '40px', height: '2px', background: '#e2e8f0', zIndex: 1 }} />
             {/* Active progress line */}
             <div style={{ 
-              position: 'absolute', top: '16px', left: '32px', right: '32px', height: '2px', 
+              position: 'absolute', top: '17px', left: '40px', right: '40px', height: '2px', 
               background: '#0009fa', zIndex: 1,
               width: `${(step - 1) * 50}%`,
-              transition: 'width 0.3s ease'
+              transition: 'width 0.4s cubic-bezier(0.4, 0, 0.2, 1)'
             }} />
 
             {STEPS.map((s, idx) => {
               const isActive = step === s.id;
               const isCompleted = step > s.id;
               return (
-                <div key={s.id} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', zIndex: 2, position: 'relative', width: '80px' }}>
+                <div key={s.id} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', zIndex: 2, position: 'relative', width: '90px' }}>
                   <div style={{ 
-                    width: '34px', height: '34px', borderRadius: '50%', 
-                    display: 'flex', alignItems: 'center', justifyItems: 'center', justifyContent: 'center',
-                    background: isCompleted ? '#0009fa' : isActive ? 'white' : '#f1f5f9',
-                    border: isActive ? '2px solid #0009fa' : isCompleted ? '2px solid #0009fa' : '2px solid #e2e8f0',
+                    width: '36px', height: '36px', borderRadius: '50%', 
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    background: isCompleted ? '#0009fa' : isActive ? 'white' : '#f8fafc',
+                    border: isActive ? '2.5px solid #0009fa' : isCompleted ? '2.5px solid #0009fa' : '2.5px solid #cbd5e1',
                     color: isCompleted ? 'white' : isActive ? '#0009fa' : '#64748b',
-                    fontWeight: 700, fontSize: '0.85rem',
-                    transition: 'all 0.3s'
+                    fontWeight: 800, fontSize: '0.85rem',
+                    boxShadow: isActive ? '0 0 0 5px rgba(0, 9, 250, 0.12)' : 'none',
+                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
                   }}>
-                    {isCompleted ? <Check size={16} strokeWidth={3} /> : s.id}
+                    {isCompleted ? <Check size={16} strokeWidth={3.5} /> : s.id}
                   </div>
-                  <span style={{ fontSize: '0.7rem', fontWeight: isActive || isCompleted ? 700 : 500, color: isActive || isCompleted ? '#0f172a' : '#64748b', marginTop: '0.5rem', textAlign: 'center', whiteSpace: 'nowrap' }}>
+                  <span style={{ fontSize: '0.72rem', fontWeight: isActive || isCompleted ? 800 : 600, color: isActive || isCompleted ? '#0f172a' : '#64748b', marginTop: '0.6rem', textAlign: 'center', whiteSpace: 'nowrap' }}>
                     {s.title}
                   </span>
                 </div>
@@ -255,35 +257,37 @@ export default function OnboardingPage() {
           </div>
 
           {/* Form Wizard Box */}
-          <div style={{ background: 'white', border: '1px solid #e2e8f0', borderRadius: '16px', padding: '2.5rem', boxShadow: '0 4px 24px rgba(0,0,0,0.02)' }}>
+          <div style={{ background: 'rgba(255, 255, 255, 0.85)', backdropFilter: 'blur(16px)', border: '1px solid rgba(226, 232, 240, 0.8)', borderRadius: '20px', padding: '2.5rem', boxShadow: '0 20px 40px -15px rgba(0, 9, 250, 0.04), 0 10px 20px -10px rgba(0, 0, 0, 0.02)' }}>
             <AnimatePresence mode="wait">
               
               {/* STEP 1: Photos and Branding */}
               {step === 1 && (
                 <motion.div
                   key="step1"
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
                   transition={{ duration: 0.2 }}
-                  style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}
+                  style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}
                 >
                   <div>
-                    <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <h2 style={{ fontSize: '1.35rem', fontWeight: 800, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '0.5rem', letterSpacing: '-0.02em' }}>
                       <Sparkles size={20} color="#0009fa" /> Create Your Studio Identity
                     </h2>
-                    <p style={{ fontSize: '0.85rem', color: '#64748b', marginTop: '0.25rem' }}>
-                      Desayner is a premium showcase. Uploading a profile photo and cover photo is **required** to proceed.
+                    <p style={{ fontSize: '0.88rem', color: '#64748b', marginTop: '0.35rem', lineHeight: 1.5 }}>
+                      Desayner is a premium creator community. Uploading a **profile avatar** and a **cover banner** is required to build your portfolio.
                     </p>
                   </div>
 
                   {/* Profile Avatar Upload */}
-                  <div>
-                    <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#6b6b6b', marginBottom: '0.5rem' }}>
+                  <div style={{ border: '1px solid #f1f5f9', background: '#f8fafc', borderRadius: '12px', padding: '1.25rem' }}>
+                    <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#475569', marginBottom: '0.75rem' }}>
                       Profile Avatar *
                     </label>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
-                      <UserAvatar src={avatarUrl} name={fullName || username} size={80} />
+                      <div style={{ border: '3px solid white', borderRadius: '50%', overflow: 'hidden', boxShadow: '0 4px 10px rgba(0,0,0,0.05)' }}>
+                        <UserAvatar src={avatarUrl} name={fullName || username} size={80} />
+                      </div>
                       <div style={{ flex: 1 }}>
                         <ImageUpload 
                           label="" 
@@ -291,24 +295,28 @@ export default function OnboardingPage() {
                           value={avatarUrl}
                           onUploaded={url => setAvatarUrl(url)}
                           onRemove={() => setAvatarUrl('')}
+                          cropAspect={1}
+                          cropShape="round"
                         />
                       </div>
                     </div>
                   </div>
 
                   {/* Cover Photo Upload */}
-                  <div>
-                    <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#6b6b6b', marginBottom: '0.5rem' }}>
+                  <div style={{ border: '1px solid #f1f5f9', background: '#f8fafc', borderRadius: '12px', padding: '1.25rem' }}>
+                    <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#475569', marginBottom: '0.75rem' }}>
                       Studio Cover Banner *
                     </label>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                       {coverUrl ? (
-                        <div style={{ width: '100%', aspectRatio: '3/1', background: '#f5f5f5', borderRadius: '12px', overflow: 'hidden', position: 'relative' }}>
+                        <div style={{ width: '100%', aspectRatio: '3/1', background: '#f5f5f5', borderRadius: '10px', overflow: 'hidden', position: 'relative', border: '1px solid #cbd5e1' }}>
                           <img src={coverUrl} alt="Cover Banner" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                         </div>
                       ) : (
-                        <div style={{ width: '100%', aspectRatio: '3/1', background: '#fafafa', border: '1px dashed #cbd5e1', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#94a3b8', fontSize: '0.85rem' }}>
-                          Upload cover image (Recommended: 1200 x 400 pixels)
+                        <div style={{ width: '100%', aspectRatio: '3/1', background: 'linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%)', border: '1px dashed #cbd5e1', borderRadius: '10px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', color: '#64748b', fontSize: '0.85rem' }}>
+                          <ImageIcon size={28} color="#94a3b8" />
+                          <span style={{ fontWeight: 600 }}>No cover banner uploaded</span>
+                          <span style={{ fontSize: '0.72rem', color: '#94a3b8' }}>Recommended: 1200 x 400 pixels (3:1)</span>
                         </div>
                       )}
                       <ImageUpload 
@@ -317,14 +325,16 @@ export default function OnboardingPage() {
                         value={coverUrl}
                         onUploaded={url => setCoverUrl(url)}
                         onRemove={() => setCoverUrl('')}
+                        cropAspect={3}
+                        cropShape="rect"
                       />
                     </div>
                   </div>
 
                   {/* Text Fields */}
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
                     <div>
-                      <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#6b6b6b', marginBottom: '0.4rem' }}>
+                      <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#475569', marginBottom: '0.45rem' }}>
                         Full Name *
                       </label>
                       <input 
@@ -332,47 +342,47 @@ export default function OnboardingPage() {
                         value={fullName}
                         onChange={e => setFullName(e.target.value)}
                         placeholder="Juan dela Cruz"
-                        style={{ width: '100%', padding: '0.75rem 1rem', border: '1px solid #cbd5e1', borderRadius: '8px', fontSize: '0.9rem', outline: 'none' }}
+                        className="premium-input"
                       />
                     </div>
 
                     <div>
-                      <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#6b6b6b', marginBottom: '0.4rem' }}>
+                      <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#475569', marginBottom: '0.45rem' }}>
                         Username *
                       </label>
                       <div style={{ position: 'relative' }}>
-                        <span style={{ position: 'absolute', left: '0.9rem', top: '50%', transform: 'translateY(-50%)', fontSize: '0.9rem', color: '#94a3b8', fontWeight: 600 }}>@</span>
+                        <span style={{ position: 'absolute', left: '1.1rem', top: '50%', transform: 'translateY(-50%)', fontSize: '0.9rem', color: '#94a3b8', fontWeight: 700 }}>@</span>
                         <input 
                           type="text"
                           value={username}
                           onChange={e => setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ''))}
                           placeholder="username"
-                          style={{ width: '100%', padding: '0.75rem 1rem 0.75rem 2rem', border: `1px solid ${usernameError ? '#ef4444' : '#cbd5e1'}`, borderRadius: '8px', fontSize: '0.9rem', outline: 'none' }}
+                          className="premium-input"
+                          style={{ paddingLeft: '2.1rem', borderColor: usernameError ? '#ef4444' : '#cbd5e1' }}
                         />
                         {checkingUsername && (
-                          <Loader2 size={16} className="spin" style={{ position: 'absolute', right: '1rem', top: '50%', transform: 'translateY(-50%)', animation: 'spin 1s linear infinite' }} />
+                          <Loader2 size={16} className="spin" style={{ position: 'absolute', right: '1.1rem', top: '50%', transform: 'translateY(-50%)', animation: 'spin 1s linear infinite' }} />
                         )}
                       </div>
                       {usernameError && (
-                        <p style={{ fontSize: '0.75rem', color: '#ef4444', marginTop: '0.25rem' }}>{usernameError}</p>
+                        <p style={{ fontSize: '0.75rem', color: '#ef4444', marginTop: '0.35rem', fontWeight: 600 }}>{usernameError}</p>
                       )}
                       {!usernameError && username.trim() && usernameAvailable && !checkingUsername && (
-                        <p style={{ fontSize: '0.75rem', color: '#22c55e', marginTop: '0.25rem' }}>✓ Username is available</p>
+                        <p style={{ fontSize: '0.75rem', color: '#22c55e', marginTop: '0.35rem', fontWeight: 600 }}>✓ Username is available</p>
                       )}
                     </div>
                   </div>
 
                   {/* Actions */}
-                  <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '1rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '0.75rem' }}>
                     <button
                       onClick={nextStep}
                       disabled={!step1Valid}
-                      className="btn btn-dark"
+                      className="premium-btn-dark"
                       style={{ 
-                        opacity: step1Valid ? 1 : 0.4, 
+                        opacity: step1Valid ? 1 : 0.45, 
                         cursor: step1Valid ? 'pointer' : 'not-allowed',
-                        display: 'flex', alignItems: 'center', gap: '0.5rem',
-                        padding: '0.75rem 1.5rem', borderRadius: '8px'
+                        display: 'flex', alignItems: 'center', gap: '0.5rem'
                       }}
                     >
                       Continue Setup <ChevronRight size={16} />
@@ -385,24 +395,24 @@ export default function OnboardingPage() {
               {step === 2 && (
                 <motion.div
                   key="step2"
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
                   transition={{ duration: 0.2 }}
-                  style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}
+                  style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}
                 >
                   <div>
-                    <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <h2 style={{ fontSize: '1.35rem', fontWeight: 800, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '0.5rem', letterSpacing: '-0.02em' }}>
                       <Briefcase size={20} color="#0009fa" /> Professional Survey
                     </h2>
-                    <p style={{ fontSize: '0.85rem', color: '#64748b', marginTop: '0.25rem' }}>
-                      Tell us about your creative skills. You must fill out your bio and select at least one creative tool to finish.
+                    <p style={{ fontSize: '0.88rem', color: '#64748b', marginTop: '0.35rem', lineHeight: 1.5 }}>
+                      Tell the community about your creative profile. Fill in your bio and select your primary creative tools to continue.
                     </p>
                   </div>
 
                   {/* Bio */}
                   <div>
-                    <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#6b6b6b', marginBottom: '0.4rem' }}>
+                    <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#475569', marginBottom: '0.45rem' }}>
                       Professional Bio *
                     </label>
                     <textarea 
@@ -411,17 +421,17 @@ export default function OnboardingPage() {
                       placeholder="Write a short pitch about your creative fields, passions, and background (Min. 10 characters)..."
                       rows={4}
                       maxLength={280}
-                      style={{ width: '100%', padding: '0.75rem 1rem', border: '1px solid #cbd5e1', borderRadius: '8px', fontSize: '0.9rem', outline: 'none', resize: 'vertical', lineHeight: 1.5 }}
+                      className="premium-textarea"
                     />
-                    <span style={{ fontSize: '0.72rem', color: '#9b9b9b', display: 'block', marginTop: '0.25rem', textAlign: 'right' }}>
+                    <span style={{ fontSize: '0.72rem', color: '#94a3b8', display: 'block', marginTop: '0.35rem', textAlign: 'right', fontWeight: 600 }}>
                       {bio.length}/280
                     </span>
                   </div>
 
                   {/* Tools / Creative Fields Multi-select */}
                   <div>
-                    <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#6b6b6b', marginBottom: '0.5rem' }}>
-                      Tools & specialties (Select at least 1) *
+                    <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#475569', marginBottom: '0.6rem' }}>
+                      Tools & Specialties (Select at least 1) *
                     </label>
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
                       {CREATIVE_TOOLS.map(t => {
@@ -431,14 +441,17 @@ export default function OnboardingPage() {
                             key={t.id}
                             type="button"
                             onClick={() => handleToolToggle(t.id)}
+                            className="tool-tag"
                             style={{
-                              display: 'flex', alignItems: 'center', gap: '0.4rem',
-                              padding: '0.4rem 0.8rem', borderRadius: '20px',
-                              border: isSelected ? '1px solid #0009fa' : '1px solid #cbd5e1',
-                              background: isSelected ? '#eef0ff' : 'white',
-                              color: isSelected ? '#0009fa' : '#0a0a0a',
-                              fontSize: '0.8rem', fontWeight: 600, cursor: 'pointer',
-                              transition: 'all 0.15s'
+                              display: 'flex', alignItems: 'center', gap: '0.45rem',
+                              padding: '0.55rem 1.1rem', borderRadius: '24px',
+                              border: isSelected ? '1.5px solid #0009fa' : '1px solid #cbd5e1',
+                              background: isSelected ? 'linear-gradient(135deg, #eef0ff 0%, #e0e4ff 100%)' : 'white',
+                              color: isSelected ? '#0009fa' : '#475569',
+                              fontSize: '0.8rem', fontWeight: 700, cursor: 'pointer',
+                              transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+                              boxShadow: isSelected ? '0 4px 12px rgba(0, 9, 250, 0.1)' : 'none',
+                              transform: isSelected ? 'scale(1.02)' : 'none'
                             }}
                           >
                             <img src={t.iconPath} alt={t.name} style={{ width: '16px', height: '16px', objectFit: 'contain' }} />
@@ -450,64 +463,65 @@ export default function OnboardingPage() {
                   </div>
 
                   {/* Additional info */}
-                  <div style={{ display: 'flex', gap: '1rem' }}>
-                    <div style={{ flex: 1 }}>
-                      <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#6b6b6b', marginBottom: '0.4rem' }}>
+                  <div style={{ display: 'flex', gap: '1.25rem', flexWrap: 'wrap' }}>
+                    <div style={{ flex: 1, minWidth: '220px' }}>
+                      <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#475569', marginBottom: '0.45rem' }}>
                         Location
                       </label>
                       <div style={{ position: 'relative' }}>
-                        <MapPin size={15} style={{ position: 'absolute', left: '0.8rem', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
+                        <MapPin size={16} style={{ position: 'absolute', left: '1.1rem', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
                         <input 
                           type="text"
                           value={location}
                           onChange={e => setLocation(e.target.value)}
                           placeholder="Manila, Philippines"
-                          style={{ width: '100%', padding: '0.75rem 1rem 0.75rem 2rem', border: '1px solid #cbd5e1', borderRadius: '8px', fontSize: '0.9rem', outline: 'none' }}
+                          className="premium-input"
+                          style={{ paddingLeft: '2.5rem' }}
                         />
                       </div>
                     </div>
 
-                    <div style={{ flex: 1 }}>
-                      <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#6b6b6b', marginBottom: '0.4rem' }}>
+                    <div style={{ flex: 1, minWidth: '220px' }}>
+                      <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#475569', marginBottom: '0.45rem' }}>
                         Website URL
                       </label>
                       <div style={{ position: 'relative' }}>
-                        <Globe size={15} style={{ position: 'absolute', left: '0.8rem', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
+                        <Globe size={16} style={{ position: 'absolute', left: '1.1rem', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
                         <input 
                           type="url"
                           value={website}
                           onChange={e => setWebsite(e.target.value)}
                           placeholder="https://juan.design"
-                          style={{ width: '100%', padding: '0.75rem 1rem 0.75rem 2rem', border: '1px solid #cbd5e1', borderRadius: '8px', fontSize: '0.9rem', outline: 'none' }}
+                          className="premium-input"
+                          style={{ paddingLeft: '2.5rem' }}
                         />
                       </div>
                     </div>
                   </div>
 
                   {submitError && (
-                    <div style={{ padding: '0.75rem 1rem', background: '#fff0f0', border: '1px solid #ffd0d0', color: '#ff3b3b', fontSize: '0.85rem', borderRadius: '8px' }}>
+                    <div style={{ padding: '0.85rem 1.1rem', background: '#fff1f2', border: '1px solid #ffe4e6', color: '#e11d48', fontSize: '0.85rem', borderRadius: '10px', fontWeight: 600 }}>
                       {submitError}
                     </div>
                   )}
 
                   {/* Actions */}
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '1rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '0.75rem', gap: '1rem' }}>
                     <button
-                      onClick={prevStep}
-                      className="btn btn-outline"
-                      style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.75rem 1.5rem', borderRadius: '8px' }}
+                      onClick={() => setStep(1)}
+                      className="premium-btn-outline"
+                      style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
                     >
                       <ChevronLeft size={16} /> Back
                     </button>
                     <button
                       onClick={handleFinish}
                       disabled={!step2Valid || submitting}
-                      className="btn btn-dark"
+                      className="premium-btn-dark"
                       style={{ 
-                        opacity: step2Valid && !submitting ? 1 : 0.4, 
+                        opacity: step2Valid && !submitting ? 1 : 0.45, 
                         cursor: step2Valid && !submitting ? 'pointer' : 'not-allowed',
-                        display: 'flex', alignItems: 'center', gap: '0.5rem',
-                        padding: '0.75rem 1.5rem', borderRadius: '8px'
+                        display: 'flex', alignItems: 'center', gap: '0.5rem'
                       }}
                     >
                       {submitting ? (
@@ -530,30 +544,66 @@ export default function OnboardingPage() {
                   key="step3"
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: '1.5rem', padding: '1.5rem 0' }}
+                  style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: '2rem', padding: '1.5rem 0' }}
                 >
-                  <div style={{ width: '80px', height: '80px', borderRadius: '50%', background: '#f0fdf4', border: '2px solid #22c55e', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <Check size={40} color="#22c55e" strokeWidth={3} />
+                  <div style={{ position: 'relative' }}>
+                    <div style={{ position: 'absolute', inset: -8, background: 'rgba(34, 197, 94, 0.2)', filter: 'blur(12px)', borderRadius: '50%', zIndex: 0 }} />
+                    <div style={{ width: '80px', height: '80px', borderRadius: '50%', background: '#f0fdf4', border: '2px solid #22c55e', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', zIndex: 1 }}>
+                      <Check size={40} color="#22c55e" strokeWidth={3.5} />
+                    </div>
                   </div>
+
                   <div>
-                    <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#0f172a' }}>You are all set, {fullName.split(' ')[0]}!</h2>
-                    <p style={{ fontSize: '0.9rem', color: '#64748b', marginTop: '0.5rem', maxWidth: '400px', lineHeight: 1.6 }}>
+                    <h2 style={{ fontSize: '1.5rem', fontWeight: 900, color: '#0f172a', letterSpacing: '-0.03em' }}>You are all set, {fullName.split(' ')[0]}!</h2>
+                    <p style={{ fontSize: '0.9rem', color: '#64748b', marginTop: '0.5rem', maxWidth: '420px', lineHeight: 1.65 }}>
                       Your studio cover and details look clean and highly professional. You are ready to explore projects, follow creators, and share your work.
                     </p>
                   </div>
 
+                  {/* Profile Preview Card */}
+                  <div style={{ width: '100%', maxWidth: '360px', background: 'white', border: '1px solid #e2e8f0', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 10px 25px rgba(0, 9, 250, 0.03)' }}>
+                    <div style={{ width: '100%', height: '100px', background: '#f1f5f9', position: 'relative' }}>
+                      {coverUrl ? <img src={coverUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : null}
+                    </div>
+                    <div style={{ padding: '0 1.25rem 1.25rem 1.25rem', position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '-36px' }}>
+                      <div style={{ border: '3px solid white', borderRadius: '50%', overflow: 'hidden', background: 'white', display: 'flex', justifyContent: 'center', alignItems: 'center', boxShadow: '0 4px 10px rgba(0,0,0,0.05)' }}>
+                        <UserAvatar src={avatarUrl} name={fullName} size={72} />
+                      </div>
+                      <h4 style={{ fontWeight: 800, fontSize: '1.05rem', color: '#0f172a', marginTop: '0.5rem' }}>{fullName}</h4>
+                      <p style={{ fontSize: '0.78rem', color: '#94a3b8', fontWeight: 600 }}>@{username}</p>
+                      
+                      <div style={{ display: 'flex', gap: '0.3rem', flexWrap: 'wrap', justifyContent: 'center', marginTop: '0.75rem' }}>
+                        {selectedTools.slice(0, 3).map(toolId => {
+                          const tool = CREATIVE_TOOLS.find(t => t.id === toolId);
+                          return tool ? (
+                            <span key={toolId} style={{ fontSize: '0.68rem', padding: '3px 8px', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', color: '#475569', display: 'inline-flex', alignItems: 'center', gap: '4px', fontWeight: 600 }}>
+                              <img src={tool.iconPath} alt="" style={{ width: '12px', height: '12px', objectFit: 'contain' }} />
+                              {tool.name}
+                            </span>
+                          ) : null;
+                        })}
+                        {selectedTools.length > 3 && (
+                          <span style={{ fontSize: '0.68rem', padding: '3px 8px', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', color: '#64748b', fontWeight: 600 }}>
+                            +{selectedTools.length - 3} more
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
                   <button
                     onClick={() => {
-                      // Redirect to main app dashboard
                       window.location.href = '/';
                     }}
-                    className="btn btn-primary"
+                    className="premium-btn-primary"
                     style={{ 
                       width: '100%', maxWidth: '240px', justifyContent: 'center',
-                      padding: '0.85rem', borderRadius: '8px', background: '#0009fa', borderColor: '#0009fa'
+                      padding: '0.85rem', borderRadius: '10px', background: '#0009fa', borderColor: '#0009fa',
+                      display: 'flex', alignItems: 'center', gap: '0.5rem', boxShadow: '0 10px 20px -8px rgba(0, 9, 250, 0.3)',
+                      cursor: 'pointer'
                     }}
                   >
-                    Launch My Studio
+                    Launch My Studio <ChevronRight size={16} />
                   </button>
                 </motion.div>
               )}
@@ -563,7 +613,7 @@ export default function OnboardingPage() {
         </div>
       </main>
 
-      {/* Styles for animation */}
+      {/* Premium CSS Styles */}
       <style>{`
         @keyframes spin { 
           from { transform: translateY(-50%) rotate(0deg); }
@@ -571,6 +621,93 @@ export default function OnboardingPage() {
         }
         .spin {
           animation: spin 1s linear infinite !important;
+        }
+
+        .premium-input {
+          width: 100%;
+          padding: 0.75rem 1rem;
+          border: 1px solid #cbd5e1;
+          border-radius: 8px;
+          font-size: 0.9rem;
+          outline: none;
+          background: white;
+          color: #0f172a;
+          transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .premium-input:focus {
+          border-color: #0009fa;
+          box-shadow: 0 0 0 4px rgba(0, 9, 250, 0.1);
+        }
+
+        .premium-textarea {
+          width: 100%;
+          padding: 0.75rem 1rem;
+          border: 1px solid #cbd5e1;
+          border-radius: 8px;
+          font-size: 0.9rem;
+          outline: none;
+          background: white;
+          color: #0f172a;
+          transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+          line-height: 1.5;
+        }
+        .premium-textarea:focus {
+          border-color: #0009fa;
+          box-shadow: 0 0 0 4px rgba(0, 9, 250, 0.1);
+        }
+
+        .premium-btn-dark {
+          background: #0f172a;
+          color: white;
+          border: none;
+          padding: 0.75rem 1.5rem;
+          border-radius: 8px;
+          font-weight: 700;
+          font-size: 0.85rem;
+          cursor: pointer;
+          transition: all 0.2s ease;
+        }
+        .premium-btn-dark:hover:not(:disabled) {
+          background: #000000;
+          transform: translateY(-1px);
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .premium-btn-outline {
+          background: white;
+          color: #0f172a;
+          border: 1px solid #cbd5e1;
+          padding: 0.75rem 1.5rem;
+          border-radius: 8px;
+          font-weight: 700;
+          font-size: 0.85rem;
+          cursor: pointer;
+          transition: all 0.2s ease;
+        }
+        .premium-btn-outline:hover {
+          background: #f8fafc;
+          border-color: #94a3b8;
+        }
+
+        .premium-btn-primary {
+          background: #0009fa;
+          color: white;
+          border: none;
+          padding: 0.75rem 1.5rem;
+          border-radius: 8px;
+          font-weight: 700;
+          font-size: 0.85rem;
+          cursor: pointer;
+          transition: all 0.2s ease;
+        }
+        .premium-btn-primary:hover {
+          background: #0007c6;
+          transform: translateY(-1px);
+        }
+
+        .tool-tag:hover {
+          border-color: #0009fa !important;
+          transform: translateY(-1px);
         }
       `}</style>
     </div>

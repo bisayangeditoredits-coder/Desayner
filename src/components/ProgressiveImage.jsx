@@ -106,7 +106,7 @@ export default function ProgressiveImage({
             fill
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             style={{ objectFit: 'cover' }}
-            unoptimized={effectiveSrc.includes('res.cloudinary.com')}
+            unoptimized={true}
           />
         ) : (
           <div style={{ position: 'absolute', inset: 0, background: '#e8e8e8' }} />
@@ -148,7 +148,7 @@ export default function ProgressiveImage({
           aria-hidden="true"
           fill
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-          unoptimized={effectiveThumb.includes('res.cloudinary.com')}
+          unoptimized={true}
           style={{
             objectFit: 'cover',
             opacity: showThumb && !showFull ? 1 : 0,
@@ -165,7 +165,7 @@ export default function ProgressiveImage({
           alt={alt}
           fill
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-          unoptimized={effectiveSrc.includes('res.cloudinary.com')}
+          unoptimized={true}
           style={{
             objectFit: 'cover',
             opacity: showFull ? 1 : 0,
