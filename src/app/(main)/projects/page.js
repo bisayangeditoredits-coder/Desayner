@@ -7,11 +7,13 @@ import Link from 'next/link';
 import { Plus } from 'lucide-react';
 import '../../App.css';
 
+import VirtualGridPage from '@/components/VirtualGridPage';
+
 const CATEGORIES = ['All', 'Design', 'Illustration', 'Photography', 'Branding', '3D', 'Motion', 'UI/UX', 'Typography', 'Other'];
 const PAGE_SIZE = 24;
 
 export default function ProjectsPage() {
-  const [projects, setProjects] = useState([]);
+  const [projects, setProjects] = useState([]); // Now an array of arrays (pages)
   const [category, setCategory] = useState('All');
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
@@ -49,7 +51,6 @@ export default function ProjectsPage() {
       
       const { data, error } = await query;
       if (error) console.error('Projects query error:', error);
-      console.log('Projects fetched:', data);
       
       const newProjects = data || [];
       if (newProjects.length < PAGE_SIZE) {
@@ -57,12 +58,13 @@ export default function ProjectsPage() {
       }
       
       if (page === 1) {
-        setProjects(newProjects);
+        setProjects([newProjects]);
       } else {
         setProjects(prev => {
-          // avoid duplicates just in case
-          const existingIds = new Set(prev.map(p => p.id));
-          return [...prev, ...newProjects.filter(p => !existingIds.has(p.id))];
+          // flatten prev to check existing ids
+          const existingIds = new Set(prev.flat().map(p => p.id));
+          const filtered = newProjects.filter(p => !existingIds.has(p.id));
+          return filtered.length > 0 ? [...prev, filtered] : prev;
         });
       }
       
@@ -72,8 +74,7 @@ export default function ProjectsPage() {
     load();
   }, [category, page]);
 
-  // Infinite scroll observer — rootMargin preloads the next page
-  // 300px before the sentinel reaches the viewport for a seamless feed
+  // Infinite scroll observer
   const lastElementRef = useCallback((node) => {
     if (loading || loadingMore) return;
     if (observerRef.current) observerRef.current.disconnect();
@@ -95,11 +96,11 @@ export default function ProjectsPage() {
         <div className="page-content">
           <div className="page-header" style={{
             position: 'sticky',
-            top: '56px', // match top header height
+            top: '56px',
             zIndex: 100,
-            background: 'var(--primary-bg, #f1f5f9)', // assuming the background is this color
-            padding: '1.5rem 0 1rem', // match the padding of the page
-            marginTop: '-1.5rem', // offset the page padding so it sticks flush
+            background: 'var(--primary-bg, #f1f5f9)',
+            padding: '1.5rem 0 1rem',
+            marginTop: '-1.5rem',
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center'
@@ -143,7 +144,7 @@ export default function ProjectsPage() {
             <div className="projects-masonry">
               {[...Array(24)].map((_, i) => <div key={i} className="masonry-item shimmer-box" style={{ aspectRatio: '4/3', borderRadius: '8px' }} />)}
             </div>
-          ) : projects.length === 0 ? (
+          ) : projects.length === 0 || (projects.length === 1 && projects[0].length === 0) ? (
             <div style={{ textAlign: 'center', padding: '6rem 2rem', border: '1px solid #e8e8e8', background: 'white', borderRadius: '12px' }}>
               <p style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '0.5rem' }}>No projects in {category}</p>
               <p style={{ color: '#9b9b9b', fontSize: '0.875rem', marginBottom: '1.5rem' }}>Be the first to share one.</p>
@@ -153,18 +154,15 @@ export default function ProjectsPage() {
             </div>
           ) : (
             <>
-              <div className="projects-masonry">
-                {projects.map((project, index) => {
-                  if (index === projects.length - 1) {
-                    return (
-                      <div ref={lastElementRef} key={project.id}>
-                        <ProjectCard project={project} currentUserId={currentUserId} />
-                      </div>
-                    );
-                  }
-                  return <ProjectCard key={project.id} project={project} currentUserId={currentUserId} />;
-                })}
-              </div>
+              {projects.map((chunk, chunkIndex) => (
+                <VirtualGridPage
+                  key={`page-${chunkIndex}`}
+                  projects={chunk}
+                  currentUserId={currentUserId}
+                  isLastPage={chunkIndex === projects.length - 1}
+                  lastElementRef={lastElementRef}
+                />
+              ))}
               
               {loadingMore && (
                 <div style={{ textAlign: 'center', padding: '2rem 0', color: '#9b9b9b', fontSize: '0.875rem' }}>

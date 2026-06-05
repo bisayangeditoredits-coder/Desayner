@@ -52,75 +52,76 @@ export default function ProjectCard({ project, currentUserId }) {
   const author = project.profiles;
 
   return (
-    <motion.div 
-      className="project-card" 
-      style={{ contentVisibility: 'auto', containIntrinsicSize: '0 280px' }}
-      whileHover={{ y: -4, transition: { type: 'spring', stiffness: 400, damping: 25 } }}
-    >
-      {/* Thumbnail */}
-      <Link href={`/projects/${project.id}`} className="project-card__thumb-link" prefetch={true}>
-        <div className="project-card__thumb">
-          {project.cover_url ? (
-            // ProgressiveImage: loads thumbnail_url (~500px WebP) first,
-            // then cross-fades to full cover_url. Falls back to cover_url for both if no thumbnail.
-            <ProgressiveImage
-              src={project.cover_url}
-              thumbnail={project.thumbnail_url || project.cover_url}
-              alt={project.title}
-              aspectRatio="4/3"
-              imgStyle={{ objectFit: 'cover' }}
-            />
-          ) : (
-            <div className="project-card__no-cover">No cover</div>
-          )}
-
-          {/* Hover overlay — positioned absolute inside the relative thumb */}
-          <div className="project-card__overlay" style={{ position: 'absolute', inset: 0 }}>
-            <p className="project-card__overlay-title">{project.title}</p>
-            {project.category && (
-              <span className="project-card__overlay-cat">{project.category}</span>
+    <div style={{ width: '100%', minWidth: 0 }}>
+      <motion.div 
+        className="project-card" 
+        whileHover={{ y: -4, transition: { type: 'spring', stiffness: 400, damping: 25 } }}
+      >
+        {/* Thumbnail */}
+        <Link href={`/projects/${project.id}`} className="project-card__thumb-link" prefetch={true}>
+          <div className="project-card__thumb">
+            {project.cover_url ? (
+              // ProgressiveImage: loads thumbnail_url (~500px WebP) first,
+              // then cross-fades to full cover_url. Falls back to cover_url for both if no thumbnail.
+              <ProgressiveImage
+                src={project.cover_url}
+                thumbnail={project.thumbnail_url || project.cover_url}
+                alt={project.title}
+                aspectRatio="4/3"
+                imgStyle={{ objectFit: 'cover' }}
+              />
+            ) : (
+              <div className="project-card__no-cover">No cover</div>
             )}
-          </div>
-        </div>
-      </Link>
 
-      {/* Footer */}
-      <div className="project-card__footer">
-        <Link
-          href={author?.username ? `/profile/${author.username}` : '#'}
-          className="project-card__author"
-        >
-          <UserAvatar
-            src={author?.avatar_url}
-            name={author?.full_name || author?.username || 'Unknown'}
-            size={24}
-          />
-          <span className="project-card__author-name">
-            {author?.full_name || author?.username || 'Unknown'}
-          </span>
+            {/* Hover overlay — positioned absolute inside the relative thumb */}
+            <div className="project-card__overlay" style={{ position: 'absolute', inset: 0 }}>
+              <p className="project-card__overlay-title">{project.title}</p>
+              {project.category && (
+                <span className="project-card__overlay-cat">{project.category}</span>
+              )}
+            </div>
+          </div>
         </Link>
 
-        <div className="project-card__actions">
-          <motion.button
-            whileTap={{ scale: 0.8 }}
-            onClick={handleLike}
-            className={`project-card__action-btn ${liked ? 'project-card__action-btn--liked' : ''}`}
-            title={liked ? 'Unlike' : 'Like'}
+        {/* Footer */}
+        <div className="project-card__footer">
+          <Link
+            href={author?.username ? `/profile/${author.username}` : '#'}
+            className="project-card__author"
           >
-            <Heart size={14} fill={liked ? 'currentColor' : 'none'} />
-            {likeCount > 0 && <span>{likeCount}</span>}
-          </motion.button>
+            <UserAvatar
+              src={author?.avatar_url}
+              name={author?.full_name || author?.username || 'Unknown'}
+              size={24}
+            />
+            <span className="project-card__author-name">
+              {author?.full_name || author?.username || 'Unknown'}
+            </span>
+          </Link>
 
-          <motion.button
-            whileTap={{ scale: 0.8 }}
-            onClick={handleSave}
-            className={`project-card__action-btn ${saved ? 'project-card__action-btn--saved' : ''}`}
-            title={saved ? 'Unsave' : 'Save'}
-          >
-            <Bookmark size={14} fill={saved ? 'currentColor' : 'none'} />
-          </motion.button>
+          <div className="project-card__actions">
+            <motion.button
+              whileTap={{ scale: 0.8 }}
+              onClick={handleLike}
+              className={`project-card__action-btn ${liked ? 'project-card__action-btn--liked' : ''}`}
+              title={liked ? 'Unlike' : 'Like'}
+            >
+              <Heart size={14} fill={liked ? 'currentColor' : 'none'} />
+              {likeCount > 0 && <span>{likeCount}</span>}
+            </motion.button>
+
+            <motion.button
+              whileTap={{ scale: 0.8 }}
+              onClick={handleSave}
+              className={`project-card__action-btn ${saved ? 'project-card__action-btn--saved' : ''}`}
+              title={saved ? 'Unsave' : 'Save'}
+            >
+              <Bookmark size={14} fill={saved ? 'currentColor' : 'none'} />
+            </motion.button>
+          </div>
         </div>
-      </div>
-    </motion.div>
+      </motion.div>
+    </div>
   );
 }
