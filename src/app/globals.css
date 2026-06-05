@@ -78,6 +78,9 @@ input, select, textarea { font-family: var(--font-body); }
 /* Brand Blue — primary action */
 .btn-primary { background: #0009fa; color: white; border: 1px solid #0009fa; }
 .btn-primary:hover, .btn-primary:focus-visible { background: #333333; border-color: #333333; color: white; }
+/* Dark button — alternate primary */
+.btn-dark { background: #0a0a0a; color: white; border: 1px solid #0a0a0a; }
+.btn-dark:hover, .btn-dark:focus-visible { background: #27272a; border-color: #27272a; color: white; }
 /* Secondary / Accent */
 .btn-accent  { background: #0009fa; color: white; border: 1px solid #0009fa; }
 .btn-accent:hover, .btn-accent:focus-visible  { background: #333333; border-color: #333333; color: white; }

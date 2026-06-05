@@ -1551,3 +1551,37 @@
 .search-dropdown__view-all:hover {
   background: #f4f5f6;
 }
+
+/* Responsive Button Styling & Text collapsing */
+.projects-header-btn,
+.project-detail__topbar-btn {
+  height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  padding: 0 1.2rem;
+  border-radius: 8px;
+  transition: all 0.15s ease;
+  font-family: inherit;
+}
+
+@media (max-width: 640px) {
+  .btn-text-responsive {
+    display: none !important;
+  }
+  
+  .projects-header-btn,
+  .project-detail__topbar-btn {
+    width: 38px;
+    height: 38px;
+    padding: 0 !important;
+    border-radius: 50% !important;
+    min-width: 38px !important;
+  }
+}
+
+.category-scroll-container::-webkit-scrollbar {
+  display: none !important;
+}

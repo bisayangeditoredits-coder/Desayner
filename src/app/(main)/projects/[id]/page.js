@@ -255,22 +255,34 @@ export default function ProjectDetailPage() {
           <Link href="/projects" className="project-detail__back">
             <ArrowLeft size={14} /> Back to Projects
           </Link>
-          <div style={{ marginLeft: 'auto', display: 'flex', gap: '0.75rem' }}>
-            <button onClick={handleShare} style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', padding: '0.4rem 0.75rem', background: 'white', border: '1px solid #e8e8e8', fontSize: '0.75rem', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', color: '#0a0a0a' }}>
+          <div style={{ marginLeft: 'auto', display: 'flex', gap: '0.5rem' }}>
+            <button 
+              onClick={handleShare} 
+              className="btn btn-outline project-detail__topbar-btn"
+              title={shareToast ? 'Copied!' : 'Share'}
+            >
               {shareToast ? <Check size={14} color="#1a8a3b" /> : <Share size={14} />}
-              {shareToast ? 'Copied!' : 'Share'}
+              <span className="btn-text-responsive">{shareToast ? 'Copied!' : 'Share'}</span>
             </button>
             {currentUser?.id === project.user_id && (
               <>
                 <button 
                   onClick={() => setShowDeleteModal(true)}
                   disabled={isDeleting}
-                  style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', padding: '0.4rem 0.75rem', background: '#fef2f2', color: '#ef4444', border: '1px solid #fee2e2', fontSize: '0.75rem', fontWeight: 600, cursor: isDeleting ? 'not-allowed' : 'pointer', fontFamily: 'inherit', borderRadius: '6px' }}
+                  className="btn btn-danger project-detail__topbar-btn"
+                  style={{ background: '#fef2f2', color: '#ef4444', borderColor: '#fee2e2' }}
+                  title="Delete"
                 >
-                  <Trash2 size={14} /> {isDeleting ? 'Deleting...' : 'Delete'}
+                  <Trash2 size={14} /> 
+                  <span className="btn-text-responsive">{isDeleting ? 'Deleting...' : 'Delete'}</span>
                 </button>
-                <Link href={`/projects/${id}/edit`} style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', padding: '0.4rem 0.75rem', background: '#0a0a0a', color: 'white', fontSize: '0.75rem', fontWeight: 600, textDecoration: 'none', borderRadius: '6px' }}>
-                  <Edit size={14} /> Edit Project
+                <Link 
+                  href={`/projects/${id}/edit`} 
+                  className="btn btn-dark project-detail__topbar-btn"
+                  title="Edit Project"
+                >
+                  <Edit size={14} /> 
+                  <span className="btn-text-responsive">Edit Project</span>
                 </Link>
               </>
             )}

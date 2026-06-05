@@ -108,12 +108,21 @@ export default function ProjectsPage() {
               <h1 className="page-title" style={{ fontSize: '1.5rem', fontWeight: 800 }}>Projects</h1>
               <p style={{ fontSize: '0.85rem', color: '#9b9b9b', marginTop: '0.25rem' }}>Discover work from the community</p>
             </div>
-            <Link href="/projects/new" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', padding: '0.6rem 1.2rem', background: '#0a0a0a', color: 'white', fontSize: '0.8rem', fontWeight: 700, textDecoration: 'none' }}>
-              <Plus size={14} strokeWidth={2.5} /> New Project
+            <Link href="/projects/new" className="btn btn-dark projects-header-btn">
+              <Plus size={14} strokeWidth={2.5} />
+              <span className="btn-text-responsive">New Project</span>
             </Link>
           </div>
 
-          <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap', marginBottom: '1.5rem' }}>
+          <div style={{ 
+            display: 'flex', 
+            gap: '0.4rem', 
+            overflowX: 'auto', 
+            paddingBottom: '0.5rem', 
+            marginBottom: '1.25rem',
+            scrollbarWidth: 'none',
+            msOverflowStyle: 'none'
+          }} className="category-scroll-container">
             {CATEGORIES.map(cat => (
               <TagPill 
                 key={cat} 
@@ -132,13 +141,13 @@ export default function ProjectsPage() {
 
           {loading && page === 1 ? (
             <div className="projects-masonry">
-              {[...Array(24)].map((_, i) => <div key={i} className="masonry-item shimmer-box" style={{ aspectRatio: '4/3', borderRadius: '0' }} />)}
+              {[...Array(24)].map((_, i) => <div key={i} className="masonry-item shimmer-box" style={{ aspectRatio: '4/3', borderRadius: '8px' }} />)}
             </div>
           ) : projects.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '6rem 2rem', border: '1px solid #e8e8e8', background: 'white' }}>
+            <div style={{ textAlign: 'center', padding: '6rem 2rem', border: '1px solid #e8e8e8', background: 'white', borderRadius: '12px' }}>
               <p style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '0.5rem' }}>No projects in {category}</p>
               <p style={{ color: '#9b9b9b', fontSize: '0.875rem', marginBottom: '1.5rem' }}>Be the first to share one.</p>
-              <Link href="/projects/new" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', padding: '0.6rem 1.5rem', background: '#0a0a0a', color: 'white', fontSize: '0.8rem', fontWeight: 700, textDecoration: 'none' }}>
+              <Link href="/projects/new" className="btn btn-dark">
                 <Plus size={14} /> Create Project
               </Link>
             </div>
