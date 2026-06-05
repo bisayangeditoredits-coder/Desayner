@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Cropper from 'react-easy-crop';
-import { X, ZoomIn, ZoomOut, Check, RotateCw } from 'lucide-react';
+import { X, ZoomIn, ZoomOut, Check, RotateCw, Loader2 } from 'lucide-react';
 
 export default function ImageCropperModal({ 
   imageSrc, 
