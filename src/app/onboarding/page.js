@@ -554,7 +554,7 @@ export default function OnboardingPage() {
                   </div>
 
                   <div>
-                    <h2 style={{ fontSize: '1.5rem', fontWeight: 900, color: '#0f172a', letterSpacing: '-0.03em' }}>You are all set, {fullName.split(' ')[0]}!</h2>
+                    <h2 style={{ fontSize: '1.5rem', fontWeight: 900, color: '#0f172a', letterSpacing: '-0.03em' }}>You are all set, {(fullName || '').split(' ')[0]}!</h2>
                     <p style={{ fontSize: '0.9rem', color: '#64748b', marginTop: '0.5rem', maxWidth: '420px', lineHeight: 1.65 }}>
                       Your studio cover and details look clean and highly professional. You are ready to explore projects, follow creators, and share your work.
                     </p>

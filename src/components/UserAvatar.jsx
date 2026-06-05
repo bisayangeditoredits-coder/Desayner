@@ -3,8 +3,10 @@ import React from 'react';
 import Image from 'next/image';
 
 export default function UserAvatar({ src, name = '', size = 32, className = '' }) {
-  const initials = name
+  const safeName = typeof name === 'string' ? name : String(name || '');
+  const initials = safeName
     .split(' ')
+    .filter(Boolean)
     .map(w => w[0])
     .join('')
     .toUpperCase()
