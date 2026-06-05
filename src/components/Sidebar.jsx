@@ -212,5 +212,6 @@ export default function Sidebar({ className = '' }) {
         </div>
       )}
     </aside>
+    </>
   );
 }
