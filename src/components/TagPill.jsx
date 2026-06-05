@@ -13,7 +13,7 @@ export default function TagPill({ label, active, onClick, small }) {
         color: active ? 'white' : '#6b6b6b',
         fontSize: small ? '0.72rem' : '0.78rem',
         fontWeight: 600,
-        borderRadius: '0px',
+        borderRadius: '20px',
         cursor: 'pointer',
         transition: 'all 0.15s ease',
         fontFamily: 'inherit',

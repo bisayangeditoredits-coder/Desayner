@@ -42,21 +42,18 @@ export default function PostComposer({ currentUser, onPosted }) {
   if (!currentUser) return null;
 
   return (
-    <div style={{ background: 'white', border: '1px solid #e8e8e8', padding: '1.25rem' }}>
+    <div style={{ background: 'white', border: '1px solid #e8e8e8', padding: '1.25rem', borderRadius: '12px' }}>
       {/* Type selector */}
-      <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
+      <div className="composer-type-selector">
         {POST_TYPES.map(t => (
           <button
             key={t.value}
             onClick={() => setPostType(t.value)}
+            className="composer-type-btn"
             style={{
-              padding: '0.3rem 0.75rem',
-              border: '1px solid',
               borderColor: postType === t.value ? t.color : '#e8e8e8',
               background: postType === t.value ? t.color : 'white',
               color: postType === t.value ? 'white' : '#6b6b6b',
-              fontSize: '0.75rem', fontWeight: 700, borderRadius: '0px',
-              cursor: 'pointer', fontFamily: 'inherit',
             }}
           >
             {t.label}
@@ -118,7 +115,7 @@ export default function PostComposer({ currentUser, onPosted }) {
                   padding: '0.5rem 1.25rem', background: '#0a0a0a', color: 'white',
                   border: 'none', fontSize: '0.8rem', fontWeight: 700,
                   cursor: submitting || !body.trim() ? 'not-allowed' : 'pointer',
-                  opacity: !body.trim() ? 0.4 : 1, fontFamily: 'inherit', borderRadius: '0px',
+                  opacity: !body.trim() ? 0.4 : 1, fontFamily: 'inherit', borderRadius: '8px',
                 }}
               >
                 {submitting ? 'Posting...' : 'Post'}

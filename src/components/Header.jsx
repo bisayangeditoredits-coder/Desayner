@@ -285,17 +285,14 @@ export default function Header() {
       <div className="header-actions">
         {userId ? (
           <>
-            <div style={{ position: 'relative' }}>
+            <div className="header-create-wrapper" style={{ position: 'relative' }}>
               <button
                 onClick={() => setCreateMenuOpen(!createMenuOpen)}
-                style={{
-                  display: 'flex', alignItems: 'center', gap: '0.4rem',
-                  padding: '0.45rem 1rem', background: '#0a0a0a', color: 'white',
-                  fontSize: '0.8rem', fontWeight: 700, border: 'none', borderRadius: '8px',
-                  cursor: 'pointer', transition: 'background 0.15s',
-                }}
+                className="header-create-btn"
               >
-                <Plus size={14} strokeWidth={2.5} /> Create <ChevronDown size={14} />
+                <Plus size={16} strokeWidth={2.5} />
+                <span className="header-create-btn-text">Create</span>
+                <ChevronDown size={14} className="header-create-btn-arrow" />
               </button>
               
               {createMenuOpen && (
@@ -372,7 +369,7 @@ export default function Header() {
             </div>
 
             {profile && (
-              <Link href={`/profile/${profile.username}`} style={{ marginLeft: '0.25rem' }}>
+              <Link href={`/profile/${profile.username}`} className="header-profile-link" style={{ marginLeft: '0.25rem' }}>
                 <UserAvatar src={profile.avatar_url} name={profile.full_name || profile.username} size={32} />
               </Link>
             )}

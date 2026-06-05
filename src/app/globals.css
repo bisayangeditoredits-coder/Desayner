@@ -10,8 +10,8 @@
   --glass-bg: rgba(255, 255, 255, 0.9);
   --glass-border: #e2e8f0;
   --border: 1px solid #e2e8f0;
-  --radius: 0px;
-  --radius-sm: 2px;
+  --radius: 8px;
+  --radius-sm: 4px;
   --font-heading: var(--font-montserrat), sans-serif;
   --font-body: var(--font-montserrat), sans-serif;
   --transition-smooth: background 0.18s ease, color 0.18s ease, border-color 0.18s ease;

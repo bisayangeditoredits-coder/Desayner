@@ -1,5 +1,6 @@
 import Sidebar from '@/components/Sidebar';
 import Header from '@/components/Header';
+import MobileBottomNav from '@/components/MobileBottomNav';
 import { MobileNavProvider } from '@/components/MobileNavProvider';
 
 export default function MainLayout({ children }) {
@@ -11,6 +12,7 @@ export default function MainLayout({ children }) {
           <Header />
           {children}
         </main>
+        <MobileBottomNav />
       </div>
     </MobileNavProvider>
   );

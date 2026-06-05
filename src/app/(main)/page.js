@@ -78,10 +78,10 @@ export default function Dashboard() {
 
   return (
     <>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 280px', minHeight: '100vh', width: '100%', margin: '0 auto', padding: '1.5rem 1rem', gap: '2rem' }}>
+        <div className="homepage-layout">
 
           {/* Main feed */}
-          <div style={{ borderRight: '1px solid var(--glass-border)', paddingRight: '2rem' }}>
+          <div className="homepage-feed">
 
             {/* --- EVENT BANNER SECTION --- */}
             {/* 
@@ -90,31 +90,20 @@ export default function Dashboard() {
               Use WebP, JPG, or optimized PNG for fast loading. 
               To change the image, simply replace the 'url(/event-banner.png)' in the background property below.
             */}
-            <div style={{ padding: '0 2rem 1.5rem 2rem' }}>
-              <div style={{
-                position: 'relative',
-                width: '100%',
-                height: '240px',
-                borderRadius: '12px',
-                overflow: 'hidden',
-                background: '#1a1a1a url(/event-banner.png) center/cover no-repeat',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'flex-end',
-                padding: '2rem'
-              }}>
-                <div style={{ position: 'relative', zIndex: 10, maxWidth: '600px' }}>
-                  <span style={{ background: '#0009fa', color: 'white', padding: '0.25rem 0.75rem', fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', borderRadius: '4px', marginBottom: '0.75rem', display: 'inline-block' }}>Upcoming Event</span>
-                  <h2 style={{ color: 'white', fontSize: '1.75rem', fontWeight: 800, marginBottom: '0.5rem', lineHeight: 1.2 }}>Welcome to Desayner</h2>
-                  <p style={{ color: 'rgba(255,255,255,0.85)', fontSize: '0.9rem', marginBottom: '1.25rem' }}>Join top creators for a day of design, networking, and exclusive reveals.</p>
-                  <button style={{ background: 'white', color: '#0a0a0a', padding: '0.6rem 1.25rem', fontSize: '0.85rem', fontWeight: 700, borderRadius: '6px', border: 'none', cursor: 'pointer' }}>Register Now</button>
+            <div className="event-banner-wrapper">
+              <div className="event-banner-container">
+                <div className="event-banner-content">
+                  <span className="event-banner-badge">Upcoming Event</span>
+                  <h2 className="event-banner-title">Welcome to Desayner</h2>
+                  <p className="event-banner-text">Join top creators for a day of design, networking, and exclusive reveals.</p>
+                  <button className="event-banner-btn">Register Now</button>
                 </div>
                 {/* Dark overlay gradient to ensure text readability */}
                 <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 70%)', zIndex: 1 }}></div>
               </div>
             </div>
             {/* --- END EVENT BANNER SECTION --- */}
-            <div className="tabs" style={{ padding: '0 2rem' }}>
+            <div className="tabs homepage-tabs">
               <button className={`tab-btn ${tab === 'projects' ? 'active' : ''}`} onClick={() => setTab('projects')}>
                 Projects
               </button>
