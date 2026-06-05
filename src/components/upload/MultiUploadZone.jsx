@@ -215,7 +215,7 @@ export default function MultiUploadZone({ folder = 'uploads', value = [], onResu
     processQueue();
   };
 
-  const allItems = items.filter((i) => i.status !== 'error' || i.error); // keep errored for visibility
+  const allItems = items.filter((i) => i.status !== 'done');
 
   return (
     <div>
