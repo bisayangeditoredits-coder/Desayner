@@ -1,0 +1,389 @@
+/* src/components/landing/Landing.module.css */
+
+/* ─── Lightweight CSS animations (replaces framer-motion) ─── */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.heroFadeIn {
+  animation: fadeInUp 0.6s ease both;
+}
+.heroSlideUp {
+  animation: fadeInUp 0.7s 0.15s ease both;
+}
+
+/* Respect user's motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .heroFadeIn, .heroSlideUp { animation: none; }
+}
+.landingWrapper {
+  background: white;
+  font-family: var(--font-body);
+}
+
+/* Navbar */
+.nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem 5%;
+  position: sticky;
+  top: 0;
+  background: rgba(255, 255, 255, 0.97);
+  z-index: 1000;
+  border-bottom: 1px solid var(--glass-border, #e8e8e8);
+}
+
+.navLogo {
+  height: 36px;
+  width: auto;
+  object-fit: contain;
+}
+
+.navLinks {
+  display: flex;
+  gap: 2.5rem;
+  align-items: center;
+}
+
+.navLink {
+  font-weight: 600;
+  color: var(--text-dim, #6b6b6b);
+  font-size: 0.9rem;
+  transition: color 0.2s;
+  text-decoration: none;
+}
+.navLink:hover, .navLink:focus-visible {
+  color: #0a0a0a;
+}
+
+.navButton {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.25rem;
+  background: #0a0a0a;
+  color: white;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: transform 0.2s;
+}
+.navButton:hover, .navButton:focus-visible {
+  transform: translateY(-2px);
+}
+
+/* Hero Section */
+.heroSection {
+  padding: 7rem 5%;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.heroBg {
+  position: absolute;
+  top: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 800px;
+  height: 800px;
+  background: radial-gradient(circle, rgba(14, 165, 233, 0.05) 0%, transparent 70%);
+  z-index: -1;
+}
+
+.heroBadge {
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
+  color: #0009fa;
+  padding: 0.4rem 1rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 2rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.heroTitle {
+  font-size: clamp(3.5rem, 7vw, 6.5rem);
+  font-weight: 800;
+  line-height: 1.05;
+  margin-bottom: 1.5rem;
+  max-width: 1100px;
+  margin: 0 auto;
+  letter-spacing: -0.04em;
+  color: #0a0a0a;
+}
+
+.heroTitleHighlight {
+  background: linear-gradient(135deg, #0a0a0a 0%, #0009fa 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.heroDesc {
+  font-size: 1.2rem;
+  color: #6b6b6b;
+  max-width: 680px;
+  margin: 0 auto 3rem;
+  line-height: 1.6;
+  font-weight: 500;
+}
+
+.heroActions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.heroBtnPrimary {
+  padding: 1rem 2.5rem;
+  background: #0009fa;
+  color: white;
+  font-size: 1rem;
+  font-weight: 700;
+  border-radius: 4px;
+  text-decoration: none;
+  transition: background 0.18s;
+  /* no heavy box-shadow */
+}
+.heroBtnPrimary:hover, .heroBtnPrimary:focus-visible {
+  background: #333333;
+}
+
+.heroBtnSecondary {
+  padding: 1rem 2.5rem;
+  background: white;
+  color: #0a0a0a;
+  border: 1px solid #e8e8e8;
+  font-size: 1rem;
+  font-weight: 700;
+  border-radius: 4px;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+.heroBtnSecondary:hover, .heroBtnSecondary:focus-visible {
+  background: #f5f5f5;
+}
+
+.dashboardPreview {
+  margin-top: 5rem;
+  border: 1px solid #e8e8e8;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+}
+
+.windowHeader {
+  display: flex;
+  gap: 0.5rem;
+  padding: 1rem;
+  border-bottom: 1px solid #e8e8e8;
+  background: #fafafa;
+}
+
+.windowDot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+.dotRed { background: #ff5f56; }
+.dotYellow { background: #ffbd2e; }
+.dotGreen { background: #27c93f; }
+
+.previewImage {
+  width: 100%;
+  height: auto;
+  display: block;
+  opacity: 0.95;
+}
+
+/* Social Proof */
+.socialSection {
+  padding: 4rem 5%;
+  text-align: center;
+  background: #fafafa;
+  border-top: 1px solid #e8e8e8;
+  border-bottom: 1px solid #e8e8e8;
+}
+
+.socialTitle {
+  font-size: 0.75rem;
+  color: #9b9b9b;
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-bottom: 2.5rem;
+  letter-spacing: 0.15em;
+}
+
+.socialLogos {
+  display: flex;
+  justify-content: center;
+  gap: clamp(2rem, 5vw, 5rem);
+  opacity: 0.3;
+  flex-wrap: wrap;
+  filter: grayscale(100%);
+}
+
+.socialLogo {
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+/* Features */
+.featuresSection {
+  padding: 8rem 5%;
+  background: white;
+}
+
+.featuresHeader {
+  text-align: center;
+  margin-bottom: 6rem;
+}
+
+.featuresBadge {
+  color: #0009fa;
+  font-weight: 700;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 1rem;
+  display: block;
+}
+
+.featuresTitle {
+  font-size: 3rem;
+  font-weight: 800;
+  margin-bottom: 1.5rem;
+  letter-spacing: -0.03em;
+  color: #0a0a0a;
+}
+
+.featuresDesc {
+  color: #6b6b6b;
+  font-size: 1.1rem;
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.featuresGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.featureCard {
+  padding: 2.5rem;
+  background: #fafafa;
+  border: 1px solid #e8e8e8;
+  border-radius: 8px;
+  transition: border-color 0.18s;
+  cursor: default;
+}
+.featureCard:hover {
+  border-color: #0009fa;
+}
+
+.featureIcon {
+  width: 48px;
+  height: 48px;
+  background: white;
+  border: 1px solid #e8e8e8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  color: #0a0a0a;
+  margin-bottom: 1.5rem;
+}
+
+.featureCardTitle {
+  font-size: 1.25rem;
+  font-weight: 800;
+  margin-bottom: 0.75rem;
+  color: #0a0a0a;
+}
+
+.featureCardDesc {
+  color: #6b6b6b;
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+
+/* CTA Section */
+.ctaSection {
+  padding: 6rem 5%;
+  background: #fafafa;
+}
+
+.ctaBox {
+  background: #0a0a0a;
+  color: white;
+  padding: 6rem 2rem;
+  border-radius: 12px;
+  text-align: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  position: relative;
+  overflow: hidden;
+}
+
+/* CTA decorative blobs removed for perf — pure dark bg is fine */
+.ctaBg1, .ctaBg2 { display: none; }
+
+.ctaContent {
+  position: relative;
+  z-index: 1;
+}
+
+.ctaTitle {
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 800;
+  margin-bottom: 1.5rem;
+  letter-spacing: -0.03em;
+}
+
+.ctaDesc {
+  font-size: 1.1rem;
+  opacity: 0.7;
+  margin-bottom: 3rem;
+  max-width: 500px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.ctaBtn {
+  padding: 1rem 3rem;
+  background: white;
+  color: #0a0a0a;
+  font-size: 1rem;
+  font-weight: 800;
+  border-radius: 4px;
+  text-decoration: none;
+  transition: background 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.ctaBtn:hover, .ctaBtn:focus-visible {
+  background: #f0f0f0;
+}

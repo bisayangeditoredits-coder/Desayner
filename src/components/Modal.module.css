@@ -1,0 +1,88 @@
+/* src/components/Modal.module.css */
+
+/* ─── Backdrop ─────────────────────────────────── */
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.72);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 1.25rem;
+}
+
+/* ─── Shell ────────────────────────────────────── */
+.modal {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  max-height: 92vh;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Size variants */
+.sm  { max-width: 480px; }
+.md  { max-width: 700px; }
+.lg  { max-width: 960px; }
+
+/* ─── Header ───────────────────────────────────── */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem var(--space-md, 1.25rem);
+  border-bottom: 1px solid #e2e8f0;
+  flex-shrink: 0;
+}
+
+.title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #0a0a0a;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.closeBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #6b7280;
+  border-radius: 0;
+  transition: background 0.15s, color 0.15s;
+  flex-shrink: 0;
+}
+.closeBtn:hover {
+  background: #f3f4f6;
+  color: #0a0a0a;
+}
+
+/* ─── Body ─────────────────────────────────────── */
+.body {
+  overflow-y: auto;
+  flex: 1;
+}
+
+/* ─── Footer ───────────────────────────────────── */
+.footer {
+  padding: 1.25rem;
+  border-top: 1px solid #e2e8f0;
+  flex-shrink: 0;
+  background: #fafafa;
+}
+
+/* ─── Responsive ───────────────────────────────── */
+@media (max-width: 600px) {
+  .backdrop { padding: 0; align-items: flex-end; }
+  .modal    { max-width: 100%; max-height: 95vh; border-radius: 0; }
+}

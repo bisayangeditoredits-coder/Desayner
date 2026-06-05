@@ -1,0 +1,126 @@
+'use client';
+import { useState } from 'react';
+import Link from 'next/link';
+import { motion } from 'framer-motion';
+import { Heart, Bookmark } from 'lucide-react';
+import { createClient } from '@/lib/supabase/client';
+import UserAvatar from './UserAvatar';
+import ProgressiveImage from './ProgressiveImage';
+
+export default function ProjectCard({ project, currentUserId }) {
+  const [liked, setLiked]         = useState(project.user_liked || false);
+  const [saved, setSaved]         = useState(project.user_saved || false);
+  const [likeCount, setLikeCount] = useState(project.likes_count || 0);
+  const supabase = createClient();
+  const router = require('next/navigation').useRouter();
+
+  async function handleLike(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!currentUserId) {
+      router.push('/login?redirectTo=' + encodeURIComponent(window.location.pathname));
+      return;
+    }
+    const wasLiked = liked;
+    setLiked(!wasLiked);
+    setLikeCount((c) => (wasLiked ? c - 1 : c + 1));
+    if (wasLiked) {
+      await supabase.from('project_likes').delete()
+        .eq('user_id', currentUserId).eq('project_id', project.id);
+    } else {
+      await supabase.from('project_likes').insert({ user_id: currentUserId, project_id: project.id });
+    }
+  }
+
+  async function handleSave(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!currentUserId) {
+      router.push('/login?redirectTo=' + encodeURIComponent(window.location.pathname));
+      return;
+    }
+    const wasSaved = saved;
+    setSaved(!wasSaved);
+    if (wasSaved) {
+      await supabase.from('project_saves').delete()
+        .eq('user_id', currentUserId).eq('project_id', project.id);
+    } else {
+      await supabase.from('project_saves').insert({ user_id: currentUserId, project_id: project.id });
+    }
+  }
+
+  const author = project.profiles;
+
+  return (
+    <motion.div 
+      className="project-card" 
+      style={{ contentVisibility: 'auto', containIntrinsicSize: '0 280px' }}
+      whileHover={{ y: -4, transition: { type: 'spring', stiffness: 400, damping: 25 } }}
+    >
+      {/* Thumbnail */}
+      <Link href={`/projects/${project.id}`} className="project-card__thumb-link" prefetch={true}>
+        <div className="project-card__thumb">
+          {project.cover_url ? (
+            // ProgressiveImage: loads thumbnail_url (~500px WebP) first,
+            // then cross-fades to full cover_url. Falls back to cover_url for both if no thumbnail.
+            <ProgressiveImage
+              src={project.cover_url}
+              thumbnail={project.thumbnail_url || project.cover_url}
+              alt={project.title}
+              aspectRatio="4/3"
+              imgStyle={{ objectFit: 'cover' }}
+            />
+          ) : (
+            <div className="project-card__no-cover">No cover</div>
+          )}
+
+          {/* Hover overlay — positioned absolute inside the relative thumb */}
+          <div className="project-card__overlay" style={{ position: 'absolute', inset: 0 }}>
+            <p className="project-card__overlay-title">{project.title}</p>
+            {project.category && (
+              <span className="project-card__overlay-cat">{project.category}</span>
+            )}
+          </div>
+        </div>
+      </Link>
+
+      {/* Footer */}
+      <div className="project-card__footer">
+        <Link
+          href={author?.username ? `/profile/${author.username}` : '#'}
+          className="project-card__author"
+        >
+          <UserAvatar
+            src={author?.avatar_url}
+            name={author?.full_name || author?.username || 'Unknown'}
+            size={24}
+          />
+          <span className="project-card__author-name">
+            {author?.full_name || author?.username || 'Unknown'}
+          </span>
+        </Link>
+
+        <div className="project-card__actions">
+          <motion.button
+            whileTap={{ scale: 0.8 }}
+            onClick={handleLike}
+            className={`project-card__action-btn ${liked ? 'project-card__action-btn--liked' : ''}`}
+            title={liked ? 'Unlike' : 'Like'}
+          >
+            <Heart size={14} fill={liked ? 'currentColor' : 'none'} />
+            {likeCount > 0 && <span>{likeCount}</span>}
+          </motion.button>
+
+          <motion.button
+            whileTap={{ scale: 0.8 }}
+            onClick={handleSave}
+            className={`project-card__action-btn ${saved ? 'project-card__action-btn--saved' : ''}`}
+            title={saved ? 'Unsave' : 'Save'}
+          >
+            <Bookmark size={14} fill={saved ? 'currentColor' : 'none'} />
+          </motion.button>
+        </div>
+      </div>
+    </motion.div>
+  );
+}

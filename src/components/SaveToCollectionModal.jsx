@@ -1,0 +1,135 @@
+'use client';
+import { useState, useEffect } from 'react';
+import { createClient } from '@/lib/supabase/client';
+import { Plus, Folder, Check } from 'lucide-react';
+import Modal from './Modal';
+
+export default function SaveToCollectionModal({ projectId, onClose }) {
+  const [collections, setCollections] = useState([]);
+  const [newColName, setNewColName] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [savedTo, setSavedTo] = useState({});
+  const supabase = createClient();
+
+  useEffect(() => {
+    async function load() {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data: cols } = await supabase
+        .from('collections')
+        .select('*, collection_items(project_id)')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
+
+      const parsedCols = (cols || []).map(c => ({
+        ...c,
+        hasProject: c.collection_items.some(ci => ci.project_id === projectId)
+      }));
+      setCollections(parsedCols);
+
+      const savedMap = {};
+      parsedCols.forEach(c => { if (c.hasProject) savedMap[c.id] = true; });
+      setSavedTo(savedMap);
+      setLoading(false);
+    }
+    load();
+  }, [projectId]);
+
+  async function createCollection(e) {
+    e.preventDefault();
+    if (!newColName.trim() || saving) return;
+    setSaving(true);
+
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { data, error } = await supabase
+      .from('collections')
+      .insert({ user_id: user.id, name: newColName.trim() })
+      .select()
+      .single();
+
+    if (error) {
+      alert('Error creating collection: ' + error.message);
+    } else if (data) {
+      setCollections(prev => [{ ...data, hasProject: false }, ...prev]);
+      setNewColName('');
+    }
+    setSaving(false);
+  }
+
+  async function toggleCollection(colId) {
+    const isSaved = savedTo[colId];
+    setSavedTo(p => ({ ...p, [colId]: !isSaved }));
+    if (isSaved) {
+      await supabase.from('collection_items').delete().match({ collection_id: colId, project_id: projectId });
+    } else {
+      await supabase.from('collection_items').insert({ collection_id: colId, project_id: projectId });
+    }
+  }
+
+  const footer = (
+    <form onSubmit={createCollection} style={{ display: 'flex', gap: '0.5rem' }}>
+      <input
+        type="text"
+        value={newColName}
+        onChange={e => setNewColName(e.target.value)}
+        placeholder="New collection name…"
+        className="input"
+        style={{ flex: 1, fontSize: '0.85rem', padding: '0.6rem 0.75rem' }}
+      />
+      <button
+        type="submit"
+        disabled={!newColName.trim() || saving}
+        className="btn btn-primary"
+        style={{ padding: '0.6rem 1rem', fontSize: '0.85rem' }}
+      >
+        Create
+      </button>
+    </form>
+  );
+
+  return (
+    <Modal title="Save to Collection" size="sm" onClose={onClose} footer={footer}>
+      <div style={{ padding: 'var(--space-md, 1.25rem)', maxHeight: '320px', overflowY: 'auto' }}>
+        {loading ? (
+          <p style={{ color: 'var(--text-dim)', textAlign: 'center', fontSize: '0.85rem', margin: 0 }}>
+            Loading collections…
+          </p>
+        ) : collections.length === 0 ? (
+          <p style={{ color: 'var(--text-muted)', textAlign: 'center', fontSize: '0.85rem', margin: 0 }}>
+            No collections yet. Create one below.
+          </p>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            {collections.map(c => (
+              <button
+                key={c.id}
+                onClick={() => toggleCollection(c.id)}
+                style={{
+                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                  padding: '0.75rem', background: savedTo[c.id] ? '#f0f9ff' : '#fafafa',
+                  border: `1px solid ${savedTo[c.id] ? '#bae6fd' : '#e2e8f0'}`,
+                  cursor: 'pointer', textAlign: 'left', color: 'var(--text-main)',
+                  transition: 'background 0.15s, border-color 0.15s',
+                  fontFamily: 'inherit',
+                }}
+              >
+                <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 600, fontSize: '0.85rem' }}>
+                  <Folder size={14} color={savedTo[c.id] ? '#0009fa' : 'var(--text-dim)'} />
+                  {c.name}
+                </span>
+                {savedTo[c.id]
+                  ? <Check size={14} color="#1a8a3b" />
+                  : <Plus size={14} color="var(--text-dim)" />
+                }
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+    </Modal>
+  );
+}
