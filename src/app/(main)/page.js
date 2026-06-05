@@ -5,6 +5,7 @@ import ProjectCard from '@/components/ProjectCard';
 import PostComposer from '@/components/PostComposer';
 import ReactionBar from '@/components/ReactionBar';
 import UserAvatar from '@/components/UserAvatar';
+import ToolsMarquee from '@/components/ToolsMarquee';
 import Link from 'next/link';
 import { MessageCircle, Bookmark, TrendingUp, ArrowRight, Users, FolderOpen } from 'lucide-react';
 import '../App.css';
@@ -198,6 +199,8 @@ export default function Dashboard() {
                       )}
                     </div>
                   </div>
+
+                  <ToolsMarquee />
 
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
                     <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#6b6b6b', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>

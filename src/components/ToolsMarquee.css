@@ -1,0 +1,65 @@
+.tools-marquee-container {
+  width: 100%;
+  overflow: hidden;
+  padding: 0 0 2rem 0;
+  position: relative;
+  display: flex;
+  background: transparent;
+  mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+}
+
+.tools-marquee-track {
+  display: flex;
+  gap: 2.5rem;
+  align-items: center;
+  white-space: nowrap;
+  animation: marquee 25s linear infinite;
+  will-change: transform;
+}
+
+.tools-marquee-track:hover {
+  animation-play-state: paused;
+}
+
+.tool-icon-wrapper {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  background: white;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+  border: 1px solid #f1f5f9;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: default;
+}
+
+.tool-icon-wrapper:hover {
+  transform: translateY(-4px) scale(1.05);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+}
+
+.tool-icon {
+  object-fit: contain;
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    /* Translate exactly half of the duplicated list + half of a gap */
+    transform: translateX(calc(-50% - 1.25rem)); 
+  }
+}
+
+/* Pause animation if user prefers reduced motion (accessibility/low end device fix) */
+@media (prefers-reduced-motion: reduce) {
+  .tools-marquee-track {
+    animation: none;
+    overflow-x: auto;
+  }
+}
