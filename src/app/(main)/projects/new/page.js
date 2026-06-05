@@ -108,10 +108,10 @@ export default function NewProjectPage() {
         <div style={{ background: '#fcfcfc', display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
 
         {/* Two-column split layout */}
-        <div style={{ display: 'flex', flex: 1, minHeight: 0 }}>
+        <div className="new-project-layout">
 
           {/* ── Left: Cover editor ── */}
-          <div style={{ flex: '0 0 55%', borderRight: '1px solid #e8e8e8', display: 'flex', flexDirection: 'column', background: '#111827' }}>
+          <div className="new-project-left">
             <CoverEditor
               value={coverUrl}
               thumbnailUrl={thumbnailUrl}
@@ -120,7 +120,7 @@ export default function NewProjectPage() {
           </div>
 
           {/* ── Right: Form ── */}
-          <div style={{ flex: 1, overflowY: 'auto', padding: '3rem 2.5rem' }}>
+          <div className="new-project-right">
 
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '2rem' }}>
               <Link href="/projects" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.8rem', color: '#9b9b9b', fontWeight: 600, textDecoration: 'none' }}>

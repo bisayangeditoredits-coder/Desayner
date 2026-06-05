@@ -18,6 +18,8 @@ import { redis } from '@/lib/redis';
 import { Ratelimit } from '@upstash/ratelimit';
 import * as Sentry from '@sentry/nextjs';
 
+export const runtime = 'edge';
+
 // 20 uploads per user per 60 seconds
 const ratelimit = new Ratelimit({
   redis,

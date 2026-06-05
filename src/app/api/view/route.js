@@ -3,6 +3,8 @@ import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import { redis } from '@/lib/redis';
 
+export const runtime = 'edge';
+
 export async function POST(req) {
   try {
     const { projectId } = await req.json();

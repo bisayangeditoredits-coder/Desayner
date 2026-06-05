@@ -4,6 +4,8 @@ import { cookies } from 'next/headers';
 import { redis } from '@/lib/redis';
 import * as Sentry from '@sentry/nextjs';
 
+export const runtime = 'edge';
+
 /**
  * POST /api/conversations/start
  * Body: { recipientId: string }
@@ -11,6 +13,16 @@ import * as Sentry from '@sentry/nextjs';
  * Finds or creates a 1:1 conversation. Idempotent — safe to call multiple times.
  * Rate limited to 10 new conversations per hour per user.
  */
+import { Ratelimit } from '@upstash/ratelimit';
+
+// Rate limit: 10 new conversation starts per hour per user
+const ratelimit = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(10, '1 h'),
+  analytics: false,
+  prefix: 'rl:conv_start',
+});
+
 export async function POST(request) {
   try {
     const cookieStore = await cookies();
@@ -28,12 +40,13 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Invalid recipient' }, { status: 400 });
     }
 
-    // Rate limit: 10 new conversation starts per hour
-    const rateLimitKey = `conv_start:${user.id}`;
-    const count = await redis.incr(rateLimitKey);
-    if (count === 1) await redis.expire(rateLimitKey, 3600);
-    if (count > 10) {
-      return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
+    // Rate limit: 10 new conversation starts per hour (atomic sliding window via Lua script)
+    const { success, remaining } = await ratelimit.limit(`user:${user.id}`);
+    if (!success) {
+      return NextResponse.json(
+        { error: 'Too many requests' }, 
+        { status: 429, headers: { 'X-RateLimit-Remaining': String(remaining) } }
+      );
     }
 
     // Canonical ordering: smaller UUID first

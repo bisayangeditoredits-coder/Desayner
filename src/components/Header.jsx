@@ -384,7 +384,7 @@ export default function Header() {
             </Link>
           </div>
         ) : (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', width: '150px' }}></div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}></div>
         )}
       </div>
     </header>

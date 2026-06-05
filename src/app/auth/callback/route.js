@@ -36,9 +36,32 @@ export async function GET(request) {
       }
     );
 
-    const { error } = await supabase.auth.exchangeCodeForSession(code);
+    const { data: sessionData, error } = await supabase.auth.exchangeCodeForSession(code);
 
-    if (!error) {
+    if (!error && sessionData?.user) {
+      const user = sessionData.user;
+      
+      // Auto-populate profile from Google/OAuth metadata if it doesn't exist
+      const { data: existingProfile } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('id', user.id)
+        .single();
+        
+      if (!existingProfile) {
+        const rawMeta = user.user_metadata || {};
+        const fullName = rawMeta.full_name || rawMeta.name || '';
+        let username = fullName.toLowerCase().replace(/[^a-z0-9]/g, '');
+        if (!username) username = `user_${Date.now()}`;
+        
+        await supabase.from('profiles').insert({
+          id: user.id,
+          full_name: fullName,
+          username: username,
+          avatar_url: rawMeta.avatar_url || rawMeta.picture || ''
+        });
+      }
+
       return NextResponse.redirect(`${origin}${next}`);
     }
   }

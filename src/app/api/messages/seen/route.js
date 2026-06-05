@@ -3,6 +3,8 @@ import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import * as Sentry from '@sentry/nextjs';
 
+export const runtime = 'edge';
+
 /**
  * PATCH /api/messages/seen
  * Body: { conversationId }

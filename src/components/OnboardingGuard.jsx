@@ -13,32 +13,21 @@ export default function OnboardingGuard({ children }) {
   useEffect(() => {
     let mounted = true;
     
-    async function checkOnboarding() {
-      // 1. Get current authenticated user
+    async function checkSession() {
+      // Just check auth briefly without enforcing profile completeness
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         if (mounted) setChecking(false);
-        return; // Guests are allowed to navigate public pages in (main)
+        return; 
       }
 
-      // 2. Query user profile
-      const { data: profile, error } = await supabase
-        .from('profiles')
-        .select('avatar_url, cover_url')
-        .eq('id', user.id)
-        .single();
-
+      // Check if profile exists, but we don't force them to /onboarding anymore
       if (mounted) {
-        if (error || !profile || !profile.avatar_url || !profile.cover_url) {
-          // If avatar or cover photo is missing, redirect to onboarding page
-          router.replace('/onboarding');
-        } else {
-          setChecking(false);
-        }
+        setChecking(false);
       }
     }
     
-    checkOnboarding();
+    checkSession();
     
     return () => {
       mounted = false;

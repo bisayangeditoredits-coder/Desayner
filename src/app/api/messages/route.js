@@ -4,6 +4,8 @@ import { cookies } from 'next/headers';
 import { redis } from '@/lib/redis';
 import * as Sentry from '@sentry/nextjs';
 
+export const runtime = 'edge';
+
 /**
  * GET /api/messages?conversationId=X&cursor=Y&limit=30
  * Fetches paginated messages for a conversation.
@@ -75,18 +77,29 @@ export async function GET(request) {
   }
 }
 
+import { Ratelimit } from '@upstash/ratelimit';
+
+// 30 messages per minute per user
+const ratelimit = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(30, '60 s'),
+  analytics: false,
+  prefix: 'rl:msg',
+});
+
 export async function POST(request) {
   try {
     const supabase = await getSupabase();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-    // Rate limit: 30 messages per minute
-    const rateLimitKey = `msg:${user.id}`;
-    const count = await redis.incr(rateLimitKey);
-    if (count === 1) await redis.expire(rateLimitKey, 60);
-    if (count > 30) {
-      return NextResponse.json({ error: 'Too many messages. Please slow down.' }, { status: 429 });
+    // Rate limit: 30 messages per minute (atomic sliding window via Lua script)
+    const { success, remaining } = await ratelimit.limit(`user:${user.id}`);
+    if (!success) {
+      return NextResponse.json(
+        { error: 'Too many messages. Please slow down.' }, 
+        { status: 429, headers: { 'X-RateLimit-Remaining': String(remaining) } }
+      );
     }
 
     const { conversationId, body, imageUrl } = await request.json();
