@@ -159,7 +159,12 @@ export default function MultiUploadZone({ folder = 'uploads', value = [], onResu
 
   // Keep a mutable ref to items for use inside processItem (avoids stale closure)
   const itemsRef = useRef(items);
-  useEffect(() => { itemsRef.current = items; }, [items]);
+  useEffect(() => { 
+    itemsRef.current = items; 
+    if (queueRef.current.length > 0 && !processingRef.current) {
+      processQueue();
+    }
+  }, [items]);
 
   // ── Add files ─────────────────────────────────────────────────────────────
   const addFiles = useCallback((files) => {
@@ -181,7 +186,7 @@ export default function MultiUploadZone({ folder = 'uploads', value = [], onResu
 
     dispatch({ type: 'ADD_ITEMS', items: newItems });
     newItems.forEach((item) => queueRef.current.push(item.id));
-    processQueue();
+    // processQueue will be triggered automatically by the items useEffect
   }, [value, items, maxFiles]);
 
   const handleDrop = (e) => {
