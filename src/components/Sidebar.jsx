@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import UserAvatar from './UserAvatar';
+import { useMobileNav } from '@/components/MobileNavProvider';
 
 const MAIN_NAV_ITEMS = [
   { href: '/',             icon: Home,          label: 'Home',        public: true },
@@ -35,6 +36,7 @@ const DESIGN_HUB_ITEMS = [
 
 export default function Sidebar({ className = '' }) {
   const pathname = usePathname();
+  const { isMobileMenuOpen, setIsMobileMenuOpen } = useMobileNav();
   const [user, setUser] = useState(null);
   const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect;
 
@@ -81,7 +83,15 @@ export default function Sidebar({ className = '' }) {
   }
 
   return (
-    <aside className={`sidebar ${className}`}>
+    <>
+      {isMobileMenuOpen && (
+        <div 
+          className="sidebar-overlay" 
+          onClick={() => setIsMobileMenuOpen(false)}
+          aria-label="Close Sidebar"
+        />
+      )}
+      <aside className={`sidebar ${className} ${isMobileMenuOpen ? 'mobile-open' : ''}`}>
       {/* Logo */}
       <div style={{ padding: '1.25rem 1.25rem 0', borderBottom: '1px solid #e8e8e8', paddingBottom: '1.25rem', marginBottom: '0.5rem' }}>
         <Image src="/Main_logo.png" alt="Desayner" width={130} height={30} priority style={{ width: '130px', height: 'auto' }} />

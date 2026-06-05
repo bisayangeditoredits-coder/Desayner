@@ -4,8 +4,9 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { 
   Search, Bell, Plus, X, Heart, Bookmark, MessageCircle, UserPlus, 
-  MessageSquare, Filter, Layers, UserSquare, CalendarCheck, PenTool, Calendar, Inbox, ChevronDown
+  MessageSquare, Filter, Layers, UserSquare, CalendarCheck, PenTool, Calendar, Inbox, ChevronDown, Menu
 } from 'lucide-react';
+import { useMobileNav } from '@/components/MobileNavProvider';
 import { createClient } from '@/lib/supabase/client';
 import UserAvatar from './UserAvatar';
 
@@ -62,6 +63,7 @@ export default function Header() {
   const debounceRef = useRef(null);
   const supabase    = createClient();
   const router     = useRouter();
+  const { isMobileMenuOpen, setIsMobileMenuOpen } = useMobileNav();
 
   useEffect(() => {
     let mounted = true;
@@ -199,7 +201,16 @@ export default function Header() {
   return (
     <header className="top-header">
       {/* Search and Left Icons */}
-      <div style={{ display: 'flex', alignItems: 'center', flex: 1, gap: '1rem' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flex: 1 }}>
+        {/* Hamburger Menu for Mobile */}
+        <button 
+          className="mobile-menu-toggle" 
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          aria-label="Toggle Navigation"
+        >
+          <Menu size={24} color="#0a0a0a" />
+        </button>
+
         <div className="search-bar" ref={searchRef} style={{ maxWidth: '400px', flex: 1 }}>
           <Search className="search-icon" size={15} />
           <input
