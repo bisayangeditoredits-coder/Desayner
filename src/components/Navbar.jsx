@@ -18,7 +18,7 @@ const Navbar = () => {
     <nav className={`navbar ${isScrolled ? 'scrolled' : ''}`}>
       <div className="container nav-container">
         <div className="logo">
-          <img src="/Main_logo.png" alt="Creldesk Studio" />
+          <img src="/Main_logo.png?v=3" alt="Creldesk Studio" />
         </div>
 
         <div className={`nav-links ${isMobileMenuOpen ? 'active' : ''}`}>

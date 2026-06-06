@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import ProjectCard from '@/components/ProjectCard';
+import InspirationCard from '@/components/InspirationCard';
 import UserAvatar from '@/components/UserAvatar';
 import Link from 'next/link';
 import { Bookmark, MessageCircle } from 'lucide-react';
@@ -19,6 +20,7 @@ export default function SavedPage() {
   const [tab, setTab]                   = useState('projects');
   const [savedProjects, setSavedProjects] = useState([]);
   const [savedPosts, setSavedPosts]     = useState([]);
+  const [savedInspirations, setSavedInspirations] = useState([]);
   const [currentUserId, setCurrentUserId] = useState(null);
   const [loading, setLoading]           = useState(true);
   const supabase = createClient();
@@ -29,7 +31,7 @@ export default function SavedPage() {
       if (!user) { setLoading(false); return; }
       setCurrentUserId(user.id);
 
-      const [projRes, postRes] = await Promise.all([
+      const [projRes, postRes, inspRes] = await Promise.all([
         supabase
           .from('project_saves')
           .select('projects(*, profiles!projects_user_id_fkey(username, full_name, avatar_url))')
@@ -40,10 +42,16 @@ export default function SavedPage() {
           .select('community_posts(*, profiles!community_posts_user_id_fkey(username, full_name, avatar_url))')
           .eq('user_id', user.id)
           .order('created_at', { ascending: false }),
+        supabase
+          .from('inspiration_saves')
+          .select('inspirations(*, profiles!inspirations_user_id_fkey(username, full_name, avatar_url))')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false }),
       ]);
 
       setSavedProjects((projRes.data || []).map(r => r.projects).filter(Boolean));
       setSavedPosts((postRes.data || []).map(r => r.community_posts).filter(Boolean));
+      setSavedInspirations((inspRes.data || []).map(r => r.inspirations).filter(Boolean));
       setLoading(false);
     }
     load();
@@ -73,6 +81,9 @@ export default function SavedPage() {
             <button className={`tab-btn ${tab === 'projects' ? 'active' : ''}`} onClick={() => setTab('projects')}>
               Projects ({savedProjects.length})
             </button>
+            <button className={`tab-btn ${tab === 'inspirations' ? 'active' : ''}`} onClick={() => setTab('inspirations')}>
+              Inspirations ({savedInspirations.length})
+            </button>
             <button className={`tab-btn ${tab === 'posts' ? 'active' : ''}`} onClick={() => setTab('posts')}>
               Posts ({savedPosts.length})
             </button>
@@ -89,6 +100,16 @@ export default function SavedPage() {
                 <div className="projects-masonry">
                   {savedProjects.map(project => (
                     <ProjectCard key={project.id} project={project} currentUserId={currentUserId} />
+                  ))}
+                </div>
+              )
+          ) : tab === 'inspirations' ? (
+            savedInspirations.length === 0
+              ? empty('No saved inspirations yet.', '/inspirations', 'Browse Inspirations')
+              : (
+                <div className="inspirations-masonry">
+                  {savedInspirations.map(item => (
+                    <InspirationCard key={item.id} inspiration={item} currentUserId={currentUserId} />
                   ))}
                 </div>
               )

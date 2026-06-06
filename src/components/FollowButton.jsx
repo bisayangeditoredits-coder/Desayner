@@ -50,7 +50,7 @@ export default function FollowButton({ targetUserId, currentUserId, initialFollo
         color: following ? '#6b6b6b' : 'white',
         fontSize: compact ? '0.8rem' : '0.875rem',
         fontWeight: 700,
-        borderRadius: '6px',
+        borderRadius: '24px',
         cursor: loading ? 'not-allowed' : 'pointer',
         transition: 'background 0.15s, color 0.15s, border-color 0.15s',
         fontFamily: 'inherit',

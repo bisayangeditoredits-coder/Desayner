@@ -2,6 +2,8 @@
 import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import ProjectCard from '@/components/ProjectCard';
+import AssetCard from '@/components/AssetCard';
+import InspirationCard from '@/components/InspirationCard';
 import { Folder, ChevronRight } from 'lucide-react';
 import '../../App.css';
 
@@ -36,11 +38,26 @@ export default function CollectionsPage() {
     setLoadingProjects(true);
     const { data } = await supabase
       .from('collection_items')
-      .select('projects(*, profiles!projects_user_id_fkey(username, full_name, avatar_url))')
+      .select(`
+        id,
+        project_id,
+        asset_id,
+        inspiration_id,
+        projects(*, profiles!projects_user_id_fkey(username, full_name, avatar_url)),
+        assets(*, profiles!assets_user_id_fkey(username, full_name, avatar_url)),
+        inspirations(*, profiles!inspirations_user_id_fkey(username, full_name, avatar_url))
+      `)
       .eq('collection_id', colId)
       .order('added_at', { ascending: false });
       
-    setColProjects(data?.map(d => d.projects) || []);
+    const items = (data || []).map(ci => {
+      if (ci.project_id && ci.projects) return { type: 'project', data: ci.projects, id: ci.id };
+      if (ci.asset_id && ci.assets) return { type: 'resource', data: ci.assets, id: ci.id };
+      if (ci.inspiration_id && ci.inspirations) return { type: 'inspiration', data: ci.inspirations, id: ci.id };
+      return null;
+    }).filter(Boolean);
+    
+    setColProjects(items);
     setLoadingProjects(false);
   }
 
@@ -104,9 +121,12 @@ export default function CollectionsPage() {
                   </div>
                 ) : (
                   <div className="projects-masonry">
-                    {colProjects.map(project => (
-                      <ProjectCard key={project.id} project={project} currentUserId={currentUserId} />
-                    ))}
+                    {colProjects.map(item => {
+                      if (item.type === 'project') return <ProjectCard key={item.id} project={item.data} currentUserId={currentUserId} />;
+                      if (item.type === 'resource') return <AssetCard key={item.id} asset={item.data} currentUserId={currentUserId} />;
+                      if (item.type === 'inspiration') return <InspirationCard key={item.id} inspiration={item.data} currentUserId={currentUserId} />;
+                      return null;
+                    })}
                   </div>
                 )}
               </>

@@ -30,7 +30,10 @@ function getIcon(type) {
 
 function getMessage(n) {
   const actorName = n.actor?.full_name || n.actor?.username || 'Someone';
-  if (n.type === 'like') return <span><strong>{actorName}</strong> liked your project</span>;
+  if (n.type === 'like') {
+    if (n.inspiration_id) return <span><strong>{actorName}</strong> liked your inspiration</span>;
+    return <span><strong>{actorName}</strong> liked your project</span>;
+  }
   if (n.type === 'save') return <span><strong>{actorName}</strong> saved your project</span>;
   if (n.type === 'comment') return <span><strong>{actorName}</strong> commented on your project</span>;
   if (n.type === 'follow') return <span><strong>{actorName}</strong> started following you</span>;
@@ -40,6 +43,7 @@ function getMessage(n) {
 function getLink(n) {
   if (n.type === 'follow') return `/profile/${n.actor?.username}`;
   if (n.project_id) return `/projects/${n.project_id}`;
+  if (n.inspiration_id) return '/inspirations';
   return '#';
 }
 
@@ -179,7 +183,8 @@ export default function Header() {
         .select(`
           *,
           actor:profiles!notifications_actor_id_fkey(username, full_name, avatar_url),
-          project:projects(title)
+          project:projects(title),
+          inspiration:inspirations(title)
         `)
         .eq('user_id', userId)
         .order('created_at', { ascending: false })

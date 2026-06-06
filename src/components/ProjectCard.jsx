@@ -7,10 +7,13 @@ import { createClient } from '@/lib/supabase/client';
 import UserAvatar from './UserAvatar';
 import ProgressiveImage from './ProgressiveImage';
 
+import SaveToCollectionModal from './SaveToCollectionModal';
+
 export default function ProjectCard({ project, currentUserId }) {
   const [liked, setLiked]         = useState(project.user_liked || false);
   const [saved, setSaved]         = useState(project.user_saved || false);
   const [likeCount, setLikeCount] = useState(project.likes_count || 0);
+  const [showColModal, setShowColModal] = useState(false);
   const supabase = createClient();
   const router = require('next/navigation').useRouter();
 
@@ -32,21 +35,14 @@ export default function ProjectCard({ project, currentUserId }) {
     }
   }
 
-  async function handleSave(e) {
+  function handleSave(e) {
     e.preventDefault();
     e.stopPropagation();
     if (!currentUserId) {
       router.push('/login?redirectTo=' + encodeURIComponent(window.location.pathname));
       return;
     }
-    const wasSaved = saved;
-    setSaved(!wasSaved);
-    if (wasSaved) {
-      await supabase.from('project_saves').delete()
-        .eq('user_id', currentUserId).eq('project_id', project.id);
-    } else {
-      await supabase.from('project_saves').insert({ user_id: currentUserId, project_id: project.id });
-    }
+    setShowColModal(true);
   }
 
   const author = project.profiles;
@@ -122,6 +118,13 @@ export default function ProjectCard({ project, currentUserId }) {
           </div>
         </div>
       </motion.div>
+      {showColModal && (
+        <SaveToCollectionModal
+          itemType="project"
+          itemId={project.id}
+          onClose={() => setShowColModal(false)}
+        />
+      )}
     </div>
   );
 }

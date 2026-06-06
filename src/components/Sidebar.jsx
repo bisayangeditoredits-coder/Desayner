@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 import Image from 'next/image';
 import {
   Home, FolderOpen, Users, Users2, Bookmark, Plus, Settings,
-  LogOut, ChevronDown, ChevronUp, Library, MessageSquare, Briefcase, ShoppingBag, Box, PlaySquare, Compass
+  LogOut, ChevronDown, ChevronUp, Library, MessageSquare, Briefcase, ShoppingBag, Box, PlaySquare, Compass, Sparkles
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import UserAvatar from './UserAvatar';
@@ -19,7 +19,6 @@ const MAIN_NAV_ITEMS = [
 const PROJECT_SUB_ITEMS = [
   { href: '/job-board',         label: 'JOB BOARD',         public: true },
   { href: '/challenges',        label: 'CHALLENGES',        public: true },
-  { href: '/inspirations',      label: 'INSPIRATIONS',      public: true },
 ];
 
 const COMMUNITY_ITEMS = [
@@ -92,9 +91,8 @@ export default function Sidebar({ className = '' }) {
         />
       )}
       <aside className={`sidebar ${className} ${isMobileMenuOpen ? 'mobile-open' : ''}`}>
-      {/* Logo */}
-      <div style={{ padding: '1.25rem 1.25rem 0', borderBottom: '1px solid #e8e8e8', paddingBottom: '1.25rem', marginBottom: '0.5rem' }}>
-        <Image src="/Main_logo.png" alt="Desayner" width={130} height={30} priority style={{ width: '130px', height: 'auto' }} />
+      <div style={{ padding: '1.25rem 1.25rem 0', borderBottom: '1px solid #e8e8e8', paddingBottom: '1.25rem', marginBottom: '0.5rem', display: 'flex', justifyContent: 'center' }}>
+        <img src="/Main_logo.png?v=4" alt="Desayner" style={{ width: '220px', height: 'auto', display: 'block' }} />
       </div>
 
       {/* Create button */}
@@ -116,6 +114,22 @@ export default function Sidebar({ className = '' }) {
             {label}
           </Link>
         ))}
+
+        <Link 
+          href="/inspirations" 
+          className={`nav-item ${isActive('/inspirations') ? 'active' : ''}`}
+        >
+          <Sparkles size={16} strokeWidth={isActive('/inspirations') ? 2.5 : 1.75} />
+          Inspirations
+        </Link>
+
+        <Link 
+          href="/collections" 
+          className={`nav-item ${isActive('/collections') ? 'active' : ''}`}
+        >
+          <Bookmark size={16} strokeWidth={isActive('/collections') ? 2.5 : 1.75} />
+          Collections
+        </Link>
 
         {/* Collapsible Projects */}
         <div className={`nav-item ${pathname.startsWith('/projects') ? 'active' : ''}`} style={{ paddingRight: '0' }}>

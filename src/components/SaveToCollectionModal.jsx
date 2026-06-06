@@ -4,7 +4,7 @@ import { createClient } from '@/lib/supabase/client';
 import { Plus, Folder, Check } from 'lucide-react';
 import Modal from './Modal';
 
-export default function SaveToCollectionModal({ projectId, onClose }) {
+export default function SaveToCollectionModal({ itemType = 'project', itemId, onClose }) {
   const [collections, setCollections] = useState([]);
   const [newColName, setNewColName] = useState('');
   const [loading, setLoading] = useState(true);
@@ -17,25 +17,33 @@ export default function SaveToCollectionModal({ projectId, onClose }) {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      const { data: cols } = await supabase
+      const { data: cols, error } = await supabase
         .from('collections')
-        .select('*, collection_items(project_id)')
+        .select('*, collection_items(project_id, asset_id, inspiration_id)')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false });
 
-      const parsedCols = (cols || []).map(c => ({
-        ...c,
-        hasProject: c.collection_items.some(ci => ci.project_id === projectId)
-      }));
+      if (error) {
+        console.error('Error fetching collections:', error);
+        alert('Error loading collections: ' + error.message);
+      }
+
+        const parsedCols = (cols || []).map(c => {
+          const idColumn = itemType === 'resource' ? 'asset_id' : itemType === 'inspiration' ? 'inspiration_id' : 'project_id';
+          return {
+            ...c,
+            hasItem: c.collection_items.some(ci => ci[idColumn] === itemId)
+          };
+        });
       setCollections(parsedCols);
 
       const savedMap = {};
-      parsedCols.forEach(c => { if (c.hasProject) savedMap[c.id] = true; });
+      parsedCols.forEach(c => { if (c.hasItem) savedMap[c.id] = true; });
       setSavedTo(savedMap);
       setLoading(false);
     }
     load();
-  }, [projectId]);
+  }, [itemId, itemType]);
 
   async function createCollection(e) {
     e.preventDefault();
@@ -54,7 +62,7 @@ export default function SaveToCollectionModal({ projectId, onClose }) {
     if (error) {
       alert('Error creating collection: ' + error.message);
     } else if (data) {
-      setCollections(prev => [{ ...data, hasProject: false }, ...prev]);
+      setCollections(prev => [{ ...data, hasItem: false }, ...prev]);
       setNewColName('');
     }
     setSaving(false);
@@ -63,10 +71,13 @@ export default function SaveToCollectionModal({ projectId, onClose }) {
   async function toggleCollection(colId) {
     const isSaved = savedTo[colId];
     setSavedTo(p => ({ ...p, [colId]: !isSaved }));
+    
+    const idColumn = itemType === 'resource' ? 'asset_id' : itemType === 'inspiration' ? 'inspiration_id' : 'project_id';
+    
     if (isSaved) {
-      await supabase.from('collection_items').delete().match({ collection_id: colId, project_id: projectId });
+      await supabase.from('collection_items').delete().match({ collection_id: colId, [idColumn]: itemId });
     } else {
-      await supabase.from('collection_items').insert({ collection_id: colId, project_id: projectId });
+      await supabase.from('collection_items').insert({ collection_id: colId, [idColumn]: itemId });
     }
   }
 

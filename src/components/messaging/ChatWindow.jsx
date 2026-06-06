@@ -8,6 +8,7 @@ import MessageInput from './MessageInput';
 import TypingIndicator from './TypingIndicator';
 import UserAvatar from '@/components/UserAvatar';
 import Link from 'next/link';
+import useToastStore from '@/store/useToastStore';
 
 /**
  * ChatWindow — the main chat panel.
@@ -38,6 +39,16 @@ const ChatWindow = memo(function ChatWindow({
   const prevMsgCount = useRef(0);
 
   const other = conversation?.other;
+
+  // ── Track active conversation for toast filtering ───────
+  useEffect(() => {
+    if (conversation?.id) {
+      useToastStore.getState().setActiveConversationId(conversation.id);
+    }
+    return () => {
+      useToastStore.getState().setActiveConversationId(null);
+    };
+  }, [conversation?.id]);
 
   // ── Subscribe to typing events ────────────────────────────
   useEffect(() => {

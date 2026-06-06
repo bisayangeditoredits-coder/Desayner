@@ -505,6 +505,14 @@ export default function ProjectDetailPage() {
           </div>
         </div>
       )}
+
+      {showColModal && (
+        <SaveToCollectionModal
+          itemType="project"
+          itemId={id}
+          onClose={() => setShowColModal(false)}
+        />
+      )}
     </>
   );
 }

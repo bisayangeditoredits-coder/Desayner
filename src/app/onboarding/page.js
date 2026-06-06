@@ -201,7 +201,7 @@ export default function OnboardingPage() {
       {/* Header */}
       <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1.25rem 2rem', borderBottom: '1px solid rgba(226, 232, 240, 0.8)', background: 'rgba(255, 255, 255, 0.8)', backdropFilter: 'blur(8px)', zIndex: 10 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          <Image src="/Main_logo.png" alt="Desayner" width={120} height={28} style={{ width: '120px', height: 'auto' }} />
+          <img src="/Main_logo.png?v=3" alt="Desayner" style={{ width: '120px', height: 'auto', display: 'block' }} />
           <span style={{ height: '18px', width: '1px', background: '#cbd5e1' }} />
           <span style={{ fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#64748b' }}>Creator Onboarding</span>
         </div>
@@ -420,11 +420,11 @@ export default function OnboardingPage() {
                       onChange={e => setBio(e.target.value)}
                       placeholder="Write a short pitch about your creative fields, passions, and background (Min. 10 characters)..."
                       rows={4}
-                      maxLength={280}
+                      maxLength={150}
                       className="premium-textarea"
                     />
                     <span style={{ fontSize: '0.72rem', color: '#94a3b8', display: 'block', marginTop: '0.35rem', textAlign: 'right', fontWeight: 600 }}>
-                      {bio.length}/280
+                      {bio.length}/150
                     </span>
                   </div>
 

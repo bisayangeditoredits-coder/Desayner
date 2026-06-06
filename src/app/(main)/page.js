@@ -38,35 +38,34 @@ export default function Dashboard() {
 
   useEffect(() => {
     async function load() {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        setCurrentUser(user);
-        const { data: profile } = await supabase.from('profiles').select('*').eq('id', user.id).single();
-        if (profile) setCurrentProfile(profile);
-      }
+      const authPromise = supabase.auth.getUser().then(async ({ data: { user } }) => {
+        if (user) {
+          setCurrentUser(user);
+          const { data: profile } = await supabase.from('profiles').select('*').eq('id', user.id).single();
+          if (profile) setCurrentProfile(profile);
+        }
+      });
 
-      try {
-        const res = await fetch('/api/trending');
-        const data = await res.json();
-        setProjects(data.projects || []);
-      } catch (err) {
-        console.error('Failed to fetch trending', err);
-      }
+      const trendingPromise = fetch('/api/trending')
+        .then(res => res.json())
+        .then(data => setProjects(data.projects || []))
+        .catch(err => console.error('Failed to fetch trending', err));
 
-      const { data: postsData } = await supabase
+      const postsPromise = supabase
         .from('community_posts')
         .select('*, profiles!community_posts_user_id_fkey(username, full_name, avatar_url)')
         .order('created_at', { ascending: false })
-        .limit(20);
-      setPosts(postsData || []);
+        .limit(20)
+        .then(({ data }) => setPosts(data || []));
 
-      const { data: usersData } = await supabase
+      const usersPromise = supabase
         .from('profiles')
         .select('id, username, full_name, avatar_url, followers_count, projects_count')
         .order('followers_count', { ascending: false })
-        .limit(8);
-      setSuggestedUsers(usersData || []);
+        .limit(8)
+        .then(({ data }) => setSuggestedUsers(data || []));
 
+      await Promise.all([authPromise, trendingPromise, postsPromise, usersPromise]);
       setLoading(false);
     }
     load();
@@ -116,7 +115,7 @@ export default function Dashboard() {
               {tab === 'projects' && (
                 <div>
                   {/* --- TOP CREATORS SECTION --- */}
-                  <div style={{ marginBottom: '2.5rem' }}>
+                  <div style={{ marginBottom: '1rem' }}>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
                       <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#6b6b6b', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
                         <Users size={13} /> Top Creators

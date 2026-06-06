@@ -3,6 +3,8 @@ import Header from '@/components/Header';
 import MobileBottomNav from '@/components/MobileBottomNav';
 import { MobileNavProvider } from '@/components/MobileNavProvider';
 import OnboardingGuard from '@/components/OnboardingGuard';
+import RealtimeNotifier from '@/components/RealtimeNotifier';
+import ToastContainer from '@/components/ToastContainer';
 
 export default function MainLayout({ children }) {
   return (
@@ -16,6 +18,8 @@ export default function MainLayout({ children }) {
           </main>
           <MobileBottomNav />
         </div>
+        <RealtimeNotifier />
+        <ToastContainer />
       </OnboardingGuard>
     </MobileNavProvider>
   );

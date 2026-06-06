@@ -1,5 +1,6 @@
 'use client';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 import styles from './Modal.module.css';
 
@@ -14,6 +15,15 @@ import styles from './Modal.module.css';
  *   children – the scrollable body content
  */
 export default function Modal({ title, size = 'md', onClose, footer, children }) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    // Prevent scrolling on body when modal is open
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = 'unset'; };
+  }, []);
+
   // Close on Escape key
   useEffect(() => {
     function onKey(e) { if (e.key === 'Escape') onClose(); }
@@ -21,10 +31,16 @@ export default function Modal({ title, size = 'md', onClose, footer, children })
     return () => document.removeEventListener('keydown', onKey);
   }, [onClose]);
 
-  return (
+  if (!mounted) return null;
+
+  return createPortal(
     <div
       className={styles.backdrop}
-      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+      onMouseDown={(e) => { 
+        e.stopPropagation();
+        if (e.target === e.currentTarget) onClose(); 
+      }}
+      onClick={(e) => e.stopPropagation()}
       role="dialog"
       aria-modal="true"
     >
@@ -53,6 +69,7 @@ export default function Modal({ title, size = 'md', onClose, footer, children })
           </div>
         )}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

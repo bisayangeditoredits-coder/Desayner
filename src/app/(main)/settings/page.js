@@ -157,18 +157,18 @@ export default function SettingsPage() {
               {/* Cover Photo */}
               <div>
                 <label style={labelStyle}>Cover Photo</label>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                   {coverUrl ? (
-                    <div style={{ width: '100%', aspectRatio: '3/1', background: '#f5f5f5', borderRadius: '12px', overflow: 'hidden', position: 'relative' }}>
+                    <div style={{ width: '100%', aspectRatio: '16/9', background: '#f5f5f5', borderRadius: '12px', overflow: 'hidden', position: 'relative' }}>
                       <img src={coverUrl} alt="Cover" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     </div>
                   ) : (
-                    <div style={{ width: '100%', aspectRatio: '3/1', background: '#f9fafb', border: '1px dashed #d1d5db', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#9ca3af', fontSize: '0.9rem' }}>
+                    <div style={{ width: '100%', aspectRatio: '16/9', background: '#f9fafb', border: '1px dashed #d1d5db', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#9ca3af', fontSize: '0.9rem' }}>
                       No cover photo uploaded
                     </div>
                   )}
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <span style={{ fontSize: '0.75rem', color: '#6b7280' }}>Recommended size: 1200 x 400 pixels</span>
+                    <span style={{ fontSize: '0.75rem', color: '#6b7280' }}>Recommended size: 1920 x 1080 pixels (16:9 aspect ratio)</span>
                     <ImageUpload
                       label={coverUrl ? "Change Cover" : "Upload Cover"}
                       folder="covers"
@@ -220,11 +220,11 @@ export default function SettingsPage() {
                   value={form.bio}
                   onChange={e => setForm(p => ({ ...p, bio: e.target.value }))}
                   placeholder="Tell the community about yourself..."
-                  maxLength={280}
+                  maxLength={150}
                   onFocus={e => e.target.style.borderColor = '#0a0a0a'}
                   onBlur={e => e.target.style.borderColor = '#e8e8e8'}
                 />
-                <span style={{ fontSize: '0.72rem', color: '#9b9b9b' }}>{form.bio.length}/280</span>
+                <span style={{ fontSize: '0.72rem', color: '#9b9b9b' }}>{form.bio.length}/150</span>
               </div>
 
               {/* Website */}

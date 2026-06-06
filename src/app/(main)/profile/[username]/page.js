@@ -34,13 +34,8 @@ function MessageButton({ profileId }) {
     <button
       onClick={startChat}
       disabled={loading}
-      style={{
-        display: 'inline-flex', alignItems: 'center', gap: '0.4rem',
-        padding: '0.45rem 1rem', border: '1px solid #e8e8e8',
-        fontSize: '0.78rem', fontWeight: 700, color: '#0a0a0a',
-        background: 'white', cursor: loading ? 'wait' : 'pointer',
-        fontFamily: 'inherit',
-      }}
+      className="profile-pill-btn profile-pill-btn-outline"
+      style={{ cursor: loading ? 'wait' : 'pointer' }}
     >
       <MessageSquare size={13} />
       {loading ? 'Opening…' : 'Message'}
@@ -123,139 +118,161 @@ export default function ProfilePage() {
 
   return (
     <>
+      <div className="profile-layout-container">
+        
+        {/* Top Split Header Section */}
+        <div className="profile-top-grid">
+          
+          {/* Left Info Column */}
+          <div className="profile-info-column">
+            
+            {/* Avatar Row */}
+            <div className="profile-avatar-row">
+              <UserAvatar src={profile.avatar_url} name={profile.full_name || profile.username} size={96} />
+            </div>
 
-        {/* Cover Photo */}
-        {profile.cover_url ? (
-          <div style={{ width: '100%', height: '240px', background: '#e5e7eb', position: 'relative' }}>
-            <img src={profile.cover_url} alt="Cover" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            {/* Name & Custom Badge Tag */}
+            <div className="profile-name-tag-row">
+              <h1 className="profile-display-name">
+                {profile.full_name || profile.username}
+              </h1>
+              <span className="profile-pro-badge">Creator Select</span>
+            </div>
+            
+            <p className="profile-username-tag">@{profile.username}</p>
+
+            {/* Headline Bio */}
+            {profile.bio ? (
+              <h2 className="profile-bio-headline">{profile.bio}</h2>
+            ) : isOwn ? (
+              <Link href="/settings" className="profile-bio-add-prompt">
+                ✏️ Add a bio to tell the community about your work →
+              </Link>
+            ) : (
+              <h2 className="profile-bio-headline profile-bio-placeholder">
+                Digital creator at Desayner Studio.
+              </h2>
+            )}
+
+            {/* Stats Row */}
+            <div className="profile-stats-row">
+              <span className="profile-stat-item">
+                <strong>{followerCount.toLocaleString()}</strong> followers
+              </span>
+              <span className="profile-stat-divider">·</span>
+              <span className="profile-stat-item">
+                <strong>{(profile.following_count || 0).toLocaleString()}</strong> following
+              </span>
+              <span className="profile-stat-divider">·</span>
+              <span className="profile-stat-item">
+                <strong>{(profile.projects_count || projects.length).toLocaleString()}</strong> projects
+              </span>
+            </div>
+
+            {/* Actions Row */}
+            <div className="profile-actions-row">
+              {isOwn ? (
+                <Link href="/settings" className="profile-pill-btn profile-pill-btn-dark">
+                  Edit Profile
+                </Link>
+              ) : (
+                <>
+                  <FollowButton targetUserId={profile.id} currentUserId={currentUser?.id} initialFollowing={isFollowing} compact={true} />
+                  {currentUser && (
+                    <MessageButton profileId={profile.id} />
+                  )}
+                </>
+              )}
+              {profile.website && (
+                <a 
+                  href={profile.website} 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="profile-round-btn" 
+                  title="Visit Website"
+                >
+                  <Globe size={15} />
+                </a>
+              )}
+            </div>
+
           </div>
-        ) : (
-          <div style={{ width: '100%', height: '120px', background: 'linear-gradient(135deg, #f9fafb, #f3f4f6)' }} />
-        )}
 
-        {/* Profile header */}
-        <div className="profile-header" style={{ paddingTop: '0', position: 'relative' }}>
-          <div style={{ maxWidth: '960px' }}>
-            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '1.5rem', flexWrap: 'wrap' }}>
+          {/* Right Showcase Card */}
+          <div className="profile-cover-column">
+            <div className="profile-cover-showcase">
               
-              {/* Avatar overlapping cover */}
-              <div style={{ marginTop: '-40px', position: 'relative', zIndex: 10, padding: '4px', background: 'white', borderRadius: '50%' }}>
-                <UserAvatar src={profile.avatar_url} name={profile.full_name || profile.username} size={100} />
-              </div>
+              <div className="profile-showcase-badge">PRO</div>
 
-              <div style={{ flex: 1, minWidth: '200px', paddingTop: '1rem' }}>
-                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem', flexWrap: 'wrap', marginBottom: '0.5rem' }}>
-                  <div>
-                    <h1 style={{ fontSize: '1.5rem', fontWeight: 800, letterSpacing: '-0.03em', lineHeight: 1.2 }}>
-                      {profile.full_name || profile.username}
-                    </h1>
-                    <p style={{ fontSize: '0.82rem', color: '#9b9b9b', marginTop: '0.1rem' }}>@{profile.username}</p>
-                  </div>
-                  <div style={{ marginTop: '0.2rem', display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-                    {isOwn ? (
-                      <Link href="/settings" style={{ padding: '0.45rem 1rem', border: '1px solid #e8e8e8', fontSize: '0.78rem', fontWeight: 700, color: '#0a0a0a', background: 'white', textDecoration: 'none', display: 'inline-block' }}>
-                        Edit Profile
-                      </Link>
-                    ) : (
-                      <>
-                        <FollowButton targetUserId={profile.id} currentUserId={currentUser?.id} initialFollowing={isFollowing} />
-                        {currentUser && (
-                          <MessageButton profileId={profile.id} />
-                        )}
-                      </>
-                    )}
-                  </div>
+              {profile.cover_url ? (
+                <img 
+                  src={profile.cover_url} 
+                  alt="Profile Cover" 
+                  className="profile-showcase-img"
+                />
+              ) : projects.length > 0 && projects[0].cover_url ? (
+                <img 
+                  src={projects[0].cover_url} 
+                  alt="Featured Work" 
+                  className="profile-showcase-img"
+                />
+              ) : (
+                <div className="profile-showcase-gradient">
+                  <div className="profile-showcase-gradient-logo">Desayner</div>
+                  <div className="profile-showcase-gradient-text">Define. Design. Develop.</div>
                 </div>
+              )}
 
-                {profile.bio ? (
-                  <p style={{ fontSize: '0.875rem', color: '#0a0a0a', lineHeight: 1.65, marginBottom: '0.75rem', maxWidth: '520px' }}>
-                    {profile.bio}
-                  </p>
-                ) : isOwn ? (
-                  <Link href="/settings" style={{
-                    display: 'inline-flex', alignItems: 'center', gap: '0.4rem',
-                    fontSize: '0.82rem', color: '#9b9b9b', marginBottom: '0.75rem',
-                    border: '1px dashed #d1d5db', padding: '0.4rem 0.75rem',
-                    textDecoration: 'none', background: 'white',
-                    transition: 'border-color 0.15s, color 0.15s',
-                  }}>
-                    ✏️ Add a bio to tell people about yourself →
-                  </Link>
-                ) : null}
-
-                {profile.tools && profile.tools.length > 0 && (
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '1rem' }}>
-                    {profile.tools.map(toolId => {
-                      const t = CREATIVE_TOOLS.find(c => c.id === toolId);
-                      if (!t) return null;
-                      return (
-                        <div key={toolId} style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', padding: '0.3rem 0.75rem', background: '#f5f5f5', border: '1px solid #e8e8e8', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 600, color: '#0a0a0a' }} title={t.name}>
-                          <img src={t.iconPath} alt={t.name} style={{ width: '14px', height: '14px', objectFit: 'contain' }} />
-                          {t.name}
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-
-                <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', flexWrap: 'wrap' }}>
-                  {profile.location && (
-                    <span style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.78rem', color: '#9b9b9b' }}>
-                      <MapPin size={12} /> {profile.location}
-                    </span>
-                  )}
-                  {profile.website && (
-                    <a href={profile.website} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.78rem', color: '#0a0a0a', fontWeight: 600 }}>
-                      <Globe size={12} /> {profile.website.replace(/^https?:\/\//, '')}
-                    </a>
-                  )}
-                  <span style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.78rem', color: '#9b9b9b' }}>
-                    <Calendar size={12} /> Joined {new Date(profile.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
-                  </span>
-                </div>
-              </div>
-
-              {/* Stats */}
-              <div style={{ display: 'flex', gap: '2rem', flexShrink: 0, paddingTop: '1.5rem' }}>
-                {[
-                  { label: 'Projects',   value: profile.projects_count || projects.length },
-                  { label: 'Followers',  value: followerCount },
-                  { label: 'Following',  value: profile.following_count || 0 },
-                ].map(s => (
-                  <div key={s.label} style={{ textAlign: 'center' }}>
-                    <div style={{ fontSize: '1.5rem', fontWeight: 800, letterSpacing: '-0.04em', color: '#0a0a0a' }}>{s.value}</div>
-                    <div style={{ fontSize: '0.68rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#9b9b9b' }}>{s.label}</div>
-                  </div>
-                ))}
-              </div>
             </div>
           </div>
+
         </div>
 
-        {/* Tabs */}
-        <div style={{ borderBottom: '1px solid #e8e8e8', padding: '0 2rem', background: 'white', position: 'sticky', top: '56px', zIndex: 700 }}>
-          <div className="tabs">
-            <button className={`tab-btn ${tab === 'projects' ? 'active' : ''}`} onClick={() => setTab('projects')}>
-              Projects ({projects.length})
-            </button>
-            {isOwn && (
-              <button className={`tab-btn ${tab === 'saved' ? 'active' : ''}`} onClick={() => setTab('saved')}>
-                Saved ({savedProjects.length})
+        {/* Tab Navigation */}
+        <div className="profile-tabs-wrapper">
+          <div className="profile-tabs-inner">
+            <div className="profile-tabs-list">
+              <button 
+                className={`profile-tab-btn ${tab === 'projects' ? 'active' : ''}`} 
+                onClick={() => setTab('projects')}
+              >
+                Work ({projects.length})
               </button>
+              {isOwn && (
+                <button 
+                  className={`profile-tab-btn ${tab === 'saved' ? 'active' : ''}`} 
+                  onClick={() => setTab('saved')}
+                >
+                  Saved ({savedProjects.length})
+                </button>
+              )}
+              <button 
+                className={`profile-tab-btn ${tab === 'about' ? 'active' : ''}`} 
+                onClick={() => setTab('about')}
+              >
+                About
+              </button>
+            </div>
+
+            {tab === 'projects' && projects.length > 0 && (
+              <div className="profile-sort-dropdown-container">
+                <span className="profile-sort-label">Sort:</span>
+                <span className="profile-sort-active">Recent Shots</span>
+              </div>
             )}
           </div>
         </div>
 
-        {/* Content */}
-        <div className="page-content">
-          {tab === 'projects' ? (
+        {/* Tab Contents */}
+        <div className="profile-tab-content-container">
+          {tab === 'projects' && (
             projects.length === 0 ? (
-              <div style={{ textAlign: 'center', padding: '4rem', border: '1px solid #e8e8e8', background: 'white' }}>
-                <p style={{ color: '#9b9b9b', fontSize: '0.875rem' }}>
+              <div className="profile-empty-state">
+                <p>
                   {isOwn ? "You haven't published any projects yet." : `${profile.full_name || profile.username} hasn't shared any projects yet.`}
                 </p>
                 {isOwn && (
-                  <Link href="/projects/new" style={{ display: 'inline-block', marginTop: '1rem', padding: '0.5rem 1.25rem', background: '#0a0a0a', color: 'white', fontSize: '0.8rem', fontWeight: 700 }}>
+                  <Link href="/projects/new" className="btn btn-dark" style={{ borderRadius: '20px', fontSize: '0.8rem', marginTop: '1rem' }}>
                     Create First Project
                   </Link>
                 )}
@@ -267,10 +284,12 @@ export default function ProfilePage() {
                 ))}
               </div>
             )
-          ) : (
+          )}
+
+          {tab === 'saved' && (
             savedProjects.length === 0 ? (
-              <div style={{ textAlign: 'center', padding: '4rem', border: '1px solid #e8e8e8', background: 'white' }}>
-                <p style={{ color: '#9b9b9b', fontSize: '0.875rem' }}>No saved projects yet.</p>
+              <div className="profile-empty-state">
+                <p>No saved projects yet.</p>
               </div>
             ) : (
               <div className="projects-masonry">
@@ -280,7 +299,78 @@ export default function ProfilePage() {
               </div>
             )
           )}
+
+          {tab === 'about' && (
+            <div className="profile-about-grid">
+              
+              <div className="profile-about-info">
+                <h3 className="profile-about-section-title">Biography</h3>
+                <p className="profile-about-bio-text">
+                  {profile.bio || "No biography provided yet."}
+                </p>
+
+                {profile.tools && profile.tools.length > 0 && (
+                  <div style={{ marginTop: '2rem' }}>
+                    <h3 className="profile-about-section-title">Creative Tools</h3>
+                    <div className="profile-about-tools-list">
+                      {profile.tools.map(toolId => {
+                        const t = CREATIVE_TOOLS.find(c => c.id === toolId);
+                        if (!t) return null;
+                        return (
+                          <div key={toolId} className="profile-about-tool-pill" title={t.name}>
+                            <img src={t.iconPath} alt={t.name} className="profile-about-tool-icon" />
+                            <span>{t.name}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div className="profile-about-meta-card">
+                <h3 className="profile-about-section-title">Details</h3>
+                
+                <div className="profile-meta-item">
+                  <Globe size={16} className="profile-meta-icon" />
+                  <div>
+                    <div className="profile-meta-label">Website</div>
+                    {profile.website ? (
+                      <a href={profile.website} target="_blank" rel="noopener noreferrer" className="profile-meta-value profile-meta-link">
+                        {profile.website.replace(/^https?:\/\//, '')}
+                      </a>
+                    ) : (
+                      <span className="profile-meta-value text-muted">None listed</span>
+                    )}
+                  </div>
+                </div>
+
+                <div className="profile-meta-item">
+                  <MapPin size={16} className="profile-meta-icon" />
+                  <div>
+                    <div className="profile-meta-label">Location</div>
+                    <span className="profile-meta-value">
+                      {profile.location || "Earth"}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="profile-meta-item">
+                  <Calendar size={16} className="profile-meta-icon" />
+                  <div>
+                    <div className="profile-meta-label">Member Since</div>
+                    <span className="profile-meta-value">
+                      {new Date(profile.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                    </span>
+                  </div>
+                </div>
+
+              </div>
+
+            </div>
+          )}
         </div>
-      </>
+      </div>
+    </>
   );
 }

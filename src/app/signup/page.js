@@ -83,7 +83,7 @@ export default function SignupPage() {
       }}>
         {/* Logo */}
         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-          <Image src="/Main_logo.png" alt="Desayner" width={200} height={48} priority />
+          <img src="/Main_logo.png?v=3" alt="Desayner" style={{ width: '200px', height: 'auto', display: 'block', margin: '0 auto' }} />
           <p style={{ marginTop: '1rem', color: '#64748b', fontSize: '0.95rem' }}>Create your account</p>
         </div>
 

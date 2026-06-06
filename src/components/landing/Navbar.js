@@ -7,13 +7,11 @@ import styles from './Landing.module.css';
 export default function Navbar() {
   return (
     <nav className={styles.nav}>
-      <Image 
-        src="/Main_logo.png" 
+      <img 
+        src="/Main_logo.png?v=4" 
         alt="Desayner" 
-        width={154} 
-        height={36} 
         className={styles.navLogo} 
-        priority 
+        style={{ height: '48px', width: 'auto', display: 'block' }}
       />
       <div className={styles.navLinks}>
         <a href="#features" className={styles.navLink}>Platform</a>

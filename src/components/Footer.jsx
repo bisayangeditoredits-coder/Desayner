@@ -7,7 +7,7 @@ const Footer = () => {
       <div className="container">
         <div className="footer-top">
           <div className="footer-brand">
-            <img src="/Main_logo.png" alt="Creldesk Studio" className="footer-logo" />
+            <img src="/Main_logo.png?v=3" alt="Creldesk Studio" className="footer-logo" />
             <p>Premium content creation and branding for the modern digital era.</p>
           </div>
           

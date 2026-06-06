@@ -1,4 +1,5 @@
-import { Montserrat } from "next/font/google";
+import { Montserrat, Raleway } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import "./messaging.css";
 
@@ -7,9 +8,26 @@ const montserrat = Montserrat({
   subsets: ["latin"],
 });
 
+const raleway = Raleway({
+  variable: "--font-raleway",
+  subsets: ["latin"],
+});
+
+const monigue = localFont({
+  src: "../../public/Fonts/Monigue.otf",
+  variable: "--font-monigue",
+});
+
 export const metadata = {
   title: "Desayner | Content Creation & Branding Agency",
   description: "Desayner is a premium platform for modern creators. Elevate your brand with professional visual storytelling.",
+  icons: {
+    icon: [
+      { url: "/android-chrome-192x192 rounded.png", type: "image/png" },
+    ],
+    apple: "/android-chrome-192x192 rounded.png",
+  },
+  manifest: "/site.webmanifest",
   openGraph: {
     title: "Desayner | Content Creation & Branding Agency",
     description: "Desayner is a premium platform for modern creators. Elevate your brand with professional visual storytelling.",
@@ -42,7 +60,7 @@ export const viewport = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={`${montserrat.variable}`}>
+    <html lang="en" className={`${montserrat.variable} ${raleway.variable} ${monigue.variable}`}>
       <body>
         {children}
       </body>
