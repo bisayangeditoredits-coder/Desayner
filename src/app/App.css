@@ -1717,7 +1717,10 @@
   height: 240px;
   border-radius: 12px;
   overflow: hidden;
-  background: linear-gradient(135deg, #0009fa 0%, #1e1b4b 100%);
+  background-image: url(/Event_banner.jpg);
+  background-size: cover;
+  background-position: center;
+  background-color: #0009fa;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
@@ -1731,8 +1734,8 @@
 }
 
 .event-banner-badge {
-  background: #0009fa;
-  color: white;
+  background: #faf600;
+  color: rgb(0, 0, 0);
   padding: 0.25rem 0.75rem;
   font-size: 0.75rem;
   font-weight: 800;

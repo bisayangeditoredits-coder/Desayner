@@ -98,7 +98,7 @@ export default function Dashboard() {
                   <button className="event-banner-btn">Register Now</button>
                 </div>
                 {/* Dark overlay gradient to ensure text readability */}
-                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 70%)', zIndex: 1 }}></div>
+                <div className="event-banner-overlay">D:\CRELDESK\CreldeskStudio\public\Event_banner.jpg</div>
               </div>
             </div>
             {/* --- END EVENT BANNER SECTION --- */}
