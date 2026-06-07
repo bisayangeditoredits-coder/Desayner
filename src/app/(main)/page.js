@@ -77,31 +77,31 @@ export default function Dashboard() {
 
   return (
     <>
-        <div className="homepage-layout">
+      <div className="homepage-layout">
 
-          {/* Main feed */}
-          <div className="homepage-feed">
+        {/* Main feed */}
+        <div className="homepage-feed">
 
-            {/* --- EVENT BANNER SECTION --- */}
-            {/* 
+          {/* --- EVENT BANNER SECTION --- */}
+          {/* 
               BANNER IMAGE SIZE GUIDE: 
               Recommended aspect ratio is roughly 3:1 to 4:1 (e.g., 1200x300 pixels or 1200x400 pixels). 
               Use WebP, JPG, or optimized PNG for fast loading. 
               To change the image, simply replace the 'url(/event-banner.png)' in the background property below.
             */}
-            <div className="event-banner-wrapper">
-              <div className="event-banner-container">
-                <div className="event-banner-content">
-                  <span className="event-banner-badge">Upcoming Event</span>
-                  <h2 className="event-banner-title">Welcome to Desayner</h2>
-                  <p className="event-banner-text">Join top creators for a day of design, networking, and exclusive reveals.</p>
-                  <button className="event-banner-btn">Register Now</button>
-                </div>
-                {/* Dark overlay gradient to ensure text readability */}
-                <div className="event-banner-overlay">D:\CRELDESK\CreldeskStudio\public\Event_banner.jpg</div>
+          <div className="event-banner-wrapper">
+            <div className="event-banner-container">
+              <div className="event-banner-content">
+                <span className="event-banner-badge">Upcoming Event</span>
+                <h2 className="event-banner-title">Welcome to Desayner</h2>
+                <p className="event-banner-text">Join top creators for a day of design, networking, and exclusive reveals.</p>
+                <button className="event-banner-btn">Register Now</button>
               </div>
+              {/* Dark overlay gradient to ensure text readability */}
+              <div className="event-banner-overlay"></div>
             </div>
-            {/* --- END EVENT BANNER SECTION --- */}
+          </div>
+          {/* --- END EVENT BANNER SECTION --- */}
             <div className="tabs homepage-tabs">
               <button className={`tab-btn ${tab === 'projects' ? 'active' : ''}`} onClick={() => setTab('projects')}>
                 Projects
@@ -124,17 +124,17 @@ export default function Dashboard() {
                         View all <ArrowRight size={13} />
                       </Link>
                     </div>
-                    
-                    <div className="top-creators-scroll" style={{ 
-                      display: 'flex', 
+
+                    <div className="top-creators-scroll" style={{
+                      display: 'flex',
                       gap: '0.6rem', // Minimal spacing as requested
-                      overflowX: 'auto', 
+                      overflowX: 'auto',
                       paddingBottom: '0.75rem',
                       scrollbarWidth: 'none', /* Firefox */
                       msOverflowStyle: 'none' /* IE/Edge */
                     }}>
                       <style>{`.top-creators-scroll::-webkit-scrollbar { display: none; }`}</style>
-                      
+
                       {loading ? (
                         [...Array(6)].map((_, i) => (
                           <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem', minWidth: '120px', padding: '0.75rem', background: 'white', borderRadius: '12px', border: '1px solid #f0f0f0' }}>
@@ -145,9 +145,9 @@ export default function Dashboard() {
                         ))
                       ) : (
                         suggestedUsers.map(creator => (
-                          <Link key={creator.id} href={`/profile/${creator.username}`} style={{ 
-                            display: 'flex', 
-                            flexDirection: 'column', 
+                          <Link key={creator.id} href={`/profile/${creator.username}`} style={{
+                            display: 'flex',
+                            flexDirection: 'column',
                             alignItems: 'center',
                             justifyContent: 'center',
                             padding: '0.75rem',
@@ -160,22 +160,22 @@ export default function Dashboard() {
                             transition: 'transform 0.2s, box-shadow 0.2s',
                             boxShadow: '0 2px 5px rgba(0,0,0,0.02)'
                           }}
-                          onMouseOver={e => {
-                            e.currentTarget.style.transform = 'translateY(-2px)';
-                            e.currentTarget.style.boxShadow = '0 4px 10px rgba(0,0,0,0.05)';
-                            e.currentTarget.style.borderColor = '#d1d5db';
-                          }}
-                          onMouseOut={e => {
-                            e.currentTarget.style.transform = 'none';
-                            e.currentTarget.style.boxShadow = '0 2px 5px rgba(0,0,0,0.02)';
-                            e.currentTarget.style.borderColor = '#e5e7eb';
-                          }}>
+                            onMouseOver={e => {
+                              e.currentTarget.style.transform = 'translateY(-2px)';
+                              e.currentTarget.style.boxShadow = '0 4px 10px rgba(0,0,0,0.05)';
+                              e.currentTarget.style.borderColor = '#d1d5db';
+                            }}
+                            onMouseOut={e => {
+                              e.currentTarget.style.transform = 'none';
+                              e.currentTarget.style.boxShadow = '0 2px 5px rgba(0,0,0,0.02)';
+                              e.currentTarget.style.borderColor = '#e5e7eb';
+                            }}>
                             <div style={{ width: '46px', height: '46px', borderRadius: '50%', overflow: 'hidden', marginBottom: '0.4rem', border: '1px solid #f3f4f6' }}>
                               <UserAvatar src={creator.avatar_url} name={creator.full_name || creator.username} size={46} />
                             </div>
-                            <span style={{ 
-                              fontSize: '0.75rem', 
-                              fontWeight: 800, 
+                            <span style={{
+                              fontSize: '0.75rem',
+                              fontWeight: 800,
                               color: '#111827',
                               textAlign: 'center',
                               width: '100%',
@@ -291,40 +291,40 @@ export default function Dashboard() {
                   <Users size={12} /> Who to follow
                 </span>
               </div>
-            <div style={{ display: 'flex', flexDirection: 'column' }}>
-              {suggestedUsers.slice(0, 5).map(u => (
-                <div key={u.id} style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', padding: '0.6rem 0', borderBottom: '1px solid #f0f0f0' }}>
-                  <Link href={`/profile/${u.username}`}>
-                    <UserAvatar src={u.avatar_url} name={u.full_name || u.username} size={30} />
-                  </Link>
-                  <div style={{ flex: 1, overflow: 'hidden' }}>
-                    <Link href={`/profile/${u.username}`} style={{ display: 'block', fontWeight: 700, fontSize: '0.78rem', color: '#0a0a0a', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      {u.full_name || u.username}
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                {suggestedUsers.slice(0, 5).map(u => (
+                  <div key={u.id} style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', padding: '0.6rem 0', borderBottom: '1px solid #f0f0f0' }}>
+                    <Link href={`/profile/${u.username}`}>
+                      <UserAvatar src={u.avatar_url} name={u.full_name || u.username} size={30} />
                     </Link>
-                    <span style={{ fontSize: '0.7rem', color: '#9b9b9b' }}>{u.projects_count || 0} projects</span>
+                    <div style={{ flex: 1, overflow: 'hidden' }}>
+                      <Link href={`/profile/${u.username}`} style={{ display: 'block', fontWeight: 700, fontSize: '0.78rem', color: '#0a0a0a', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {u.full_name || u.username}
+                      </Link>
+                      <span style={{ fontSize: '0.7rem', color: '#9b9b9b' }}>{u.projects_count || 0} projects</span>
+                    </div>
+                    <Link href={`/profile/${u.username}`} style={{ padding: '0.25rem 0.6rem', border: '1px solid #e8e8e8', fontSize: '0.7rem', fontWeight: 700, color: '#0a0a0a', background: 'white', flexShrink: 0 }}>
+                      Follow
+                    </Link>
                   </div>
-                  <Link href={`/profile/${u.username}`} style={{ padding: '0.25rem 0.6rem', border: '1px solid #e8e8e8', fontSize: '0.7rem', fontWeight: 700, color: '#0a0a0a', background: 'white', flexShrink: 0 }}>
-                    Follow
-                  </Link>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
 
-            <div style={{ marginTop: '2rem', padding: '1rem', background: '#f9f9f9', border: '1px solid #e8e8e8' }}>
-              <p style={{ fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#6b6b6b', marginBottom: '0.75rem' }}>Quick Links</p>
-              {[
-                { label: 'Explore Projects', href: '/projects' },
-                { label: 'Community Feed', href: '/community' },
-                { label: 'Saved Items', href: '/saved' },
-              ].map(item => (
-                <Link key={item.href} href={item.href} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.5rem 0', fontSize: '0.8rem', color: '#0a0a0a', fontWeight: 500, borderBottom: '1px solid #f0f0f0' }}>
-                  {item.label} <ArrowRight size={12} color="#9b9b9b" />
-                </Link>
-              ))}
+              <div style={{ marginTop: '2rem', padding: '1rem', background: '#f9f9f9', border: '1px solid #e8e8e8' }}>
+                <p style={{ fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#6b6b6b', marginBottom: '0.75rem' }}>Quick Links</p>
+                {[
+                  { label: 'Explore Projects', href: '/projects' },
+                  { label: 'Community Feed', href: '/community' },
+                  { label: 'Saved Items', href: '/saved' },
+                ].map(item => (
+                  <Link key={item.href} href={item.href} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.5rem 0', fontSize: '0.8rem', color: '#0a0a0a', fontWeight: 500, borderBottom: '1px solid #f0f0f0' }}>
+                    {item.label} <ArrowRight size={12} color="#9b9b9b" />
+                  </Link>
+                ))}
+              </div>
             </div>
-          </div>
           </div>
         </div>
       </>
-  );
+      );
 }
