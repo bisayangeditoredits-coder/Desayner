@@ -21,8 +21,40 @@ export default function ProjectModalWrapper({ children }) {
   }, [onDismiss]);
 
   return (
-    <AnimatePresence>
-      <motion.div
+    <>
+      <style>{`
+        .modal-overlay {
+          padding: 2rem;
+        }
+        .modal-content {
+          width: 95vw;
+          max-height: 95vh;
+          border-radius: 0px;
+        }
+        .modal-close-btn {
+          top: 1.5rem;
+          right: 2rem;
+        }
+        @media (max-width: 768px) {
+          .modal-overlay {
+            padding: 0 !important;
+          }
+          .modal-content {
+            width: 100vw !important;
+            max-height: 100vh !important;
+            height: 100vh !important;
+            border-radius: 0 !important;
+          }
+          .modal-close-btn {
+            top: 0.75rem !important;
+            right: 0.75rem !important;
+            background: rgba(0,0,0,0.4) !important;
+          }
+        }
+      `}</style>
+      <AnimatePresence>
+        <motion.div
+          className="modal-overlay"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
@@ -36,12 +68,11 @@ export default function ProjectModalWrapper({ children }) {
           alignItems: 'center',
           backgroundColor: 'rgba(15, 23, 42, 0.8)', // Deep slate overlay
           backdropFilter: 'blur(8px)',
-          overflowY: 'auto',
-          padding: '2rem'
+          overflowY: 'auto'
         }}
         onClick={onDismiss}
       >
-        <div style={{ position: 'absolute', top: '1.5rem', right: '2rem' }}>
+        <div className="modal-close-btn" style={{ position: 'absolute', zIndex: 1000 }}>
           <button
             onClick={onDismiss}
             style={{
@@ -65,17 +96,15 @@ export default function ProjectModalWrapper({ children }) {
         </div>
 
         <motion.div
+          className="modal-content"
           initial={{ y: 20, opacity: 0, scale: 0.95 }}
           animate={{ y: 0, opacity: 1, scale: 1 }}
           transition={{ duration: 0.3, type: 'spring', bounce: 0.2 }}
           style={{
-            width: '95vw',
             maxWidth: '1600px', // Like behance/dribbble wide modal
             background: '#ffffff',
-            borderRadius: '0px', // Sharp edges requested by user
             overflow: 'hidden',
             boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
-            maxHeight: '95vh',
             display: 'flex',
             flexDirection: 'column',
           }}
@@ -87,5 +116,6 @@ export default function ProjectModalWrapper({ children }) {
         </motion.div>
       </motion.div>
     </AnimatePresence>
+  </>
   );
 }
