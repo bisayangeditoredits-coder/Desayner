@@ -309,12 +309,6 @@ export default function Header() {
                   <Link href="/projects/new" onClick={() => setCreateMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.5rem 1rem', color: '#0a0a0a', fontSize: '0.875rem', textDecoration: 'none', fontWeight: 500 }}>
                     <Plus size={16} color="#6b7280" /> New Project
                   </Link>
-                  <button onClick={() => setCreateMenuOpen(false)} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.5rem 1rem', background: 'none', border: 'none', color: '#0a0a0a', fontSize: '0.875rem', fontWeight: 500, cursor: 'pointer', textAlign: 'left' }}>
-                    <PenTool size={16} color="#6b7280" /> Post Art
-                  </button>
-                  <button onClick={() => setCreateMenuOpen(false)} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.5rem 1rem', background: 'none', border: 'none', color: '#0a0a0a', fontSize: '0.875rem', fontWeight: 500, cursor: 'pointer', textAlign: 'left' }}>
-                    <Calendar size={16} color="#6b7280" /> Open Gig
-                  </button>
                 </div>
               )}
             </div>
