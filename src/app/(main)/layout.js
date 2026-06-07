@@ -6,7 +6,7 @@ import OnboardingGuard from '@/components/OnboardingGuard';
 import RealtimeNotifier from '@/components/RealtimeNotifier';
 import ToastContainer from '@/components/ToastContainer';
 
-export default function MainLayout({ children }) {
+export default function MainLayout({ children, modal }) {
   return (
     <MobileNavProvider>
       <OnboardingGuard>
@@ -18,6 +18,7 @@ export default function MainLayout({ children }) {
           </main>
           <MobileBottomNav />
         </div>
+        {modal}
         <RealtimeNotifier />
         <ToastContainer />
       </OnboardingGuard>

@@ -1,27 +1,42 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
+import OnboardingModal from '@/components/OnboardingModal';
 
 export default function OnboardingGuard({ children }) {
-  const [checking, setChecking] = useState(true);
   const router = useRouter();
   const pathname = usePathname();
   const supabase = createClient();
+  const [checking, setChecking] = useState(true);
+  const [needsOnboarding, setNeedsOnboarding] = useState(false);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
     let mounted = true;
     
     async function checkSession() {
-      // Just check auth briefly without enforcing profile completeness
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         if (mounted) setChecking(false);
         return; 
       }
+      if (mounted) setUser(user);
 
-      // Check if profile exists, but we don't force them to /onboarding anymore
+      // Check if profile exists and is complete (avatar, username, bio, tools required)
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('avatar_url, username, bio, tools')
+        .eq('id', user.id)
+        .single();
+
+      if (!profile || !profile.avatar_url || !profile.username || !profile.bio || !profile.tools || profile.tools.length === 0) {
+        if (mounted) {
+          setNeedsOnboarding(true);
+        }
+      }
+
       if (mounted) {
         setChecking(false);
       }
@@ -34,23 +49,43 @@ export default function OnboardingGuard({ children }) {
     };
   }, [pathname, router, supabase]);
 
-  if (checking) {
-    return (
-      <div style={{ 
-        minHeight: '100vh', 
-        display: 'flex', 
-        alignItems: 'center', 
-        justifyContent: 'center', 
-        background: '#f1f5f9',
-        fontFamily: 'var(--font-body)'
-      }}>
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
-          <div className="shimmer-box" style={{ width: '48px', height: '48px', borderRadius: '50%' }} />
-          <p style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: 600 }}>Securing session...</p>
-        </div>
-      </div>
-    );
-  }
+  if (checking) return null;
 
-  return children;
+  return (
+    <>
+      <div style={{ 
+        filter: needsOnboarding ? 'blur(10px) brightness(0.9)' : 'none', 
+        transition: 'filter 0.4s ease-out',
+        pointerEvents: needsOnboarding ? 'none' : 'auto',
+        userSelect: needsOnboarding ? 'none' : 'auto',
+        height: needsOnboarding ? '100vh' : 'auto',
+        overflow: needsOnboarding ? 'hidden' : 'auto'
+      }}>
+        {children}
+      </div>
+
+      {needsOnboarding && (
+        <div style={{ 
+          position: 'fixed', 
+          inset: 0, 
+          zIndex: 99999, 
+          background: 'rgba(15, 23, 42, 0.8)', 
+          backdropFilter: 'blur(8px)', 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'center',
+          padding: '1rem',
+          animation: 'fadeIn 0.4s ease-out'
+        }}>
+          <OnboardingModal user={user} onComplete={() => setNeedsOnboarding(false)} />
+          <style>{`
+            @keyframes fadeIn {
+              from { opacity: 0; backdrop-filter: blur(0px); background: rgba(15, 23, 42, 0); }
+              to { opacity: 1; backdrop-filter: blur(8px); background: rgba(15, 23, 42, 0.8); }
+            }
+          `}</style>
+        </div>
+      )}
+    </>
+  );
 }

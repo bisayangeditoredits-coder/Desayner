@@ -25,12 +25,6 @@ export const metadata = {
   alternates: {
     canonical: "/",
   },
-  icons: {
-    icon: [
-      { url: "/android-chrome-192x192 rounded.png", type: "image/png" },
-    ],
-    apple: "/android-chrome-192x192 rounded.png",
-  },
   manifest: "/site.webmanifest",
   openGraph: {
     title: "Desayner | Content Creation & Branding Agency",

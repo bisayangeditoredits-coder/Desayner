@@ -142,7 +142,7 @@ function ImageGallery({ images, title }) {
 
 // ─── Main page ───────────────────────────────────────────────────────────────
 
-export default function ProjectDetailPage() {
+export default function ProjectDetailClient({ isModal = false }) {
   const { id } = useParams();
   const router = useRouter();
   const supabase = createClient();
@@ -270,10 +270,12 @@ export default function ProjectDetailPage() {
     <>
 
         {/* Back bar */}
-        <div className="project-detail__topbar">
-          <button onClick={() => router.back()} className="project-detail__back" style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: 0 }}>
-            <ArrowLeft size={14} /> Back to Projects
-          </button>
+        <div className="project-detail__topbar" style={isModal ? { position: 'static', borderBottom: 'none' } : {}}>
+          {!isModal ? (
+            <button onClick={() => router.back()} className="project-detail__back" style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: 0 }}>
+              <ArrowLeft size={14} /> Back to Projects
+            </button>
+          ) : <div />}
           <div style={{ marginLeft: 'auto', display: 'flex', gap: '0.5rem' }}>
             <button 
               onClick={handleShare} 

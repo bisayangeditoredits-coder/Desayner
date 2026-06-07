@@ -71,8 +71,8 @@ function ResetPasswordForm() {
           <div style={{ marginBottom: '2.5rem' }}>
             <div style={{
               width: '40px', height: '40px', background: '#5b45f4',
-              maskImage: 'url(/favicon_io/android-chrome-192x192%20rounded.png)',
-              WebkitMaskImage: 'url(/favicon_io/android-chrome-192x192%20rounded.png)',
+              maskImage: 'url(/desayner-favicon.png)',
+              WebkitMaskImage: 'url(/desayner-favicon.png)',
               maskSize: 'contain', WebkitMaskSize: 'contain', maskRepeat: 'no-repeat', WebkitMaskRepeat: 'no-repeat'
             }} />
           </div>

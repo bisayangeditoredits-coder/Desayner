@@ -8,7 +8,7 @@ export default function Navbar() {
   return (
     <nav className={styles.nav}>
       <img 
-        src="/Main_logo.png?v=4" 
+        src="/desayner-logo.png" 
         alt="Desayner" 
         className={styles.navLogo} 
         style={{ height: '48px', width: 'auto', display: 'block' }}
