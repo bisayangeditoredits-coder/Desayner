@@ -64,14 +64,14 @@
 /* Grid layout matching the Explore feed */
 .inspirations-masonry {
   column-count: 4;
-  column-gap: 1.25rem;
+  column-gap: 4px;
   width: 100%;
 }
 
 .inspirations-card-wrapper {
   width: 100%;
   break-inside: avoid;
-  margin-bottom: 1.25rem;
+  margin-bottom: 4px;
   display: inline-block;
 }
 
@@ -79,14 +79,14 @@
   .inspirations-masonry { column-count: 3; }
 }
 @media (max-width: 768px) {
-  .inspirations-masonry { column-count: 2; column-gap: 0.8rem; }
-  .inspirations-card-wrapper { margin-bottom: 0.8rem; }
+  .inspirations-masonry { column-count: 2; column-gap: 4px; }
+  .inspirations-card-wrapper { margin-bottom: 4px; }
   .inspirations-container { padding: 1rem; }
 }
 @media (max-width: 640px) {
   .inspirations-container { padding: 0.5rem 0.6rem; }
-  .inspirations-masonry { column-gap: 0.35rem; }
-  .inspirations-card-wrapper { margin-bottom: 0.35rem; }
+  .inspirations-masonry { column-gap: 4px; }
+  .inspirations-card-wrapper { margin-bottom: 4px; }
 }
 @media (max-width: 480px) {
   .inspirations-masonry { column-count: 2; }

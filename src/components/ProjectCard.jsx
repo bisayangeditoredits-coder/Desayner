@@ -7,7 +7,8 @@ import { createClient } from '@/lib/supabase/client';
 import UserAvatar from './UserAvatar';
 import ProgressiveImage from './ProgressiveImage';
 
-import SaveToCollectionModal from './SaveToCollectionModal';
+import dynamic from 'next/dynamic';
+const SaveToCollectionModal = dynamic(() => import('./SaveToCollectionModal'), { ssr: false });
 
 export default function ProjectCard({ project, currentUserId }) {
   const [liked, setLiked]         = useState(project.user_liked || false);

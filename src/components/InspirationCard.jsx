@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { Heart } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import UserAvatar from './UserAvatar';
+import ProgressiveImage from './ProgressiveImage';
 
 export default function InspirationCard({ inspiration, currentUserId, onClick }) {
   const [liked, setLiked]         = useState(inspiration.user_liked || false);

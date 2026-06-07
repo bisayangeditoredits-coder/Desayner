@@ -1,11 +1,21 @@
 'use client';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import UserAvatar from '@/components/UserAvatar';
 import FollowButton from '@/components/FollowButton';
 import Link from 'next/link';
-import { Search, Users2, MapPin, Globe, TrendingUp, Clock, Star } from 'lucide-react';
+import { Search, MapPin, TrendingUp, Clock, Star, BadgeCheck, Sparkles, Award, Users2 } from 'lucide-react';
 import '../../App.css';
+
+const CATEGORIES = [
+  'All',
+  'Graphic Design',
+  'UI/UX',
+  'Branding',
+  'Illustration',
+  'Photography',
+  'Motion Graphics'
+];
 
 const SORT_OPTIONS = [
   { value: 'followers', label: 'Most Followed', icon: TrendingUp },
@@ -14,13 +24,21 @@ const SORT_OPTIONS = [
 ];
 
 export default function CreatorsPage() {
-  const [creators, setCreators]         = useState([]);
+  const [data, setData] = useState({
+    heroCreator: null,
+    featuredCreators: [],
+    risingCreators: [],
+    creators: []
+  });
+  
   const [loading, setLoading]           = useState(true);
   const [search, setSearch]             = useState('');
+  const [category, setCategory]         = useState('All');
   const [sort, setSort]                 = useState('followers');
   const [currentUserId, setCurrentUserId] = useState(null);
   const [page, setPage]                 = useState(1);
   const [hasMore, setHasMore]           = useState(false);
+  
   const supabase = createClient();
   const PAGE_SIZE = 24;
 
@@ -30,193 +48,352 @@ export default function CreatorsPage() {
     });
   }, []);
 
-  const loadCreators = useCallback(async (pageNum = 1, searchQ = '', sortBy = 'followers', append = false) => {
+  const loadCreators = useCallback(async (pageNum = 1, currentCat = 'All', currentSort = 'followers', append = false) => {
     if (pageNum === 1) setLoading(true);
 
-    let query = supabase
-      .from('profiles')
-      .select('id, username, full_name, avatar_url, bio, location, website, followers_count, following_count, created_at')
-      .not('username', 'is', null)
-      .range((pageNum - 1) * PAGE_SIZE, pageNum * PAGE_SIZE - 1);
+    try {
+      const res = await fetch(`/api/creators?category=${encodeURIComponent(currentCat)}&sort=${currentSort}&page=${pageNum}`);
+      if (!res.ok) throw new Error('Failed to fetch creators');
+      const payload = await res.json();
+      
+      const newCreators = (payload.creators || []).filter(c => c.id !== currentUserId);
+      setHasMore(payload.creators?.length === PAGE_SIZE);
 
-    if (searchQ.trim()) {
-      query = query.or(`username.ilike.%${searchQ}%,full_name.ilike.%${searchQ}%`);
+      setData(prev => {
+        if (!append) {
+          return {
+            heroCreator: payload.heroCreator || prev.heroCreator,
+            featuredCreators: payload.featuredCreators || prev.featuredCreators,
+            risingCreators: payload.risingCreators || prev.risingCreators,
+            creators: newCreators
+          };
+        }
+        
+        const existingIds = new Set(prev.creators.map(c => c.id));
+        const added = newCreators.filter(c => !existingIds.has(c.id));
+        return {
+          ...prev,
+          creators: [...prev.creators, ...added]
+        };
+      });
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
     }
-
-    if (sortBy === 'followers') query = query.order('followers_count', { ascending: false, nullsFirst: false });
-    else if (sortBy === 'newest') query = query.order('created_at', { ascending: false });
-    else if (sortBy === 'projects') query = query.order('projects_count', { ascending: false, nullsFirst: false });
-
-    const { data } = await query;
-    const list = (data || []).filter(c => c.id !== currentUserId);
-
-    // Fetch 3 sample project thumbnails per creator
-    const withProjects = await Promise.all(
-      list.map(async (creator) => {
-        const { data: projects } = await supabase
-          .from('projects')
-          .select('id, cover_url, thumbnail_url, title')
-          .eq('user_id', creator.id)
-          .eq('published', true)
-          .order('created_at', { ascending: false })
-          .limit(3);
-        return { ...creator, sampleProjects: projects || [] };
-      })
-    );
-
-    setHasMore(list.length === PAGE_SIZE);
-    setCreators(prev => {
-      if (!append) return withProjects;
-      const existingIds = new Set(prev.map(c => c.id));
-      const newItems = withProjects.filter(c => !existingIds.has(c.id));
-      return [...prev, ...newItems];
-    });
-    setLoading(false);
   }, [currentUserId]);
 
-  // Debounce search
+  // Load initial data and handle filter/sort changes
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setPage(1);
-      loadCreators(1, search, sort, false);
-    }, 300);
-    return () => clearTimeout(timer);
-  }, [search, sort]);
+    setPage(1);
+    loadCreators(1, category, sort, false);
+  }, [category, sort]);
 
+  // Handle pagination
   useEffect(() => {
-    if (page > 1) loadCreators(page, search, sort, true);
+    if (page > 1) loadCreators(page, category, sort, true);
   }, [page]);
+
+    // Use featured creators if available in DB, otherwise fallback to rising creators
+    let displayCreators = [];
+    if (data.heroCreator || (data.featuredCreators && data.featuredCreators.length > 0)) {
+      const allFeatured = [];
+      if (data.heroCreator) allFeatured.push(data.heroCreator);
+      if (data.featuredCreators) allFeatured.push(...data.featuredCreators);
+      
+      displayCreators = allFeatured.map(f => ({
+        ...f.profiles,
+        id: f.id,
+        is_featured: true,
+        bio: f.featured_description || f.profiles?.bio,
+        banner_url: f.banner_url
+      })).slice(0, 4);
+    } else {
+      displayCreators = (data.risingCreators || []).map(r => ({
+        ...r,
+        is_featured: false,
+        banner_url: r.sampleProjects?.[0]?.thumbnail_url || r.sampleProjects?.[0]?.cover_url
+      })).slice(0, 4);
+    }
+
+  // Handle search (client-side filtering for simplicity, or we could add to API)
+  const filteredCreators = search.trim() 
+    ? data.creators.filter(c => 
+        c.username.toLowerCase().includes(search.toLowerCase()) || 
+        (c.full_name && c.full_name.toLowerCase().includes(search.toLowerCase()))
+      )
+    : data.creators;
 
   return (
     <>
-
-        <div className="page-content">
-          {/* Page header */}
-          <div className="page-header">
-            <div>
-              <h1 className="page-title" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <Users2 size={20} /> Creators
+      
+      {/* 1. EDITORIAL HEADER & PREMIUM CAROUSEL */}
+      {!loading && displayCreators.length > 0 && page === 1 && category === 'All' && search === '' && (
+        <section style={{ marginBottom: '1.5rem', paddingTop: '2rem' }}>
+          <div className="page-content">
+            <div style={{ textAlign: 'center', maxWidth: '700px', margin: '0 auto 1.5rem' }}>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(0,0,0,0.05)', padding: '0.4rem 1rem', borderRadius: '30px', fontSize: '0.8rem', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '0.75rem', color: '#8b5cf6' }}>
+                <Sparkles size={14} /> Rising Stars
+              </div>
+              <h1 style={{ fontSize: '2.2rem', fontWeight: 900, marginBottom: '0.5rem', lineHeight: 1.1, letterSpacing: '-0.02em', color: '#111827' }}>
+                Trending Creators
               </h1>
-              <p style={{ fontSize: '0.82rem', color: '#9b9b9b', marginTop: '0.2rem' }}>
-                Discover talented designers and photographers
+              <p style={{ fontSize: '0.95rem', color: '#4b5563', lineHeight: 1.4, margin: 0 }}>
+                Discover the fastest-growing creative professionals this week.
               </p>
             </div>
-          </div>
 
-          {/* Controls */}
-          <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '1.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
-            {/* Search */}
-            <div style={{ position: 'relative', flex: '1', minWidth: '200px', maxWidth: '380px' }}>
-              <Search size={14} style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)', color: '#9b9b9b', pointerEvents: 'none' }} />
-              <input
-                type="text"
-                value={search}
-                onChange={e => setSearch(e.target.value)}
-                placeholder="Search creators..."
-                style={{
-                  width: '100%', padding: '0.55rem 0.75rem 0.55rem 2.25rem',
-                  border: '1px solid #e2e8f0', background: 'white',
-                  fontSize: '0.875rem', outline: 'none', color: '#0a0a0a',
-                  fontFamily: 'inherit',
-                }}
-                onFocus={e => e.target.style.borderColor = '#0a0a0a'}
-                onBlur={e => e.target.style.borderColor = '#e2e8f0'}
-              />
-            </div>
+            {/* 4-Column Responsive Grid (Fills container completely) */}
+            <div className="trending-grid" style={{ paddingBottom: '0.5rem' }}>
+              {displayCreators.map(creator => (
+                <div key={creator.id} className="featured-card" style={{
+                  background: 'white',
+                  borderRadius: '20px',
+                  overflow: 'hidden',
+                  position: 'relative',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  transition: 'transform 0.2s ease-out, box-shadow 0.2s ease-out',
+                  boxShadow: '0 4px 15px rgba(0,0,0,0.08)',
+                  cursor: 'pointer',
+                  color: '#111827',
+                  aspectRatio: '3 / 4' // Keeps the portrait shape even when it stretches
+                }}>
+                  {/* Full Background Image */}
+                  <div style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', background: '#e5e7eb', zIndex: 0 }}>
+                    {creator.banner_url && (
+                      <img 
+                        src={creator.banner_url} 
+                        alt="" 
+                        className="featured-banner-img"
+                        loading="lazy"
+                        style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.3s ease-out' }} 
+                      />
+                    )}
+                  </div>
+                  
+                  {/* Glassmorphism Top Badge */}
+                  <div style={{ position: 'absolute', top: '1rem', left: '50%', transform: 'translateX(-50%)', background: 'rgba(255,255,255,0.7)', backdropFilter: 'blur(4px)', WebkitBackdropFilter: 'blur(4px)', padding: '0.3rem 0.8rem', borderRadius: '20px', color: '#111827', fontSize: '0.7rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.3rem', border: '1px solid rgba(255,255,255,0.5)', zIndex: 2, whiteSpace: 'nowrap' }}>
+                    {creator.is_featured ? (
+                      <><Star size={12} color="#eab308" fill="#eab308" /> Featured Creator</>
+                    ) : (
+                      <><TrendingUp size={12} color="#8b5cf6" /> Rising Creator</>
+                    )}
+                  </div>
 
-            {/* Sort pills */}
-            <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
-              {SORT_OPTIONS.map(opt => (
-                <button
-                  key={opt.value}
-                  onClick={() => setSort(opt.value)}
-                  style={{
-                    display: 'flex', alignItems: 'center', gap: '0.35rem',
-                    padding: '0.45rem 0.85rem', fontSize: '0.78rem', fontWeight: 700,
-                    border: '1px solid', cursor: 'pointer', fontFamily: 'inherit',
-                    background: sort === opt.value ? '#0a0a0a' : 'white',
-                    color: sort === opt.value ? 'white' : '#6b7280',
-                    borderColor: sort === opt.value ? '#0a0a0a' : '#e2e8f0',
-                    transition: 'background 0.15s, color 0.15s, border-color 0.15s',
-                  }}
-                >
-                  <opt.icon size={12} /> {opt.label}
-                </button>
-              ))}
-            </div>
-          </div>
+                  {/* Gradient Overlay for Bottom Text */}
+                  <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, rgba(0,0,0,0) 30%, rgba(255,255,255,0.9) 70%, rgba(255,255,255,1) 100%)', zIndex: 1 }} className="gradient-overlay" />
 
-          {/* Grid */}
-          {loading ? (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1px' }}>
-              {[...Array(12)].map((_, i) => (
-                <div key={i} style={{ background: 'white', border: '1px solid #f0f0f0', height: '280px' }}>
-                  <div style={{ height: '100px', background: '#f5f5f5' }} />
-                  <div style={{ padding: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                    <div style={{ width: '60%', height: '12px', background: '#f0f0f0' }} />
-                    <div style={{ width: '40%', height: '10px', background: '#f5f5f5' }} />
-                    <div style={{ width: '80%', height: '10px', background: '#f5f5f5' }} />
+                  {/* Content Container Floating at Bottom */}
+                  <div style={{ padding: '1.25rem', display: 'flex', flexDirection: 'column', position: 'absolute', bottom: 0, left: 0, right: 0, zIndex: 2, color: '#111827' }}>
+                    
+                    <h2 style={{ fontSize: '1.15rem', fontWeight: 800, margin: '0 0 0.25rem 0', display: 'flex', alignItems: 'center', gap: '0.3rem', color: '#000' }}>
+                      <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{creator.full_name || creator.username}</span>
+                      <BadgeCheck size={16} color="#8b5cf6" fill="#f3e8ff" style={{ flexShrink: 0 }} />
+                    </h2>
+                    
+                    {/* Bio */}
+                    <p style={{ fontSize: '0.75rem', color: '#4b5563', lineHeight: 1.4, margin: '0 0 1rem 0', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', fontWeight: 500 }}>
+                      {creator.bio || 'New talented creative on Desayner.'}
+                    </p>
+
+                    {/* Footer Stats & Actions */}
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem' }}>
+                      <div style={{ display: 'flex', gap: '0.75rem' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.2rem', color: '#8b5cf6', fontSize: '0.75rem', fontWeight: 700 }}>
+                          <Users2 size={14} />
+                          {creator.followers_count || 0}
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.2rem', color: '#8b5cf6', fontSize: '0.75rem', fontWeight: 700 }}>
+                          <Star size={14} />
+                          {creator.projects_count || 0}
+                        </div>
+                      </div>
+                      
+                      <Link href={`/profile/${creator.username}`} className="btn btn-outline" style={{ padding: '0.3rem 0.8rem', fontSize: '0.75rem', borderRadius: '30px', borderColor: '#d1d5db', color: '#000', fontWeight: 600 }}>
+                        Follow +
+                      </Link>
+                    </div>
+
                   </div>
                 </div>
               ))}
             </div>
-          ) : creators.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '5rem 2rem', border: '1px solid #e2e8f0', background: 'white' }}>
-              <Users2 size={40} color="#d1d5db" style={{ marginBottom: '1rem' }} />
-              <p style={{ fontWeight: 700, marginBottom: '0.4rem' }}>No creators found</p>
-              <p style={{ fontSize: '0.875rem', color: '#9b9b9b' }}>
-                {search ? `No results for "${search}"` : 'Be the first to create a profile!'}
-              </p>
-            </div>
-          ) : (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '4px' }}>
-              {creators.map(creator => (
-                <CreatorCard key={creator.id} creator={creator} currentUserId={currentUserId} />
-              ))}
-            </div>
-          )}
+            
+            <style jsx>{`
+              .trending-grid {
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 1.5rem;
+              }
+              @media (max-width: 1024px) {
+                .trending-grid {
+                  grid-template-columns: repeat(2, 1fr);
+                }
+              }
+              @media (max-width: 640px) {
+                .trending-grid {
+                  grid-template-columns: 1fr;
+                }
+              }
+              .featured-card:hover {
+                transform: translateY(-4px);
+                box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+              }
+              .featured-card:hover .featured-banner-img {
+                transform: scale(1.05);
+              }
+            `}</style>
+          </div>
+        </section>
+      )}
 
-          {/* Load more */}
-          {hasMore && !loading && (
-            <div style={{ textAlign: 'center', marginTop: '2rem' }}>
-              <button
-                onClick={() => setPage(p => p + 1)}
-                className="btn btn-outline"
-                style={{ padding: '0.65rem 2rem', fontSize: '0.875rem' }}
-              >
-                Load more creators
-              </button>
-            </div>
-          )}
+      <div className="page-content">
+
+        {/* 3. Main Explore Section */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
+          <h2 style={{ fontSize: '1.75rem', fontWeight: 800 }}>Explore Creators</h2>
+          
+          <div style={{ position: 'relative', width: '300px' }}>
+            <Search size={16} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: '#9b9b9b' }} />
+            <input
+              type="text"
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              placeholder="Search creators..."
+              style={{ width: '100%', padding: '0.75rem 1rem 0.75rem 2.5rem', borderRadius: '30px', border: '1px solid #e2e8f0', background: 'white', fontSize: '0.9rem', outline: 'none' }}
+              onFocus={e => e.target.style.borderColor = '#0a0a0a'}
+              onBlur={e => e.target.style.borderColor = '#e2e8f0'}
+            />
+          </div>
         </div>
-      </>
+
+        {/* Category Filters */}
+        <div className="category-scroll-container" style={{ display: 'flex', gap: '0.5rem', overflowX: 'auto', paddingBottom: '1rem', marginBottom: '2rem', scrollbarWidth: 'none' }}>
+          {CATEGORIES.map(cat => (
+            <button
+              key={cat}
+              onClick={() => setCategory(cat)}
+              style={{
+                padding: '0.6rem 1.25rem', fontSize: '0.9rem', fontWeight: 600, borderRadius: '30px',
+                border: '1px solid', cursor: 'pointer', whiteSpace: 'nowrap',
+                background: category === cat ? '#0a0a0a' : 'white',
+                color: category === cat ? 'white' : '#4b5563',
+                borderColor: category === cat ? '#0a0a0a' : '#e2e8f0',
+                transition: 'all 0.2s ease',
+              }}
+              onMouseOver={e => { if (category !== cat) e.currentTarget.style.borderColor = '#9b9b9b'; }}
+              onMouseOut={e => { if (category !== cat) e.currentTarget.style.borderColor = '#e2e8f0'; }}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
+
+        {/* Sort Controls */}
+        <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '2rem' }}>
+          {SORT_OPTIONS.map(opt => (
+            <button
+              key={opt.value}
+              onClick={() => setSort(opt.value)}
+              style={{
+                display: 'flex', alignItems: 'center', gap: '0.4rem',
+                padding: '0.5rem 1rem', fontSize: '0.85rem', fontWeight: 600, borderRadius: '8px',
+                background: 'transparent', border: 'none', cursor: 'pointer',
+                color: sort === opt.value ? '#000' : '#9b9b9b',
+              }}
+            >
+              <opt.icon size={14} color={sort === opt.value ? '#000' : '#9b9b9b'} /> {opt.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Main Grid */}
+        {loading && page === 1 ? (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '1rem' }}>
+            {[...Array(12)].map((_, i) => (
+              <div key={i} style={{ background: 'white', borderRadius: '16px', height: '360px', overflow: 'hidden', border: '1px solid #f0f0f0' }}>
+                <div style={{ height: '180px', background: '#f5f5f5' }} />
+                <div style={{ padding: '1.5rem', display: 'flex', gap: '1rem' }}>
+                  <div style={{ width: '60px', height: '60px', borderRadius: '50%', background: '#f0f0f0' }} />
+                  <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '0.5rem', marginTop: '0.5rem' }}>
+                    <div style={{ width: '60%', height: '14px', background: '#f0f0f0', borderRadius: '4px' }} />
+                    <div style={{ width: '40%', height: '12px', background: '#f5f5f5', borderRadius: '4px' }} />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : filteredCreators.length === 0 ? (
+          <div style={{ textAlign: 'center', padding: '6rem 2rem', background: 'white', borderRadius: '24px', border: '1px dashed #d1d5db' }}>
+            <Sparkles size={48} color="#d1d5db" style={{ marginBottom: '1.5rem' }} />
+            <p style={{ fontWeight: 800, fontSize: '1.25rem', marginBottom: '0.5rem' }}>No creators found</p>
+            <p style={{ fontSize: '1rem', color: '#6b7280' }}>
+              {search ? `No results match "${search}"` : `No creators found in ${category}`}
+            </p>
+          </div>
+        ) : (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '1rem' }}>
+            {filteredCreators.map(creator => (
+              <PremiumCreatorCard key={creator.id} creator={creator} currentUserId={currentUserId} />
+            ))}
+          </div>
+        )}
+
+        {/* Load more */}
+        {hasMore && !loading && search === '' && (
+          <div style={{ textAlign: 'center', marginTop: '4rem' }}>
+            <button
+              onClick={() => setPage(p => p + 1)}
+              className="btn btn-outline"
+              style={{ padding: '0.85rem 3rem', fontSize: '1rem', borderRadius: '30px', fontWeight: 700 }}
+            >
+              Discover More Creators
+            </button>
+          </div>
+        )}
+        
+        {loading && page > 1 && (
+          <div style={{ textAlign: 'center', padding: '2rem 0', color: '#9b9b9b', fontWeight: 600 }}>Loading more...</div>
+        )}
+      </div>
+    </>
   );
 }
 
-function CreatorCard({ creator, currentUserId }) {
+// ---------------------------------------------------------------------------
+// Components
+// ---------------------------------------------------------------------------
+
+function PremiumCreatorCard({ creator, currentUserId }) {
   return (
-    <div style={{
+    <div className="premium-creator-card" style={{
       background: 'white',
+      borderRadius: '16px',
       border: '1px solid #e2e8f0',
+      overflow: 'hidden',
+      transition: 'transform 0.2s ease, box-shadow 0.2s ease',
       display: 'flex',
       flexDirection: 'column',
-      overflow: 'hidden',
+      position: 'relative'
     }}>
       {/* Thumbnail strip — 3 project previews */}
       <Link href={`/profile/${creator.username}`} style={{ display: 'block', textDecoration: 'none' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', height: '120px', background: '#f5f5f5' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', height: '220px', gap: '2px' }}>
           {[0, 1, 2].map(i => (
-            <div key={i} style={{ overflow: 'hidden', background: '#eee', borderRight: i < 2 ? '1px solid white' : 'none' }}>
+            <div key={i} style={{ overflow: 'hidden', background: '#e5e7eb' }}>
               {creator.sampleProjects[i]?.cover_url ? (
-                  <img
-                    src={creator.sampleProjects[i].thumbnail_url || creator.sampleProjects[i].cover_url}
-                    alt=""
-                    loading="lazy"
-                    decoding="async"
-                    style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-                  />
+                <img
+                  src={creator.sampleProjects[i].thumbnail_url || creator.sampleProjects[i].cover_url}
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                  style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', transition: 'transform 0.3s ease' }}
+                  onMouseOver={e => e.currentTarget.style.transform = 'scale(1.05)'}
+                  onMouseOut={e => e.currentTarget.style.transform = 'scale(1)'}
+                />
               ) : (
-                <div style={{ width: '100%', height: '100%', background: i === 0 ? '#1a1a1a' : i === 1 ? '#2a2a2a' : '#333' }} />
+                <div style={{ width: '100%', height: '100%', background: '#f3f4f6' }} />
               )}
             </div>
           ))}
@@ -224,57 +401,61 @@ function CreatorCard({ creator, currentUserId }) {
       </Link>
 
       {/* Creator info */}
-      <div style={{ padding: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.85rem', flex: 1 }}>
-        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem' }}>
-          {/* Avatar */}
-          <Link href={`/profile/${creator.username}`} style={{ flexShrink: 0 }}>
-            <UserAvatar
-              src={creator.avatar_url}
-              name={creator.full_name || creator.username}
-              size={48}
-            />
+      <div style={{ padding: '1.5rem', display: 'flex', gap: '1rem', position: 'relative' }}>
+        {/* Avatar pulled up */}
+        <div style={{ marginTop: '-2.5rem' }}>
+          <Link href={`/profile/${creator.username}`}>
+            <div style={{ border: '4px solid white', borderRadius: '50%', background: 'white', overflow: 'hidden', boxShadow: '0 2px 10px rgba(0,0,0,0.05)' }}>
+              <UserAvatar src={creator.avatar_url} name={creator.full_name || creator.username} size={64} />
+            </div>
           </Link>
-
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <Link href={`/profile/${creator.username}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-              <div style={{ fontWeight: 700, fontSize: '1rem', color: '#0a0a0a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                {creator.full_name || creator.username}
-              </div>
-              <div style={{ fontSize: '0.85rem', color: '#9b9b9b' }}>@{creator.username}</div>
-            </Link>
-          </div>
-
-          {/* Follow button */}
-          <FollowButton
-            targetUserId={creator.id}
-            currentUserId={currentUserId}
-            initialFollowing={false}
-            compact
-          />
         </div>
 
-        {/* Bio */}
-        {creator.bio && (
-          <p style={{
-            fontSize: '0.9rem', color: '#4b5563', lineHeight: 1.5, margin: 0,
-            display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden',
-          }}>
-            {creator.bio}
-          </p>
-        )}
+        <div style={{ flex: 1, minWidth: 0, marginTop: '-0.5rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem' }}>
+            <Link href={`/profile/${creator.username}`} style={{ textDecoration: 'none', color: 'inherit', minWidth: 0 }}>
+              <div style={{ fontWeight: 800, fontSize: '1.1rem', color: '#111827', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                {creator.full_name || creator.username}
+                {creator.followers_count > 1000 && <BadgeCheck size={16} color="#3b82f6" fill="#eff6ff" style={{ flexShrink: 0 }}/>}
+              </div>
+              <div style={{ fontSize: '0.9rem', color: '#6b7280' }}>@{creator.username}</div>
+            </Link>
+            
+            <FollowButton targetUserId={creator.id} currentUserId={currentUserId} initialFollowing={false} compact />
+          </div>
 
-        {/* Meta */}
-        <div style={{ display: 'flex', gap: '1rem', marginTop: 'auto' }}>
-          {creator.location && (
-            <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.85rem', color: '#9b9b9b' }}>
-              <MapPin size={12} /> {creator.location}
+          <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
+            {creator.location && (
+              <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.8rem', color: '#6b7280', fontWeight: 500 }}>
+                <MapPin size={12} /> {creator.location}
+              </span>
+            )}
+            <span style={{ fontSize: '0.8rem', color: '#6b7280', fontWeight: 500, marginLeft: creator.location ? '0' : 'auto' }}>
+              <strong style={{ color: '#111827' }}>{creator.followers_count || 0}</strong> Followers
             </span>
-          )}
-          <span style={{ fontSize: '0.85rem', color: '#9b9b9b', marginLeft: 'auto' }}>
-            <strong style={{ color: '#0a0a0a' }}>{creator.followers_count || 0}</strong> followers
-          </span>
+          </div>
         </div>
       </div>
     </div>
+  );
+}
+
+
+
+function RisingCreatorRow({ creator, rank }) {
+  return (
+    <Link href={`/profile/${creator.username}`} style={{ display: 'flex', alignItems: 'center', gap: '1rem', textDecoration: 'none', color: 'inherit', padding: '0.5rem', borderRadius: '8px', transition: 'background 0.2s' }} onMouseOver={e => e.currentTarget.style.background = '#f8fafc'} onMouseOut={e => e.currentTarget.style.background = 'transparent'}>
+      <div style={{ width: '24px', fontWeight: 800, color: rank <= 3 ? '#111827' : '#9ca3af', fontSize: '1.1rem', textAlign: 'center' }}>
+        #{rank}
+      </div>
+      <UserAvatar src={creator.avatar_url} name={creator.full_name || creator.username} size={40} />
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ fontWeight: 700, fontSize: '0.95rem', color: '#111827', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{creator.full_name || creator.username}</div>
+        <div style={{ fontSize: '0.8rem', color: '#6b7280' }}>{creator.followers_count} followers</div>
+      </div>
+      <div style={{ color: '#10b981', fontWeight: 700, fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+        <TrendingUp size={12} />
+      </div>
+    </Link>
   );
 }

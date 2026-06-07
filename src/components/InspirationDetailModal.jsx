@@ -23,6 +23,7 @@ export default function InspirationDetailModal({ inspiration, currentUserId, onC
   const [savesCount, setSavesCount] = useState(inspiration.saves_count || 0);
   const [deleting, setDeleting]     = useState(false);
   const [showColModal, setShowColModal] = useState(false);
+  const [isZoomed, setIsZoomed]     = useState(false);
 
   const supabase = createClient();
   const router   = useRouter();
@@ -105,9 +106,42 @@ export default function InspirationDetailModal({ inspiration, currentUserId, onC
               src={inspiration.image_url}
               alt={inspiration.title || 'Inspiration'}
               className="inspiration-modal-image"
-              style={{ maxHeight: '100%', objectFit: 'contain' }}
+              style={{ maxHeight: '100%', objectFit: 'contain', cursor: 'zoom-in' }}
+              onClick={() => setIsZoomed(true)}
             />
           </div>
+
+          {/* Full Screen Lightbox Zoom */}
+          {isZoomed && (
+            <div
+              className="lightbox-overlay"
+              onClick={() => setIsZoomed(false)}
+              role="dialog"
+              style={{
+                position: 'fixed',
+                inset: 0,
+                zIndex: 99999,
+                background: 'rgba(0,0,0,0.9)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'zoom-out'
+              }}
+            >
+              <button 
+                style={{ position: 'absolute', top: '24px', right: '24px', background: 'rgba(255,255,255,0.1)', border: 'none', color: 'white', cursor: 'pointer', borderRadius: '50%', padding: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }} 
+                onClick={() => setIsZoomed(false)}
+              >
+                <X size={24} />
+              </button>
+              <img
+                src={inspiration.image_url}
+                alt={inspiration.title || 'Inspiration'}
+                style={{ maxWidth: '95vw', maxHeight: '95vh', objectFit: 'contain', borderRadius: '8px' }}
+                onClick={(e) => e.stopPropagation()}
+              />
+            </div>
+          )}
 
           {/* Right Panel: Content details, meta, actions */}
           <div className="inspiration-modal-info-panel">

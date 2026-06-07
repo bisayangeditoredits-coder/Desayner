@@ -488,8 +488,8 @@
 
 .profile-bio-headline {
   font-size: 1.75rem;
-  font-weight: normal;
-  font-family: var(--font-monigue), var(--font-raleway), sans-serif;
+  font-weight: 500;
+  font-family: var(--font-raleway), sans-serif;
   letter-spacing: -0.02em;
   line-height: 1.35;
   color: var(--text-main);
@@ -1717,7 +1717,7 @@
   height: 240px;
   border-radius: 12px;
   overflow: hidden;
-  background: #1a1a1a url(/event-banner.png) center/cover no-repeat;
+  background: linear-gradient(135deg, #0009fa 0%, #1e1b4b 100%);
   display: flex;
   flex-direction: column;
   justify-content: flex-end;

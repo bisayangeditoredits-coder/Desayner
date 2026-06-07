@@ -127,15 +127,17 @@ export default function CommunityPage() {
   useEffect(() => {
     async function loadPosts() {
       setLoading(true);
-      let query = supabase
-        .from('community_posts')
-        .select('*, profiles!community_posts_user_id_fkey(username, full_name, avatar_url)')
-        .order('created_at', { ascending: false })
-        .limit(50);
-      if (filter !== 'All') query = query.eq('post_type', filter.toLowerCase());
-      const { data } = await query;
-      setPosts(data || []);
-      setLoading(false);
+      try {
+        const res = await fetch(`/api/community?filter=${encodeURIComponent(filter)}&limit=50`);
+        if (!res.ok) throw new Error('Failed to fetch community posts');
+        const { posts } = await res.json();
+        setPosts(posts || []);
+      } catch (err) {
+        console.error('Error fetching community posts:', err);
+        setPosts([]);
+      } finally {
+        setLoading(false);
+      }
     }
     loadPosts();
   }, [filter]);

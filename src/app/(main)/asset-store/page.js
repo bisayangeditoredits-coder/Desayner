@@ -3,19 +3,17 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { ShoppingBag, Plus } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import AssetCard from '@/components/AssetCard';
-import AssetUploadModal from '@/components/AssetUploadModal';
-import AssetDetailModal from '@/components/AssetDetailModal';
+import dynamic from 'next/dynamic';
+import useSWRInfinite from 'swr/infinite';
 import './AssetStore.css';
+
+const AssetUploadModal = dynamic(() => import('@/components/AssetUploadModal'), { ssr: false });
+const AssetDetailModal = dynamic(() => import('@/components/AssetDetailModal'), { ssr: false });
 
 const CATEGORIES = ['All', 'Figma', 'Framer', 'Webflow', 'UI Kit', 'Icon Pack', 'Font', 'Mockup', 'Other'];
 const LIMIT = 12;
 
 export default function AssetStorePage() {
-  const [assets, setAssets]         = useState([]);
-  const [nextCursor, setNextCursor] = useState(null);
-  const [hasMore, setHasMore]       = useState(true);
-  const [loading, setLoading]       = useState(true);
-  const [loadingMore, setLoadingMore] = useState(false);
   const [activeCat, setActiveCat]   = useState('All');
   const [currentUserId, setCurrentUserId] = useState(null);
 
@@ -33,48 +31,36 @@ export default function AssetStorePage() {
     });
   }, [supabase]);
 
-  // 2. Fetch Assets
-  const fetchAssets = useCallback(async (category, cursor = null) => {
-    try {
-      const isFirst = !cursor;
-      if (isFirst) {
-        setLoading(true);
-      } else {
-        setLoadingMore(true);
-      }
-
-      let url = `/api/assets?limit=${LIMIT}&category=${encodeURIComponent(category)}`;
-      if (cursor) {
-        url += `&cursor=${encodeURIComponent(cursor)}`;
-      }
-
-      const res = await fetch(url);
-      if (!res.ok) throw new Error('Failed to load assets feed');
-      const data = await res.json();
-
-      setAssets(prev => isFirst ? data.assets : [...prev, ...data.assets]);
-      setNextCursor(data.nextCursor);
-      setHasMore(data.hasMore);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-      setLoadingMore(false);
+  // 2. SWR Data Fetching
+  const getKey = (pageIndex, previousPageData) => {
+    if (previousPageData && !previousPageData.hasMore) return null; // Reached end
+    let url = `/api/assets?limit=${LIMIT}&category=${encodeURIComponent(activeCat)}`;
+    if (pageIndex > 0 && previousPageData?.nextCursor) {
+      url += `&cursor=${encodeURIComponent(previousPageData.nextCursor)}`;
     }
-  }, []);
+    return url;
+  };
 
-  // 3. Trigger reload on category change
-  useEffect(() => {
-    fetchAssets(activeCat);
-  }, [activeCat, fetchAssets]);
+  const fetcher = url => fetch(url).then(res => res.json());
 
-  // 4. Infinite Scroll Observer
+  const { data, size, setSize, isValidating, mutate, error } = useSWRInfinite(getKey, fetcher, {
+    revalidateFirstPage: false,
+    persistSize: true, // keeps the previous page size when unmounting/remounting
+  });
+
+  const assets = data ? data.flatMap(page => page.assets) : [];
+  const isLoadingInitialData = !data && !error;
+  const isLoadingMore = isLoadingInitialData || (size > 0 && data && typeof data[size - 1] === "undefined");
+  const isEmpty = data?.[0]?.assets?.length === 0;
+  const hasMore = data ? data[data.length - 1]?.hasMore : false;
+
+  // 3. Infinite Scroll Observer
   useEffect(() => {
-    if (loading || !hasMore) return;
+    if (isLoadingInitialData || !hasMore) return;
 
     const observer = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting && !loadingMore && nextCursor) {
-        fetchAssets(activeCat, nextCursor);
+      if (entries[0].isIntersecting && !isValidating && !isLoadingMore) {
+        setSize(size + 1);
       }
     }, { threshold: 0.1 });
 
@@ -88,21 +74,32 @@ export default function AssetStorePage() {
         observer.unobserve(currentSentinel);
       }
     };
-  }, [loading, loadingMore, hasMore, nextCursor, activeCat, fetchAssets]);
+  }, [isLoadingInitialData, isLoadingMore, isValidating, hasMore, size, setSize]);
 
   const handleCardClick = useCallback((item) => {
     setSelectedAsset(item);
   }, []);
 
   const handleUploadSuccess = useCallback((newItem) => {
-    setAssets(prev => [newItem, ...prev]);
+    mutate((currentData) => {
+      if (!currentData) return currentData;
+      const newData = [...currentData];
+      newData[0] = { ...newData[0], assets: [newItem, ...(newData[0].assets || [])] };
+      return newData;
+    }, false);
     setUploadOpen(false);
-  }, []);
+  }, [mutate]);
 
   const handleDeleteSuccess = useCallback((id) => {
-    setAssets(prev => prev.filter(item => item.id !== id));
+    mutate((currentData) => {
+      if (!currentData) return currentData;
+      return currentData.map(page => ({
+        ...page,
+        assets: (page.assets || []).filter(item => item.id !== id)
+      }));
+    }, false);
     setSelectedAsset(null);
-  }, []);
+  }, [mutate]);
 
   return (
     <div className="assets-container">
@@ -136,7 +133,7 @@ export default function AssetStorePage() {
       </div>
 
       {/* Grid Display */}
-      {loading ? (
+      {isLoadingInitialData ? (
         <div className="assets-grid">
           {[1, 2, 3, 4, 5, 6].map(i => (
             <div key={i} className="asset-card" style={{ cursor: 'default' }}>
@@ -158,7 +155,7 @@ export default function AssetStorePage() {
             </div>
           ))}
         </div>
-      ) : assets.length === 0 ? (
+      ) : isEmpty ? (
         <div className="assets-empty-state">
           <div style={{ width: '56px', height: '56px', background: 'var(--primary-bg, #f1f5f9)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifycontent: 'center', margin: '0 auto 1.25rem', justifyContent: 'center' }}>
             <ShoppingBag size={24} style={{ color: 'var(--text-muted, #94a3b8)' }} />
@@ -193,7 +190,7 @@ export default function AssetStorePage() {
           {/* Infinite Scroll Sentinel Spinner */}
           {hasMore && (
             <div ref={sentinelRef} style={{ height: '70px', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', marginTop: '1.5rem' }}>
-              {loadingMore && <div className="chat-messages__spinner" />}
+              {isLoadingMore && <div className="chat-messages__spinner" />}
             </div>
           )}
         </>

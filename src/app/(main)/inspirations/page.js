@@ -3,19 +3,17 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Plus, Sparkles } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import InspirationCard from '@/components/InspirationCard';
-import InspirationUploadModal from '@/components/InspirationUploadModal';
-import InspirationDetailModal from '@/components/InspirationDetailModal';
+import dynamic from 'next/dynamic';
+import useSWRInfinite from 'swr/infinite';
 import './Inspirations.css';
+
+const InspirationUploadModal = dynamic(() => import('@/components/InspirationUploadModal'), { ssr: false });
+const InspirationDetailModal = dynamic(() => import('@/components/InspirationDetailModal'), { ssr: false });
 
 const CATEGORIES = ['All', 'General', 'Graphic Design', 'Web Design', 'Typography', 'UI/UX', 'Photography', 'Branding', '3D & Illustration'];
 const LIMIT = 15;
 
 export default function InspirationsPage() {
-  const [inspirations, setInspirations] = useState([]);
-  const [nextCursor, setNextCursor]   = useState(null);
-  const [hasMore, setHasMore]         = useState(true);
-  const [loading, setLoading]         = useState(true);
-  const [loadingMore, setLoadingMore] = useState(false);
   const [activeCat, setActiveCat]     = useState('All');
   const [currentUserId, setCurrentUserId] = useState(null);
 
@@ -48,48 +46,36 @@ export default function InspirationsPage() {
     });
   }, [supabase]);
 
-  // 2. Core paginated data loading
-  const fetchInspirations = useCallback(async (category, cursor = null) => {
-    try {
-      const isFirst = !cursor;
-      if (isFirst) {
-        setLoading(true);
-      } else {
-        setLoadingMore(true);
-      }
-
-      let url = `/api/inspirations?limit=${LIMIT}&category=${encodeURIComponent(category)}`;
-      if (cursor) {
-        url += `&cursor=${encodeURIComponent(cursor)}`;
-      }
-
-      const res = await fetch(url);
-      if (!res.ok) throw new Error('Failed to load inspirations feed');
-      const data = await res.json();
-
-      setInspirations(prev => isFirst ? data.inspirations : [...prev, ...data.inspirations]);
-      setNextCursor(data.nextCursor);
-      setHasMore(data.hasMore);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-      setLoadingMore(false);
+  // 2. SWR Data Fetching
+  const getKey = (pageIndex, previousPageData) => {
+    if (previousPageData && !previousPageData.hasMore) return null; // Reached end
+    let url = `/api/inspirations?limit=${LIMIT}&category=${encodeURIComponent(activeCat)}`;
+    if (pageIndex > 0 && previousPageData?.nextCursor) {
+      url += `&cursor=${encodeURIComponent(previousPageData.nextCursor)}`;
     }
-  }, []);
+    return url;
+  };
 
-  // 3. Reload when category changes
-  useEffect(() => {
-    fetchInspirations(activeCat);
-  }, [activeCat, fetchInspirations]);
+  const fetcher = url => fetch(url).then(res => res.json());
 
-  // 4. Set up Infinite Scroll Observer
+  const { data, size, setSize, isValidating, mutate, error } = useSWRInfinite(getKey, fetcher, {
+    revalidateFirstPage: false,
+    persistSize: true, // keeps the previous page size when unmounting/remounting
+  });
+
+  const inspirations = data ? data.flatMap(page => page.inspirations) : [];
+  const isLoadingInitialData = !data && !error;
+  const isLoadingMore = isLoadingInitialData || (size > 0 && data && typeof data[size - 1] === "undefined");
+  const isEmpty = data?.[0]?.inspirations?.length === 0;
+  const hasMore = data ? data[data.length - 1]?.hasMore : false;
+
+  // 3. Infinite Scroll Observer
   useEffect(() => {
-    if (loading || !hasMore) return;
+    if (isLoadingInitialData || !hasMore) return;
 
     const observer = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting && !loadingMore && nextCursor) {
-        fetchInspirations(activeCat, nextCursor);
+      if (entries[0].isIntersecting && !isValidating && !isLoadingMore) {
+        setSize(size + 1);
       }
     }, { threshold: 0.1 });
 
@@ -103,21 +89,32 @@ export default function InspirationsPage() {
         observer.unobserve(currentSentinel);
       }
     };
-  }, [loading, loadingMore, hasMore, nextCursor, activeCat, fetchInspirations]);
+  }, [isLoadingInitialData, isLoadingMore, isValidating, hasMore, size, setSize]);
 
   const handleCardClick = useCallback((item) => {
     setSelectedInspiration(item);
   }, []);
 
   const handleUploadSuccess = useCallback((newItem) => {
-    setInspirations(prev => [newItem, ...prev]);
+    mutate((currentData) => {
+      if (!currentData) return currentData;
+      const newData = [...currentData];
+      newData[0] = { ...newData[0], inspirations: [newItem, ...(newData[0].inspirations || [])] };
+      return newData;
+    }, false);
     setUploadOpen(false);
-  }, []);
+  }, [mutate]);
 
   const handleDeleteSuccess = useCallback((id) => {
-    setInspirations(prev => prev.filter(item => item.id !== id));
+    mutate((currentData) => {
+      if (!currentData) return currentData;
+      return currentData.map(page => ({
+        ...page,
+        inspirations: (page.inspirations || []).filter(item => item.id !== id)
+      }));
+    }, false);
     setSelectedInspiration(null);
-  }, []);
+  }, [mutate]);
 
   return (
     <div className="inspirations-container">
@@ -151,19 +148,15 @@ export default function InspirationsPage() {
       </div>
 
       {/* Masonry Feed */}
-      {loading ? (
-        <div style={{ display: 'flex', gap: '1.25rem', width: '100%' }}>
-          {Array.from({ length: cols }).map((_, colIndex) => (
-            <div key={colIndex} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', flex: 1 }}>
-              {[160, 240, 200, 300].slice(0, 2).map((height, idx) => (
-                <div key={idx} className="inspirations-card-wrapper">
-                  <div className="inspiration-skeleton" style={{ height: `${height}px` }} />
-                </div>
-              ))}
+      {isLoadingInitialData ? (
+        <div className="inspirations-masonry">
+          {[160, 240, 200, 300, 250, 180, 220, 280].map((height, idx) => (
+            <div key={idx} className="inspirations-card-wrapper">
+              <div className="inspiration-skeleton" style={{ height: `${height}px` }} />
             </div>
           ))}
         </div>
-      ) : inspirations.length === 0 ? (
+      ) : isEmpty ? (
         <div style={{ textAlign: 'center', padding: '5rem 2rem', background: 'var(--card-bg, #ffffff)', border: 'var(--border, 1px solid #e2e8f0)', borderRadius: '16px', maxWidth: '600px', margin: '2rem auto' }}>
           <div style={{ width: '56px', height: '56px', background: 'var(--primary-bg, #f1f5f9)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifycontent: 'center', margin: '0 auto 1.25rem', justifyContent: 'center' }}>
             <Sparkles size={24} style={{ color: 'var(--text-muted, #94a3b8)' }} />
@@ -184,25 +177,21 @@ export default function InspirationsPage() {
         </div>
       ) : (
         <>
-          <div style={{ display: 'flex', gap: '1.25rem', width: '100%' }}>
-            {Array.from({ length: cols }).map((_, colIndex) => (
-              <div key={colIndex} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', flex: 1 }}>
-                {inspirations.filter((_, i) => i % cols === colIndex).map(item => (
-                  <InspirationCard
-                    key={item.id}
-                    inspiration={item}
-                    currentUserId={currentUserId}
-                    onClick={() => handleCardClick(item)}
-                  />
-                ))}
-              </div>
+          <div className="inspirations-masonry">
+            {inspirations.map(item => (
+              <InspirationCard
+                key={item.id}
+                inspiration={item}
+                currentUserId={currentUserId}
+                onClick={() => handleCardClick(item)}
+              />
             ))}
           </div>
 
           {/* Infinite Scroll Sentinel Spinner */}
           {hasMore && (
             <div ref={sentinelRef} style={{ height: '70px', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', marginTop: '1.5rem' }}>
-              {loadingMore && <div className="chat-messages__spinner" />}
+              {isLoadingMore && <div className="chat-messages__spinner" />}
             </div>
           )}
         </>

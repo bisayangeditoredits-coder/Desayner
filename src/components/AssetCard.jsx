@@ -4,7 +4,9 @@ import { useRouter } from 'next/navigation';
 import { Bookmark, Download } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import UserAvatar from './UserAvatar';
-import SaveToCollectionModal from './SaveToCollectionModal';
+import ProgressiveImage from './ProgressiveImage';
+import dynamic from 'next/dynamic';
+const SaveToCollectionModal = dynamic(() => import('./SaveToCollectionModal'), { ssr: false });
 
 function getTagClassName(category) {
   const norm = (category || '').toLowerCase().replace(/\s+/g, '-');
@@ -38,12 +40,12 @@ export default function AssetCard({ asset, currentUserId, onClick }) {
       {/* Visual Preview */}
       <div className="asset-image-panel">
         {asset.thumbnail_url ? (
-          <img
+          <ProgressiveImage
             src={asset.thumbnail_url}
             alt={asset.title}
-            loading="lazy"
-            decoding="async"
             className="asset-img"
+            aspectRatio="16/9"
+            imgStyle={{ objectFit: 'cover' }}
           />
         ) : (
           <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--secondary-bg, #e2e8f0)', color: 'var(--text-muted, #94a3b8)' }}>
