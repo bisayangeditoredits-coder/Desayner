@@ -127,7 +127,7 @@ export default function Dashboard() {
                     
                     <div className="top-creators-scroll" style={{ 
                       display: 'flex', 
-                      gap: '1.25rem', 
+                      gap: '0.6rem', // Minimal spacing as requested
                       overflowX: 'auto', 
                       paddingBottom: '0.75rem',
                       scrollbarWidth: 'none', /* Firefox */
@@ -137,9 +137,10 @@ export default function Dashboard() {
                       
                       {loading ? (
                         [...Array(6)].map((_, i) => (
-                          <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem', minWidth: '80px' }}>
-                            <div className="shimmer-box" style={{ width: '64px', height: '64px', borderRadius: '50%' }} />
-                            <div className="shimmer-box" style={{ width: '50px', height: '10px', borderRadius: '4px' }} />
+                          <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem', minWidth: '120px', padding: '0.75rem', background: 'white', borderRadius: '12px', border: '1px solid #f0f0f0' }}>
+                            <div className="shimmer-box" style={{ width: '48px', height: '48px', borderRadius: '50%' }} />
+                            <div className="shimmer-box" style={{ width: '70px', height: '10px', borderRadius: '4px', marginTop: '0.25rem' }} />
+                            <div className="shimmer-box" style={{ width: '50px', height: '8px', borderRadius: '4px' }} />
                           </div>
                         ))
                       ) : (
@@ -147,40 +148,46 @@ export default function Dashboard() {
                           <Link key={creator.id} href={`/profile/${creator.username}`} style={{ 
                             display: 'flex', 
                             flexDirection: 'column', 
-                            alignItems: 'center', 
-                            gap: '0.5rem',
-                            minWidth: '80px',
-                            textDecoration: 'none'
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            padding: '0.75rem',
+                            background: 'white',
+                            border: '1px solid #e5e7eb',
+                            borderRadius: '12px',
+                            minWidth: '110px',
+                            maxWidth: '110px',
+                            textDecoration: 'none',
+                            transition: 'transform 0.2s, box-shadow 0.2s',
+                            boxShadow: '0 2px 5px rgba(0,0,0,0.02)'
+                          }}
+                          onMouseOver={e => {
+                            e.currentTarget.style.transform = 'translateY(-2px)';
+                            e.currentTarget.style.boxShadow = '0 4px 10px rgba(0,0,0,0.05)';
+                            e.currentTarget.style.borderColor = '#d1d5db';
+                          }}
+                          onMouseOut={e => {
+                            e.currentTarget.style.transform = 'none';
+                            e.currentTarget.style.boxShadow = '0 2px 5px rgba(0,0,0,0.02)';
+                            e.currentTarget.style.borderColor = '#e5e7eb';
                           }}>
-                            <div style={{
-                              width: '64px', 
-                              height: '64px', 
-                              borderRadius: '50%', 
-                              padding: '2px',
-                              background: 'linear-gradient(45deg, #0009fa, #0ea5e9)',
-                              flexShrink: 0
-                            }}>
-                              <div style={{
-                                width: '100%',
-                                height: '100%',
-                                borderRadius: '50%',
-                                overflow: 'hidden',
-                                border: '2px solid white'
-                              }}>
-                                <UserAvatar src={creator.avatar_url} name={creator.full_name || creator.username} size={56} />
-                              </div>
+                            <div style={{ width: '46px', height: '46px', borderRadius: '50%', overflow: 'hidden', marginBottom: '0.4rem', border: '1px solid #f3f4f6' }}>
+                              <UserAvatar src={creator.avatar_url} name={creator.full_name || creator.username} size={46} />
                             </div>
                             <span style={{ 
                               fontSize: '0.75rem', 
-                              fontWeight: 700, 
-                              color: '#0a0a0a',
+                              fontWeight: 800, 
+                              color: '#111827',
                               textAlign: 'center',
                               width: '100%',
                               overflow: 'hidden',
                               textOverflow: 'ellipsis',
-                              whiteSpace: 'nowrap'
+                              whiteSpace: 'nowrap',
+                              marginBottom: '0.2rem'
                             }}>
                               {creator.full_name?.split(' ')[0] || creator.username}
+                            </span>
+                            <span style={{ fontSize: '0.65rem', color: '#6b7280', fontWeight: 600 }}>
+                              {creator.followers_count || 0} followers
                             </span>
                           </Link>
                         ))

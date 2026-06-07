@@ -23,7 +23,14 @@ const SORT_OPTIONS = [
   { value: 'projects',  label: 'Most Projects', icon: Star },
 ];
 
-export default function CreatorsPage() {
+import { Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+
+function CreatorsContent() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const initialSearch = searchParams.get('q') || '';
+  const initialCategory = searchParams.get('category') || 'All';
   const [data, setData] = useState({
     heroCreator: null,
     featuredCreators: [],
@@ -32,8 +39,8 @@ export default function CreatorsPage() {
   });
   
   const [loading, setLoading]           = useState(true);
-  const [search, setSearch]             = useState('');
-  const [category, setCategory]         = useState('All');
+  const [search, setSearch]             = useState(initialSearch);
+  const [category, setCategory]         = useState(initialCategory);
   const [sort, setSort]                 = useState('followers');
   const [currentUserId, setCurrentUserId] = useState(null);
   const [page, setPage]                 = useState(1);
@@ -47,6 +54,17 @@ export default function CreatorsPage() {
       if (user) setCurrentUserId(user.id);
     });
   }, []);
+
+  // Sync search & category to URL
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const params = new URLSearchParams();
+      if (search) params.set('q', search);
+      if (category !== 'All') params.set('category', category);
+      router.replace(`/creators?${params.toString()}`, { scroll: false });
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [search, category, router]);
 
   const loadCreators = useCallback(async (pageNum = 1, currentCat = 'All', currentSort = 'followers', append = false) => {
     if (pageNum === 1) setLoading(true);
@@ -146,7 +164,7 @@ export default function CreatorsPage() {
             {/* 4-Column Responsive Grid (Fills container completely) */}
             <div className="trending-grid" style={{ paddingBottom: '0.5rem' }}>
               {displayCreators.map(creator => (
-                <div key={creator.id} className="featured-card" style={{
+                <Link key={creator.id} href={`/profile/${creator.username}`} className="featured-card" style={{
                   background: 'white',
                   borderRadius: '20px',
                   overflow: 'hidden',
@@ -157,6 +175,7 @@ export default function CreatorsPage() {
                   boxShadow: '0 4px 15px rgba(0,0,0,0.08)',
                   cursor: 'pointer',
                   color: '#111827',
+                  textDecoration: 'none',
                   aspectRatio: '3 / 4' // Keeps the portrait shape even when it stretches
                 }}>
                   {/* Full Background Image */}
@@ -210,13 +229,15 @@ export default function CreatorsPage() {
                         </div>
                       </div>
                       
-                      <Link href={`/profile/${creator.username}`} className="btn btn-outline" style={{ padding: '0.3rem 0.8rem', fontSize: '0.75rem', borderRadius: '30px', borderColor: '#d1d5db', color: '#000', fontWeight: 600 }}>
-                        Follow +
-                      </Link>
+                      <FollowButton 
+                        targetUserId={creator.id} 
+                        currentUserId={currentUserId} 
+                        compact={true} 
+                      />
                     </div>
 
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
             
@@ -326,11 +347,16 @@ export default function CreatorsPage() {
           </div>
         ) : filteredCreators.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '6rem 2rem', background: 'white', borderRadius: '24px', border: '1px dashed #d1d5db' }}>
-            <Sparkles size={48} color="#d1d5db" style={{ marginBottom: '1.5rem' }} />
+            <Sparkles size={48} color="#d1d5db" style={{ marginBottom: '1.5rem', margin: '0 auto' }} />
             <p style={{ fontWeight: 800, fontSize: '1.25rem', marginBottom: '0.5rem' }}>No creators found</p>
             <p style={{ fontSize: '1rem', color: '#6b7280' }}>
               {search ? `No results match "${search}"` : `No creators found in ${category}`}
             </p>
+            <div style={{ marginTop: '1.5rem' }}>
+              <button onClick={() => { setSearch(''); setCategory('All'); }} className="btn" style={{ padding: '0.6rem 1.5rem', fontSize: '0.9rem', background: '#0a0a0a', color: 'white', fontWeight: 700, borderRadius: '30px' }}>
+                Clear Filters
+              </button>
+            </div>
           </div>
         ) : (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '1rem' }}>
@@ -457,5 +483,13 @@ function RisingCreatorRow({ creator, rank }) {
         <TrendingUp size={12} />
       </div>
     </Link>
+  );
+}
+
+export default function CreatorsPage() {
+  return (
+    <Suspense fallback={<div style={{ padding: '4rem', textAlign: 'center', color: '#9b9b9b' }}>Loading...</div>}>
+      <CreatorsContent />
+    </Suspense>
   );
 }

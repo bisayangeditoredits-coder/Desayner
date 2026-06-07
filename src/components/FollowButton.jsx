@@ -11,7 +11,11 @@ export default function FollowButton({ targetUserId, currentUserId, initialFollo
 
   if (currentUserId === targetUserId) return null;
 
-  async function toggle() {
+  async function toggle(e) {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
     if (!currentUserId) {
       router.push('/login?redirectTo=' + encodeURIComponent(window.location.pathname));
       return;

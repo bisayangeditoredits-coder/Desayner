@@ -184,12 +184,17 @@ function SearchResults() {
                 {[...Array(8)].map((_, i) => <div key={i} style={{ background: '#f0f0f0', aspectRatio: '4/3' }} />)}
               </div>
             ) : projects.length === 0 && !loadingProjects ? (
-              <div style={{ textAlign: 'center', padding: '4rem 2rem', background: 'white', border: '1px solid #e2e8f0' }}>
-                <p style={{ fontWeight: 700, marginBottom: '0.4rem' }}>No projects found</p>
-                <p style={{ color: '#9b9b9b', fontSize: '0.875rem' }}>Try different keywords or clear the category filter.</p>
-                <button onClick={() => { setCategory('All'); setSort('newest'); }} className="btn btn-outline" style={{ marginTop: '1rem', padding: '0.5rem 1.25rem', fontSize: '0.8rem' }}>
-                  Clear filters
-                </button>
+              <div style={{ textAlign: 'center', padding: '4rem 2rem', background: 'white', border: '1px solid #e2e8f0', borderRadius: '16px' }}>
+                <p style={{ fontWeight: 800, fontSize: '1.2rem', marginBottom: '0.4rem' }}>No projects found for "{query}"</p>
+                <p style={{ color: '#6b7280', fontSize: '0.9rem' }}>We couldn't find anything matching your search. Try adjusting your keywords.</p>
+                <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center', marginTop: '1.5rem' }}>
+                  <button onClick={() => { setCategory('All'); setSort('newest'); }} className="btn btn-outline" style={{ padding: '0.6rem 1.25rem', fontSize: '0.85rem' }}>
+                    Clear Filters
+                  </button>
+                  <Link href="/projects" className="btn" style={{ padding: '0.6rem 1.25rem', fontSize: '0.85rem', background: '#0a0a0a', color: 'white', fontWeight: 700, textDecoration: 'none' }}>
+                    Explore All Projects
+                  </Link>
+                </div>
               </div>
             ) : (
               <>
@@ -216,10 +221,13 @@ function SearchResults() {
                 {[...Array(6)].map((_, i) => <div key={i} style={{ background: '#f0f0f0', height: '200px' }} />)}
               </div>
             ) : creators.length === 0 ? (
-              <div style={{ textAlign: 'center', padding: '4rem 2rem', background: 'white', border: '1px solid #e2e8f0' }}>
-                <Users2 size={36} color="#d1d5db" style={{ marginBottom: '1rem' }} />
-                <p style={{ fontWeight: 700, marginBottom: '0.4rem' }}>No creators found</p>
-                <p style={{ color: '#9b9b9b', fontSize: '0.875rem' }}>Try a different name or username.</p>
+              <div style={{ textAlign: 'center', padding: '4rem 2rem', background: 'white', border: '1px solid #e2e8f0', borderRadius: '16px' }}>
+                <Users2 size={36} color="#d1d5db" style={{ marginBottom: '1rem', margin: '0 auto 1rem' }} />
+                <p style={{ fontWeight: 800, fontSize: '1.2rem', marginBottom: '0.4rem' }}>No creators found for "{query}"</p>
+                <p style={{ color: '#6b7280', fontSize: '0.9rem' }}>Try a different name or username.</p>
+                <Link href="/creators" className="btn" style={{ display: 'inline-block', marginTop: '1.5rem', padding: '0.6rem 1.25rem', fontSize: '0.85rem', background: '#0a0a0a', color: 'white', fontWeight: 700, textDecoration: 'none' }}>
+                  Explore All Creators
+                </Link>
               </div>
             ) : (
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '4px' }}>
