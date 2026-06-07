@@ -75,7 +75,7 @@ export default function AssetDetailModal({ asset, currentUserId, onClose, onDele
     try {
       const { error } = await supabase
         .from('assets')
-        .delete()
+        .update({ deleted_at: new Date().toISOString() })
         .eq('id', asset.id);
 
       if (error) throw error;

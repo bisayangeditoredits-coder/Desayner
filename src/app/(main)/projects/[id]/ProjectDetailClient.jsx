@@ -217,7 +217,10 @@ export default function ProjectDetailPage() {
     setLoading(false);
   }, [id]);
 
-  useEffect(() => { load(); }, [load]);
+  useEffect(() => {
+    async function init() { await load(); }
+    init();
+  }, [load]);
 
   async function toggleLike() {
     if (!currentUser) {
@@ -243,7 +246,7 @@ export default function ProjectDetailPage() {
 
   async function confirmDelete() {
     setIsDeleting(true);
-    const { error } = await supabase.from('projects').delete().eq('id', id);
+    const { error } = await supabase.from('projects').update({ deleted_at: new Date().toISOString() }).eq('id', id);
     if (error) {
       alert('Failed to delete project: ' + error.message);
       setIsDeleting(false);

@@ -20,7 +20,7 @@ export default function InspirationUploadModal({ onClose, onSuccess }) {
   useEffect(() => {
     if (!file) return;
     const url = URL.createObjectURL(file);
-    setPreviewUrl(url);
+    setTimeout(() => setPreviewUrl(url), 0);
     return () => URL.revokeObjectURL(url);
   }, [file]);
 
@@ -57,7 +57,7 @@ export default function InspirationUploadModal({ onClose, onSuccess }) {
   // Sync upload store completion with DB save trigger
   useEffect(() => {
     if (status === 'done' && result) {
-      saveInspiration(result.publicUrl, result.thumbnailUrl);
+      setTimeout(() => saveInspiration(result.publicUrl, result.thumbnailUrl), 0);
     }
   }, [status, result, saveInspiration]);
 

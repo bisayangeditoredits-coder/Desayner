@@ -12,13 +12,13 @@ export default function FeaturedAdminPage() {
   const [searchResults, setSearchResults] = useState([]);
   
   const [selectedUser, setSelectedUser] = useState(null);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState(() => ({
     banner_url: '',
     featured_title: '',
     featured_description: '',
     start_date: new Date().toISOString().slice(0, 16),
     end_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 16),
-  });
+  }));
   
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState('');

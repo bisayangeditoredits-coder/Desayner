@@ -34,7 +34,7 @@ const About = () => {
             <span className="hero-tagline">Who We Are</span>
             <h2 className="section-title">Driven by Creativity, <br />Focused on Results</h2>
             <p className="about-text">
-              Creldesk Studio was founded with a single mission: to empower creators and brands with world-class visual storytelling. Our team of designers, strategists, and producers work at the intersection of culture and technology to build brands that don't just exist—they lead.
+              Creldesk Studio was founded with a single mission: to empower creators and brands with world-class visual storytelling. Our team of designers, strategists, and producers work at the intersection of culture and technology to build brands that don&apos;t just exist—they lead.
             </p>
             
             <div className="stats-grid">
@@ -55,7 +55,7 @@ const About = () => {
             </div>
 
             <p className="about-subtext">
-              Whether you're an individual creator looking to define your voice or a global brand seeking to connect with the digital generation, we provide the tools and talent to make it happen.
+              Whether you&apos;re an individual creator looking to define your voice or a global brand seeking to connect with the digital generation, we provide the tools and talent to make it happen.
             </p>
           </motion.div>
         </div>

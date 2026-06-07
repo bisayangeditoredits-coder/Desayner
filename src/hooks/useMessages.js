@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect, useRef, useCallback, useReducer } from 'react';
+import { useState, useEffect, useRef, useCallback, useReducer, useMemo } from 'react';
 import { createClient } from '@/lib/supabase/client';
 
 /**
@@ -57,18 +57,18 @@ export function useMessages(conversationId) {
 
   const channelRef  = useRef(null);
   const mountedRef  = useRef(true);
-  const supabase    = createClient();
+  const supabase = useMemo(() => createClient(), []);
 
   // ── Initial load ─────────────────────────────────────────
   useEffect(() => {
     if (!conversationId) return;
     mountedRef.current = true;
-    setLoading(true);
-    setError(null);
 
     const controller = new AbortController();
 
     async function loadInitial() {
+      setLoading(true);
+      setError(null);
       try {
         const res = await fetch(
           `/api/messages?conversationId=${conversationId}&limit=30`,
@@ -136,7 +136,7 @@ export function useMessages(conversationId) {
         channelRef.current = null;
       }
     };
-  }, [conversationId]);
+  }, [conversationId, supabase]);
 
   // ── Load older messages (pagination) ─────────────────────
   const loadMore = useCallback(async () => {

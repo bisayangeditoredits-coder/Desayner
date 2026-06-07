@@ -26,11 +26,15 @@ export async function generateMetadata({ params }) {
   return {
     title,
     description,
+    alternates: {
+      canonical: `/profile/${username}`,
+    },
     openGraph: {
       title,
       description,
       images: [{ url: imageUrl }],
       type: 'profile',
+      url: `https://desayner.com/profile/${username}`,
     },
     twitter: {
       card: 'summary',

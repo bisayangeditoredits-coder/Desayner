@@ -245,7 +245,7 @@ export default function Header() {
               {searching ? (
                 <div className="search-dropdown__empty">Searching...</div>
               ) : results.length === 0 ? (
-                <div className="search-dropdown__empty">No results for "{searchQuery}"</div>
+                <div className="search-dropdown__empty">No results for &quot;{searchQuery}&quot;</div>
               ) : (
                 <>
                   {results.map(p => (
@@ -274,7 +274,7 @@ export default function Header() {
                     className="search-dropdown__view-all"
                     onClick={() => setDropdownOpen(false)}
                   >
-                    See all results for "{searchQuery}" →
+                    See all results for &quot;{searchQuery}&quot; →
                   </Link>
                 </>
               )}
@@ -302,11 +302,11 @@ export default function Header() {
               
               {createMenuOpen && (
                 <div style={{
-                  position: 'absolute', top: 'calc(100% + 0.5rem)', right: 0,
+                  position: 'absolute', top: 'calc(100% + 0.5rem)', left: '50%', transform: 'translateX(-50%)',
                   background: 'white', border: '1px solid #e8e8e8', borderRadius: '8px',
-                  boxShadow: '0 4px 12px rgba(0,0,0,0.1)', zIndex: 100, padding: '0.5rem 0', minWidth: '160px'
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.1)', zIndex: 100, padding: '0.5rem 0', minWidth: '160px', width: 'max-content'
                 }}>
-                  <Link href="/projects/new" onClick={() => setCreateMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.5rem 1rem', color: '#0a0a0a', fontSize: '0.875rem', textDecoration: 'none', fontWeight: 500 }}>
+                  <Link href="/projects/new" onClick={() => setCreateMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.5rem 1rem', color: '#0a0a0a', fontSize: '0.875rem', textDecoration: 'none', fontWeight: 500, whiteSpace: 'nowrap' }}>
                     <Plus size={16} color="#6b7280" /> New Project
                   </Link>
                 </div>

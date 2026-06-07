@@ -19,8 +19,12 @@ const monigue = localFont({
 });
 
 export const metadata = {
+  metadataBase: new URL("https://desayner.com"),
   title: "Desayner | Content Creation & Branding Agency",
   description: "Desayner is a premium platform for modern creators. Elevate your brand with professional visual storytelling.",
+  alternates: {
+    canonical: "/",
+  },
   icons: {
     icon: [
       { url: "/android-chrome-192x192 rounded.png", type: "image/png" },
@@ -31,7 +35,7 @@ export const metadata = {
   openGraph: {
     title: "Desayner | Content Creation & Branding Agency",
     description: "Desayner is a premium platform for modern creators. Elevate your brand with professional visual storytelling.",
-    url: "https://draftly.com",
+    url: "https://desayner.com",
     siteName: "Desayner",
     images: [
       {

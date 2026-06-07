@@ -102,7 +102,7 @@ export default function ProfilePage() {
     <>
       <div style={{ padding: '4rem', textAlign: 'center' }}>
         <p style={{ fontWeight: 700, marginBottom: '0.5rem' }}>User not found</p>
-        <p style={{ color: '#9b9b9b', fontSize: '0.875rem' }}>@{username} doesn't exist.</p>
+        <p style={{ color: '#9b9b9b', fontSize: '0.875rem' }}>@{username} doesn&apos;t exist.</p>
       </div>
     </>
   );

@@ -10,7 +10,7 @@ export function MobileNavProvider({ children }) {
 
   // Close mobile menu when navigating to a new route
   useEffect(() => {
-    setIsMobileMenuOpen(false);
+    setTimeout(() => setIsMobileMenuOpen(false), 0);
   }, [pathname]);
 
   // Lock body scroll when mobile menu is open

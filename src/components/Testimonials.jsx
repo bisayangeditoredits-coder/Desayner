@@ -46,7 +46,7 @@ const Testimonials = () => {
               <div className="testimonial-icon">
                 <Quote size={24} />
               </div>
-              <p className="testimonial-content">"{t.content}"</p>
+              <p className="testimonial-content">&quot;{t.content}&quot;</p>
               <div className="testimonial-author">
                 <img src={t.image} alt={t.name} className="author-img" />
                 <div className="author-info">

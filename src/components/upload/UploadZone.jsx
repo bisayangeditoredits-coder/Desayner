@@ -50,10 +50,12 @@ export default function UploadZone({ label, folder = 'uploads', value = '', thum
 
   // Bubble upload result to parent exactly once per successful upload
   const doneCalledRef = useRef('');
-  if (status === 'done' && result && result.publicUrl !== doneCalledRef.current) {
-    doneCalledRef.current = result.publicUrl;
-    onResult?.(result);
-  }
+  useEffect(() => {
+    if (status === 'done' && result && result.publicUrl !== doneCalledRef.current) {
+      doneCalledRef.current = result.publicUrl;
+      onResult?.(result);
+    }
+  }, [status, result, onResult]);
 
   const processFile = useCallback((file) => {
     if (!file) return;

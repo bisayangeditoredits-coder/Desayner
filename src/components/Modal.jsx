@@ -18,7 +18,7 @@ export default function Modal({ title, size = 'md', onClose, footer, children })
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
+    setTimeout(() => setMounted(true), 0);
     // Prevent scrolling on body when modal is open
     document.body.style.overflow = 'hidden';
     return () => { document.body.style.overflow = 'unset'; };

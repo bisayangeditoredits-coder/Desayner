@@ -103,14 +103,20 @@ function CreatorsContent() {
 
   // Load initial data and handle filter/sort changes
   useEffect(() => {
-    setPage(1);
-    loadCreators(1, category, sort, false);
-  }, [category, sort]);
+    async function init() {
+      setPage(1);
+      await loadCreators(1, category, sort, false);
+    }
+    init();
+  }, [category, sort, loadCreators]);
 
   // Handle pagination
   useEffect(() => {
-    if (page > 1) loadCreators(page, category, sort, true);
-  }, [page]);
+    async function fetchPage() {
+      if (page > 1) await loadCreators(page, category, sort, true);
+    }
+    fetchPage();
+  }, [page, category, sort, loadCreators]);
 
     // Use featured creators if available in DB, otherwise fallback to rising creators
     let displayCreators = [];

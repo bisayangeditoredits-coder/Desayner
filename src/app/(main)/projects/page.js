@@ -17,7 +17,7 @@ const PAGE_SIZE = 24;
 export default function ProjectsPage() {
   const { category, scrollPosition, setFeedState, setScrollPosition } = useFeedStore();
   const [currentUserId, setCurrentUserId] = useState(null);
-  
+
   const supabase = createMemoizedClient();
 
   useEffect(() => {
@@ -100,30 +100,30 @@ export default function ProjectsPage() {
             <h1 className="page-title" style={{ fontSize: '1.5rem', fontWeight: 800 }}>Projects</h1>
             <p style={{ fontSize: '0.85rem', color: '#9b9b9b', marginTop: '0.25rem' }}>Discover work from the community</p>
           </div>
-          <Link href="/projects/new" className="btn btn-dark projects-header-btn">
+          <Link href="/projects/new" className="btn btn-dark" style={{ borderRadius: '8px' }}>
             <Plus size={14} strokeWidth={2.5} />
             <span className="btn-text-responsive">New Project</span>
           </Link>
         </div>
 
-        <div style={{ 
-          display: 'flex', 
-          gap: '0.4rem', 
-          overflowX: 'auto', 
-          paddingBottom: '0.5rem', 
+        <div style={{
+          display: 'flex',
+          gap: '0.4rem',
+          overflowX: 'auto',
+          paddingBottom: '0.5rem',
           marginBottom: '1.25rem',
           scrollbarWidth: 'none',
           msOverflowStyle: 'none'
         }} className="category-scroll-container">
           {CATEGORIES.map(cat => (
-            <TagPill 
-              key={cat} 
-              label={cat} 
-              active={category === cat} 
+            <TagPill
+              key={cat}
+              label={cat}
+              active={category === cat}
               onClick={() => {
                 if (category === cat) return;
                 setFeedState({ category: cat });
-              }} 
+              }}
             />
           ))}
         </div>
@@ -151,7 +151,7 @@ export default function ProjectsPage() {
                 lastElementRef={lastElementRef}
               />
             ))}
-            
+
             {isLoadingMore && (
               <div style={{ textAlign: 'center', padding: '2rem 0', color: '#9b9b9b', fontSize: '0.875rem' }}>
                 Loading more...

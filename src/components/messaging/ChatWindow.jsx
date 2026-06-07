@@ -110,7 +110,7 @@ const ChatWindow = memo(function ChatWindow({
         <div className="chat-window__empty-state">
           <div className="chat-window__empty-icon">💬</div>
           <p className="chat-window__empty-title">Select a conversation</p>
-          <p className="chat-window__empty-sub">or start a new one from someone's profile</p>
+          <p className="chat-window__empty-sub">or start a new one from someone&apos;s profile</p>
         </div>
       </div>
     );

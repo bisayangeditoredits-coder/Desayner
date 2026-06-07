@@ -92,7 +92,7 @@ export default function NotificationsPage() {
               <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#f5f5f5', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1rem' }}>
                 <Check size={24} color="#9b9b9b" />
               </div>
-              <p style={{ fontWeight: 700, marginBottom: '0.5rem' }}>You're all caught up!</p>
+              <p style={{ fontWeight: 700, marginBottom: '0.5rem' }}>You&apos;re all caught up!</p>
               <p style={{ color: '#9b9b9b', fontSize: '0.85rem' }}>No new notifications.</p>
             </div>
           ) : (

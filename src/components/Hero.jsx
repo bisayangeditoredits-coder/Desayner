@@ -27,7 +27,7 @@ const Hero = () => {
           </p>
           <div className="hero-btns">
             <a href="#contact" className="btn btn-primary">
-              Let's Collaborate <ChevronRight size={20} />
+              Let&apos;s Collaborate <ChevronRight size={20} />
             </a>
             <a href="#portfolio" className="btn btn-outline">
               View Our Work

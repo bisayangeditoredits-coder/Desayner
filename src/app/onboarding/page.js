@@ -93,15 +93,19 @@ export default function OnboardingPage() {
   // 2. Validate username on typing (debounced lookups)
   useEffect(() => {
     if (!username.trim() || username === profile?.username) {
-      setUsernameAvailable(true);
-      setCheckingUsername(false);
-      setUsernameError('');
+      setTimeout(() => {
+        setUsernameAvailable(true);
+        setCheckingUsername(false);
+        setUsernameError('');
+      }, 0);
       return;
     }
 
     if (username.length < 3) {
-      setUsernameError('Username must be at least 3 characters');
-      setUsernameAvailable(false);
+      setTimeout(() => {
+        setUsernameError('Username must be at least 3 characters');
+        setUsernameAvailable(false);
+      }, 0);
       return;
     }
 

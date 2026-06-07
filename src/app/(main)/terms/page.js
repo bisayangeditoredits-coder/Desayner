@@ -12,7 +12,7 @@ export default function TermsPage() {
           <section style={{ marginBottom: '2rem' }}>
             <h2 style={{ fontSize: '1.25rem', fontWeight: '600', marginBottom: '1rem', color: 'var(--text-main)' }}>1. Introduction</h2>
             <p style={{ color: 'var(--text-dim)', lineHeight: '1.6' }}>
-              Welcome to Creldesk Studio ("we," "our," or "us"). By accessing or using our platform, you agree to be bound by these Terms and Conditions. Please read them carefully before using our services.
+              Welcome to Creldesk Studio (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;). By accessing or using our platform, you agree to be bound by these Terms and Conditions. Please read them carefully before using our services.
             </p>
           </section>
 

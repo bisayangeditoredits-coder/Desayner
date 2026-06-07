@@ -144,9 +144,9 @@ function LoginForm() {
                 <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#0a0a0a' }}>Remember me</span>
               </label>
 
-              <a href="#" style={{ fontSize: '0.85rem', color: '#5b45f4', fontWeight: 600, textDecoration: 'none' }}>
+              <Link href="/forgot-password" style={{ fontSize: '0.85rem', color: '#5b45f4', fontWeight: 600, textDecoration: 'none' }}>
                 Forgot your password ?
-              </a>
+              </Link>
             </div>
 
             {error && (
@@ -201,7 +201,7 @@ function LoginForm() {
           </button>
 
           <p style={{ textAlign: 'center', marginTop: '2.5rem', fontSize: '0.875rem', color: '#0a0a0a', fontWeight: 500 }}>
-            Don't have an account ?{' '}
+            Don&apos;t have an account ?{' '}
             <Link href="/signup" style={{ color: '#5b45f4', fontWeight: 600, textDecoration: 'underline' }}>
               Register here
             </Link>

@@ -15,7 +15,7 @@ const CTA = () => {
         >
           <div className="cta-content">
             <h2>Ready to transform your brand?</h2>
-            <p>Let's collaborate and create something extraordinary together.</p>
+            <p>Let&apos;s collaborate and create something extraordinary together.</p>
             <form className="cta-form" onSubmit={(e) => e.preventDefault()}>
               <input type="email" placeholder="Your email address" required />
               <button type="submit" className="btn btn-primary">

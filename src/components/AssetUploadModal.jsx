@@ -22,7 +22,7 @@ export default function AssetUploadModal({ onClose, onSuccess }) {
   useEffect(() => {
     if (!file) return;
     const url = URL.createObjectURL(file);
-    setPreviewUrl(url);
+    setTimeout(() => setPreviewUrl(url), 0);
     return () => URL.revokeObjectURL(url);
   }, [file]);
 
@@ -60,7 +60,7 @@ export default function AssetUploadModal({ onClose, onSuccess }) {
 
   useEffect(() => {
     if (status === 'done' && result) {
-      saveAsset(result.publicUrl, result.thumbnailUrl);
+      setTimeout(() => saveAsset(result.publicUrl, result.thumbnailUrl), 0);
     }
   }, [status, result, saveAsset]);
 
