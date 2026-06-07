@@ -10,22 +10,22 @@ const GUIDE_STEPS = [
     id: 1,
     title: 'Welcome to Desayner',
     desc: 'Discover a powerful collection of features designed to enhance your creative workflow and portfolio.',
-    // Placeholder video 1
-    videoSrc: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4', 
+    // Real video for Step 1
+    videoSrc: '/video-onboarding/welcome-to-desayner.mp4', 
   },
   {
     id: 2,
     title: 'Upload Your Projects',
     desc: 'Easily upload your latest work, organize it into collections, and share it with the world.',
-    // Placeholder video 2
-    videoSrc: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
+    // Real video for Step 2
+    videoSrc: '/video-onboarding/upload-your-projects.mp4',
   },
   {
     id: 3,
     title: 'Get Inspired & Save',
     desc: 'Browse the feed to find inspiration. Like and save projects to your personal moodboards.',
-    // Placeholder video 3
-    videoSrc: 'https://storage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4',
+    // Temporarily reusing step 2 video since the 3rd video wasn't found in the folder
+    videoSrc: '/video-onboarding/upload-your-projects.mp4',
   }
 ];
 
