@@ -99,13 +99,13 @@ export default function Sidebar({ className = '' }) {
 
       {/* Create button */}
       <div style={{ padding: '0.75rem 1rem' }}>
-        <Link
+        <a
           href="/projects/new"
           className="btn btn-primary"
-          style={{ width: '100%', justifyContent: 'center', fontSize: '0.8rem', padding: '0.6rem' }}
+          style={{ width: '100%', justifyContent: 'center', fontSize: '0.8rem', padding: '0.6rem', textDecoration: 'none' }}
         >
           <Plus size={15} strokeWidth={2.5} /> New Project
-        </Link>
+        </a>
       </div>
 
       {/* Nav */}

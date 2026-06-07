@@ -100,10 +100,10 @@ export default function ProjectsPage() {
             <h1 className="page-title" style={{ fontSize: '1.5rem', fontWeight: 800 }}>Projects</h1>
             <p style={{ fontSize: '0.85rem', color: '#9b9b9b', marginTop: '0.25rem' }}>Discover work from the community</p>
           </div>
-          <Link href="/projects/new" className="btn btn-dark" style={{ borderRadius: '8px' }}>
+          <a href="/projects/new" className="btn btn-dark" style={{ borderRadius: '8px', textDecoration: 'none' }}>
             <Plus size={14} strokeWidth={2.5} />
             <span className="btn-text-responsive">New Project</span>
-          </Link>
+          </a>
         </div>
 
         <div style={{

@@ -306,9 +306,9 @@ export default function Header() {
                   background: 'white', border: '1px solid #e8e8e8', borderRadius: '8px',
                   boxShadow: '0 4px 12px rgba(0,0,0,0.1)', zIndex: 100, padding: '0.5rem 0', minWidth: '160px', width: 'max-content'
                 }}>
-                  <Link href="/projects/new" onClick={() => setCreateMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.5rem 1rem', color: '#0a0a0a', fontSize: '0.875rem', textDecoration: 'none', fontWeight: 500, whiteSpace: 'nowrap' }}>
+                  <a href="/projects/new" onClick={() => setCreateMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.5rem 1rem', color: '#0a0a0a', fontSize: '0.875rem', textDecoration: 'none', fontWeight: 500, whiteSpace: 'nowrap' }}>
                     <Plus size={16} color="#6b7280" /> New Project
-                  </Link>
+                  </a>
                 </div>
               )}
             </div>
