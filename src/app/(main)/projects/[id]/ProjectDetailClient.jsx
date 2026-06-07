@@ -447,6 +447,12 @@ export default function ProjectDetailClient({ isModal = false }) {
               <Link
                 href={`/profile/${author?.username}`}
                 className="project-detail__author-avatar-link"
+                onClick={(e) => {
+                  if (isModal) {
+                    e.preventDefault();
+                    window.location.href = `/profile/${author?.username}`;
+                  }
+                }}
               >
                 <UserAvatar
                   src={author?.avatar_url}
@@ -457,6 +463,12 @@ export default function ProjectDetailClient({ isModal = false }) {
               <Link
                 href={`/profile/${author?.username}`}
                 className="project-detail__author-name"
+                onClick={(e) => {
+                  if (isModal) {
+                    e.preventDefault();
+                    window.location.href = `/profile/${author?.username}`;
+                  }
+                }}
               >
                 {author?.full_name || author?.username}
               </Link>
