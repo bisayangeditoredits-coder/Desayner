@@ -1,0 +1,130 @@
+.guide-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(8px);
+  padding: 1rem;
+}
+
+.guide-modal-content {
+  position: relative;
+  width: 100%;
+  max-width: 440px;
+  background: #ffffff;
+  border-radius: 4px; /* Slightly sharp, clean edges as requested */
+  overflow: hidden;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
+  display: flex;
+  flex-direction: column;
+}
+
+.guide-modal-hero {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1; /* Perfect Square for the video */
+  background: #f3f4f6; /* light gray fallback */
+  overflow: hidden;
+}
+
+.guide-modal-hero-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Ensures video fills the square perfectly */
+  background: #000;
+}
+
+.guide-modal-body {
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  min-height: 180px; /* Consistent height for the text area */
+  justify-content: space-between;
+}
+
+.guide-modal-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 0.75rem;
+  letter-spacing: -0.01em;
+}
+
+.guide-modal-desc {
+  font-size: 0.95rem;
+  color: #6b7280;
+  line-height: 1.5;
+}
+
+.guide-modal-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 2.5rem;
+}
+
+.guide-modal-dots {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.guide-modal-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #d1d5db;
+  transition: all 0.3s ease;
+}
+
+.guide-modal-dot.active {
+  background-color: #111827;
+  width: 16px;
+  border-radius: 4px;
+}
+
+.guide-modal-actions {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.guide-modal-btn-skip {
+  background: transparent;
+  border: none;
+  color: #4b5563;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0.5rem;
+  transition: color 0.2s;
+}
+
+.guide-modal-btn-skip:hover {
+  color: #111827;
+}
+
+.guide-modal-btn-next {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #111827;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 0.6rem 1.2rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.guide-modal-btn-next:hover {
+  background: #000000;
+}
+
+.guide-modal-btn-next:active {
+  transform: scale(0.98);
+}

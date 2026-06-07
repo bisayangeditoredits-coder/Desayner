@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import OnboardingModal from '@/components/OnboardingModal';
+import OnboardingGuideModal from '@/components/OnboardingGuideModal';
 
 export default function OnboardingGuard({ children }) {
   const router = useRouter();
@@ -11,6 +12,7 @@ export default function OnboardingGuard({ children }) {
   const supabase = createClient();
   const [checking, setChecking] = useState(true);
   const [needsOnboarding, setNeedsOnboarding] = useState(false);
+  const [showGuide, setShowGuide] = useState(false);
   const [user, setUser] = useState(null);
 
   useEffect(() => {
@@ -77,7 +79,10 @@ export default function OnboardingGuard({ children }) {
           padding: '1rem',
           animation: 'fadeIn 0.4s ease-out'
         }}>
-          <OnboardingModal user={user} onComplete={() => setNeedsOnboarding(false)} />
+          <OnboardingModal user={user} onComplete={() => {
+            setNeedsOnboarding(false);
+            setShowGuide(true);
+          }} />
           <style>{`
             @keyframes fadeIn {
               from { opacity: 0; backdrop-filter: blur(0px); background: rgba(15, 23, 42, 0); }
@@ -86,6 +91,12 @@ export default function OnboardingGuard({ children }) {
           `}</style>
         </div>
       )}
+
+      {/* Render the Guide Modal after profile completion */}
+      <OnboardingGuideModal 
+        open={showGuide} 
+        onOpenChange={setShowGuide} 
+      />
     </>
   );
 }
