@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { Heart, Bookmark } from 'lucide-react';
+import { Heart, Bookmark, Eye } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import UserAvatar from './UserAvatar';
 import ProgressiveImage from './ProgressiveImage';
@@ -14,9 +14,47 @@ export default function ProjectCard({ project, currentUserId }) {
   const [liked, setLiked]         = useState(project.user_liked || false);
   const [saved, setSaved]         = useState(project.user_saved || false);
   const [likeCount, setLikeCount] = useState(project.likes_count || 0);
+  const [viewCount, setViewCount] = useState(project.views_count || 0);
   const [showColModal, setShowColModal] = useState(false);
   const supabase = createClient();
   const router = require('next/navigation').useRouter();
+
+  const trackView = async () => {
+    if (!project.id) return;
+    
+    const trackViewWithRetry = async (retries = 2) => {
+      try {
+        const res = await fetch('/api/view', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ projectId: project.id })
+        });
+        
+        if (!res.ok && retries > 0) {
+          console.warn('View tracking failed, retrying...');
+          setTimeout(() => trackViewWithRetry(retries - 1), 500);
+          return;
+        }
+        
+        if (res.ok) {
+          const data = await res.json();
+          // Only increment view if not cached (hasn't viewed in last hour)
+          if (data.success && !data.cached) {
+            setViewCount(prev => prev + 1);
+          }
+        }
+      } catch (err) {
+        if (retries > 0) {
+          console.warn('View tracking error, retrying:', err.message);
+          setTimeout(() => trackViewWithRetry(retries - 1), 500);
+        } else {
+          console.error('View tracking failed:', err);
+        }
+      }
+    };
+    
+    trackViewWithRetry();
+  };
 
   async function handleLike(e) {
     e.preventDefault();
@@ -55,7 +93,7 @@ export default function ProjectCard({ project, currentUserId }) {
         whileHover={{ y: -4, transition: { type: 'spring', stiffness: 400, damping: 25 } }}
       >
         {/* Thumbnail */}
-        <Link href={`/projects/${project.id}`} className="project-card__thumb-link" prefetch={true}>
+        <Link href={`/projects/${project.id}`} className="project-card__thumb-link" prefetch={true} onClick={trackView}>
           <div className="project-card__thumb">
             {project.cover_url ? (
               // ProgressiveImage: loads thumbnail_url (~500px WebP) first,
@@ -98,6 +136,16 @@ export default function ProjectCard({ project, currentUserId }) {
           </Link>
 
           <div className="project-card__actions">
+            <motion.button
+              whileTap={{ scale: 0.8 }}
+              onClick={handleLike}
+              className={`project-card__action-btn ${liked ? 'project-card__action-btn--liked' : ''}`}
+              title={liked ? 'Unlike' : 'Like'}
+            >
+              <Eye size={14} />
+              {viewCount > 0 && <span>{viewCount}</span>}
+            </motion.button>
+
             <motion.button
               whileTap={{ scale: 0.8 }}
               onClick={handleLike}

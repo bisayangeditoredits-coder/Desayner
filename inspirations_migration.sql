@@ -13,6 +13,7 @@ create table if not exists inspirations (
   description text,
   category text default 'General',
   likes_count int default 0,
+  views_count int default 0,
   created_at timestamptz default now()
 );
 

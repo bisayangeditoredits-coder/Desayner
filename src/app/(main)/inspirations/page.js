@@ -63,7 +63,13 @@ export default function InspirationsPage() {
     persistSize: true, // keeps the previous page size when unmounting/remounting
   });
 
-  const inspirations = data ? data.flatMap(page => page.inspirations) : [];
+  // FIX: Filter out undefined pages and items to prevent "Cannot read properties of undefined"
+  const inspirations = data 
+    ? data
+        .filter(page => page && page.inspirations)
+        .flatMap(page => page.inspirations || [])
+        .filter(item => item) // Remove any undefined items
+    : [];
   const isLoadingInitialData = !data && !error;
   const isLoadingMore = isLoadingInitialData || (size > 0 && data && typeof data[size - 1] === "undefined");
   const isEmpty = data?.[0]?.inspirations?.length === 0;

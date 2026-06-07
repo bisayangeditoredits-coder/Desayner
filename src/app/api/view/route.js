@@ -5,21 +5,29 @@ import { redis } from '@/lib/redis';
 
 export const runtime = 'edge';
 
+// SECURITY FIX: Improved IP validation and user-based rate limiting
+function sanitizeIP(ip) {
+  // Only accept valid IPv4 or IPv6 format
+  const ipv4Regex = /^(\d{1,3}\.){3}\d{1,3}$/;
+  const ipv6Regex = /^[\da-f:]+$/i;
+  
+  if (!ip) return 'unknown';
+  
+  // If multiple IPs, take the first (from x-forwarded-for)
+  const cleanedIp = ip.split(',')[0].trim();
+  
+  // Validate IP format
+  if (!ipv4Regex.test(cleanedIp) && !ipv6Regex.test(cleanedIp)) {
+    return 'unknown';
+  }
+  
+  return cleanedIp;
+}
+
 export async function POST(req) {
   try {
     const { projectId } = await req.json();
     if (!projectId) return NextResponse.json({ error: 'Missing projectId' }, { status: 400 });
-
-    const ip = req.headers.get('x-forwarded-for') || 'unknown';
-    const cacheKey = `view_${projectId}_${ip}`;
-    
-    // Prevent spamming views from the same IP (1 view per project per IP per hour)
-    const hasViewed = await redis.get(cacheKey);
-    if (hasViewed) {
-      return NextResponse.json({ success: true, cached: true });
-    }
-    
-    await redis.setex(cacheKey, 3600, '1');
 
     const cookieStore = await cookies();
     const supabase = createServerClient(
@@ -27,6 +35,25 @@ export async function POST(req) {
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
       { cookies: { getAll: () => cookieStore.getAll() } }
     );
+
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    // Prefer authenticated user ID for rate limiting, fall back to IP
+    let rateLimitKey;
+    if (user?.id) {
+      rateLimitKey = `view_${projectId}_user_${user.id}`;
+    } else {
+      const ip = sanitizeIP(req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown');
+      rateLimitKey = `view_${projectId}_ip_${ip}`;
+    }
+    
+    // Prevent spamming views (1 view per project per user/IP per hour)
+    const hasViewed = await redis.get(rateLimitKey);
+    if (hasViewed) {
+      return NextResponse.json({ success: true, cached: true });
+    }
+    
+    await redis.setex(rateLimitKey, 3600, '1');
 
     const { error } = await supabase.rpc('increment_project_view', { p_id: projectId });
     if (error) {

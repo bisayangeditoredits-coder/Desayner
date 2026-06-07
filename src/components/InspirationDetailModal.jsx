@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { Heart, Bookmark, Trash2, X, Calendar, Folder } from 'lucide-react';
+import { Heart, Bookmark, Trash2, X, Calendar, Folder, Eye } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import UserAvatar from './UserAvatar';
 import SaveToCollectionModal from './SaveToCollectionModal';
@@ -19,16 +19,53 @@ function timeAgo(dateStr) {
 export default function InspirationDetailModal({ inspiration, currentUserId, onClose, onDeleteSuccess }) {
   const [liked, setLiked]         = useState(inspiration.user_liked || false);
   const [likesCount, setLikesCount] = useState(inspiration.likes_count || 0);
+  const [viewsCount, setViewsCount] = useState(inspiration.views_count || 0);
   const [saved, setSaved]           = useState(false);
   const [savesCount, setSavesCount] = useState(inspiration.saves_count || 0);
   const [deleting, setDeleting]     = useState(false);
   const [showColModal, setShowColModal] = useState(false);
   const [isZoomed, setIsZoomed]     = useState(false);
+  const [viewTracked, setViewTracked] = useState(false);
 
   const supabase = createClient();
   const router   = useRouter();
   const creator  = inspiration.profiles;
   const isOwner  = currentUserId === inspiration.user_id;
+
+  // Track view on modal open (only once) with retry logic
+  React.useEffect(() => {
+    if (!viewTracked && inspiration.id) {
+      const trackViewWithRetry = async (retries = 2) => {
+        try {
+          const res = await fetch(`/api/inspirations/${inspiration.id}/views`, { 
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+          });
+          
+          if (!res.ok && retries > 0) {
+            console.warn('View tracking failed, retrying...');
+            setTimeout(() => trackViewWithRetry(retries - 1), 500);
+          } else if (res.ok) {
+            const data = await res.json();
+            if (data.success) {
+              setViewsCount(prev => prev + 1);
+              setViewTracked(true);
+            }
+          }
+        } catch (err) {
+          if (retries > 0) {
+            console.warn('View tracking error, retrying:', err.message);
+            setTimeout(() => trackViewWithRetry(retries - 1), 500);
+          } else {
+            console.error('View tracking failed:', err);
+            setViewTracked(true); // Don't retry forever
+          }
+        }
+      };
+      
+      trackViewWithRetry();
+    }
+  }, [inspiration.id, viewTracked]);
 
   React.useEffect(() => {
     if (currentUserId) {
@@ -183,6 +220,10 @@ export default function InspirationDetailModal({ inspiration, currentUserId, onC
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.8rem', color: 'var(--text-dim, #475569)' }}>
                   <Folder size={14} />
                   <span>Category: <strong>{inspiration.category}</strong></span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.8rem', color: 'var(--text-dim, #475569)' }}>
+                  <Eye size={14} />
+                  <span><strong>{viewsCount}</strong> {viewsCount === 1 ? 'View' : 'Views'}</span>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.8rem', color: 'var(--text-dim, #475569)' }}>
                   <Calendar size={14} />

@@ -1,7 +1,7 @@
 'use client';
 import { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { Heart } from 'lucide-react';
+import { Heart, Eye } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import UserAvatar from './UserAvatar';
 import ProgressiveImage from './ProgressiveImage';
@@ -9,8 +9,44 @@ import ProgressiveImage from './ProgressiveImage';
 export default function InspirationCard({ inspiration, currentUserId, onClick }) {
   const [liked, setLiked]         = useState(inspiration.user_liked || false);
   const [likesCount, setLikesCount] = useState(inspiration.likes_count || 0);
+  const [viewsCount, setViewsCount] = useState(inspiration.views_count || 0);
   const supabase = createClient();
   const router   = useRouter();
+
+  const handleCardClick = useCallback(() => {
+    // Track view when card is clicked (with retry logic)
+    if (inspiration.id) {
+      const trackViewWithRetry = async (retries = 2) => {
+        try {
+          const res = await fetch(`/api/inspirations/${inspiration.id}/views`, { 
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+          });
+          
+          if (!res.ok && retries > 0) {
+            // Retry on failure
+            console.warn('View tracking failed, retrying...');
+            setTimeout(() => trackViewWithRetry(retries - 1), 500);
+          } else if (res.ok) {
+            const data = await res.json();
+            if (data.success) {
+              setViewsCount(prev => prev + 1);
+            }
+          }
+        } catch (err) {
+          if (retries > 0) {
+            console.warn('View tracking error, retrying:', err.message);
+            setTimeout(() => trackViewWithRetry(retries - 1), 500);
+          } else {
+            console.error('View tracking failed:', err);
+          }
+        }
+      };
+      
+      trackViewWithRetry();
+    }
+    onClick?.();
+  }, [inspiration.id, onClick]);
 
   const handleLike = useCallback(async (e) => {
     e.preventDefault();
@@ -45,7 +81,7 @@ export default function InspirationCard({ inspiration, currentUserId, onClick })
 
   return (
     <div className="inspirations-card-wrapper">
-      <div className="inspiration-card" onClick={onClick}>
+      <div className="inspiration-card" onClick={handleCardClick}>
         <div className="inspiration-image-wrap">
           <img
             src={inspiration.thumbnail_url || inspiration.image_url}
@@ -75,9 +111,15 @@ export default function InspirationCard({ inspiration, currentUserId, onClick })
                   {creator?.full_name || creator?.username || 'Designer'}
                 </span>
               </div>
-              <div className="inspiration-like-counter">
-                <Heart size={10} fill="currentColor" />
-                <span>{likesCount}</span>
+              <div className="inspiration-stats">
+                <div className="inspiration-stat">
+                  <Eye size={10} />
+                  <span>{viewsCount}</span>
+                </div>
+                <div className="inspiration-stat">
+                  <Heart size={10} fill="currentColor" />
+                  <span>{likesCount}</span>
+                </div>
               </div>
             </div>
           </div>

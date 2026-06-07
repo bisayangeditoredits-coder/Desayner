@@ -16,7 +16,18 @@ import { NextResponse } from 'next/server';
 export async function GET(request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get('code');
-  const next = searchParams.get('next') || '/';
+  let next = searchParams.get('next') || '/';
+
+  // SECURITY FIX: Validate redirect URL to prevent open redirect attacks
+  // Only allow same-origin URLs (starting with /)
+  if (!next.startsWith('/') || next.includes('//')) {
+    next = '/';
+  }
+  try {
+    new URL(`${origin}${next}`); // Validate it's a valid URL
+  } catch {
+    next = '/';
+  }
 
   if (code) {
     const cookieStore = await cookies();
@@ -54,15 +65,23 @@ export async function GET(request) {
         let username = fullName.toLowerCase().replace(/[^a-z0-9]/g, '');
         if (!username) username = `user_${Date.now()}`;
         
-        await supabase.from('profiles').insert({
+        const { error: insertError } = await supabase.from('profiles').insert({
           id: user.id,
           full_name: fullName,
           username: username,
           avatar_url: rawMeta.avatar_url || rawMeta.picture || ''
         });
+        
+        if (insertError) {
+          console.error('Profile creation failed:', insertError);
+          return NextResponse.redirect(`${origin}/login?error=profile_creation_failed`);
+        }
       }
 
       return NextResponse.redirect(`${origin}${next}`);
+    } else if (error) {
+      console.error('Auth error:', error);
+      return NextResponse.redirect(`${origin}/login?error=${encodeURIComponent(error.message)}`);
     }
   }
 
