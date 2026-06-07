@@ -72,7 +72,7 @@ export default function ProjectModalWrapper({ children }) {
             width: '95vw',
             maxWidth: '1600px', // Like behance/dribbble wide modal
             background: '#ffffff',
-            borderRadius: '24px',
+            borderRadius: '0px', // Sharp edges requested by user
             overflow: 'hidden',
             boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
             maxHeight: '95vh',

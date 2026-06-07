@@ -2,6 +2,7 @@ import { Montserrat, Raleway } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
 import "./messaging.css";
+import "./App.css";
 
 const montserrat = Montserrat({
   variable: "--font-montserrat",

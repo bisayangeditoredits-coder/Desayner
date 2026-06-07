@@ -277,14 +277,6 @@ export default function ProjectDetailClient({ isModal = false }) {
             </button>
           ) : <div />}
           <div style={{ marginLeft: 'auto', display: 'flex', gap: '0.5rem' }}>
-            <button 
-              onClick={handleShare} 
-              className="btn btn-outline project-detail__topbar-btn"
-              title={shareToast ? 'Copied!' : 'Share'}
-            >
-              {shareToast ? <Check size={14} color="#1a8a3b" /> : <Share size={14} />}
-              <span className="btn-text-responsive">{shareToast ? 'Copied!' : 'Share'}</span>
-            </button>
             {currentUser?.id === project.user_id && (
               <>
                 <button 
@@ -408,6 +400,14 @@ export default function ProjectDetailClient({ isModal = false }) {
                 <span>Save</span>
               </button>
 
+              <button
+                onClick={handleShare}
+                className="project-detail__action-btn"
+              >
+                {shareToast ? <Check size={16} color="#1a8a3b" /> : <Share size={16} />}
+                <span style={shareToast ? { color: '#1a8a3b', fontWeight: 600 } : {}}>{shareToast ? 'Link Copied!' : 'Share'}</span>
+              </button>
+
               {project.external_link && (
                 <a
                   href={project.external_link}
@@ -448,9 +448,14 @@ export default function ProjectDetailClient({ isModal = false }) {
                 href={`/profile/${author?.username}`}
                 className="project-detail__author-avatar-link"
                 onClick={(e) => {
+                  e.preventDefault();
                   if (isModal) {
-                    e.preventDefault();
-                    window.location.href = `/profile/${author?.username}`;
+                    router.back();
+                    setTimeout(() => {
+                      router.push(`/profile/${author?.username}`);
+                    }, 50);
+                  } else {
+                    router.push(`/profile/${author?.username}`);
                   }
                 }}
               >
@@ -464,9 +469,14 @@ export default function ProjectDetailClient({ isModal = false }) {
                 href={`/profile/${author?.username}`}
                 className="project-detail__author-name"
                 onClick={(e) => {
+                  e.preventDefault();
                   if (isModal) {
-                    e.preventDefault();
-                    window.location.href = `/profile/${author?.username}`;
+                    router.back();
+                    setTimeout(() => {
+                      router.push(`/profile/${author?.username}`);
+                    }, 50);
+                  } else {
+                    router.push(`/profile/${author?.username}`);
                   }
                 }}
               >
