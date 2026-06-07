@@ -38,9 +38,9 @@ export default function ProjectCard({ project, currentUserId }) {
         
         if (res.ok) {
           const data = await res.json();
-          // Only increment view if not cached (hasn't viewed in last hour)
-          if (data.success && !data.cached) {
-            setViewCount(prev => prev + 1);
+          // Update view count from API response
+          if (data.success && typeof data.views === 'number') {
+            setViewCount(data.views);
           }
         }
       } catch (err) {

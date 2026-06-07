@@ -29,8 +29,8 @@ export default function InspirationCard({ inspiration, currentUserId, onClick })
             setTimeout(() => trackViewWithRetry(retries - 1), 500);
           } else if (res.ok) {
             const data = await res.json();
-            if (data.success) {
-              setViewsCount(prev => prev + 1);
+            if (data.success && typeof data.views === 'number') {
+              setViewsCount(data.views);
             }
           }
         } catch (err) {

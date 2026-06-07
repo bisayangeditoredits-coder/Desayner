@@ -55,16 +55,27 @@ export async function POST(req) {
     
     await redis.setex(rateLimitKey, 3600, '1');
 
-    const { error } = await supabase.rpc('increment_project_view', { p_id: projectId });
+    // Increment views atomically and get the updated count
+    const { data, error } = await supabase
+      .from('projects')
+      .update({ views_count: supabase.raw('views_count + 1') })
+      .eq('id', projectId)
+      .select('views_count')
+      .single();
+
     if (error) {
-      // Fallback if RPC is missing
-      await supabase
-        .from('projects')
-        .update({ views_count: supabase.raw('views_count + 1') })
-        .eq('id', projectId);
+      console.error('View increment error:', error);
+      return NextResponse.json({ success: false, error: error.message }, { status: 500 });
     }
 
-    return NextResponse.json({ success: true });
+    // Invalidate cache for this project
+    try {
+      await redis.del(`projects:All:*`, `projects:*`);
+    } catch (cacheErr) {
+      console.warn('Cache invalidation failed:', cacheErr);
+    }
+
+    return NextResponse.json({ success: true, views: data?.views_count || 0 });
   } catch (error) {
     // Suppress console spam for view tracking
     return NextResponse.json({ success: false, reason: error.message }, { status: 200 });

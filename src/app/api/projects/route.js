@@ -87,10 +87,10 @@ export async function GET(request) {
       items.forEach(p => { p.user_liked = likedSet.has(p.id); });
     }
 
-    // 4. Cache first page responses to Redis cache for 10 seconds
+    // 4. Cache first page responses to Redis cache for 5 seconds (reduced for freshness)
     if (offset === 0) {
       try {
-        await redis.setex(cacheKey, 10, { projects: items });
+        await redis.setex(cacheKey, 5, { projects: items });
       } catch (err) {
         console.error('[Redis Cache SET Error]', err);
       }
