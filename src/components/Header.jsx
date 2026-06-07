@@ -112,8 +112,8 @@ export default function Header() {
 
       // Realtime listeners
       sub = supabase.channel(`header_badges_${user.id}_${Date.now()}`)
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'notifications', filter: `user_id=eq.${user.id}` }, fetchBadges)
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'conversation_members', filter: `user_id=eq.${user.id}` }, fetchBadges)
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'notifications' }, fetchBadges)
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'conversation_members' }, fetchBadges)
         .subscribe();
     }
     load();

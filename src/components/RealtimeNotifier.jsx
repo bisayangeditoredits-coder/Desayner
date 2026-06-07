@@ -30,9 +30,10 @@ export default function RealtimeNotifier() {
             event: 'INSERT',
             schema: 'public',
             table: 'notifications',
-            filter: `user_id=eq.${userId}`,
           },
           async (payload) => {
+            if (payload.new.user_id !== userId) return;
+
             // Dynamically join actor, project, and inspiration details for context
             const { data: notif } = await supabase
               .from('notifications')
