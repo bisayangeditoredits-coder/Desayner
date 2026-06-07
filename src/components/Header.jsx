@@ -321,7 +321,7 @@ export default function Header() {
             </Link>
 
             <div style={{ position: 'relative' }} ref={notifRef}>
-              <button onClick={toggleNotifs} className="icon-btn" id="notification-btn" title="Notifications">
+              <button onClick={toggleNotifs} className="icon-btn" id="notification-btn" title="Notifications" style={{ position: 'relative' }}>
                 <Bell size={18} strokeWidth={1.5} />
                 {unreadCount > 0 && (
                   <span className="notif-badge"></span>
