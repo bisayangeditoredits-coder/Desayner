@@ -32,7 +32,21 @@ export async function saveProfileAdmin(profileData) {
       return { success: false, error: 'Forbidden: You can only update your own profile.' };
     }
 
-    // 2. Perform the update with service role now that identity is verified
+    // 2. Whitelist allowed fields to prevent unauthorized updates (e.g., is_admin)
+    const ALLOWED_FIELDS = ['avatar_url', 'full_name', 'bio', 'tools', 'username', 'website'];
+    const safeProfileData = {
+      id: user.id,  // Force correct user ID
+      updated_at: new Date().toISOString(),
+    };
+
+    // Only copy allowed fields
+    ALLOWED_FIELDS.forEach(field => {
+      if (field in profileData) {
+        safeProfileData[field] = profileData[field];
+      }
+    });
+
+    // 3. Perform the update with service role now that identity is verified
     const supabaseAdmin = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL,
       process.env.SUPABASE_SERVICE_ROLE_KEY
@@ -40,7 +54,7 @@ export async function saveProfileAdmin(profileData) {
 
     const { error } = await supabaseAdmin
       .from('profiles')
-      .upsert(profileData);
+      .upsert(safeProfileData);
 
     if (error) {
       return { success: false, error: error.message };
