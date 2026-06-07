@@ -157,6 +157,14 @@ export default function ResourcesPage() {
           )}
 
         </div>
+        
+        {/* Render the modal if a resource is selected */}
+        {selectedResourceId && (
+          <ResourceDetailModal 
+            resourceId={selectedResourceId} 
+            onClose={() => setSelectedResourceId(null)} 
+          />
+        )}
       </>
   );
 }

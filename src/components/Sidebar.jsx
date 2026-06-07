@@ -28,7 +28,7 @@ const COMMUNITY_ITEMS = [
 ];
 
 const DESIGN_HUB_ITEMS = [
-  { href: '/asset-store',  icon: ShoppingBag,   label: 'ASSET STORE', public: true },
+  // { href: '/asset-store',  icon: ShoppingBag,   label: 'ASSET STORE', public: true },
   { href: '/mockups',      icon: Box,           label: 'MOCKUPS',     public: true },
   { href: '/tutorials',    icon: PlaySquare,    label: 'TUTORIALS',   public: true },
 ];
