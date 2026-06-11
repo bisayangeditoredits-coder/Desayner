@@ -186,15 +186,18 @@ export default function Dashboard() {
                       </Link>
                     </div>
 
-                    <div className="top-creators-grid" style={{
-                      display: 'grid',
-                      gridTemplateColumns: 'repeat(8, 1fr)',
+                    <div className="top-creators-grid hide-scrollbar" style={{
+                      display: 'flex',
+                      overflowX: 'auto',
                       gap: '0.6rem', // Minimal spacing as requested
-                      paddingBottom: '0.75rem'
+                      paddingBottom: '0.75rem',
+                      WebkitOverflowScrolling: 'touch',
+                      scrollbarWidth: 'none',
+                      msOverflowStyle: 'none'
                     }}>
                       {loading ? (
                         [...Array(8)].map((_, i) => (
-                          <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem', padding: '0.75rem', background: 'white', borderRadius: '12px', border: '1px solid #f0f0f0', width: '100%', height: '140px' }}>
+                          <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem', padding: '0.75rem', background: 'white', borderRadius: '12px', border: '1px solid #f0f0f0', width: '100px', minWidth: '100px', flexShrink: 0, height: '140px' }}>
                             <div className="shimmer-box" style={{ width: '48px', height: '48px', borderRadius: '50%' }} />
                             <div className="shimmer-box" style={{ width: '70px', height: '10px', borderRadius: '4px', marginTop: '0.25rem' }} />
                             <div className="shimmer-box" style={{ width: '50px', height: '8px', borderRadius: '4px' }} />
@@ -212,7 +215,9 @@ export default function Dashboard() {
                             background: '#111827',
                             border: '1px solid #e5e7eb',
                             borderRadius: '16px',
-                            width: '100%',
+                            width: '100px',
+                            minWidth: '100px',
+                            flexShrink: 0,
                             height: '140px',
                             textDecoration: 'none',
                             transition: 'transform 0.2s, box-shadow 0.2s',

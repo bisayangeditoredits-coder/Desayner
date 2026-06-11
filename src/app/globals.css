@@ -59,6 +59,14 @@ input, select, textarea { font-family: var(--font-body); }
 ::-webkit-scrollbar-thumb { background: #d0d0d0; border-radius: 0; }
 ::-webkit-scrollbar-thumb:hover { background: #b0b0b0; }
 
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
 /* ─── Button system ─────────────────────────────── */
 .btn {
   display: inline-flex;
