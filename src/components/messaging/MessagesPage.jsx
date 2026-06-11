@@ -1,5 +1,6 @@
 'use client';
-import React, { useState, useCallback, memo } from 'react';
+import React, { useState, useCallback, useEffect, useRef, memo } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import ConversationList from './ConversationList';
 import ChatWindow from './ChatWindow';
 import { useConversations } from '@/hooks/useConversations';
@@ -13,6 +14,11 @@ import { useConversations } from '@/hooks/useConversations';
  * - Search query state
  */
 const MessagesPage = memo(function MessagesPage({ currentUserId }) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const openId = searchParams.get('open');
+  const openedFromUrl = useRef(false);
+
   const { conversations, loading, markRead } = useConversations(currentUserId);
   const [activeConversation, setActiveConversation] = useState(null);
   const [searchQuery, setSearchQuery]               = useState('');
@@ -28,6 +34,17 @@ const MessagesPage = memo(function MessagesPage({ currentUserId }) {
     setShowChat(false);
     setActiveConversation(null);
   }, []);
+
+  // Deep-link: /messages?open={conversationId}
+  useEffect(() => {
+    if (!openId || loading || openedFromUrl.current) return;
+    const conv = conversations.find((c) => c.id === openId);
+    if (conv) {
+      openedFromUrl.current = true;
+      handleSelect(conv);
+      router.replace('/messages', { scroll: false });
+    }
+  }, [openId, loading, conversations, handleSelect, router]);
 
   return (
     <div className="messages-layout">

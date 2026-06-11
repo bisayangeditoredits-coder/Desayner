@@ -47,21 +47,17 @@ export async function POST(req) {
       rateLimitKey = `view_${projectId}_ip_${ip}`;
     }
     
-    // Prevent spamming views (1 view per project per user/IP per hour)
+    // Prevent spamming views (rate limited to 1 view per 5 seconds instead of 1 hour for testing)
     const hasViewed = await redis.get(rateLimitKey);
     if (hasViewed) {
       return NextResponse.json({ success: true, cached: true });
     }
     
-    await redis.setex(rateLimitKey, 3600, '1');
+    await redis.setex(rateLimitKey, 5, '1');
 
-    // Increment views atomically and get the updated count
+    // Increment views atomically using the RPC function created in the migration
     const { data, error } = await supabase
-      .from('projects')
-      .update({ views_count: supabase.raw('views_count + 1') })
-      .eq('id', projectId)
-      .select('views_count')
-      .single();
+      .rpc('increment_project_view', { p_id: projectId });
 
     if (error) {
       console.error('View increment error:', error);
@@ -75,7 +71,8 @@ export async function POST(req) {
       console.warn('Cache invalidation failed:', cacheErr);
     }
 
-    return NextResponse.json({ success: true, views: data?.views_count || 0 });
+    // `data` from the RPC is directly the integer count
+    return NextResponse.json({ success: true, views: typeof data === 'number' ? data : 0 });
   } catch (error) {
     // Suppress console spam for view tracking
     return NextResponse.json({ success: false, reason: error.message }, { status: 200 });

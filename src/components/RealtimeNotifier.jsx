@@ -123,7 +123,7 @@ export default function RealtimeNotifier() {
               title: sender.full_name || sender.username || 'New Message',
               message: newMsg.body || 'Sent an image',
               avatarUrl: sender.avatar_url,
-              link: `/messages`,
+              link: `/messages?open=${newMsg.conversation_id}`,
               duration: 5000,
             });
           }

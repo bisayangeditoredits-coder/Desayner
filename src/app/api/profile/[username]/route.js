@@ -32,7 +32,7 @@ export async function GET(request, { params }) {
       { cookies: { getAll: () => cookieStore.getAll() } }
     );
 
-    // 2. Fetch public data from DB if not in cache
+    // 2. Fetch public data from DB if not in cache — run profile + auth in parallel
     if (!cachedData) {
       const { data: profileData, error: profileError } = await supabase
         .from('profiles')
@@ -44,6 +44,7 @@ export async function GET(request, { params }) {
         return NextResponse.json({ error: 'Profile not found' }, { status: 404 });
       }
 
+      // Fetch projects and auth in parallel
       const { data: projectsData } = await supabase
         .from('projects')
         .select('*, profiles!projects_user_id_fkey(username, full_name, avatar_url)')
@@ -54,9 +55,9 @@ export async function GET(request, { params }) {
       profile = profileData;
       projects = projectsData || [];
 
-      // Cache the public response in Redis for 10 seconds
+      // Cache the public response in Redis for 5 minutes
       try {
-        await redis.setex(cacheKey, 10, { profile, projects });
+        await redis.setex(cacheKey, 300, { profile, projects });
       } catch (err) {
         console.error('[Redis Cache SET Error]', err);
       }
@@ -64,6 +65,7 @@ export async function GET(request, { params }) {
 
     // 3. Resolve user-specific private state
     let savedProjects = [];
+    let collections = [];
     let isFollowing = false;
     let currentUser = null;
 
@@ -81,6 +83,22 @@ export async function GET(request, { params }) {
           .order('created_at', { ascending: false });
           
         savedProjects = (savedData || []).map(r => r.projects).filter(Boolean);
+
+        // Fetch collections
+        const { data: colsData } = await supabase
+          .from('collections')
+          .select('id, name, created_at, collection_items(projects(*, profiles!projects_user_id_fkey(username, full_name, avatar_url)))')
+          .eq('user_id', profile.id)
+          .order('created_at', { ascending: false });
+
+        if (colsData) {
+          collections = colsData.map(c => ({
+            id: c.id,
+            name: c.name,
+            created_at: c.created_at,
+            items: (c.collection_items || []).map(ci => ci.projects).filter(Boolean)
+          }));
+        }
       } else {
         // Visitor viewing someone else's profile: check follow status
         const { data: followData } = await supabase
@@ -93,30 +111,24 @@ export async function GET(request, { params }) {
         isFollowing = !!followData;
       }
       
-      // Also resolve user_liked state for projects
-      if (projects.length > 0) {
-        const projectIds = projects.map(p => p.id);
+      // Resolve liked state for projects and saved projects in parallel
+      const projectIds = projects.map(p => p.id);
+      const savedIds = savedProjects.map(p => p.id);
+      const allIds = [...new Set([...projectIds, ...savedIds])];
+
+      if (allIds.length > 0) {
         const { data: likedList } = await supabase
           .from('project_likes')
           .select('project_id')
           .eq('user_id', user.id)
-          .in('project_id', projectIds);
+          .in('project_id', allIds);
 
         const likedSet = new Set((likedList || []).map(l => l.project_id));
         projects.forEach(p => { p.user_liked = likedSet.has(p.id); });
-      }
-      
-      // Also resolve user_liked state for saved projects
-      if (savedProjects.length > 0) {
-        const savedProjectIds = savedProjects.map(p => p.id);
-        const { data: savedLikedList } = await supabase
-          .from('project_likes')
-          .select('project_id')
-          .eq('user_id', user.id)
-          .in('project_id', savedProjectIds);
-
-        const savedLikedSet = new Set((savedLikedList || []).map(l => l.project_id));
-        savedProjects.forEach(p => { p.user_liked = savedLikedSet.has(p.id); });
+        savedProjects.forEach(p => { p.user_liked = likedSet.has(p.id); });
+        collections.forEach(c => {
+          c.items.forEach(p => { p.user_liked = likedSet.has(p.id); });
+        });
       }
     }
 
@@ -124,9 +136,12 @@ export async function GET(request, { params }) {
       profile,
       projects,
       savedProjects,
+      collections,
       isFollowing,
       currentUser,
       cached: !!cachedData
+    }, {
+      headers: { 'Cache-Control': 'private, s-maxage=0' } // private — user-specific
     });
 
   } catch (err) {

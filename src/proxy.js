@@ -21,7 +21,7 @@ if (process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN) 
  *
  * Responsibilities:
  * 1. Refreshes the Supabase session token (keeps users logged in).
- * 2. Protects /dashboard — redirects unauthenticated users to /login.
+ * 2. Protects /settings and /messages — redirects unauthenticated users to /login.
  * 3. Redirects authenticated users away from /login and /signup.
  */
 export async function proxy(request) {
@@ -63,7 +63,7 @@ export async function proxy(request) {
       if (!success) {
         return NextResponse.json(
           { error: 'Too many requests. Please try again in a few seconds.' },
-          { 
+          {
             status: 429,
             headers: {
               'X-RateLimit-Limit': limit.toString(),
@@ -83,9 +83,11 @@ export async function proxy(request) {
   // redirect them to /login.
   const isProtected = pathname.startsWith('/settings') || pathname.startsWith('/messages');
   if (isProtected && !user) {
+    const returnTo = pathname + request.nextUrl.search;
     const loginUrl = request.nextUrl.clone();
     loginUrl.pathname = '/login';
-    loginUrl.searchParams.set('redirectTo', pathname);
+    loginUrl.search = '';
+    loginUrl.searchParams.set('redirectTo', returnTo);
     return NextResponse.redirect(loginUrl);
   }
 

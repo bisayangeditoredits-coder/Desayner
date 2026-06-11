@@ -37,33 +37,54 @@ function formatDate(dateStr) {
 /** Contact Creator button — starts a DM from the project page */
 function ContactButton({ authorId, router }) {
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   async function startChat() {
     if (!authorId) return;
     setLoading(true);
+    setError('');
     try {
       const res = await fetch('/api/conversations/start', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ recipientId: authorId }),
       });
-      const { conversationId } = await res.json();
-      if (conversationId) router.push(`/messages?open=${conversationId}`);
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error || 'Could not start conversation');
+        return;
+      }
+      if (data.conversationId) {
+        // Use hard navigation to break out of the Next.js intercepted modal bug
+        window.location.href = `/messages?open=${data.conversationId}`;
+      }
+    } catch {
+      setError('Could not start conversation');
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <button
-      onClick={startChat}
-      disabled={loading}
-      className="project-detail__action-btn"
-      style={{ width: '100%', justifyContent: 'center', marginTop: '0.5rem' }}
-    >
-      <MessageSquare size={16} />
-      <span>{loading ? 'Opening…' : 'Contact Creator'}</span>
-    </button>
+    <div>
+      <button
+        onClick={startChat}
+        disabled={loading}
+        className="project-detail__action-btn"
+        style={{
+          width: '100%',
+          justifyContent: 'center',
+          marginTop: '0.5rem',
+          background: '#0009fa',
+          color: 'white',
+          borderColor: '#0009fa',
+        }}
+      >
+        <MessageSquare size={16} />
+        <span>{loading ? 'Opening…' : 'Contact Creator'}</span>
+      </button>
+      {error && <p style={{ fontSize: '0.75rem', color: '#ef4444', marginTop: '0.35rem', textAlign: 'center' }}>{error}</p>}
+    </div>
   );
 }
 
@@ -222,9 +243,17 @@ export default function ProjectDetailClient({ isModal = false }) {
     init();
   }, [load]);
 
+  function goBack() {
+    if (window.history.length > 1) {
+      router.back();
+    } else {
+      router.push('/projects');
+    }
+  }
+
   async function toggleLike() {
     if (!currentUser) {
-      router.push('/login?redirectTo=' + encodeURIComponent(window.location.pathname));
+      router.push('/login?redirectTo=' + encodeURIComponent(window.location.pathname + window.location.search));
       return;
     }
     const wasLiked = liked;
@@ -245,14 +274,30 @@ export default function ProjectDetailClient({ isModal = false }) {
   }
 
   async function confirmDelete() {
-    setIsDeleting(true);
-    const { error } = await supabase.from('projects').update({ deleted_at: new Date().toISOString() }).eq('id', id);
-    if (error) {
-      alert('Failed to delete project: ' + error.message);
+    try {
+      setIsDeleting(true);
+      
+      // Call the server API to delete the project AND clear the Redis profile cache
+      const res = await fetch(`/api/projects/${id}`, {
+        method: 'DELETE',
+      });
+      const data = await res.json();
+        
+      if (!res.ok || data.error) {
+        alert('Failed to delete project: ' + (data.error || 'Unknown error'));
+        setIsDeleting(false);
+        setShowDeleteModal(false);
+        return;
+      }
+      
+      // Go back to the owner's profile after deletion with hard navigation to clear state
+      const username = currentProfile?.username;
+      window.location.href = username ? `/profile/${username}` : '/projects';
+    } catch (err) {
+      console.error('Delete error:', err);
+      alert('An unexpected error occurred: ' + err.message);
       setIsDeleting(false);
       setShowDeleteModal(false);
-    } else {
-      router.push('/projects');
     }
   }
 
@@ -265,6 +310,18 @@ export default function ProjectDetailClient({ isModal = false }) {
     ...(project.images || []).filter(img => img !== project.cover_url),
   ];
   const allImages = rawAllImages.map(stripCloudinaryProxy);
+  const profileHref = author?.username ? `/profile/${author.username}` : '#';
+
+  function goToAuthorProfile(e) {
+    if (!author?.username) {
+      e.preventDefault();
+      return;
+    }
+    // Next.js App Router has a bug where soft-navigating out of an intercepted modal
+    // sometimes fails to unmount the modal. Hard navigation guarantees it works.
+    e.preventDefault();
+    window.location.href = profileHref;
+  }
 
   return (
     <>
@@ -272,7 +329,7 @@ export default function ProjectDetailClient({ isModal = false }) {
         {/* Back bar */}
         <div className="project-detail__topbar" style={isModal ? { position: 'static', borderBottom: 'none' } : {}}>
           {!isModal ? (
-            <button onClick={() => router.back()} className="project-detail__back" style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: 0 }}>
+            <button onClick={goBack} className="project-detail__back" style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: 0 }}>
               <ArrowLeft size={14} /> Back to Projects
             </button>
           ) : <div />}
@@ -289,14 +346,15 @@ export default function ProjectDetailClient({ isModal = false }) {
                   <Trash2 size={14} /> 
                   <span className="btn-text-responsive">{isDeleting ? 'Deleting...' : 'Delete'}</span>
                 </button>
-                <Link 
-                  href={`/projects/${id}/edit`} 
+                <button
+                  onClick={() => window.location.href = `/projects/${id}/edit`}
                   className="btn btn-dark project-detail__topbar-btn"
                   title="Edit Project"
+                  style={{ background: '#0a0a0a', color: 'white', border: '1px solid #0a0a0a', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: 600, fontSize: '0.85rem', padding: '0.5rem 1rem', fontFamily: 'inherit' }}
                 >
                   <Edit size={14} /> 
                   <span className="btn-text-responsive">Edit Project</span>
-                </Link>
+                </button>
               </>
             )}
           </div>
@@ -420,6 +478,25 @@ export default function ProjectDetailClient({ isModal = false }) {
                   <span>Visit Project</span>
                 </a>
               )}
+
+              {/* Edit Project — owner only */}
+              {currentUser?.id === project.user_id && (
+                <button
+                  onClick={() => window.location.href = `/projects/${id}/edit`}
+                  className="project-detail__action-btn"
+                  style={{
+                    color: 'white',
+                    background: '#0009fa',
+                    borderColor: '#0009fa',
+                    fontWeight: 700,
+                    justifyContent: 'center',
+                    cursor: 'pointer',
+                  }}
+                >
+                  <Edit size={16} />
+                  <span>Edit Project</span>
+                </button>
+              )}
             </div>
 
             {/* Stats */}
@@ -445,19 +522,9 @@ export default function ProjectDetailClient({ isModal = false }) {
             {/* Author card */}
             <div className="project-detail__author-card">
               <Link
-                href={`/profile/${author?.username}`}
+                href={profileHref}
                 className="project-detail__author-avatar-link"
-                onClick={(e) => {
-                  e.preventDefault();
-                  if (isModal) {
-                    router.back();
-                    setTimeout(() => {
-                      router.push(`/profile/${author?.username}`);
-                    }, 50);
-                  } else {
-                    router.push(`/profile/${author?.username}`);
-                  }
-                }}
+                onClick={goToAuthorProfile}
               >
                 <UserAvatar
                   src={author?.avatar_url}
@@ -466,19 +533,9 @@ export default function ProjectDetailClient({ isModal = false }) {
                 />
               </Link>
               <Link
-                href={`/profile/${author?.username}`}
+                href={profileHref}
                 className="project-detail__author-name"
-                onClick={(e) => {
-                  e.preventDefault();
-                  if (isModal) {
-                    router.back();
-                    setTimeout(() => {
-                      router.push(`/profile/${author?.username}`);
-                    }, 50);
-                  } else {
-                    router.push(`/profile/${author?.username}`);
-                  }
-                }}
+                onClick={goToAuthorProfile}
               >
                 {author?.full_name || author?.username}
               </Link>

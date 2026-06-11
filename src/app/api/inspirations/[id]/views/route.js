@@ -20,40 +20,21 @@ export async function POST(request, { params }) {
       { cookies: { getAll: () => cookieStore.getAll() } }
     );
 
-    // ROBUST FIX: Use atomic increment (views_count + 1) to prevent race conditions
+    // ROBUST FIX: Use the RPC function created in views_tracking_migration.sql
     // This is safe for concurrent users - Postgres handles the increment atomically
     const { data, error } = await supabase
-      .from('inspirations')
-      .update({ 
-        views_count: supabase.rpc('increment', { x: 1 })  // Use increment RPC if available
-      })
-      .eq('id', id)
-      .select('views_count')
-      .single();
+      .rpc('increment_inspiration_view', { i_id: id });
 
     if (error) {
-      console.warn('RPC increment failed, using fallback:', error.message);
-      
-      // FALLBACK: Use raw SQL increment (atomic at database level)
-      const { data: fallbackData, error: fallbackError } = await supabase
-        .from('inspirations')
-        .update({ views_count: supabase.raw('views_count + 1') })
-        .eq('id', id)
-        .select('views_count')
-        .single();
-
-      if (fallbackError) {
-        console.error('View tracking failed:', fallbackError);
-        return NextResponse.json(
-          { success: false, error: 'Failed to track view' }, 
-          { status: 500 }
-        );
-      }
-
-      return NextResponse.json({ success: true, views: fallbackData?.views_count || 0 });
+      console.error('View tracking failed:', error);
+      return NextResponse.json(
+        { success: false, error: 'Failed to track view' }, 
+        { status: 500 }
+      );
     }
 
-    return NextResponse.json({ success: true, views: data?.views_count || 0 });
+    // `data` from the RPC is directly the integer count
+    return NextResponse.json({ success: true, views: typeof data === 'number' ? data : 0 });
 
   } catch (err) {
     console.error('[POST /api/inspirations/[id]/views Error]:', err);

@@ -13,7 +13,7 @@ export async function GET(request) {
     const page = parseInt(searchParams.get('page') || '1', 10);
     const PAGE_SIZE = 24;
 
-    const cacheKey = `creators_feed:${category}:${sort}:${page}`;
+    const cacheKey = `designers_feed:${category}:${sort}:${page}`;
 
     // 1. Try to read from cache (Only cache the first page for fast load)
     if (page === 1) {
@@ -36,10 +36,10 @@ export async function GET(request) {
 
     // Prepare response payload
     let payload = {
-      heroCreator: null,
-      featuredCreators: [],
-      risingCreators: [],
-      creators: [],
+      heroDesigner: null,
+      featuredDesigners: [],
+      risingDesigners: [],
+      designers: [],
     };
 
     // 2. Fetch Editorial Sections (Only on Page 1)
@@ -55,8 +55,8 @@ export async function GET(request) {
         .limit(6);
         
       if (featuredData && featuredData.length > 0) {
-        payload.heroCreator = featuredData[0];
-        payload.featuredCreators = featuredData.slice(1);
+        payload.heroDesigner = featuredData[0];
+        payload.featuredDesigners = featuredData.slice(1);
       }
 
       // 2b. Fetch Rising Creators (Created in last 30 days, sorted by followers)
@@ -84,16 +84,16 @@ export async function GET(request) {
             return { ...creator, sampleProjects: projects || [] };
           })
         );
-        payload.risingCreators = risingWithProjects;
+        payload.risingDesigners = risingWithProjects;
       } else {
-        payload.risingCreators = [];
+        payload.risingDesigners = [];
       }
     }
 
     // 3. Fetch Main Creators Grid
     let query = supabase
       .from('profiles')
-      .select('id, username, full_name, avatar_url, bio, location, followers_count, following_count, created_at')
+      .select('id, username, full_name, avatar_url, bio, location, followers_count, following_count, projects_count, created_at')
       .not('username', 'is', null)
       .range((page - 1) * PAGE_SIZE, page * PAGE_SIZE - 1);
 
@@ -121,21 +121,20 @@ export async function GET(request) {
     const { data: gridCreators, error: gridError } = await query;
     if (gridError) throw gridError;
 
-    // Fetch sample projects for the grid creators to build the cards
     const creatorsWithProjects = await Promise.all(
       (gridCreators || []).map(async (creator) => {
         const { data: projects } = await supabase
           .from('projects')
-          .select('id, cover_url, thumbnail_url, title')
+          .select('id, cover_url, thumbnail_url, title, category')
           .eq('user_id', creator.id)
           .eq('published', true)
           .order('created_at', { ascending: false })
-          .limit(3);
+          .limit(5);
         return { ...creator, sampleProjects: projects || [] };
       })
     );
 
-    payload.creators = creatorsWithProjects;
+    payload.designers = creatorsWithProjects;
 
     // 4. Cache response in Redis for 10 seconds (Only Page 1)
     if (page === 1) {
@@ -149,7 +148,7 @@ export async function GET(request) {
     return NextResponse.json({ ...payload, cached: false });
 
   } catch (err) {
-    console.error('[GET /api/creators Error]:', err);
+    console.error('[GET /api/designers Error]:', err);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

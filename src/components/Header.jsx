@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { useMobileNav } from '@/components/MobileNavProvider';
 import { createClient } from '@/lib/supabase/client';
+import { saveProjectModalReturn } from '@/lib/projectModalNav';
 import UserAvatar from './UserAvatar';
 
 function timeAgo(dateStr) {
@@ -225,7 +226,7 @@ export default function Header() {
             onChange={handleChange}
             onKeyDown={handleKeyDown}
             onFocus={() => searchQuery.trim() && setDropdownOpen(true)}
-            placeholder="Search projects, creators, tutorials..."
+            placeholder="Search projects, designers, tutorials..."
             autoComplete="off"
             style={{ paddingRight: '2.5rem' }}
           />
@@ -253,7 +254,7 @@ export default function Header() {
                       key={p.id}
                       href={`/projects/${p.id}`}
                       className="search-dropdown__item"
-                      onClick={() => { setDropdownOpen(false); setSearchQuery(''); }}
+                      onClick={() => { saveProjectModalReturn(); setDropdownOpen(false); setSearchQuery(''); }}
                     >
                       <div className="search-dropdown__thumb">
                         {p.cover_url 
@@ -306,9 +307,9 @@ export default function Header() {
                   background: 'white', border: '1px solid #e8e8e8', borderRadius: '8px',
                   boxShadow: '0 4px 12px rgba(0,0,0,0.1)', zIndex: 100, padding: '0.5rem 0', minWidth: '160px', width: 'max-content'
                 }}>
-                  <a href="/projects/new" onClick={() => setCreateMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.5rem 1rem', color: '#0a0a0a', fontSize: '0.875rem', textDecoration: 'none', fontWeight: 500, whiteSpace: 'nowrap' }}>
+                  <Link href="/projects/new" onClick={() => setCreateMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.5rem 1rem', color: '#0a0a0a', fontSize: '0.875rem', textDecoration: 'none', fontWeight: 500, whiteSpace: 'nowrap' }}>
                     <Plus size={16} color="#6b7280" /> New Project
-                  </a>
+                  </Link>
                 </div>
               )}
             </div>

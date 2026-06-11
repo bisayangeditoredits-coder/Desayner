@@ -3,6 +3,7 @@ import React, { useEffect, useCallback, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { MessageCircle, Heart, Bookmark, UserPlus, CheckCircle, AlertCircle, Info, X } from 'lucide-react';
 import useToastStore from '@/store/useToastStore';
+import { saveProjectModalReturn } from '@/lib/projectModalNav';
 import './Toast.css';
 
 function getToastIcon(type) {
@@ -44,6 +45,9 @@ function ToastItem({ toast }) {
 
   const handleClick = useCallback(() => {
     if (toast.link) {
+      if (/^\/projects\/[^/]+$/.test(toast.link)) {
+        saveProjectModalReturn();
+      }
       router.push(toast.link);
     }
     handleDismiss();

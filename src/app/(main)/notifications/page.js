@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import UserAvatar from '@/components/UserAvatar';
 import Link from 'next/link';
+import { saveProjectModalReturn } from '@/lib/projectModalNav';
 import { Heart, Bookmark, MessageCircle, UserPlus, Check, Bell } from 'lucide-react';
 import '../../App.css';
 
@@ -101,6 +102,10 @@ export default function NotificationsPage() {
                 <Link
                   key={n.id}
                   href={getLink(n)}
+                  onClick={() => {
+                    const link = getLink(n);
+                    if (/^\/projects\/[^/]+$/.test(link)) saveProjectModalReturn();
+                  }}
                   style={{
                     display: 'flex', alignItems: 'flex-start', gap: '1rem',
                     padding: '1.25rem 1.5rem', textDecoration: 'none', color: 'inherit',

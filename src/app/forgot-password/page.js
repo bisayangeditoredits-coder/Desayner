@@ -54,7 +54,7 @@ function ForgotPasswordForm() {
             Forgot password?
           </h1>
           <p style={{ fontSize: '0.95rem', color: '#64748b', marginBottom: '2.5rem', lineHeight: '1.5' }}>
-            No worries, we'll send you reset instructions.
+            No worries, we&apos;ll send you reset instructions.
           </p>
 
           {success ? (

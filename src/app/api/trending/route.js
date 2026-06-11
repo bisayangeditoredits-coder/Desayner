@@ -6,7 +6,7 @@ import { redis } from '@/lib/redis';
 export const runtime = 'edge';
 
 export async function GET() {
-  const CACHE_KEY = 'trending_projects';
+  const CACHE_KEY = 'trending_projects_top_10';
   
   // 1. Check Redis cache first
   try {
@@ -31,17 +31,19 @@ export async function GET() {
     .select('*, profiles!projects_user_id_fkey(username, full_name, avatar_url)')
     .eq('published', true)
     .order('likes_count', { ascending: false })
-    .limit(12);
+    .limit(10);
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   const projects = data || [];
 
-  // 3. Save to Redis (cache for 5 seconds to show new projects instantly)
+  // 3. Save to Redis — trending changes slowly, cache for 2 minutes
   try {
-    await redis.setex(CACHE_KEY, 5, projects);
+    await redis.setex(CACHE_KEY, 120, projects);
   } catch (err) {
     console.error('Redis cache write error:', err);
   }
 
-  return NextResponse.json({ projects, cached: false });
+  return NextResponse.json({ projects, cached: false }, {
+    headers: { 'Cache-Control': 's-maxage=120, stale-while-revalidate=60' }
+  });
 }

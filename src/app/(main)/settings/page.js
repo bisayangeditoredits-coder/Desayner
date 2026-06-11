@@ -157,20 +157,52 @@ export default function SettingsPage() {
               {/* Cover Photo */}
               <div>
                 <label style={labelStyle}>Cover Photo</label>
-                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                  {coverUrl ? (
-                    <div style={{ width: '100%', aspectRatio: '16/9', background: '#f5f5f5', borderRadius: '12px', overflow: 'hidden', position: 'relative' }}>
-                      <img src={coverUrl} alt="Cover" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                    </div>
-                  ) : (
-                    <div style={{ width: '100%', aspectRatio: '16/9', background: '#f9fafb', border: '1px dashed #d1d5db', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#9ca3af', fontSize: '0.9rem' }}>
-                      No cover photo uploaded
-                    </div>
-                  )}
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <span style={{ fontSize: '0.75rem', color: '#6b7280' }}>Recommended size: 1920 x 1080 pixels (16:9 aspect ratio)</span>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
+
+                  {/* Preview area */}
+                  <div style={{ position: 'relative', width: '100%', aspectRatio: '16/9', borderRadius: '12px', overflow: 'hidden', background: '#f9fafb', border: coverUrl ? 'none' : '1.5px dashed #d1d5db' }}>
+                    {coverUrl ? (
+                      <>
+                        <img src={coverUrl} alt="Cover" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                        {/* Dimension badge on existing cover */}
+                        <div style={{
+                          position: 'absolute', bottom: '10px', right: '10px',
+                          background: 'rgba(0,0,0,0.55)', backdropFilter: 'blur(6px)',
+                          color: 'white', fontSize: '0.68rem', fontWeight: 700,
+                          padding: '0.25rem 0.6rem', borderRadius: '6px',
+                          letterSpacing: '0.04em', pointerEvents: 'none',
+                        }}>
+                          1920 × 1080 — 16:9
+                        </div>
+                      </>
+                    ) : (
+                      /* Empty state — dimension guide */
+                      <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', padding: '1.5rem' }}>
+                        {/* Aspect ratio visual */}
+                        <div style={{ position: 'relative', width: '120px', height: '67.5px', border: '2px dashed #d1d5db', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <span style={{ fontSize: '0.65rem', fontWeight: 700, color: '#9ca3af', letterSpacing: '0.04em' }}>16 : 9</span>
+                          {/* Corner ticks */}
+                          {[['0','0'],['0','auto'],['auto','0'],['auto','auto']].map(([t,b], i) => (
+                            <span key={i} style={{ position: 'absolute', top: t === '0' ? '-1px' : 'auto', bottom: b === '0' ? '-1px' : 'auto', left: i < 2 ? '-1px' : 'auto', right: i >= 2 ? '-1px' : 'auto', width: '8px', height: '8px', borderTop: (t === '0') ? '2px solid #9ca3af' : 'none', borderBottom: (b === '0') ? '2px solid #9ca3af' : 'none', borderLeft: (i < 2) ? '2px solid #9ca3af' : 'none', borderRight: (i >= 2) ? '2px solid #9ca3af' : 'none' }} />
+                          ))}
+                        </div>
+                        <div style={{ textAlign: 'center' }}>
+                          <p style={{ fontSize: '0.8rem', fontWeight: 700, color: '#374151', margin: 0 }}>1920 × 1080 px recommended</p>
+                          <p style={{ fontSize: '0.72rem', color: '#9ca3af', marginTop: '0.2rem' }}>16:9 landscape · JPG, PNG, or WebP · max 5 MB</p>
+                          <p style={{ fontSize: '0.7rem', color: '#b3b3b3', marginTop: '0.15rem' }}>This appears as your profile banner</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Actions row */}
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem' }}>
+                    <p style={{ fontSize: '0.72rem', color: '#6b7280', lineHeight: 1.5, margin: 0 }}>
+                      Shown at the top of your public profile page.{' '}
+                      <span style={{ color: '#9ca3af' }}>Best at 1920 × 1080 (16:9).</span>
+                    </p>
                     <ImageUpload
-                      label={coverUrl ? "Change Cover" : "Upload Cover"}
+                      label={coverUrl ? 'Change Cover' : 'Upload Cover'}
                       folder="covers"
                       value={coverUrl}
                       onUploaded={url => setCoverUrl(url)}

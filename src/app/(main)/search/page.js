@@ -32,9 +32,9 @@ function SearchResults() {
   const [page, setPage]             = useState(1);
   const [hasMore, setHasMore]       = useState(false);
   const [loadingProjects, setLoadingProjects] = useState(false);
-  // --- creators ---
-  const [creators, setCreators]     = useState([]);
-  const [loadingCreators, setLoadingCreators] = useState(false);
+  // --- designers ---
+  const [designers, setDesigners]     = useState([]);
+  const [loadingDesigners, setLoadingDesigners] = useState(false);
   const [currentUserId, setCurrentUserId] = useState(null);
   const supabase = createClient();
 
@@ -70,11 +70,11 @@ function SearchResults() {
     search();
   }, [query, category, sort, page, tab]);
 
-  // Search creators
+  // Search designers — fixed N+1: one batch query instead of per-designer queries
   useEffect(() => {
-    if (!query.trim() || tab !== 'creators') return;
-    async function searchCreators() {
-      setLoadingCreators(true);
+    if (!query.trim() || tab !== 'designers') return;
+    async function searchDesigners() {
+      setLoadingDesigners(true);
       const { data } = await supabase
         .from('profiles')
         .select('id, username, full_name, avatar_url, bio, location, followers_count')
@@ -83,25 +83,36 @@ function SearchResults() {
         .order('followers_count', { ascending: false, nullsFirst: false })
         .limit(24);
 
-      // Fetch sample projects for each creator
-      const withProjects = await Promise.all(
-        (data || []).map(async (creator) => {
-          const { data: projects } = await supabase
-            .from('projects')
-            .select('id, cover_url')
-            .eq('user_id', creator.id)
-            .eq('published', true)
-            .limit(3);
-          return { ...creator, sampleProjects: projects || [] };
-        })
-      );
-      setCreators(withProjects);
-      setLoadingCreators(false);
+      const creatorList = data || [];
+
+      if (creatorList.length === 0) {
+        setDesigners([]);
+        setLoadingDesigners(false);
+        return;
+      }
+
+      // Batch fetch all covers in ONE query — no more N+1
+      const { data: allCovers } = await supabase
+        .from('projects')
+        .select('user_id, cover_url')
+        .in('user_id', creatorList.map(c => c.id))
+        .eq('published', true)
+        .order('created_at', { ascending: false });
+
+      // Group by user_id, max 3 per creator
+      const coversByUser = {};
+      (allCovers || []).forEach(p => {
+        if (!coversByUser[p.user_id]) coversByUser[p.user_id] = [];
+        if (coversByUser[p.user_id].length < 3) coversByUser[p.user_id].push(p);
+      });
+
+      setDesigners(creatorList.map(c => ({ ...c, sampleProjects: coversByUser[c.id] || [] })));
+      setLoadingDesigners(false);
     }
-    searchCreators();
+    searchDesigners();
   }, [query, tab]);
 
-  const loading = tab === 'projects' ? loadingProjects : loadingCreators;
+  const loading = tab === 'projects' ? loadingProjects : loadingDesigners;
 
   return (
     <div>
@@ -111,7 +122,7 @@ function SearchResults() {
           <div style={{ display: 'flex', gap: 0, marginBottom: '1.5rem', borderBottom: '1px solid #e2e8f0' }}>
             {[
               { id: 'projects', label: 'Projects', icon: FolderOpen, count: total },
-              { id: 'creators', label: 'Creators', icon: Users2 },
+              { id: 'designers', label: 'Designers', icon: Users2 },
             ].map(t => (
               <button
                 key={t.id}
@@ -176,7 +187,7 @@ function SearchResults() {
             <Search size={36} style={{ color: '#d1d5db', marginBottom: '1rem' }} />
             <p style={{ fontWeight: 800, fontSize: '1.1rem', marginBottom: '0.4rem', color: '#0a0a0a' }}>Search Desayner</p>
             <p style={{ color: '#9b9b9b', fontSize: '0.875rem', lineHeight: 1.6 }}>
-              Find inspiring projects, talented creators, and premium resources shared by the community.
+              Find inspiring projects, talented designers, and premium resources shared by the community.
             </p>
           </div>
         )}
@@ -218,25 +229,25 @@ function SearchResults() {
           </>
         )}
 
-        {/* CREATORS RESULTS */}
-        {tab === 'creators' && query && (
+        {/* DESIGNERS RESULTS */}
+        {tab === 'designers' && query && (
           <>
-            {loadingCreators ? (
+            {loadingDesigners ? (
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '4px' }}>
                 {[...Array(6)].map((_, i) => <div key={i} style={{ background: '#f0f0f0', height: '200px' }} />)}
               </div>
-            ) : creators.length === 0 ? (
+            ) : designers.length === 0 ? (
               <div style={{ textAlign: 'center', padding: '4rem 2rem', background: 'white', border: '1px solid #e2e8f0', borderRadius: '16px' }}>
                 <Users2 size={36} color="#d1d5db" style={{ marginBottom: '1rem', margin: '0 auto 1rem' }} />
-                <p style={{ fontWeight: 800, fontSize: '1.2rem', marginBottom: '0.4rem' }}>No creators found for &quot;{query}&quot;</p>
+                <p style={{ fontWeight: 800, fontSize: '1.2rem', marginBottom: '0.4rem' }}>No designers found for &quot;{query}&quot;</p>
                 <p style={{ color: '#6b7280', fontSize: '0.9rem' }}>Try a different name or username.</p>
-                <Link href="/creators" className="btn" style={{ display: 'inline-block', marginTop: '1.5rem', padding: '0.6rem 1.25rem', fontSize: '0.85rem', background: '#0a0a0a', color: 'white', fontWeight: 700, textDecoration: 'none' }}>
-                  Explore All Creators
+                <Link href="/designers" className="btn" style={{ display: 'inline-block', marginTop: '1.5rem', padding: '0.6rem 1.25rem', fontSize: '0.85rem', background: '#0a0a0a', color: 'white', fontWeight: 700, textDecoration: 'none' }}>
+                  Explore All Designers
                 </Link>
               </div>
             ) : (
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '4px' }}>
-                {creators.map(creator => (
+                {designers.map(creator => (
                   <div key={creator.id} style={{ background: 'white', border: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
                     {/* Thumbnail strip */}
                     <Link href={`/profile/${creator.username}`} style={{ display: 'block', textDecoration: 'none' }}>

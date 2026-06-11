@@ -15,11 +15,20 @@ export default function SignupForm({ isModal = false }) {
   const [loading, setLoading]   = useState(false);
   const [error, setError]       = useState('');
   const [success, setSuccess]   = useState(false);
+  const [botTrap, setBotTrap]   = useState('');
 
   async function handleSignup(e) {
     e.preventDefault();
     setLoading(true);
     setError('');
+
+    // Anti-bot honeypot check: If the hidden field is filled out, silently reject it
+    if (botTrap) {
+      // Fake success to fool the bot
+      setSuccess(true);
+      setLoading(false);
+      return;
+    }
 
     const supabase = createClient();
     const { error } = await supabase.auth.signUp({
@@ -117,6 +126,21 @@ export default function SignupForm({ isModal = false }) {
 
         {/* Signup Form */}
         <form onSubmit={handleSignup} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          
+          {/* HONEYPOT FIELD - Invisible to users, bots will fill this out */}
+          <div style={{ position: 'absolute', left: '-9999px', opacity: 0 }} aria-hidden="true">
+            <label htmlFor="website_url">Website URL</label>
+            <input 
+              type="text" 
+              id="website_url" 
+              name="website_url" 
+              tabIndex={-1} 
+              autoComplete="off"
+              value={botTrap}
+              onChange={e => setBotTrap(e.target.value)}
+            />
+          </div>
+
           <div>
             <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#374151', marginBottom: '0.5rem' }}>Full Name</label>
             <input

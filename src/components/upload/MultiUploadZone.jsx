@@ -227,11 +227,11 @@ export default function MultiUploadZone({ folder = 'uploads', value = [], onResu
 
       {/* Existing uploaded items from parent */}
       {(value?.length > 0 || allItems.length > 0) && (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem', marginBottom: '0.75rem' }}>
+        <div className="gallery-upload-masonry" style={{ marginBottom: '0.75rem' }}>
           {/* Parent-controlled items */}
           {value.map((url, i) => (
-            <div key={url} style={{ position: 'relative', aspectRatio: '4/3', background: '#f0f0f0', overflow: 'hidden', borderRadius: '6px' }}>
-              <img src={url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} loading="lazy" decoding="async" />
+            <div key={url} className="gallery-upload-item" style={{ position: 'relative', background: '#f0f0f0', overflow: 'hidden', borderRadius: '6px' }}>
+              <img src={url} alt="" style={{ width: '100%', height: 'auto', display: 'block' }} loading="lazy" decoding="async" />
               <button
                 type="button"
                 onClick={() => onRemove?.(i)}
@@ -244,10 +244,10 @@ export default function MultiUploadZone({ folder = 'uploads', value = [], onResu
 
           {/* In-flight / done items */}
           {allItems.map((item) => (
-            <div key={item.id} style={{ position: 'relative', aspectRatio: '4/3', background: '#f0f0f0', overflow: 'hidden', borderRadius: '6px' }}>
+            <div key={item.id} className="gallery-upload-item" style={{ position: 'relative', background: '#f0f0f0', overflow: 'hidden', borderRadius: '6px' }}>
               {/* Instant preview */}
               {item.previewUrl && (
-                <img src={item.previewUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: item.status === 'done' ? 1 : 0.4, transition: 'opacity 0.3s' }} />
+                <img src={item.previewUrl} alt="" style={{ width: '100%', height: 'auto', display: 'block', opacity: item.status === 'done' ? 1 : 0.4, transition: 'opacity 0.3s' }} />
               )}
 
               {/* Overlay for in-progress */}

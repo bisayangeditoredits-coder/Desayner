@@ -109,10 +109,10 @@ export async function GET(request) {
       });
     }
 
-    // 4. Save first page responses to Redis cache for 10 seconds
+    // 4. Save first page responses to Redis cache for 60 seconds
     if (!cursor) {
       try {
-        await redis.setex(cacheKey, 10, {
+        await redis.setex(cacheKey, 60, {
           inspirations: items,
           nextCursor,
           hasMore,
@@ -127,6 +127,8 @@ export async function GET(request) {
       nextCursor,
       hasMore,
       cached: false,
+    }, {
+      headers: { 'Cache-Control': 's-maxage=60, stale-while-revalidate=30' }
     });
 
   } catch (err) {

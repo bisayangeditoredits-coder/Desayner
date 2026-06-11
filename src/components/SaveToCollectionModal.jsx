@@ -78,6 +78,19 @@ export default function SaveToCollectionModal({ itemType = 'project', itemId, on
       await supabase.from('collection_items').delete().match({ collection_id: colId, [idColumn]: itemId });
     } else {
       await supabase.from('collection_items').insert({ collection_id: colId, [idColumn]: itemId });
+      
+      // Also sync to global saves table to trigger the saves_count increment
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const savesTable = itemType === 'resource' ? 'asset_saves' : itemType === 'inspiration' ? 'inspiration_saves' : 'project_saves';
+        const saveIdColumn = itemType === 'resource' ? 'asset_id' : itemType === 'inspiration' ? 'inspiration_id' : 'project_id';
+        
+        // Upsert to handle if it's already saved globally
+        await supabase.from(savesTable).upsert(
+          { user_id: user.id, [saveIdColumn]: itemId },
+          { onConflict: `user_id, ${saveIdColumn}` }
+        );
+      }
     }
   }
 

@@ -9,6 +9,7 @@ import MultiUploadZone from '@/components/upload/MultiUploadZone';
 import Link from 'next/link';
 import { X, Plus, ArrowLeft } from 'lucide-react';
 import { CREATIVE_TOOLS } from '@/lib/constants';
+import { saveProjectModalReturn } from '@/lib/projectModalNav';
 import '../../../App.css';
 
 const CATEGORIES = ['Design', 'Illustration', 'Photography', 'Branding', '3D', 'Motion', 'UI/UX', 'Typography', 'Other'];
@@ -100,6 +101,7 @@ export default function NewProjectPage() {
     }).select().single();
 
     if (err) { setError(err.message); setSubmitting(false); return; }
+    saveProjectModalReturn();
     router.push(`/projects/${data.id}`);
   }
 

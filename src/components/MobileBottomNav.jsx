@@ -43,11 +43,11 @@ export default function MobileBottomNav() {
         <span className="mobile-nav-label">Explore</span>
       </Link>
       
-      <a href="/projects/new" className="mobile-nav-item-create" aria-label="Create New Project">
+      <Link href="/projects/new" className="mobile-nav-item-create" aria-label="Create New Project">
         <div className="create-icon-wrapper">
           <Plus size={20} strokeWidth={3} />
         </div>
-      </a>
+      </Link>
       
       <Link href="/community" className={`mobile-nav-item ${isActive('/community') ? 'active' : ''}`}>
         <Users size={20} strokeWidth={isActive('/community') ? 2.5 : 1.75} />

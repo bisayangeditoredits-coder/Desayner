@@ -37,8 +37,19 @@ export async function GET(request) {
               .eq('user_id', user.id)
               .in('project_id', projectIds);
 
+            const { data: savedList } = await supabase
+              .from('project_saves')
+              .select('project_id')
+              .eq('user_id', user.id)
+              .in('project_id', projectIds);
+
             const likedSet = new Set((likedList || []).map(l => l.project_id));
-            items.forEach(p => { p.user_liked = likedSet.has(p.id); });
+            const savedSet = new Set((savedList || []).map(l => l.project_id));
+            
+            items.forEach(p => { 
+              p.user_liked = likedSet.has(p.id); 
+              p.user_saved = savedSet.has(p.id);
+            });
           }
           return NextResponse.json({ projects: items, cached: true });
         }
@@ -83,20 +94,33 @@ export async function GET(request) {
         .eq('user_id', user.id)
         .in('project_id', projectIds);
 
+      const { data: savedList } = await supabase
+        .from('project_saves')
+        .select('project_id')
+        .eq('user_id', user.id)
+        .in('project_id', projectIds);
+
       const likedSet = new Set((likedList || []).map(l => l.project_id));
-      items.forEach(p => { p.user_liked = likedSet.has(p.id); });
+      const savedSet = new Set((savedList || []).map(l => l.project_id));
+      
+      items.forEach(p => { 
+        p.user_liked = likedSet.has(p.id); 
+        p.user_saved = savedSet.has(p.id);
+      });
     }
 
-    // 4. Cache first page responses to Redis cache for 5 seconds (reduced for freshness)
+    // 4. Cache first page responses to Redis for 60 seconds
     if (offset === 0) {
       try {
-        await redis.setex(cacheKey, 5, { projects: items });
+        await redis.setex(cacheKey, 60, { projects: items });
       } catch (err) {
         console.error('[Redis Cache SET Error]', err);
       }
     }
 
-    return NextResponse.json({ projects: items, cached: false });
+    return NextResponse.json({ projects: items, cached: false }, {
+      headers: { 'Cache-Control': 's-maxage=60, stale-while-revalidate=30' }
+    });
 
   } catch (err) {
     console.error('[GET /api/projects Error]:', err);

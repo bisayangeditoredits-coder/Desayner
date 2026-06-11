@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 import Image from 'next/image';
 import {
   Home, FolderOpen, Users, Users2, Bookmark, Plus, Settings,
-  LogOut, ChevronDown, ChevronUp, Library, MessageSquare, Briefcase, ShoppingBag, Box, PlaySquare, Compass, Sparkles
+  LogOut, ChevronDown, ChevronUp, Library, MessageSquare, Briefcase, ShoppingBag, Box, PlaySquare, Compass, MessageSquareCode
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import UserAvatar from './UserAvatar';
@@ -22,7 +22,7 @@ const PROJECT_SUB_ITEMS = [
 ];
 
 const COMMUNITY_ITEMS = [
-  { href: '/creators',     icon: Users2,        label: 'Creators',    public: true },
+  { href: '/designers',    icon: Users2,        label: 'Designers',   public: true },
   { href: '/community',    icon: Users,         label: 'Community',   public: true },
   { href: '/resources',    icon: Library,       label: 'Resources',   public: true },
 ];
@@ -77,7 +77,6 @@ export default function Sidebar({ className = '' }) {
   }
 
   function isActive(href) {
-    if (href === '/dashboard') return pathname === '/dashboard';
     return pathname.startsWith(href);
   }
 
@@ -99,13 +98,13 @@ export default function Sidebar({ className = '' }) {
 
       {/* Create button */}
       <div style={{ padding: '0.75rem 1rem' }}>
-        <a
+        <Link
           href="/projects/new"
           className="btn btn-primary"
           style={{ width: '100%', justifyContent: 'center', fontSize: '0.8rem', padding: '0.6rem', textDecoration: 'none' }}
         >
           <Plus size={15} strokeWidth={2.5} /> New Project
-        </a>
+        </Link>
       </div>
 
       {/* Nav */}
@@ -118,20 +117,14 @@ export default function Sidebar({ className = '' }) {
         ))}
 
         <Link 
-          href="/inspirations" 
-          className={`nav-item ${isActive('/inspirations') ? 'active' : ''}`}
+          href="/feedback" 
+          className={`nav-item ${isActive('/feedback') ? 'active' : ''}`}
         >
-          <Sparkles size={16} strokeWidth={isActive('/inspirations') ? 2.5 : 1.75} />
-          Inspirations
+          <MessageSquareCode size={16} strokeWidth={isActive('/feedback') ? 2.5 : 1.75} />
+          Feedback
         </Link>
 
-        <Link 
-          href="/collections" 
-          className={`nav-item ${isActive('/collections') ? 'active' : ''}`}
-        >
-          <Bookmark size={16} strokeWidth={isActive('/collections') ? 2.5 : 1.75} />
-          Collections
-        </Link>
+
 
         {/* Collapsible Projects */}
         <div className={`nav-item ${pathname.startsWith('/projects') ? 'active' : ''}`} style={{ paddingRight: '0' }}>

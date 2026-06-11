@@ -59,7 +59,7 @@ BEGIN
   
   RETURN COALESCE(new_count, 0);
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- Create similar function for inspirations
 CREATE OR REPLACE FUNCTION increment_inspiration_view(i_id UUID)
@@ -74,7 +74,7 @@ BEGIN
   
   RETURN COALESCE(new_count, 0);
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- 5. GRANT permissions (for RLS compatibility)
 GRANT EXECUTE ON FUNCTION increment_project_view TO authenticated, anon;

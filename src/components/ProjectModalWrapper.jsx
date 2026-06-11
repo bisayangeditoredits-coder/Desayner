@@ -4,17 +4,23 @@ import { useCallback, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { consumeProjectModalReturn } from '@/lib/projectModalNav';
 
 export default function ProjectModalWrapper({ children }) {
   const router = useRouter();
 
   const onDismiss = useCallback(() => {
+    // In Next.js App Router, router.replace to the background URL is a no-op.
+    // The reliable way to close an intercepted modal is router.back().
     router.back();
   }, [router]);
 
   useEffect(() => {
     const onKeyDown = (e) => {
-      if (e.key === 'Escape') onDismiss();
+      if (e.key !== 'Escape') return;
+      // Skip if a nested modal (e.g. Save to Collection) is open
+      if (document.querySelector('[role="dialog"][aria-modal="true"]')) return;
+      onDismiss();
     };
     document.addEventListener('keydown', onKeyDown);
     return () => document.removeEventListener('keydown', onKeyDown);
@@ -46,6 +52,7 @@ export default function ProjectModalWrapper({ children }) {
             border-radius: 0 !important;
           }
           .modal-close-btn {
+            position: fixed !important;
             top: 0.75rem !important;
             right: 0.75rem !important;
             background: rgba(0,0,0,0.4) !important;
@@ -68,33 +75,9 @@ export default function ProjectModalWrapper({ children }) {
           alignItems: 'center',
           backgroundColor: 'rgba(15, 23, 42, 0.8)', // Deep slate overlay
           backdropFilter: 'blur(8px)',
-          overflowY: 'auto'
         }}
         onClick={onDismiss}
       >
-        <div className="modal-close-btn" style={{ position: 'absolute', zIndex: 1000 }}>
-          <button
-            onClick={onDismiss}
-            style={{
-              background: 'rgba(255, 255, 255, 0.1)',
-              border: 'none',
-              borderRadius: '50%',
-              width: '40px',
-              height: '40px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: 'pointer',
-              color: 'white',
-              transition: 'background 0.2s',
-            }}
-            onMouseOver={(e) => (e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)')}
-            onMouseOut={(e) => (e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)')}
-          >
-            <X size={24} />
-          </button>
-        </div>
-
         <motion.div
           className="modal-content"
           initial={{ y: 20, opacity: 0, scale: 0.95 }}
@@ -114,6 +97,33 @@ export default function ProjectModalWrapper({ children }) {
             {children}
           </div>
         </motion.div>
+
+        <div
+          className="modal-close-btn"
+          style={{ position: 'fixed', zIndex: 100000, top: '1.5rem', right: '2rem' }}
+        >
+          <button
+            onClick={(e) => { e.stopPropagation(); onDismiss(); }}
+            style={{
+              background: 'rgba(255, 255, 255, 0.15)',
+              border: '1px solid rgba(255,255,255,0.25)',
+              borderRadius: '50%',
+              width: '40px',
+              height: '40px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              color: 'white',
+              transition: 'background 0.2s',
+            }}
+            onMouseOver={(e) => (e.currentTarget.style.background = 'rgba(255, 255, 255, 0.3)')}
+            onMouseOut={(e) => (e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)')}
+            aria-label="Close"
+          >
+            <X size={22} />
+          </button>
+        </div>
       </motion.div>
     </AnimatePresence>
   </>

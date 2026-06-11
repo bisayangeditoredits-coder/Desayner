@@ -1,15 +1,17 @@
 'use client';
 import { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { Heart, Eye } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import UserAvatar from './UserAvatar';
-import ProgressiveImage from './ProgressiveImage';
 
 export default function InspirationCard({ inspiration, currentUserId, onClick }) {
   const [liked, setLiked]         = useState(inspiration.user_liked || false);
   const [likesCount, setLikesCount] = useState(inspiration.likes_count || 0);
   const [viewsCount, setViewsCount] = useState(inspiration.views_count || 0);
+  // 'loading' | 'loaded' | 'error'
+  const [imgStatus, setImgStatus] = useState('loading');
   const supabase = createClient();
   const router   = useRouter();
 
@@ -82,14 +84,21 @@ export default function InspirationCard({ inspiration, currentUserId, onClick })
   return (
     <div className="inspirations-card-wrapper">
       <div className="inspiration-card" onClick={handleCardClick}>
-        <div className="inspiration-image-wrap">
-          <img
-            src={inspiration.thumbnail_url || inspiration.image_url}
-            alt={inspiration.title || 'Inspiration'}
-            loading="lazy"
-            decoding="async"
-            className="inspiration-img"
-          />
+        <div className={`inspiration-image-wrap inspiration-image-wrap--${imgStatus}`}>
+          {imgStatus !== 'error' ? (
+              <Image
+              src={inspiration.cover_url || inspiration.thumbnail_url || inspiration.image_url}
+              alt={inspiration.title || 'Inspiration'}
+              className="inspiration-img"
+              width={600}
+              height={450}
+              sizes="(max-width: 480px) 100vw, (max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
+              onLoad={() => setImgStatus('loaded')}
+              onError={() => setImgStatus('error')}
+            />
+          ) : (
+            <div style={{ width: '100%', aspectRatio: '4/3', background: '#1a1a1a' }} />
+          )}
           <div className="inspiration-overlay">
             <div className="inspiration-overlay-top">
               <button

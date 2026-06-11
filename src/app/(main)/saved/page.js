@@ -121,12 +121,12 @@ export default function SavedPage() {
                   {savedPosts.map(post => (
                     <div key={post.id} className="post-card">
                       <div style={{ display: 'flex', gap: '0.75rem' }}>
-                        <Link href={`/profile/${post.profiles?.username}`}>
+                        <Link href={post.profiles?.username ? `/profile/${post.profiles.username}` : '#'}>
                           <UserAvatar src={post.profiles?.avatar_url} name={post.profiles?.full_name || post.profiles?.username} size={36} />
                         </Link>
                         <div style={{ flex: 1, minWidth: 0 }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.4rem' }}>
-                            <Link href={`/profile/${post.profiles?.username}`} style={{ fontWeight: 700, fontSize: '0.875rem', color: '#0a0a0a' }}>
+                            <Link href={post.profiles?.username ? `/profile/${post.profiles.username}` : '#'} style={{ fontWeight: 700, fontSize: '0.875rem', color: '#0a0a0a' }}>
                               {post.profiles?.full_name || post.profiles?.username}
                             </Link>
                             <span style={{ fontSize: '0.72rem', color: '#9b9b9b' }}>{timeAgo(post.created_at)}</span>

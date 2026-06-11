@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import ProjectCard from '@/components/ProjectCard';
 import TagPill from '@/components/TagPill';
@@ -90,8 +90,10 @@ export default function ProjectsPage() {
           top: '56px',
           zIndex: 100,
           background: 'var(--primary-bg, #f1f5f9)',
-          padding: '1.5rem 0 1rem',
-          marginTop: '-1.5rem',
+          padding: '1.5rem 1.5rem 1rem',
+          marginTop: '-0.5rem',
+          marginLeft: '-1.5rem',
+          marginRight: '-1.5rem',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center'
@@ -100,20 +102,31 @@ export default function ProjectsPage() {
             <h1 className="page-title" style={{ fontSize: '1.5rem', fontWeight: 800 }}>Projects</h1>
             <p style={{ fontSize: '0.85rem', color: '#9b9b9b', marginTop: '0.25rem' }}>Discover work from the community</p>
           </div>
-          <a href="/projects/new" className="btn btn-dark" style={{ borderRadius: '8px', textDecoration: 'none' }}>
+          <Link href="/projects/new" className="btn btn-dark" style={{ borderRadius: '8px', textDecoration: 'none' }}>
             <Plus size={14} strokeWidth={2.5} />
             <span className="btn-text-responsive">New Project</span>
-          </a>
+          </Link>
         </div>
 
         <div style={{
+          position: 'sticky',
+          top: 'calc(56px + 72px)',
+          zIndex: 99,
           display: 'flex',
           gap: '0.4rem',
           overflowX: 'auto',
-          paddingBottom: '0.5rem',
+          paddingBottom: '0.75rem',
+          paddingTop: '0.5rem',
           marginBottom: '1.25rem',
+          marginLeft: '-1.5rem',
+          marginRight: '-1.5rem',
+          paddingLeft: '1.5rem',
+          paddingRight: '1.5rem',
           scrollbarWidth: 'none',
-          msOverflowStyle: 'none'
+          msOverflowStyle: 'none',
+          background: 'rgba(241, 245, 249, 0.92)',
+          backdropFilter: 'blur(8px)',
+          WebkitBackdropFilter: 'blur(8px)',
         }} className="category-scroll-container">
           {CATEGORIES.map(cat => (
             <TagPill
@@ -142,15 +155,16 @@ export default function ProjectsPage() {
           </div>
         ) : (
           <>
-            {projects.map((chunk, chunkIndex) => (
-              <VirtualGridPage
-                key={`page-${chunkIndex}`}
-                projects={chunk}
-                currentUserId={currentUserId}
-                isLastPage={chunkIndex === projects.length - 1}
-                lastElementRef={lastElementRef}
-              />
-            ))}
+            <div className="projects-masonry">
+              {projects.flat().map((project, index, arr) => {
+                const isLast = index === arr.length - 1;
+                return (
+                  <div key={project.id} ref={isLast ? lastElementRef : null} style={{ width: '100%', minWidth: 0, breakInside: 'avoid' }}>
+                    <ProjectCard project={project} currentUserId={currentUserId} />
+                  </div>
+                );
+              })}
+            </div>
 
             {isLoadingMore && (
               <div style={{ textAlign: 'center', padding: '2rem 0', color: '#9b9b9b', fontSize: '0.875rem' }}>
