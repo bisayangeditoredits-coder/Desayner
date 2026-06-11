@@ -182,41 +182,46 @@ export default function ProjectDetailClient({ isModal = false }) {
   const [showDeleteModal,setShowDeleteModal] = useState(false);
 
   const load = useCallback(async () => {
-    // 1. Fetch current user
-    const { data: { user } } = await supabase.auth.getUser();
+    // Run user auth + project fetch + comments in parallel
+    const [authResult, projResult, commsResult] = await Promise.all([
+      supabase.auth.getUser(),
+      supabase
+        .from('projects')
+        .select(`
+          *,
+          profiles!projects_user_id_fkey(
+            id, username, full_name, avatar_url,
+            bio, followers_count, projects_count, website
+          )
+        `)
+        .eq('id', id)
+        .single(),
+      supabase
+        .from('project_comments')
+        .select('*, profiles(username, full_name, avatar_url)')
+        .eq('project_id', id)
+        .order('created_at', { ascending: true }),
+    ]);
+
+    const user = authResult.data?.user || null;
+
+    // Set user + profile in parallel
     if (user) {
       setCurrentUser(user);
-      const { data: profile } = await supabase
-        .from('profiles').select('*').eq('id', user.id).single();
-      if (profile) setCurrentProfile(profile);
+      // Fetch profile without blocking — fire and forget from UI perspective
+      supabase
+        .from('profiles').select('*').eq('id', user.id).single()
+        .then(({ data: profile }) => { if (profile) setCurrentProfile(profile); });
     }
 
-    // 2. Fetch project with author profile
-    const { data: proj } = await supabase
-      .from('projects')
-      .select(`
-        *,
-        profiles!projects_user_id_fkey(
-          id, username, full_name, avatar_url,
-          bio, followers_count, projects_count, website
-        )
-      `)
-      .eq('id', id)
-      .single();
-
+    const proj = projResult.data;
     if (!proj) { setLoading(false); return; }
     setProject(proj);
     setLikeCount(proj.likes_count || 0);
 
-    // 3. Fetch comments
-    const { data: comms } = await supabase
-      .from('project_comments')
-      .select('*, profiles(username, full_name, avatar_url)')
-      .eq('project_id', id)
-      .order('created_at', { ascending: true });
-    setComments(comms || []);
+    setComments(commsResult.data || []);
 
-    // 4. Fetch interaction state for logged-in user
+    // Fetch interaction state only if user is logged in
     if (user) {
       const [likeRes, followRes] = await Promise.all([
         supabase.from('project_likes').select('user_id')
@@ -228,7 +233,7 @@ export default function ProjectDetailClient({ isModal = false }) {
       setIsFollowing(!!followRes.data);
     }
     
-    // 5. Track view
+    // Track view — fire and forget, don't block render
     fetch('/api/view', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

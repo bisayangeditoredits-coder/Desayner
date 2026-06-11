@@ -47,13 +47,13 @@ export async function POST(req) {
       rateLimitKey = `view_${projectId}_ip_${ip}`;
     }
     
-    // Prevent spamming views (rate limited to 1 view per 5 seconds instead of 1 hour for testing)
+    // Prevent spamming views — 1 view per user/IP per hour per project
     const hasViewed = await redis.get(rateLimitKey);
     if (hasViewed) {
       return NextResponse.json({ success: true, cached: true });
     }
     
-    await redis.setex(rateLimitKey, 5, '1');
+    await redis.setex(rateLimitKey, 3600, '1'); // 1 hour
 
     // Increment views atomically using the RPC function created in the migration
     const { data, error } = await supabase
@@ -64,9 +64,12 @@ export async function POST(req) {
       return NextResponse.json({ success: false, error: error.message }, { status: 500 });
     }
 
-    // Invalidate cache for this project
+    // Invalidate first-page project feed caches (exact keys only — Redis DEL does not support globs)
     try {
-      await redis.del(`projects:All:*`, `projects:*`);
+      await redis.del(
+        'projects:All:24:0',
+        'trending_projects_top_10'
+      );
     } catch (cacheErr) {
       console.warn('Cache invalidation failed:', cacheErr);
     }

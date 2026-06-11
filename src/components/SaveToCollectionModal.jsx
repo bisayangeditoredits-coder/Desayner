@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { Plus, Folder, Check } from 'lucide-react';
 import Modal from './Modal';
@@ -10,7 +10,8 @@ export default function SaveToCollectionModal({ itemType = 'project', itemId, on
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [savedTo, setSavedTo] = useState({});
-  const supabase = createClient();
+  const [error, setError] = useState('');
+  const supabase = useMemo(() => createClient(), []);
 
   useEffect(() => {
     async function load() {
@@ -25,7 +26,7 @@ export default function SaveToCollectionModal({ itemType = 'project', itemId, on
 
       if (error) {
         console.error('Error fetching collections:', error);
-        alert('Error loading collections: ' + error.message);
+        setError('Failed to load collections. Please try again.');
       }
 
         const parsedCols = (cols || []).map(c => {
@@ -60,7 +61,7 @@ export default function SaveToCollectionModal({ itemType = 'project', itemId, on
       .single();
 
     if (error) {
-      alert('Error creating collection: ' + error.message);
+      setError('Could not create collection. Please try again.');
     } else if (data) {
       setCollections(prev => [{ ...data, hasItem: false }, ...prev]);
       setNewColName('');
@@ -121,6 +122,10 @@ export default function SaveToCollectionModal({ itemType = 'project', itemId, on
         {loading ? (
           <p style={{ color: 'var(--text-dim)', textAlign: 'center', fontSize: '0.85rem', margin: 0 }}>
             Loading collections…
+          </p>
+        ) : error ? (
+          <p style={{ color: '#ef4444', textAlign: 'center', fontSize: '0.85rem', margin: 0 }}>
+            {error}
           </p>
         ) : collections.length === 0 ? (
           <p style={{ color: 'var(--text-muted)', textAlign: 'center', fontSize: '0.85rem', margin: 0 }}>

@@ -13,11 +13,19 @@ export default function MobileBottomNav() {
   const supabase = createClient();
 
   useEffect(() => {
+    // Check sessionStorage first to avoid a DB fetch on every page navigation
+    const cached = typeof window !== 'undefined' && sessionStorage.getItem('mnav_profile');
+    if (cached) {
+      try { setProfile(JSON.parse(cached)); return; } catch {}
+    }
     async function load() {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
         const { data } = await supabase.from('profiles').select('username').eq('id', user.id).single();
-        if (data) setProfile(data);
+        if (data) {
+          setProfile(data);
+          sessionStorage.setItem('mnav_profile', JSON.stringify(data));
+        }
       }
     }
     load();

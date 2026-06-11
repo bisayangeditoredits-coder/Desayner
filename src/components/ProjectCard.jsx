@@ -1,5 +1,6 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
@@ -20,31 +21,14 @@ export default function ProjectCard({ project, currentUserId }) {
   const [showColModal, setShowColModal] = useState(false);
   // 'loading' | 'loaded' | 'error'
   const [imgStatus, setImgStatus] = useState('loading');
-  const supabase = createClient();
-  const router = require('next/navigation').useRouter();
 
-  // Listen for real-time updates to this project's counters
-  require('react').useEffect(() => {
-    if (!project.id) return;
-    const channel = supabase
-      .channel(`project-updates-${project.id}`)
-      .on(
-        'postgres_changes',
-        { event: 'UPDATE', schema: 'public', table: 'projects', filter: `id=eq.${project.id}` },
-        (payload) => {
-          if (payload.new) {
-            if (payload.new.views_count !== undefined) setViewCount(payload.new.views_count);
-            if (payload.new.likes_count !== undefined) setLikeCount(payload.new.likes_count);
-            if (payload.new.saves_count !== undefined) setSaveCount(payload.new.saves_count);
-          }
-        }
-      )
-      .subscribe();
+  // FIX: Memoize supabase client — don't create a new instance on every render
+  const supabase = useMemo(() => createClient(), []);
+  const router = useRouter();
 
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [project.id, supabase]);
+  // FIX: Removed per-card realtime Supabase subscription.
+  // Opening 1 WebSocket channel per card (up to 24+) floods the browser connection pool
+  // and burns Supabase realtime quota. Optimistic UI on like/save is sufficient for UX.
 
   async function handleLike(e) {
     e.preventDefault();

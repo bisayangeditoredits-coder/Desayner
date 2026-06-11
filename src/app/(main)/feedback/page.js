@@ -90,7 +90,7 @@ export default function FeedbackPage() {
   }, [mutate]);
 
   return (
-    <div className="page-content" style={{ padding: '1.5rem' }}>
+    <div className="page-content">
       <div className="feedback-container">
         {/* Header */}
         <div className="feedback-header" style={{

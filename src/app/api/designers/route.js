@@ -71,20 +71,27 @@ export async function GET(request) {
         .limit(4);
         
       if (risingData && risingData.length > 0) {
-        // Fetch sample projects for rising creators to use as banners
-        const risingWithProjects = await Promise.all(
-          risingData.map(async (creator) => {
-            const { data: projects } = await supabase
-              .from('projects')
-              .select('id, cover_url, thumbnail_url, title')
-              .eq('user_id', creator.id)
-              .eq('published', true)
-              .order('created_at', { ascending: false })
-              .limit(1);
-            return { ...creator, sampleProjects: projects || [] };
-          })
-        );
-        payload.risingDesigners = risingWithProjects;
+        // FIX: Single batch query instead of N+1 per-creator queries
+        const risingIds = risingData.map(c => c.id);
+        const { data: risingProjects } = await supabase
+          .from('projects')
+          .select('user_id, id, cover_url, thumbnail_url, title')
+          .in('user_id', risingIds)
+          .eq('published', true)
+          .order('created_at', { ascending: false });
+
+        // Group by user_id in JS (max 1 per rising creator)
+        const risingProjectsByUser = {};
+        (risingProjects || []).forEach(p => {
+          if (!risingProjectsByUser[p.user_id]) {
+            risingProjectsByUser[p.user_id] = p;
+          }
+        });
+
+        payload.risingDesigners = risingData.map(creator => ({
+          ...creator,
+          sampleProjects: risingProjectsByUser[creator.id] ? [risingProjectsByUser[creator.id]] : [],
+        }));
       } else {
         payload.risingDesigners = [];
       }
@@ -121,18 +128,29 @@ export async function GET(request) {
     const { data: gridCreators, error: gridError } = await query;
     if (gridError) throw gridError;
 
-    const creatorsWithProjects = await Promise.all(
-      (gridCreators || []).map(async (creator) => {
-        const { data: projects } = await supabase
-          .from('projects')
-          .select('id, cover_url, thumbnail_url, title, category')
-          .eq('user_id', creator.id)
-          .eq('published', true)
-          .order('created_at', { ascending: false })
-          .limit(5);
-        return { ...creator, sampleProjects: projects || [] };
-      })
-    );
+    // FIX: Single batch query for ALL creator thumbnails instead of N+1 per-creator queries
+    let creatorsWithProjects = [];
+    if ((gridCreators || []).length > 0) {
+      const gridIds = gridCreators.map(c => c.id);
+      const { data: allGridProjects } = await supabase
+        .from('projects')
+        .select('user_id, id, cover_url, thumbnail_url, title, category')
+        .in('user_id', gridIds)
+        .eq('published', true)
+        .order('created_at', { ascending: false });
+
+      // Group by user_id (max 5 per creator) in JavaScript
+      const projectsByUser = {};
+      (allGridProjects || []).forEach(p => {
+        if (!projectsByUser[p.user_id]) projectsByUser[p.user_id] = [];
+        if (projectsByUser[p.user_id].length < 5) projectsByUser[p.user_id].push(p);
+      });
+
+      creatorsWithProjects = gridCreators.map(creator => ({
+        ...creator,
+        sampleProjects: projectsByUser[creator.id] || [],
+      }));
+    }
 
     payload.designers = creatorsWithProjects;
 
