@@ -68,37 +68,15 @@ export default function Dashboard() {
         .then(data => setProjects(data.projects || []))
         .catch(err => console.error('Failed to fetch trending', err));
 
-      const postsPromise = supabase
-        .from('community_posts')
-        .select('*, profiles!community_posts_user_id_fkey(username, full_name, avatar_url)')
-        .order('created_at', { ascending: false })
-        .limit(20)
-        .then(({ data }) => setPosts(data || []));
+      const postsPromise = fetch('/api/community/recent')
+        .then(res => res.json())
+        .then(data => setPosts(data.posts || []))
+        .catch(err => console.error('Failed to fetch posts', err));
 
-      const usersPromise = supabase
-        .from('profiles')
-        .select('id, username, full_name, avatar_url, followers_count, projects_count, cover_url')
-        .order('followers_count', { ascending: false })
-        .limit(8)
-        .then(async ({ data }) => {
-           if (!data) return setSuggestedUsers([]);
-           
-           const userIds = data.map(u => u.id);
-           const { data: projectsData } = await supabase
-             .from('projects')
-             .select('user_id, cover_url, thumbnail_url')
-             .in('user_id', userIds)
-             .eq('published', true);
-
-           const processed = data.map(u => {
-             const userProj = (projectsData || []).find(p => p.user_id === u.id);
-             return {
-               ...u,
-               banner_url: u.cover_url || (userProj ? userProj.thumbnail_url || userProj.cover_url : null)
-             };
-           });
-           setSuggestedUsers(processed);
-        });
+      const usersPromise = fetch('/api/designers/top')
+        .then(res => res.json())
+        .then(data => setSuggestedUsers(data.designers || []))
+        .catch(err => console.error('Failed to fetch designers', err));
 
       await Promise.all([authPromise, trendingPromise, postsPromise, usersPromise]);
       setLoading(false);
