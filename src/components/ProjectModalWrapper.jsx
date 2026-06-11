@@ -46,9 +46,9 @@ export default function ProjectModalWrapper({ children }) {
             padding: 0 !important;
           }
           .modal-content {
-            width: 100vw !important;
-            max-height: 100vh !important;
-            height: 100vh !important;
+            width: 100% !important;
+            max-height: 100% !important;
+            height: 100% !important;
             border-radius: 0 !important;
           }
           .modal-close-btn {

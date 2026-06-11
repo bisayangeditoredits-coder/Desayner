@@ -2545,7 +2545,19 @@
 
   .project-detail__actions {
     flex-direction: row;
+    flex-wrap: wrap;
     flex: 1;
+  }
+}
+
+@media (max-width: 480px) {
+  .project-detail__title {
+    font-size: 1.8rem;
+    word-break: break-word;
+  }
+  .project-detail__actions button {
+    flex: 1;
+    min-width: 120px;
   }
 }
 
