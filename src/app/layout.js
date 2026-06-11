@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import "./messaging.css";
 import "./App.css";
+import PWAInstaller from "@/components/PWAInstaller";
 
 const montserrat = Montserrat({
   variable: "--font-montserrat",
@@ -49,18 +50,24 @@ export const metadata = {
     description: "Desayner is a premium platform for modern creators. Elevate your brand with professional visual storytelling.",
     images: ["https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=1200&q=80"],
   },
+  appleWebApp: {
+    title: "Desayner",
+    statusBarStyle: "default",
+  },
 };
 
 export const viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
+  themeColor: "#0009fa",
 };
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${montserrat.variable} ${raleway.variable} ${monigue.variable}`}>
       <body>
+        <PWAInstaller />
         {children}
       </body>
     </html>

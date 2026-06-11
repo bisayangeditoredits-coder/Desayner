@@ -30,9 +30,9 @@ const POST_TYPE_STYLES = {
 
 export default function Dashboard() {
   const banners = [
-    '/banner-event-homepage.jpeg',
-    '/banner-event-2.png',
-    '/banner-event-3.png'
+    '/banner-event-homepage.jpeg', // Ibinalik ang original event banner mo
+    'https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=2000&auto=format&fit=crop', // Geometric 3D (Non-copyright)
+    'https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=2000&auto=format&fit=crop'  // Vintage shapes (Non-copyright)
   ];
   const [currentBanner, setCurrentBanner] = useState(0);
 
@@ -164,18 +164,10 @@ export default function Dashboard() {
                       </Link>
                     </div>
 
-                    <div className="top-creators-grid hide-scrollbar" style={{
-                      display: 'flex',
-                      overflowX: 'auto',
-                      gap: '0.6rem', // Minimal spacing as requested
-                      paddingBottom: '0.75rem',
-                      WebkitOverflowScrolling: 'touch',
-                      scrollbarWidth: 'none',
-                      msOverflowStyle: 'none'
-                    }}>
+                    <div className="top-creators-grid swipe-grid-on-mobile hide-scrollbar">
                       {loading ? (
                         [...Array(8)].map((_, i) => (
-                          <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem', padding: '0.75rem', background: 'white', borderRadius: '12px', border: '1px solid #f0f0f0', width: '100px', minWidth: '100px', flexShrink: 0, height: '140px' }}>
+                          <div key={i} className="swipe-grid-item" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem', padding: '0.75rem', background: 'white', borderRadius: '12px', border: '1px solid #f0f0f0' }}>
                             <div className="shimmer-box" style={{ width: '48px', height: '48px', borderRadius: '50%' }} />
                             <div className="shimmer-box" style={{ width: '70px', height: '10px', borderRadius: '4px', marginTop: '0.25rem' }} />
                             <div className="shimmer-box" style={{ width: '50px', height: '8px', borderRadius: '4px' }} />
@@ -183,7 +175,7 @@ export default function Dashboard() {
                         ))
                       ) : (
                         suggestedUsers.map(creator => (
-                          <Link key={creator.id} href={`/profile/${creator.username}`} style={{
+                          <Link key={creator.id} href={`/profile/${creator.username}`} className="swipe-grid-item" style={{
                             position: 'relative',
                             display: 'flex',
                             flexDirection: 'column',
@@ -193,10 +185,6 @@ export default function Dashboard() {
                             background: '#111827',
                             border: '1px solid #e5e7eb',
                             borderRadius: '16px',
-                            width: '100px',
-                            minWidth: '100px',
-                            flexShrink: 0,
-                            height: '140px',
                             textDecoration: 'none',
                             transition: 'transform 0.2s, box-shadow 0.2s',
                             boxShadow: '0 2px 5px rgba(0,0,0,0.02)',
@@ -394,6 +382,19 @@ export default function Dashboard() {
           {/* Right sidebar */}
           <div className="right-sidebar-wrapper">
             <div style={{ position: 'sticky', top: 'calc(56px + 1.5rem)' }}>
+              <div style={{ padding: '1rem', background: '#f9f9f9', border: '1px solid #e8e8e8', marginBottom: '2rem' }}>
+                <p style={{ fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#6b6b6b', marginBottom: '0.75rem' }}>Quick Links</p>
+                {[
+                  { label: 'Explore Projects', href: '/projects' },
+                  { label: 'Community Feed', href: '/community' },
+                  { label: 'Saved Items', href: '/saved' },
+                ].map(item => (
+                  <Link key={item.href} href={item.href} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.5rem 0', fontSize: '0.8rem', color: '#0a0a0a', fontWeight: 500, borderBottom: '1px solid #f0f0f0' }}>
+                    {item.label} <ArrowRight size={12} color="#9b9b9b" />
+                  </Link>
+                ))}
+              </div>
+
               <div style={{ marginBottom: '0.75rem', paddingBottom: '0.75rem', borderBottom: '1px solid var(--glass-border)' }}>
                 <span style={{ fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#6b6b6b', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
                   <Users size={12} /> Who to follow
@@ -417,19 +418,6 @@ export default function Dashboard() {
                       compact
                     />
                   </div>
-                ))}
-              </div>
-
-              <div style={{ marginTop: '2rem', padding: '1rem', background: '#f9f9f9', border: '1px solid #e8e8e8' }}>
-                <p style={{ fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#6b6b6b', marginBottom: '0.75rem' }}>Quick Links</p>
-                {[
-                  { label: 'Explore Projects', href: '/projects' },
-                  { label: 'Community Feed', href: '/community' },
-                  { label: 'Saved Items', href: '/saved' },
-                ].map(item => (
-                  <Link key={item.href} href={item.href} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.5rem 0', fontSize: '0.8rem', color: '#0a0a0a', fontWeight: 500, borderBottom: '1px solid #f0f0f0' }}>
-                    {item.label} <ArrowRight size={12} color="#9b9b9b" />
-                  </Link>
                 ))}
               </div>
             </div>

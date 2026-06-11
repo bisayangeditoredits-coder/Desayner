@@ -10,8 +10,8 @@ import { Globe, MapPin, Calendar, MessageSquare, ExternalLink, Folder, ArrowLeft
 import { CREATIVE_TOOLS } from '@/lib/constants';
 import '../../../App.css';
 
-/** Small button that starts a conversation with a user */
-function MessageButton({ profileId }) {
+/** Prominent Hire Me button that opens a chat for job inquiries */
+function HireMeButton({ profileId }) {
   const router = useRouter();
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState('');
@@ -45,11 +45,17 @@ function MessageButton({ profileId }) {
       <button
         onClick={startChat}
         disabled={loading}
-        className="profile-pill-btn profile-pill-btn-outline"
-        style={{ cursor: loading ? 'wait' : 'pointer' }}
+        className="profile-pill-btn"
+        style={{ 
+          cursor: loading ? 'wait' : 'pointer', 
+          background: '#0009fa', 
+          color: 'white', 
+          borderColor: '#0009fa',
+          boxShadow: '0 4px 14px rgba(0, 9, 250, 0.3)'
+        }}
       >
         <MessageSquare size={13} />
-        {loading ? 'Opening…' : 'Message'}
+        {loading ? 'Connecting…' : 'Hire Me'}
       </button>
       {error && <span style={{ fontSize: '0.7rem', color: '#ef4444' }}>{error}</span>}
     </div>
@@ -191,7 +197,7 @@ export default function ProfilePage() {
                       initialFollowing={isFollowing}
                       compact={true}
                     />
-                    {currentUser && <MessageButton profileId={profile.id} />}
+                    {currentUser && <HireMeButton profileId={profile.id} />}
                   </>
                 )}
                 {profile.website && (
