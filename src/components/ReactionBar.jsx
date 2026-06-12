@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useMemo} from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 
@@ -9,7 +9,7 @@ export default function ReactionBar({ postId, currentUserId, initialReaction = n
   const [userReaction, setUserReaction] = useState(initialReaction);
   const [count, setCount] = useState(reactionsCount);
   const [showPicker, setShowPicker] = useState(false);
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
   const router = useRouter();
 
   async function react(emoji) {

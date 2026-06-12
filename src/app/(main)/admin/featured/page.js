@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo} from 'react';
 import { createClient } from '@/lib/supabase/client';
 import UploadZone from '@/components/upload/UploadZone';
 import UserAvatar from '@/components/UserAvatar';
@@ -23,7 +23,7 @@ export default function FeaturedAdminPage() {
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState('');
 
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
 
   useEffect(() => {
     async function checkAdmin() {

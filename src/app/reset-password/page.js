@@ -1,5 +1,5 @@
 'use client';
-import { useState, Suspense, useEffect } from 'react';
+import { useState, Suspense, useEffect, useMemo} from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
@@ -14,17 +14,17 @@ function ResetPasswordForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
+  const supabase = useMemo(() => createClient(), []);
 
   // Optional: check if user is actually authenticated
   useEffect(() => {
-    const supabase = createClient();
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (!user) {
         // If not authenticated, they shouldn't be here
         setError('You do not have a valid session to reset your password. Please request a new link.');
       }
     });
-  }, []);
+  }, [supabase]);
 
   async function handleUpdatePassword(e) {
     e.preventDefault();
@@ -40,7 +40,6 @@ function ResetPasswordForm() {
     setLoading(true);
     setError('');
 
-    const supabase = createClient();
     const { error } = await supabase.auth.updateUser({ password });
 
     if (error) {

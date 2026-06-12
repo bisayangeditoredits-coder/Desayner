@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import OnboardingModal from '@/components/OnboardingModal';
@@ -9,7 +9,7 @@ import OnboardingGuideModal from '@/components/OnboardingGuideModal';
 export default function OnboardingGuard({ children }) {
   const router = useRouter();
   const pathname = usePathname();
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
   const [checking, setChecking] = useState(true);
   const [needsOnboarding, setNeedsOnboarding] = useState(false);
   const [showGuide, setShowGuide] = useState(false);
@@ -49,7 +49,7 @@ export default function OnboardingGuard({ children }) {
     return () => {
       mounted = false;
     };
-  }, [pathname, router, supabase]);
+  }, [pathname, supabase]);
 
   if (checking) return null;
 
@@ -83,12 +83,6 @@ export default function OnboardingGuard({ children }) {
             setNeedsOnboarding(false);
             setShowGuide(true);
           }} />
-          <style>{`
-            @keyframes fadeIn {
-              from { opacity: 0; backdrop-filter: blur(0px); background: rgba(15, 23, 42, 0); }
-              to { opacity: 1; backdrop-filter: blur(8px); background: rgba(15, 23, 42, 0.8); }
-            }
-          `}</style>
         </div>
       )}
 

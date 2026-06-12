@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo} from "react";
 import { createClient } from "@/lib/supabase/client";
 import UserAvatar from "@/components/UserAvatar";
 import FollowButton from "@/components/FollowButton";
@@ -56,7 +56,7 @@ function DesignersContent() {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(false);
 
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
   const PAGE_SIZE = 24;
 
   useEffect(() => {

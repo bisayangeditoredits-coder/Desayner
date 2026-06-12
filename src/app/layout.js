@@ -1,24 +1,86 @@
-import { Montserrat, Raleway } from "next/font/google";
+import {
+  Montserrat,
+  Raleway,
+  Syne,
+  Plus_Jakarta_Sans,
+  Space_Grotesk,
+  DM_Serif_Display,
+  JetBrains_Mono,
+} from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
 import "./messaging.css";
 import "./App.css";
 import PWAInstaller from "@/components/PWAInstaller";
 
+// ── Existing fonts ────────────────────────────────────────────────────────────
+
 const montserrat = Montserrat({
   variable: "--font-montserrat",
   subsets: ["latin"],
+  display: "swap",
+  // Only load weights actually used in the app
+  weight: ["400", "500", "600", "700", "800"],
 });
 
 const raleway = Raleway({
   variable: "--font-raleway",
   subsets: ["latin"],
+  display: "swap",
+  weight: ["600", "700", "800", "900"],
 });
 
 const monigue = localFont({
   src: "../../public/Fonts/Monigue.otf",
   variable: "--font-monigue",
+  display: "swap",
 });
+
+// ── New curated fonts ─────────────────────────────────────────────────────────
+// All use next/font — self-hosted, zero external DNS, HTTP/2 pushed.
+// Only specific weights are downloaded so low-end devices aren't penalised.
+
+/** Display / Hero text — bold, editorial, design-forward */
+const syne = Syne({
+  variable: "--font-display",
+  subsets: ["latin"],
+  display: "swap",
+  weight: ["400", "600", "700", "800"],
+});
+
+/** Modern clean UI alternative to Montserrat — friendly and geometric */
+const plusJakartaSans = Plus_Jakarta_Sans({
+  variable: "--font-jakarta",
+  subsets: ["latin"],
+  display: "swap",
+  weight: ["400", "500", "600", "700"],
+});
+
+/** Labels, tags, category pills, navigation items — technical & compact */
+const spaceGrotesk = Space_Grotesk({
+  variable: "--font-grotesk",
+  subsets: ["latin"],
+  display: "swap",
+  weight: ["400", "500", "700"],
+});
+
+/** Elegant serif — for pull-quotes, featured text, creative contrast */
+const dmSerifDisplay = DM_Serif_Display({
+  variable: "--font-serif",
+  subsets: ["latin"],
+  display: "swap",
+  weight: ["400"],
+});
+
+/** Monospace — stats, numbers, code snippets, hex colour values */
+const jetbrainsMono = JetBrains_Mono({
+  variable: "--font-mono",
+  subsets: ["latin"],
+  display: "swap",
+  weight: ["400", "700"],
+});
+
+
 
 export const metadata = {
   metadataBase: new URL("https://desayner.com"),
@@ -65,7 +127,19 @@ export const viewport = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={`${montserrat.variable} ${raleway.variable} ${monigue.variable}`}>
+    <html
+      lang="en"
+      className={[
+        montserrat.variable,
+        raleway.variable,
+        monigue.variable,
+        syne.variable,
+        plusJakartaSans.variable,
+        spaceGrotesk.variable,
+        dmSerifDisplay.variable,
+        jetbrainsMono.variable,
+      ].join(' ')}
+    >
       <body>
         <PWAInstaller />
         {children}

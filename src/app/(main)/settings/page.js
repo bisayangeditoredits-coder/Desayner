@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo} from 'react';
 import { createClient } from '@/lib/supabase/client';
 import UserAvatar from '@/components/UserAvatar';
 import ImageUpload from '@/components/ImageUpload';
@@ -39,7 +39,7 @@ export default function SettingsPage() {
   const [newPass, setNewPass]     = useState('');
   const [authSaving, setAuthSaving] = useState(false);
   const [authMsg, setAuthMsg]   = useState('');
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
 
   useEffect(() => {
     async function load() {

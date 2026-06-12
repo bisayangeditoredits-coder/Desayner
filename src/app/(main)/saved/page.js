@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo} from 'react';
 import { createClient } from '@/lib/supabase/client';
 import ProjectCard from '@/components/ProjectCard';
 import InspirationCard from '@/components/InspirationCard';
@@ -23,7 +23,7 @@ export default function SavedPage() {
   const [savedInspirations, setSavedInspirations] = useState([]);
   const [currentUserId, setCurrentUserId] = useState(null);
   const [loading, setLoading]           = useState(true);
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
 
   useEffect(() => {
     async function load() {

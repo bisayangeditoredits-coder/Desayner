@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { createClient } from '@/lib/supabase/client';
 
 export default function RecoveryPage() {
@@ -10,7 +10,7 @@ export default function RecoveryPage() {
   const [restoring, setRestoring] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
 
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
 
   useEffect(() => {
     async function loadData() {

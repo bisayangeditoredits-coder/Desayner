@@ -1,11 +1,12 @@
 'use client';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useMemo } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import useToastStore from '@/store/useToastStore';
 
 export default function RealtimeNotifier() {
   const addToast = useToastStore((state) => state.addToast);
-  const supabase = createClient();
+  // Stable client instance — prevents new WebSocket on every render
+  const supabase = useMemo(() => createClient(), []);
   const channelsRef = useRef([]);
 
   useEffect(() => {

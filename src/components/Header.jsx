@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { 
@@ -66,7 +66,8 @@ export default function Header() {
   const searchRef   = useRef(null);
   const notifRef    = useRef(null);
   const debounceRef = useRef(null);
-  const supabase    = createClient();
+  // Stable client instance — not recreated on every render
+  const supabase    = useMemo(() => createClient(), []);
   const router     = useRouter();
   const { isMobileMenuOpen, setIsMobileMenuOpen } = useMobileNav();
 
@@ -111,8 +112,8 @@ export default function Header() {
       if (!mounted) return;
       setAuthLoaded(true);
 
-      // Realtime listeners
-      sub = supabase.channel(`header_badges_${user.id}_${Date.now()}`)
+      // Realtime listeners — stable channel name (no Date.now) to prevent leaks on remount
+      sub = supabase.channel(`header_badges_${user.id}`)
         .on('postgres_changes', { event: '*', schema: 'public', table: 'notifications' }, fetchBadges)
         .on('postgres_changes', { event: '*', schema: 'public', table: 'conversation_members' }, fetchBadges)
         .subscribe();
@@ -125,19 +126,20 @@ export default function Header() {
     };
   }, []);
 
-  // Debounced live search
+  // Debounced live search — routed through /api/search so it uses the FTS index + Redis cache
   const liveSearch = useCallback(async (q) => {
     if (!q.trim()) { setResults([]); setDropdownOpen(false); return; }
     setSearching(true);
-    const { data } = await supabase
-      .from('projects')
-      .select('id, title, cover_url, category, profiles!projects_user_id_fkey(username, full_name, avatar_url)')
-      .eq('published', true)
-      .or(`title.ilike.%${q}%,description.ilike.%${q}%,category.ilike.%${q}%`)
-      .limit(6);
-    setResults(data || []);
-    setDropdownOpen(true);
-    setSearching(false);
+    try {
+      const res = await fetch(`/api/search?q=${encodeURIComponent(q)}&page=1`);
+      const data = await res.json();
+      setResults((data.projects || []).slice(0, 6));
+      setDropdownOpen(true);
+    } catch {
+      setResults([]);
+    } finally {
+      setSearching(false);
+    }
   }, []);
 
   function handleChange(e) {

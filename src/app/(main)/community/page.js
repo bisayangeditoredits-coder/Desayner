@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo} from 'react';
 import { createClient } from '@/lib/supabase/client';
 import PostComposer from '@/components/PostComposer';
 import ReactionBar from '@/components/ReactionBar';
@@ -32,7 +32,7 @@ function PostCard({ post, currentUser, currentProfile }) {
   const [comments, setComments]         = useState([]);
   const [loaded, setLoaded]             = useState(false);
   const [saved, setSaved]               = useState(false);
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
 
   async function toggleComments() {
     if (!loaded) {
@@ -110,7 +110,7 @@ export default function CommunityPage() {
   const [currentUser, setCurrentUser]   = useState(null);
   const [currentProfile, setCurrentProfile] = useState(null);
   const [loading, setLoading]           = useState(true);
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
 
   useEffect(() => {
     async function loadUser() {

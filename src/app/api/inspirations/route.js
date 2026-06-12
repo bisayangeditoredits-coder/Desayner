@@ -2,6 +2,15 @@ import { NextResponse } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import { redis } from '@/lib/redis';
+import { Ratelimit } from '@upstash/ratelimit';
+
+// 10 inspiration posts per user per 60 seconds
+const postRatelimit = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(10, '60 s'),
+  analytics: false,
+  prefix: 'rl:inspirations:post',
+});
 
 export const runtime = 'edge';
 
@@ -150,6 +159,15 @@ export async function POST(request) {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Rate limit — 10 posts per user per 60 seconds
+    const { success: canPost, remaining } = await postRatelimit.limit(`user:${user.id}`);
+    if (!canPost) {
+      return NextResponse.json(
+        { error: 'You are posting too fast. Please wait a moment.' },
+        { status: 429, headers: { 'X-RateLimit-Remaining': String(remaining) } }
+      );
     }
 
     const body = await request.json();

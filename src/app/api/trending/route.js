@@ -4,6 +4,7 @@ import { cookies } from 'next/headers';
 import { redis } from '@/lib/redis';
 
 export const runtime = 'edge';
+const CACHE_HEADERS = { 'Cache-Control': 's-maxage=120, stale-while-revalidate=60' };
 
 export async function GET() {
   const CACHE_KEY = 'trending_projects_top_10';
@@ -12,7 +13,7 @@ export async function GET() {
   try {
     const cached = await redis.get(CACHE_KEY);
     if (cached) {
-      return NextResponse.json({ projects: cached, cached: true });
+      return NextResponse.json({ projects: cached, cached: true }, { headers: CACHE_HEADERS });
     }
   } catch (err) {
     console.error('Redis cache read error:', err);
@@ -43,7 +44,5 @@ export async function GET() {
     console.error('Redis cache write error:', err);
   }
 
-  return NextResponse.json({ projects, cached: false }, {
-    headers: { 'Cache-Control': 's-maxage=120, stale-while-revalidate=60' }
-  });
+  return NextResponse.json({ projects, cached: false }, { headers: CACHE_HEADERS });
 }

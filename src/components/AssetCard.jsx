@@ -17,7 +17,7 @@ export default function AssetCard({ asset, currentUserId, onClick }) {
   const [saved, setSaved]         = useState(asset.user_saved || false);
   const [savesCount, setSavesCount] = useState(asset.saves_count || 0);
   const [showColModal, setShowColModal] = useState(false);
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
   const router   = useRouter();
 
   const handleSave = useCallback(async (e) => {

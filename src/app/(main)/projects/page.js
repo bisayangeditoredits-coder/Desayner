@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import ProjectCard from '@/components/ProjectCard';
 import TagPill from '@/components/TagPill';
@@ -18,7 +18,7 @@ export default function ProjectsPage() {
   const { category, scrollPosition, setFeedState, setScrollPosition } = useFeedStore();
   const [currentUserId, setCurrentUserId] = useState(null);
 
-  const supabase = createMemoizedClient();
+  const supabase = useMemo(() => createClient(), []);
 
   useEffect(() => {
     async function loadUser() {
@@ -178,10 +178,3 @@ export default function ProjectsPage() {
   );
 }
 
-function createMemoizedClient() {
-  let client = null;
-  if (!client) {
-    client = createClient();
-  }
-  return client;
-}

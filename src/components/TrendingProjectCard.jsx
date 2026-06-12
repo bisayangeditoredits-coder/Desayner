@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo} from 'react';
 import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -28,7 +28,7 @@ export default function TrendingProjectCard({ project, currentUserId, rank }) {
   const [showCollectionModal, setShowCollectionModal] = useState(false);
   const [imageStatus, setImageStatus] = useState('loading');
   const router = useRouter();
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
   const author = project.profiles;
   const authorName = author?.full_name || author?.username || 'Unknown';
 
@@ -121,7 +121,7 @@ export default function TrendingProjectCard({ project, currentUserId, rank }) {
           <div className="trending-project-card__stats" aria-label="Project stats">
             <span className="trending-project-card__stat" title="Views">
               <Eye size={13} />
-              {compactNumber(project.views_count)}
+              <span className="font-mono">{compactNumber(project.views_count)}</span>
             </span>
             <button
               type="button"
@@ -130,7 +130,7 @@ export default function TrendingProjectCard({ project, currentUserId, rank }) {
               title={liked ? 'Unlike' : 'Like'}
             >
               <Heart size={13} fill={liked ? 'currentColor' : 'none'} />
-              {compactNumber(likeCount)}
+              <span className="font-mono">{compactNumber(likeCount)}</span>
             </button>
             <button
               type="button"
@@ -139,7 +139,7 @@ export default function TrendingProjectCard({ project, currentUserId, rank }) {
               title={saved ? 'Saved' : 'Save'}
             >
               <Bookmark size={13} fill={saved ? 'currentColor' : 'none'} />
-              {compactNumber(project.saves_count)}
+              <span className="font-mono">{compactNumber(project.saves_count)}</span>
             </button>
           </div>
         </div>

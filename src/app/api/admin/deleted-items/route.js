@@ -3,6 +3,8 @@ import { createClient } from '@supabase/supabase-js';
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 
+export const runtime = 'edge';
+
 // SECURITY FIX: Added authentication check
 export async function GET(req) {
   try {

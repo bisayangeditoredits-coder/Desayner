@@ -43,10 +43,20 @@ export async function GET() {
     .from('projects')
     .select('user_id, cover_url, thumbnail_url')
     .in('user_id', userIds)
-    .eq('published', true);
+    .eq('published', true)
+    .order('created_at', { ascending: false })
+    .limit(userIds.length * 3); // max 3 covers per designer
+
+  // Build a Map for O(1) lookup instead of O(n²) find() in a loop
+  const projectsByUser = new Map();
+  for (const p of (projectsData || [])) {
+    if (!projectsByUser.has(p.user_id)) {
+      projectsByUser.set(p.user_id, p);
+    }
+  }
 
   const processed = profiles.map(u => {
-    const userProj = (projectsData || []).find(p => p.user_id === u.id);
+    const userProj = projectsByUser.get(u.id);
     return {
       ...u,
       banner_url: u.cover_url || (userProj ? userProj.thumbnail_url || userProj.cover_url : null)

@@ -1,12 +1,12 @@
 'use client';
-import { useState } from 'react';
+import { useState, useMemo} from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
 
 export default function FollowButton({ targetUserId, currentUserId, initialFollowing = false, compact = false }) {
   const [following, setFollowing] = useState(initialFollowing);
   const [loading, setLoading] = useState(false);
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
   const router = useRouter();
 
   if (currentUserId === targetUserId) return null;

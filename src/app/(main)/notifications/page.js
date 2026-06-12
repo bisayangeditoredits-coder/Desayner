@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo} from 'react';
 import { createClient } from '@/lib/supabase/client';
 import UserAvatar from '@/components/UserAvatar';
 import Link from 'next/link';
@@ -20,7 +20,7 @@ function timeAgo(dateStr) {
 export default function NotificationsPage() {
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
 
   useEffect(() => {
     async function load() {

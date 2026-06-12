@@ -1,16 +1,45 @@
 'use client';
-import { useState, useRef } from 'react';
+import { useState, useRef, useMemo} from 'react';
 import { useRouter } from 'next/navigation';
+import dynamic from 'next/dynamic';
 import { createClient } from '@/lib/supabase/client';
 import TagPill from '@/components/TagPill';
-import CoverEditor from '@/components/CoverEditor';
-import UploadZone from '@/components/upload/UploadZone';
-import MultiUploadZone from '@/components/upload/MultiUploadZone';
 import Link from 'next/link';
 import { X, Plus, ArrowLeft } from 'lucide-react';
 import { CREATIVE_TOOLS } from '@/lib/constants';
 import { saveProjectModalReturn } from '@/lib/projectModalNav';
 import '../../../App.css';
+
+// ── Lazy load heavy components so the page shell renders instantly ───────────
+// CoverEditor pulls in react-easy-crop (large)
+// MultiUploadZone pulls in processImage + Worker pipeline (large)
+const CoverEditor = dynamic(() => import('@/components/CoverEditor'), {
+  ssr: false,
+  loading: () => (
+    <div style={{
+      width: '100%', height: '100%', minHeight: '280px',
+      background: '#f0f0f0', display: 'flex',
+      alignItems: 'center', justifyContent: 'center',
+      flexDirection: 'column', gap: '0.75rem', color: '#9b9b9b',
+    }}>
+      <div style={{ width: 48, height: 48, borderRadius: '50%', background: '#e0e0e0', animation: 'shimmer 1.5s infinite' }} />
+      <div style={{ width: 120, height: 12, borderRadius: 6, background: '#e0e0e0', animation: 'shimmer 1.5s infinite' }} />
+    </div>
+  ),
+});
+
+const MultiUploadZone = dynamic(() => import('@/components/upload/MultiUploadZone'), {
+  ssr: false,
+  loading: () => (
+    <div style={{
+      border: '1.5px dashed #d0d0d0', background: '#fafafa',
+      padding: '1.75rem 1rem', textAlign: 'center', borderRadius: 4,
+    }}>
+      <div style={{ width: 80, height: 12, borderRadius: 6, background: '#e0e0e0', margin: '0 auto 0.5rem', animation: 'shimmer 1.5s infinite' }} />
+      <div style={{ width: 140, height: 10, borderRadius: 6, background: '#e0e0e0', margin: '0 auto', animation: 'shimmer 1.5s infinite' }} />
+    </div>
+  ),
+});
 
 const CATEGORIES = ['Design', 'Illustration', 'Photography', 'Branding', '3D', 'Motion', 'UI/UX', 'Typography', 'Other'];
 
@@ -38,7 +67,7 @@ export default function NewProjectPage() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError]           = useState('');
   const router   = useRouter();
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
 
   // ── CoverEditor result ──────────────────────────────────────────────────────
   function handleCoverResult(result) {

@@ -45,7 +45,7 @@ export default function FeedbackDetailPage({ params }) {
   const [showLightbox, setShowLightbox] = useState(false);
   const [error, setError] = useState(null);
 
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
   const [feedbackId, setFeedbackId] = useState(null);
 
   // Resolve params (Next.js 16 passes params as a Promise)

@@ -4,6 +4,7 @@ import { cookies } from 'next/headers';
 import { redis } from '@/lib/redis';
 
 export const runtime = 'edge';
+const CACHE_HEADERS = { 'Cache-Control': 's-maxage=60, stale-while-revalidate=30' };
 
 export async function GET(request) {
   try {
@@ -28,7 +29,7 @@ export async function GET(request) {
           );
           const { data: { user } } = await supabase.auth.getUser();
 
-          const items = cached.projects || [];
+          const items = (cached.projects || []).map((project) => ({ ...project }));
           if (user && items.length > 0) {
             const projectIds = items.map(p => p.id);
             const { data: likedList } = await supabase
@@ -51,7 +52,7 @@ export async function GET(request) {
               p.user_saved = savedSet.has(p.id);
             });
           }
-          return NextResponse.json({ projects: items, cached: true });
+          return NextResponse.json({ projects: items, cached: true }, { headers: CACHE_HEADERS });
         }
       } catch (err) {
         console.error('[Redis Cache GET Error]', err);
@@ -118,9 +119,7 @@ export async function GET(request) {
       }
     }
 
-    return NextResponse.json({ projects: items, cached: false }, {
-      headers: { 'Cache-Control': 's-maxage=60, stale-while-revalidate=30' }
-    });
+    return NextResponse.json({ projects: items, cached: false }, { headers: CACHE_HEADERS });
 
   } catch (err) {
     console.error('[GET /api/projects Error]:', err);

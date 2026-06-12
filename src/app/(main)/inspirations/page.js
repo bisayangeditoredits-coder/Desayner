@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { Plus, Sparkles } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import InspirationCard from '@/components/InspirationCard';
@@ -24,7 +24,7 @@ export default function InspirationsPage() {
   // Masonry column tracking
   const [cols, setCols] = useState(4);
 
-  const supabase    = createClient();
+  const supabase    = useMemo(() => createClient(), []);
   const sentinelRef = useRef(null);
 
   useEffect(() => {

@@ -2,7 +2,12 @@ import { withSentryConfig } from "@sentry/nextjs";
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  compress: true,
+  experimental: {
+    optimizePackageImports: ['lucide-react', 'framer-motion'],
+  },
   images: {
+    formats: ['image/avif', 'image/webp'],
     remotePatterns: [
       {
         protocol: 'https',

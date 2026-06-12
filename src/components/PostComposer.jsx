@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useMemo} from 'react';
 import { ImageIcon, X } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import UserAvatar from './UserAvatar';
@@ -17,7 +17,7 @@ export default function PostComposer({ currentUser, onPosted }) {
   const [imageUrl, setImageUrl] = useState('');
   const [imageInput, setImageInput] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
 
   async function submit(e) {
     e.preventDefault();

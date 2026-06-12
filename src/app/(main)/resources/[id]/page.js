@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect, use } from 'react';
+import { useState, useEffect, use, useMemo} from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import Link from 'next/link';
@@ -12,7 +12,7 @@ export default function ResourceDetailPage({ params }) {
   const [loading, setLoading] = useState(true);
   const [saved, setSaved] = useState(false);
   const [currentUserId, setCurrentUserId] = useState(null);
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
   const router = useRouter();
 
   useEffect(() => {

@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect, Suspense, lazy } from 'react';
+import { useState, useEffect, Suspense, lazy, useMemo} from 'react';
 import { createClient } from '@/lib/supabase/client';
 import '../../App.css';
 
@@ -43,7 +43,7 @@ function ChatSkeleton() {
 export default function MessagesRoute() {
   const [userId, setUserId] = useState(null);
   const [authLoading, setAuthLoading] = useState(true);
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {

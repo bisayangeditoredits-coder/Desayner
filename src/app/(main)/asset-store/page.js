@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { ShoppingBag, Plus } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import AssetCard from '@/components/AssetCard';
@@ -21,7 +21,7 @@ export default function AssetStorePage() {
   const [uploadOpen, setUploadOpen]     = useState(false);
   const [selectedAsset, setSelectedAsset] = useState(null);
 
-  const supabase    = createClient();
+  const supabase    = useMemo(() => createClient(), []);
   const sentinelRef = useRef(null);
 
   // 1. Identify logged-in user details

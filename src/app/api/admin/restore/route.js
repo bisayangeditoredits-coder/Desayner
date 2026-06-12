@@ -3,6 +3,8 @@ import { createClient } from '@supabase/supabase-js';
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 
+export const runtime = 'edge';
+
 // Whitelist of tables that can be restored (prevents SQL injection)
 const ALLOWED_TABLES = ['projects', 'assets', 'inspirations', 'resources'];
 

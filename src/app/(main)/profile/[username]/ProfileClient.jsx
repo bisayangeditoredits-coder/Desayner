@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import ProjectCard from '@/components/ProjectCard';
@@ -74,7 +74,7 @@ export default function ProfilePage() {
   const [isFollowing, setIsFollowing]   = useState(false);
   const [followerCount, setFollowerCount] = useState(0);
   const [loading, setLoading]           = useState(true);
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
 
   useEffect(() => {
     async function load() {

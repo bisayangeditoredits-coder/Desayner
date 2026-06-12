@@ -16,8 +16,8 @@ export default function TagPill({ label, active, onClick, small }) {
         borderRadius: '20px',
         cursor: 'pointer',
         transition: 'all 0.15s ease',
-        fontFamily: 'inherit',
-        letterSpacing: '0.01em',
+        fontFamily: 'var(--font-grotesk, inherit)',
+        letterSpacing: '0.02em',
       }}
     >
       {label}

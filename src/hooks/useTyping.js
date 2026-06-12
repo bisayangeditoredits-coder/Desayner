@@ -1,5 +1,5 @@
 'use client';
-import { useRef, useCallback } from 'react';
+import { useRef, useCallback, useMemo } from 'react';
 import { createClient } from '@/lib/supabase/client';
 
 /**
@@ -17,7 +17,7 @@ import { createClient } from '@/lib/supabase/client';
  *   // In channel setup: pass onTyping to broadcast listener
  */
 export function useTyping(conversationId, currentUserId) {
-  const supabase      = createClient();
+  const supabase      = useMemo(() => createClient(), []);
   const channelRef    = useRef(null);
   const debounceRef   = useRef(null);
   const clearRef      = useRef(null);
@@ -44,7 +44,7 @@ export function useTyping(conversationId, currentUserId) {
         channelRef.current = null;
       }
     };
-  }, [conversationId, currentUserId]);
+  }, [conversationId, currentUserId, supabase]);
 
   /** Broadcast typing=true, debounce stop after 3s silence */
   const sendTyping = useCallback(() => {

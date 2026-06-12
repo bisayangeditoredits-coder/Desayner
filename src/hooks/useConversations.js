@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { createClient } from '@/lib/supabase/client';
 
 /**
@@ -20,7 +20,7 @@ export function useConversations(userId) {
   const [totalUnread, setTotalUnread]     = useState(0);
   const channelRef  = useRef(null);
   const mountedRef  = useRef(true);
-  const supabase    = createClient();
+  const supabase    = useMemo(() => createClient(), []);
 
   // ── Fetch ───────────────────────────────────────────────
   const fetchConversations = useCallback(async () => {
@@ -99,7 +99,7 @@ export function useConversations(userId) {
         channelRef.current = null;
       }
     };
-  }, [userId, fetchConversations]);
+  }, [userId, fetchConversations, supabase]);
 
   // ── Helpers ───────────────────────────────────────────────
   /**

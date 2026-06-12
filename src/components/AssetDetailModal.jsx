@@ -11,7 +11,7 @@ export default function AssetDetailModal({ asset, currentUserId, onClose, onDele
   const [deleting, setDeleting]     = useState(false);
   const [downloading, setDownloading] = useState(false);
 
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
   const creator  = asset.profiles;
   const isOwner  = currentUserId === asset.user_id;
 

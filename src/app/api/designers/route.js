@@ -4,6 +4,7 @@ import { cookies } from 'next/headers';
 import { redis } from '@/lib/redis';
 
 export const runtime = 'edge';
+const CACHE_HEADERS = { 'Cache-Control': 's-maxage=10, stale-while-revalidate=30' };
 
 export async function GET(request) {
   try {
@@ -20,7 +21,7 @@ export async function GET(request) {
       try {
         const cached = await redis.get(cacheKey);
         if (cached) {
-          return NextResponse.json({ ...cached, cached: true });
+          return NextResponse.json({ ...cached, cached: true }, { headers: CACHE_HEADERS });
         }
       } catch (err) {
         console.error('[Redis Cache GET Error]', err);
@@ -163,7 +164,7 @@ export async function GET(request) {
       }
     }
 
-    return NextResponse.json({ ...payload, cached: false });
+    return NextResponse.json({ ...payload, cached: false }, { headers: CACHE_HEADERS });
 
   } catch (err) {
     console.error('[GET /api/designers Error]:', err);

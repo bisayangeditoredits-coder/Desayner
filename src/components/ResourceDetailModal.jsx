@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo} from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { ExternalLink, Bookmark, Download, Library, ShieldCheck, User } from 'lucide-react';
 import Modal from './Modal';
@@ -9,7 +9,7 @@ export default function ResourceDetailModal({ resourceId, onClose }) {
   const [loading, setLoading] = useState(true);
   const [saved, setSaved] = useState(false);
   const [currentUserId, setCurrentUserId] = useState(null);
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
 
   useEffect(() => {
     async function load() {

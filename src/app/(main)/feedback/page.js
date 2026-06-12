@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { Plus, MessageSquare } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import FeedbackCard from '@/components/FeedbackCard';
@@ -15,7 +15,7 @@ export default function FeedbackPage() {
   const [currentUserId, setCurrentUserId] = useState(null);
   const [uploadOpen, setUploadOpen] = useState(false);
 
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
   const sentinelRef = useRef(null);
 
   useEffect(() => {

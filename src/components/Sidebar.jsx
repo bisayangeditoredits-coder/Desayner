@@ -1,11 +1,12 @@
 'use client';
-import React, { useState, useEffect, useLayoutEffect } from 'react';
+import React, { useState, useEffect, useLayoutEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import Image from 'next/image';
 import {
   Home, FolderOpen, Users, Users2, Bookmark, Plus, Settings,
-  LogOut, ChevronDown, ChevronUp, Library, MessageSquare, Briefcase, ShoppingBag, Box, PlaySquare, Compass, MessageSquareCode
+  LogOut, ChevronDown, ChevronUp, Library, MessageSquare, Briefcase, ShoppingBag, Box, PlaySquare, Compass, MessageSquareCode, Image as ImageIcon,
+  Palette, Type
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import UserAvatar from './UserAvatar';
@@ -29,8 +30,9 @@ const COMMUNITY_ITEMS = [
 
 const DESIGN_HUB_ITEMS = [
   // { href: '/asset-store',  icon: ShoppingBag,   label: 'ASSET STORE', public: true },
-  { href: '/mockups',      icon: Box,           label: 'MOCKUPS',     public: true },
-  { href: '/tutorials',    icon: PlaySquare,    label: 'TUTORIALS',   public: true },
+  { href: '/colors',       icon: Palette,       label: 'COLORS',       public: true },
+  { href: '/stock-photos', icon: ImageIcon,     label: 'STOCK PHOTOS', public: true },
+  { href: '/fonts',        icon: Type,          label: 'FONTS',        public: true },
 ];
 
 export default function Sidebar({ className = '' }) {
@@ -50,16 +52,17 @@ export default function Sidebar({ className = '' }) {
   const [profile, setProfile] = useState(null);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [projectsExpanded, setProjectsExpanded] = useState(true);
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
 
   useEffect(() => {
     let mounted = true;
     async function load() {
       const { data: { user } } = await supabase.auth.getUser();
+      if (!mounted) return;
       if (user) {
         setUser(user);
         const { data } = await supabase.from('profiles').select('*').eq('id', user.id).single();
-        if (data) setProfile(data);
+        if (mounted && data) setProfile(data);
       } else {
         setUser(null);
       }
@@ -68,8 +71,8 @@ export default function Sidebar({ className = '' }) {
 
     return () => {
       mounted = false;
-    }
-  }, []);
+    };
+  }, [supabase]);
 
   async function signOut() {
     await supabase.auth.signOut();
@@ -156,7 +159,7 @@ export default function Sidebar({ className = '' }) {
         ))}
 
         {/* Design Hub Section */}
-        <div className="sidebar-section-title">DESIGN HUB</div>
+        <div className="sidebar-section-title font-grotesk">DESIGN HUB</div>
         {DESIGN_HUB_ITEMS.map(({ href, icon: Icon, label }) => (
           <Link key={href} href={href} className={`nav-item ${isActive(href) ? 'active' : ''}`}>
             <Icon size={16} strokeWidth={isActive(href) ? 2.5 : 1.75} />

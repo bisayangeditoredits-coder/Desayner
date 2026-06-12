@@ -3,6 +3,7 @@ import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 
 export const runtime = 'edge';
+const CACHE_HEADERS = { 'Cache-Control': 's-maxage=30, stale-while-revalidate=60' };
 
 // ── GET: Fetch feedback requests (cursor-based pagination) ──────────────
 export async function GET(request) {
@@ -55,7 +56,7 @@ export async function GET(request) {
       feedback: items,
       nextCursor,
       hasMore,
-    });
+    }, { headers: CACHE_HEADERS });
   } catch (err) {
     console.error('[GET /api/feedback Error]:', err);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

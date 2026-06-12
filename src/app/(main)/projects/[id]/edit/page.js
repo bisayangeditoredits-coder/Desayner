@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo} from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import ImageUpload from '@/components/ImageUpload';
@@ -26,7 +26,7 @@ const labelStyle = {
 export default function EditProjectPage() {
   const { id } = useParams();
   const router  = useRouter();
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
 
   const [form, setForm]         = useState({ title: '', description: '', category: 'Design', published: true });
   const [coverUrl, setCoverUrl] = useState('');

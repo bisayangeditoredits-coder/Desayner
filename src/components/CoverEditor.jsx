@@ -1,9 +1,12 @@
 'use client';
 import { useState, useCallback, useRef, useEffect } from 'react';
 import Cropper from 'react-easy-crop';
-import { Image as ImageIcon, Upload, Loader2, Check, RefreshCw, Crop } from 'lucide-react';
+import dynamic from 'next/dynamic';
+import { Image as ImageIcon, Upload, Loader2, Check, RefreshCw, Crop, Search } from 'lucide-react';
 import getCroppedImg from '@/lib/cropImage';
 import { useUpload } from '@/hooks/useUpload';
+
+const UnsplashPicker = dynamic(() => import('@/components/UnsplashPicker'), { ssr: false });
 
 const previewPanelStyle = {
   position: 'relative',
@@ -36,6 +39,7 @@ export default function CoverEditor({ value, thumbnailUrl, onUploaded }) {
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
   const [isCropping, setIsCropping] = useState(false);
+  const [showUnsplash, setShowUnsplash] = useState(false); // ← new
 
   const inputRef = useRef(null);
   const reportedRef = useRef(null);
@@ -173,15 +177,27 @@ export default function CoverEditor({ value, thumbnailUrl, onUploaded }) {
           <ImageIcon size={64} style={{ marginBottom: '1rem', opacity: 0.35, color: '#9b9b9b' }} />
           <h2 style={{ color: '#0a0a0a', fontWeight: 700, marginBottom: '0.5rem', fontSize: '1.25rem' }}>Project Cover</h2>
           <p style={{ marginBottom: '1.5rem', fontSize: '0.875rem', textAlign: 'center', maxWidth: '280px' }}>
-            Upload your cover image. Any aspect ratio works — it will display naturally in the feed.
+            Upload your own image or pick a free stock photo.
           </p>
-          <button
-            type="button"
-            onClick={() => inputRef.current?.click()}
-            style={{ padding: '0.75rem 1.5rem', background: '#0009fa', color: 'white', fontWeight: 600, border: 'none', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
-          >
-            <Upload size={16} /> Select Image
-          </button>
+
+          {/* Action buttons */}
+          <div style={{ display: 'flex', gap: '0.65rem', flexWrap: 'wrap', justifyContent: 'center' }}>
+            <button
+              type="button"
+              onClick={() => inputRef.current?.click()}
+              style={{ padding: '0.7rem 1.35rem', background: '#0009fa', color: 'white', fontWeight: 600, border: 'none', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+            >
+              <Upload size={16} /> Upload Image
+            </button>
+            <button
+              type="button"
+              onClick={() => setShowUnsplash(true)}
+              style={{ padding: '0.7rem 1.35rem', background: '#f0f0f0', color: '#0a0a0a', fontWeight: 600, border: 'none', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+            >
+              <Search size={16} /> Browse Stock Photos
+            </button>
+          </div>
+
           <p style={{ marginTop: '1.5rem', fontSize: '0.72rem', opacity: 0.55, letterSpacing: '0.02em' }}>
             JPG / PNG / WebP · Auto-converted to WebP · max 10 MB
           </p>

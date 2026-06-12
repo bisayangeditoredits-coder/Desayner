@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo} from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import CommentThread from '@/components/CommentThread';
@@ -166,7 +166,7 @@ function ImageGallery({ images, title }) {
 export default function ProjectDetailClient({ isModal = false }) {
   const { id } = useParams();
   const router = useRouter();
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
 
   const [project,        setProject]        = useState(null);
   const [comments,       setComments]       = useState([]);

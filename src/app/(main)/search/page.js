@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect, useRef, Suspense } from 'react';
+import { useState, useEffect, useRef, useCallback, Suspense, useMemo } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import ProjectCard from '@/components/ProjectCard';
@@ -36,13 +36,13 @@ function SearchResults() {
   const [designers, setDesigners]     = useState([]);
   const [loadingDesigners, setLoadingDesigners] = useState(false);
   const [currentUserId, setCurrentUserId] = useState(null);
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (user) setCurrentUserId(user.id);
     });
-  }, []);
+  }, [supabase]);
 
   useEffect(() => {
     async function init() {
@@ -51,10 +51,17 @@ function SearchResults() {
     init();
   }, [q]);
 
-  // Search projects
+  // ── Debounced project search ──────────────────────────────────────────
+  const searchTimerRef = useRef(null);
+
   useEffect(() => {
     if (!query.trim() || tab !== 'projects') return;
-    async function search() {
+
+    // Clear any pending debounce
+    if (searchTimerRef.current) clearTimeout(searchTimerRef.current);
+
+    // Wait 400ms after the user stops typing before firing the API call
+    searchTimerRef.current = setTimeout(async () => {
       setLoadingProjects(true);
       const params = new URLSearchParams({ q: query, page: String(page) });
       if (category !== 'All') params.set('category', category);
@@ -66,8 +73,11 @@ function SearchResults() {
       setTotal(data.total || 0);
       setHasMore((data.projects || []).length === 24);
       setLoadingProjects(false);
-    }
-    search();
+    }, 400);
+
+    return () => {
+      if (searchTimerRef.current) clearTimeout(searchTimerRef.current);
+    };
   }, [query, category, sort, page, tab]);
 
   // Search designers — fixed N+1: one batch query instead of per-designer queries
@@ -110,7 +120,7 @@ function SearchResults() {
       setLoadingDesigners(false);
     }
     searchDesigners();
-  }, [query, tab]);
+  }, [query, tab, supabase]);
 
   const loading = tab === 'projects' ? loadingProjects : loadingDesigners;
 

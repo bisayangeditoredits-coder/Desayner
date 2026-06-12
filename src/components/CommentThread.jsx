@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useMemo} from 'react';
 import { createClient } from '@/lib/supabase/client';
 import UserAvatar from './UserAvatar';
 
@@ -17,7 +17,7 @@ export default function CommentThread({ targetId, targetType = 'project', commen
   const [comments, setComments] = useState(initialComments);
   const [body, setBody] = useState('');
   const [submitting, setSubmitting] = useState(false);
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
 
   const table = targetType === 'project' ? 'project_comments' : 'post_comments';
   const fk = targetType === 'project' ? 'project_id' : 'post_id';

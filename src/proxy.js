@@ -16,6 +16,36 @@ if (process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN) 
   });
 }
 
+const PUBLIC_READ_API_PREFIXES = [
+  '/api/assets',
+  '/api/community',
+  '/api/designers',
+  '/api/explore-colors',
+  '/api/feedback',
+  '/api/fonts',
+  '/api/inspirations',
+  '/api/profile',
+  '/api/projects',
+  '/api/search',
+  '/api/trending',
+  '/api/unsplash/search',
+];
+
+function isPublicReadApi(request, pathname) {
+  if (request.method !== 'GET') return false;
+
+  return PUBLIC_READ_API_PREFIXES.some((prefix) => (
+    pathname === prefix || pathname.startsWith(`${prefix}/`)
+  ));
+}
+
+function shouldResolveUser(pathname) {
+  return pathname.startsWith('/settings')
+    || pathname.startsWith('/messages')
+    || pathname === '/login'
+    || pathname === '/signup';
+}
+
 /**
  * Next.js Middleware — runs on every request before page renders.
  *
@@ -25,38 +55,11 @@ if (process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN) 
  * 3. Redirects authenticated users away from /login and /signup.
  */
 export async function proxy(request) {
+  const { pathname } = request.nextUrl;
   let supabaseResponse = NextResponse.next({ request });
 
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-    {
-      cookies: {
-        getAll() {
-          return request.cookies.getAll();
-        },
-        setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value }) =>
-            request.cookies.set(name, value)
-          );
-          supabaseResponse = NextResponse.next({ request });
-          cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options)
-          );
-        },
-      },
-    }
-  );
-
-  // Refresh session — do NOT remove this call.
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  const { pathname } = request.nextUrl;
-
   // ── Rate Limiting (API Routes) ───────────────────────────────
-  if (pathname.startsWith('/api') && ratelimit) {
+  if (pathname.startsWith('/api') && ratelimit && !isPublicReadApi(request, pathname)) {
     const ip = request.ip ?? request.headers.get('x-forwarded-for') ?? '127.0.0.1';
     try {
       const { success, limit, reset, remaining } = await ratelimit.limit(ip);
@@ -76,6 +79,35 @@ export async function proxy(request) {
     } catch (err) {
       console.error('Rate limit error:', err);
     }
+  }
+
+  let user = null;
+  if (shouldResolveUser(pathname)) {
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+      {
+        cookies: {
+          getAll() {
+            return request.cookies.getAll();
+          },
+          setAll(cookiesToSet) {
+            cookiesToSet.forEach(({ name, value }) =>
+              request.cookies.set(name, value)
+            );
+            supabaseResponse = NextResponse.next({ request });
+            cookiesToSet.forEach(({ name, value, options }) =>
+              supabaseResponse.cookies.set(name, value, options)
+            );
+          },
+        },
+      }
+    );
+
+    const {
+      data: { user: resolvedUser },
+    } = await supabase.auth.getUser();
+    user = resolvedUser;
   }
 
   // ── Protected Routes ─────────────────────────────────────────

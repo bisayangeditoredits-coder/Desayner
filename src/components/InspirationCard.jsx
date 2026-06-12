@@ -1,5 +1,5 @@
 'use client';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo} from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Heart, Eye } from 'lucide-react';
@@ -12,7 +12,7 @@ export default function InspirationCard({ inspiration, currentUserId, onClick })
   const [viewsCount, setViewsCount] = useState(inspiration.views_count || 0);
   // 'loading' | 'loaded' | 'error'
   const [imgStatus, setImgStatus] = useState('loading');
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
   const router   = useRouter();
 
   const handleCardClick = useCallback(() => {

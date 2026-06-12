@@ -70,7 +70,7 @@ export default function ProjectCard({ project, currentUserId }) {
         <Link
           href={`/projects/${project.id}`}
           className="project-card__thumb-link"
-          prefetch={true}
+          prefetch={false}
           onClick={saveProjectModalReturn}
         >
           <div className={`project-card__thumb project-card__thumb--${imgStatus}`}>
@@ -122,7 +122,7 @@ export default function ProjectCard({ project, currentUserId }) {
               style={{ cursor: 'default' }}
             >
               <Eye size={14} />
-              <span>{viewCount}</span>
+              <span className="font-mono">{viewCount}</span>
             </div>
 
             <motion.button
@@ -132,7 +132,7 @@ export default function ProjectCard({ project, currentUserId }) {
               title={liked ? 'Unlike' : 'Like'}
             >
               <Heart size={14} fill={liked ? 'currentColor' : 'none'} />
-              <span>{likeCount}</span>
+              <span className="font-mono">{likeCount}</span>
             </motion.button>
 
             <motion.button
@@ -142,7 +142,7 @@ export default function ProjectCard({ project, currentUserId }) {
               title={saved ? 'Unsave' : 'Save'}
             >
               <Bookmark size={14} fill={saved ? 'currentColor' : 'none'} />
-              <span>{saveCount}</span>
+              <span className="font-mono">{saveCount}</span>
             </motion.button>
           </div>
         </div>

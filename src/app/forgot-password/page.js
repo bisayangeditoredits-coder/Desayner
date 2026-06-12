@@ -1,5 +1,5 @@
 'use client';
-import { useState, Suspense } from 'react';
+import { useState, Suspense, useMemo} from 'react';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 import { Loader2, ArrowLeft, Mail } from 'lucide-react';
@@ -9,6 +9,7 @@ function ForgotPasswordForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
+  const supabase = useMemo(() => createClient(), []);
 
   async function handleResetPassword(e) {
     e.preventDefault();
@@ -16,7 +17,6 @@ function ForgotPasswordForm() {
     setError('');
     setSuccess(false);
 
-    const supabase = createClient();
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${window.location.origin}/auth/callback?next=/reset-password`,
     });

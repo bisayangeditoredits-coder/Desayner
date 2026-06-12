@@ -4,6 +4,7 @@ import { cookies } from 'next/headers';
 import { redis } from '@/lib/redis';
 
 export const runtime = 'edge';
+const CACHE_HEADERS = { 'Cache-Control': 's-maxage=10, stale-while-revalidate=30' };
 
 // ── GET: Fetch assets (Cursor-based + Caching) ────────────────────────
 export async function GET(request) {
@@ -48,7 +49,7 @@ export async function GET(request) {
             nextCursor: cached.nextCursor,
             hasMore: cached.hasMore,
             cached: true,
-          });
+          }, { headers: CACHE_HEADERS });
         }
       } catch (err) {
         console.error('[Redis Cache GET Error]:', err);
@@ -126,7 +127,7 @@ export async function GET(request) {
       nextCursor,
       hasMore,
       cached: false,
-    });
+    }, { headers: CACHE_HEADERS });
 
   } catch (err) {
     console.error('[GET /api/assets Error]:', err);

@@ -2,7 +2,7 @@
   --primary-bg: #f1f5f9;
   --secondary-bg: #e2e8f0;
   --accent-blue: #0009fa;
-  --accent-red: #0009fa;
+  --accent-red: #ef4444;
   --text-main: #0f172a;
   --text-dim: #475569;
   --text-muted: #94a3b8;
@@ -12,8 +12,16 @@
   --border: 1px solid #e2e8f0;
   --radius: 8px;
   --radius-sm: 4px;
-  --font-heading: var(--font-raleway), sans-serif;
-  --font-body: var(--font-montserrat), sans-serif;
+  /* ── Typography scale ── */
+  /* Existing */
+  --font-heading:  var(--font-raleway),        sans-serif;
+  --font-body:     var(--font-montserrat),     sans-serif;
+  /* New: available as opt-in utility classes — not applied globally */
+  --font-display:  var(--font-display,  'Syne'),          sans-serif;
+  --font-jakarta:  var(--font-jakarta,  'Plus Jakarta Sans'), sans-serif;
+  --font-grotesk:  var(--font-grotesk,  'Space Grotesk'), sans-serif;
+  --font-serif:    var(--font-serif,    'DM Serif Display'), serif;
+  --font-mono:     var(--font-mono,     'JetBrains Mono'), 'Courier New', monospace;
   --transition-smooth: background 0.18s ease, color 0.18s ease, border-color 0.18s ease;
   --card-shadow: 0 1px 3px rgba(0,0,0,0.06);
   --card-shadow-hover: 0 4px 12px rgba(0,0,0,0.08);
@@ -66,6 +74,11 @@ input, select, textarea { font-family: var(--font-body); }
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* Sidebar scrollbar hide */
+.sidebar::-webkit-scrollbar { display: none; }
+.sidebar { scrollbar-width: none; -ms-overflow-style: none; }
+
 
 /* Responsive Grid/Swipe for Top Creators */
 .swipe-grid-on-mobile {
@@ -167,6 +180,48 @@ textarea.input { resize: vertical; min-height: 120px; }
 .truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0; }
 
+/* ─── Font Utility Classes ───────────────────────────────────────────────────
+   Opt-in only — adding these classes applies the font to an element and its
+   children without affecting the global scale or existing components.
+   ─────────────────────────────────────────────────────────────────────────── */
+
+/** Syne — use on hero headings, landing page titles, big display text */
+.font-display { font-family: var(--font-display) !important; }
+
+/** Plus Jakarta Sans — use on cards, modals, modern clean UI sections */
+.font-jakarta { font-family: var(--font-jakarta) !important; }
+
+/** Space Grotesk — use on labels, tags, pills, nav labels, category chips */
+.font-grotesk { font-family: var(--font-grotesk) !important; }
+
+/** DM Serif Display — use on pull-quotes, featured descriptions, editorial text */
+.font-serif { font-family: var(--font-serif) !important; }
+
+/** JetBrains Mono — use on numbers, hex colours, stats, code snippets */
+.font-mono { font-family: var(--font-mono) !important; letter-spacing: 0; }
+
 @media (max-width: 768px) {
   .container { padding: 0 1rem; }
 }
+
+/* Login page desktop background panel */
+@media (min-width: 900px) {
+  .desktop-bg-panel { display: block !important; }
+}
+
+
+/* ─── Shared Keyframe Animations ──────────────────── */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; backdrop-filter: blur(0px); background: rgba(15, 23, 42, 0); }
+  to   { opacity: 1; backdrop-filter: blur(8px);  background: rgba(15, 23, 42, 0.8); }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position:  400px 0; }
+}
+

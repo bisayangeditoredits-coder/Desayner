@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo} from 'react';
 import { createClient } from '@/lib/supabase/client';
 import Link from 'next/link';
 import { Plus, Library } from 'lucide-react';
@@ -14,7 +14,7 @@ export default function ResourcesPage() {
   const [activeCat, setActiveCat] = useState('All');
   const [tab, setTab] = useState('Explore'); // 'Explore' | 'Saved'
   const [selectedResourceId, setSelectedResourceId] = useState(null);
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
 
   useEffect(() => {
     async function load() {

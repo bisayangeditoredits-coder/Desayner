@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useMemo} from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import Link from 'next/link';
@@ -29,7 +29,7 @@ export default function NewResourcePage() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
   const router = useRouter();
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
 
   async function handleSubmit(e) {
     e.preventDefault();

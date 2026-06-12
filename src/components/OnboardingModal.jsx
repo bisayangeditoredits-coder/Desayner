@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo} from 'react';
 import { createClient } from '@/lib/supabase/client';
 import ImageUpload from '@/components/ImageUpload';
 import UserAvatar from '@/components/UserAvatar';
@@ -10,7 +10,7 @@ import { CREATIVE_TOOLS } from '@/lib/constants';
 import { saveProfileAdmin } from '@/app/actions/onboardingActions';
 
 export default function OnboardingModal({ user, onComplete }) {
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
 
   const [loadingUser, setLoadingUser] = useState(true);
   const [profile, setProfile] = useState(null);

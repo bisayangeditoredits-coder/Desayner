@@ -27,7 +27,7 @@ export default function InspirationDetailModal({ inspiration, currentUserId, onC
   const [isZoomed, setIsZoomed]     = useState(false);
   const [viewTracked, setViewTracked] = useState(false);
 
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
   const router   = useRouter();
   const creator  = inspiration.profiles;
   const isOwner  = currentUserId === inspiration.user_id;

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Home, Compass, Plus, Users, User } from 'lucide-react';
@@ -9,15 +9,21 @@ import './MobileBottomNav.css';
 
 export default function MobileBottomNav() {
   const pathname = usePathname();
-  const [profile, setProfile] = useState(null);
-  const supabase = createClient();
+  const [profile, setProfile] = useState(() => {
+    if (typeof window === 'undefined') return null;
+    const cached = sessionStorage.getItem('mnav_profile');
+    if (!cached) return null;
+    try {
+      return JSON.parse(cached);
+    } catch {
+      return null;
+    }
+  });
+  const supabase = useMemo(() => createClient(), []);
 
   useEffect(() => {
-    // Check sessionStorage first to avoid a DB fetch on every page navigation
-    const cached = typeof window !== 'undefined' && sessionStorage.getItem('mnav_profile');
-    if (cached) {
-      try { setProfile(JSON.parse(cached)); return; } catch {}
-    }
+    if (profile) return;
+
     async function load() {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
@@ -29,7 +35,7 @@ export default function MobileBottomNav() {
       }
     }
     load();
-  }, []);
+  }, [profile, supabase]);
 
   function isActive(href) {
     if (href === '/') return pathname === '/';
