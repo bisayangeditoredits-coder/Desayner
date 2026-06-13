@@ -59,7 +59,7 @@ export default function MessagesRoute() {
         ) : !userId ? (
           <div style={{ padding: '4rem', textAlign: 'center' }}>
             <p style={{ color: '#9b9b9b', fontSize: '0.875rem' }}>
-              Please <a href="/login" style={{ color: '#0009fa', fontWeight: 700 }}>sign in</a> to access messages.
+              Please <a href="/login" style={{ color: '#2d43e8', fontWeight: 700 }}>sign in</a> to access messages.
             </p>
           </div>
         ) : (

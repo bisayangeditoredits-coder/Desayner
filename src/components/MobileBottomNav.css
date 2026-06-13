@@ -38,7 +38,7 @@
 }
 
 .mobile-nav-item.active {
-  color: var(--accent-blue, #0009fa);
+  color: var(--accent-blue, #2d43e8);
 }
 
 .mobile-nav-label {

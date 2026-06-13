@@ -31,12 +31,12 @@
 }
 
 .upload-zone__drop:focus-visible {
-  box-shadow: 0 0 0 3px rgba(0, 9, 250, 0.15);
-  border-color: #0009fa;
+  box-shadow: 0 0 0 3px rgba(45, 67, 232, 0.15);
+  border-color: #2d43e8;
 }
 
 .upload-zone__drop--dragging {
-  border-color: #0009fa;
+  border-color: #2d43e8;
   background: #f0f2ff;
 }
 
@@ -65,15 +65,15 @@
 }
 
 .upload-zone__drop--dragging .upload-zone__icon {
-  border-color: #0009fa;
-  box-shadow: 0 0 0 4px rgba(0, 9, 250, 0.08);
+  border-color: #2d43e8;
+  box-shadow: 0 0 0 4px rgba(45, 67, 232, 0.08);
 }
 
 /* ─── Text ─────────────────────────────────────────────────────── */
 .upload-zone__title {
   font-size: 0.875rem;
   font-weight: 600;
-  color: #0a0a0a;
+  color: #231f20;
   margin-bottom: 0.25rem;
 }
 
@@ -82,7 +82,7 @@
   color: #9b9b9b;
 }
 
-.upload-zone__hint strong { color: #0009fa; font-weight: 700; }
+.upload-zone__hint strong { color: #2d43e8; font-weight: 700; }
 
 /* ─── Progress ─────────────────────────────────────────────────── */
 .upload-zone__progress-wrap {
@@ -95,7 +95,7 @@
 .upload-zone__progress-label {
   font-size: 0.78rem;
   font-weight: 600;
-  color: #0a0a0a;
+  color: #231f20;
 }
 
 .upload-zone__bar-track {
@@ -109,7 +109,7 @@
 
 .upload-zone__bar-fill {
   height: 100%;
-  background: #0009fa;
+  background: #2d43e8;
   border-radius: 2px;
   transition: width 0.25s ease;
 }

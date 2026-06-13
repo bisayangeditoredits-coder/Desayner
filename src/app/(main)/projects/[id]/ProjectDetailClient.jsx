@@ -75,9 +75,9 @@ function ContactButton({ authorId, router }) {
           width: '100%',
           justifyContent: 'center',
           marginTop: '0.5rem',
-          background: '#0009fa',
+          background: '#2d43e8',
           color: 'white',
-          borderColor: '#0009fa',
+          borderColor: '#2d43e8',
         }}
       >
         <MessageSquare size={16} />
@@ -355,7 +355,7 @@ export default function ProjectDetailClient({ isModal = false }) {
                   onClick={() => window.location.href = `/projects/${id}/edit`}
                   className="btn btn-dark project-detail__topbar-btn"
                   title="Edit Project"
-                  style={{ background: '#0a0a0a', color: 'white', border: '1px solid #0a0a0a', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: 600, fontSize: '0.85rem', padding: '0.5rem 1rem', fontFamily: 'inherit' }}
+                  style={{ background: '#231f20', color: 'white', border: '1px solid #231f20', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: 600, fontSize: '0.85rem', padding: '0.5rem 1rem', fontFamily: 'inherit' }}
                 >
                   <Edit size={14} /> 
                   <span className="btn-text-responsive">Edit Project</span>
@@ -399,7 +399,7 @@ export default function ProjectDetailClient({ isModal = false }) {
                       const t = CREATIVE_TOOLS.find(c => c.id === toolId);
                       if (!t) return null;
                       return (
-                        <div key={toolId} style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', padding: '0.3rem 0.75rem', background: '#f5f5f5', border: '1px solid #e8e8e8', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 600, color: '#0a0a0a' }} title={t.name}>
+                        <div key={toolId} style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', padding: '0.3rem 0.75rem', background: '#f5f5f5', border: '1px solid #e8e8e8', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 600, color: '#231f20' }} title={t.name}>
                           <img src={t.iconPath} alt={t.name} style={{ width: '14px', height: '14px', objectFit: 'contain' }} />
                           {t.name}
                         </div>
@@ -491,8 +491,8 @@ export default function ProjectDetailClient({ isModal = false }) {
                   className="project-detail__action-btn"
                   style={{
                     color: 'white',
-                    background: '#0009fa',
-                    borderColor: '#0009fa',
+                    background: '#2d43e8',
+                    borderColor: '#2d43e8',
                     fontWeight: 700,
                     justifyContent: 'center',
                     cursor: 'pointer',
@@ -588,7 +588,7 @@ export default function ProjectDetailClient({ isModal = false }) {
               Are you sure you want to delete this project? This action cannot be undone.
             </p>
             <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end' }}>
-              <button onClick={() => setShowDeleteModal(false)} style={{ padding: '0.5rem 1rem', background: '#f5f5f5', color: '#0a0a0a', border: 'none', borderRadius: '6px', fontWeight: 600, cursor: 'pointer' }}>Cancel</button>
+              <button onClick={() => setShowDeleteModal(false)} style={{ padding: '0.5rem 1rem', background: '#f5f5f5', color: '#231f20', border: 'none', borderRadius: '6px', fontWeight: 600, cursor: 'pointer' }}>Cancel</button>
               <button onClick={confirmDelete} disabled={isDeleting} style={{ padding: '0.5rem 1rem', background: '#ef4444', color: 'white', border: 'none', borderRadius: '6px', fontWeight: 600, cursor: isDeleting ? 'not-allowed' : 'pointer' }}>{isDeleting ? 'Deleting...' : 'Delete'}</button>
             </div>
           </div>

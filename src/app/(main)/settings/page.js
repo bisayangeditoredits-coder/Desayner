@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/client';
 import UserAvatar from '@/components/UserAvatar';
 import ImageUpload from '@/components/ImageUpload';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Save, User, Lock, Trash2, ArrowLeft } from 'lucide-react';
 import { CREATIVE_TOOLS } from '@/lib/constants';
 import '../../App.css';
@@ -17,7 +18,7 @@ const inputStyle = {
   width: '100%', padding: '0.65rem 0.9rem',
   border: '1px solid #e8e8e8', background: 'white',
   fontSize: '0.875rem', outline: 'none',
-  fontFamily: 'inherit', color: '#0a0a0a',
+  fontFamily: 'inherit', color: '#231f20',
   transition: 'border-color 0.15s',
 };
 const labelStyle = {
@@ -40,6 +41,7 @@ export default function SettingsPage() {
   const [authSaving, setAuthSaving] = useState(false);
   const [authMsg, setAuthMsg]   = useState('');
   const supabase = useMemo(() => createClient(), []);
+  const router = useRouter();
 
   useEffect(() => {
     async function load() {
@@ -81,8 +83,29 @@ export default function SettingsPage() {
         tools:      form.tools,
       })
       .eq('id', profile.id);
-    if (err) setError(err.message);
-    else setSaved(true);
+    if (err) {
+      setError(err.message);
+    } else {
+      // Clear Redis cache for old and new username
+      try {
+        const keysToClear = [`profile_data:${form.username.toLowerCase()}`];
+        if (profile.username && profile.username !== form.username) {
+          keysToClear.push(`profile_data:${profile.username.toLowerCase()}`);
+        }
+        await fetch('/api/cache/clear', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ keys: keysToClear })
+        });
+      } catch (e) {
+        console.error('Failed to clear cache', e);
+      }
+      
+      setSaved(true);
+      // Dispatch global event so Header can update instantly
+      window.dispatchEvent(new Event('profile_updated'));
+      router.refresh();
+    }
     setSaving(false);
   }
 
@@ -221,7 +244,7 @@ export default function SettingsPage() {
                   onChange={e => setForm(p => ({ ...p, full_name: e.target.value }))}
                   placeholder="Your full name"
                   maxLength={80}
-                  onFocus={e => e.target.style.borderColor = '#0a0a0a'}
+                  onFocus={e => e.target.style.borderColor = '#231f20'}
                   onBlur={e => e.target.style.borderColor = '#e8e8e8'}
                 />
               </div>
@@ -238,7 +261,7 @@ export default function SettingsPage() {
                     placeholder="username"
                     maxLength={30}
                     required
-                    onFocus={e => e.target.style.borderColor = '#0a0a0a'}
+                    onFocus={e => e.target.style.borderColor = '#231f20'}
                     onBlur={e => e.target.style.borderColor = '#e8e8e8'}
                   />
                 </div>
@@ -253,7 +276,7 @@ export default function SettingsPage() {
                   onChange={e => setForm(p => ({ ...p, bio: e.target.value }))}
                   placeholder="Tell the community about yourself..."
                   maxLength={150}
-                  onFocus={e => e.target.style.borderColor = '#0a0a0a'}
+                  onFocus={e => e.target.style.borderColor = '#231f20'}
                   onBlur={e => e.target.style.borderColor = '#e8e8e8'}
                 />
                 <span style={{ fontSize: '0.72rem', color: '#9b9b9b' }}>{form.bio.length}/150</span>
@@ -268,7 +291,7 @@ export default function SettingsPage() {
                   onChange={e => setForm(p => ({ ...p, website: e.target.value }))}
                   placeholder="https://yourwebsite.com"
                   type="url"
-                  onFocus={e => e.target.style.borderColor = '#0a0a0a'}
+                  onFocus={e => e.target.style.borderColor = '#231f20'}
                   onBlur={e => e.target.style.borderColor = '#e8e8e8'}
                 />
               </div>
@@ -282,7 +305,7 @@ export default function SettingsPage() {
                   onChange={e => setForm(p => ({ ...p, location: e.target.value }))}
                   placeholder="City, Country"
                   maxLength={60}
-                  onFocus={e => e.target.style.borderColor = '#0a0a0a'}
+                  onFocus={e => e.target.style.borderColor = '#231f20'}
                   onBlur={e => e.target.style.borderColor = '#e8e8e8'}
                 />
               </div>
@@ -306,9 +329,9 @@ export default function SettingsPage() {
                         style={{
                           display: 'flex', alignItems: 'center', gap: '0.4rem',
                           padding: '0.4rem 0.8rem', borderRadius: '20px',
-                          border: isSelected ? '1px solid #0009fa' : '1px solid #e8e8e8',
+                          border: isSelected ? '1px solid #2d43e8' : '1px solid #e8e8e8',
                           background: isSelected ? '#eef0ff' : 'white',
-                          color: isSelected ? '#0009fa' : '#0a0a0a',
+                          color: isSelected ? '#2d43e8' : '#231f20',
                           fontSize: '0.8rem', fontWeight: 600, cursor: 'pointer',
                           transition: 'all 0.15s'
                         }}
@@ -324,7 +347,7 @@ export default function SettingsPage() {
               <button
                 type="submit"
                 disabled={saving}
-                style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.75rem 2rem', background: '#0a0a0a', color: 'white', border: 'none', fontSize: '0.875rem', fontWeight: 700, cursor: saving ? 'not-allowed' : 'pointer', opacity: saving ? 0.7 : 1, fontFamily: 'inherit', width: 'fit-content' }}
+                style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.75rem 2rem', background: '#231f20', color: 'white', border: 'none', fontSize: '0.875rem', fontWeight: 700, cursor: saving ? 'not-allowed' : 'pointer', opacity: saving ? 0.7 : 1, fontFamily: 'inherit', width: 'fit-content' }}
               >
                 <Save size={14} /> {saving ? 'Saving...' : 'Save Profile'}
               </button>
@@ -339,13 +362,13 @@ export default function SettingsPage() {
                 {authMsg && <div style={{ padding: '0.65rem 0.9rem', background: authMsg.includes('error') || authMsg.startsWith('Error') ? '#fff0f0' : '#f0fff4', border: `1px solid ${authMsg.includes('error') ? '#ffd0d0' : '#b7f5c8'}`, color: authMsg.includes('error') ? '#ff3b3b' : '#1a8a3b', fontSize: '0.85rem' }}>{authMsg}</div>}
                 <div>
                   <label style={labelStyle}>Email</label>
-                  <input style={inputStyle} value={newEmail} onChange={e => setNewEmail(e.target.value)} type="email" onFocus={e => e.target.style.borderColor = '#0a0a0a'} onBlur={e => e.target.style.borderColor = '#e8e8e8'} />
+                  <input style={inputStyle} value={newEmail} onChange={e => setNewEmail(e.target.value)} type="email" onFocus={e => e.target.style.borderColor = '#231f20'} onBlur={e => e.target.style.borderColor = '#e8e8e8'} />
                 </div>
                 <div>
                   <label style={labelStyle}>New Password</label>
-                  <input style={inputStyle} value={newPass} onChange={e => setNewPass(e.target.value)} type="password" placeholder="Leave blank to keep current" minLength={6} onFocus={e => e.target.style.borderColor = '#0a0a0a'} onBlur={e => e.target.style.borderColor = '#e8e8e8'} />
+                  <input style={inputStyle} value={newPass} onChange={e => setNewPass(e.target.value)} type="password" placeholder="Leave blank to keep current" minLength={6} onFocus={e => e.target.style.borderColor = '#231f20'} onBlur={e => e.target.style.borderColor = '#e8e8e8'} />
                 </div>
-                <button type="submit" disabled={authSaving} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.65rem 1.5rem', background: '#0a0a0a', color: 'white', border: 'none', fontSize: '0.875rem', fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', width: 'fit-content' }}>
+                <button type="submit" disabled={authSaving} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.65rem 1.5rem', background: '#231f20', color: 'white', border: 'none', fontSize: '0.875rem', fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', width: 'fit-content' }}>
                   <Save size={14} /> {authSaving ? 'Saving...' : 'Update'}
                 </button>
               </form>

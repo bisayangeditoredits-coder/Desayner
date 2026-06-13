@@ -107,7 +107,7 @@ export default function AssetStorePage() {
       <div className="assets-header">
         <div>
           <h1 className="assets-title" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <ShoppingBag size={22} style={{ color: 'var(--accent-blue, #0009fa)' }} /> Asset Store
+            <ShoppingBag size={22} style={{ color: 'var(--accent-blue, #2d43e8)' }} /> Asset Store
           </h1>
           <p className="assets-desc">Premium templates, UI Kits, assets, and source files shared by creators.</p>
         </div>

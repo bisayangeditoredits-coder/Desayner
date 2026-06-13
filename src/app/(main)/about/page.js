@@ -33,7 +33,7 @@ export default function AboutPage() {
             </div>
             <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0f172a', marginBottom: '0.5rem' }}>Contact Us</h3>
             <p style={{ color: '#64748b', lineHeight: 1.6, marginBottom: '1rem' }}>We'd love to hear from you. For support, partnerships, or feedback.</p>
-            <a href="mailto:support@desayner.com" style={{ fontWeight: 700, color: '#0009fa', textDecoration: 'none' }}>support@desayner.com</a>
+            <a href="mailto:support@desayner.com" style={{ fontWeight: 700, color: '#2d43e8', textDecoration: 'none' }}>support@desayner.com</a>
           </div>
         </div>
       </div>

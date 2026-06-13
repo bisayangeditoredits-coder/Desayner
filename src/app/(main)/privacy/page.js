@@ -47,7 +47,7 @@ export default function PrivacyPage() {
           <section>
             <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#0f172a', marginBottom: '1rem' }}>4. Contact Us</h2>
             <p>
-              If you have any questions about this privacy policy or our privacy practices, please contact us at <a href="mailto:support@desayner.com" style={{ color: '#0009fa', fontWeight: 600 }}>support@desayner.com</a>.
+              If you have any questions about this privacy policy or our privacy practices, please contact us at <a href="mailto:support@desayner.com" style={{ color: '#2d43e8', fontWeight: 600 }}>support@desayner.com</a>.
             </p>
           </section>
         </div>

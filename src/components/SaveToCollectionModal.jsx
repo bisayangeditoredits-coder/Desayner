@@ -147,7 +147,7 @@ export default function SaveToCollectionModal({ itemType = 'project', itemId, on
                 }}
               >
                 <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 600, fontSize: '0.85rem' }}>
-                  <Folder size={14} color={savedTo[c.id] ? '#0009fa' : 'var(--text-dim)'} />
+                  <Folder size={14} color={savedTo[c.id] ? '#2d43e8' : 'var(--text-dim)'} />
                   {c.name}
                 </span>
                 {savedTo[c.id]

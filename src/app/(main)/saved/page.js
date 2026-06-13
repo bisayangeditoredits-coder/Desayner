@@ -61,7 +61,7 @@ export default function SavedPage() {
     <div style={{ textAlign: 'center', padding: '4rem', border: '1px solid #e8e8e8', background: 'white' }}>
       <Bookmark size={28} style={{ color: '#e0e0e0', display: 'block', margin: '0 auto 1rem' }} />
       <p style={{ color: '#9b9b9b', fontSize: '0.875rem', marginBottom: '1rem' }}>{label}</p>
-      <Link href={href} style={{ display: 'inline-block', padding: '0.5rem 1.25rem', border: '1px solid #e8e8e8', fontSize: '0.8rem', fontWeight: 700, color: '#0a0a0a' }}>
+      <Link href={href} style={{ display: 'inline-block', padding: '0.5rem 1.25rem', border: '1px solid #e8e8e8', fontSize: '0.8rem', fontWeight: 700, color: '#231f20' }}>
         {linkLabel}
       </Link>
     </div>
@@ -126,12 +126,12 @@ export default function SavedPage() {
                         </Link>
                         <div style={{ flex: 1, minWidth: 0 }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.4rem' }}>
-                            <Link href={post.profiles?.username ? `/profile/${post.profiles.username}` : '#'} style={{ fontWeight: 700, fontSize: '0.875rem', color: '#0a0a0a' }}>
+                            <Link href={post.profiles?.username ? `/profile/${post.profiles.username}` : '#'} style={{ fontWeight: 700, fontSize: '0.875rem', color: '#231f20' }}>
                               {post.profiles?.full_name || post.profiles?.username}
                             </Link>
                             <span style={{ fontSize: '0.72rem', color: '#9b9b9b' }}>{timeAgo(post.created_at)}</span>
                           </div>
-                          <p style={{ fontSize: '0.875rem', lineHeight: 1.6, color: '#0a0a0a' }}>{post.body}</p>
+                          <p style={{ fontSize: '0.875rem', lineHeight: 1.6, color: '#231f20' }}>{post.body}</p>
                           {post.image_url && (
                             <img src={post.image_url} alt="" style={{ marginTop: '0.75rem', width: '100%', maxHeight: '240px', objectFit: 'cover', border: '1px solid #e8e8e8' }} />
                           )}

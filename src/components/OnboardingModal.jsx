@@ -145,7 +145,7 @@ export default function OnboardingModal({ user, onComplete }) {
   if (loadingUser) {
     return (
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '400px' }}>
-        <Loader2 size={32} color="#0009fa" style={{ animation: 'spin 1s linear infinite' }} />
+        <Loader2 size={32} color="#2d43e8" style={{ animation: 'spin 1s linear infinite' }} />
         <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       </div>
     );
@@ -162,7 +162,7 @@ export default function OnboardingModal({ user, onComplete }) {
         width: '100%', 
         maxWidth: '520px', 
         borderRadius: '24px', 
-        boxShadow: '0 20px 40px -15px rgba(0, 9, 250, 0.08), 0 10px 20px -10px rgba(0, 0, 0, 0.04)',
+        boxShadow: '0 20px 40px -15px rgba(45, 67, 232, 0.08), 0 10px 20px -10px rgba(0, 0, 0, 0.04)',
         overflow: 'hidden',
         display: 'flex',
         flexDirection: 'column',
@@ -170,7 +170,7 @@ export default function OnboardingModal({ user, onComplete }) {
       }}
     >
       {/* Top Gradient Accent */}
-      <div style={{ height: '8px', background: 'linear-gradient(90deg, #0009fa 0%, #3b82f6 100%)' }} />
+      <div style={{ height: '8px', background: 'linear-gradient(90deg, #2d43e8 0%, #3b82f6 100%)' }} />
 
       <div style={{ padding: '2.5rem' }}>
         {/* Header */}
@@ -217,7 +217,7 @@ export default function OnboardingModal({ user, onComplete }) {
                   onChange={e => setFullName(e.target.value)}
                   placeholder="Juan dela Cruz"
                   style={{ width: '100%', padding: '0.8rem 1rem', borderRadius: '12px', border: '1px solid #cbd5e1', fontSize: '0.95rem', outline: 'none', transition: 'border-color 0.2s', boxSizing: 'border-box' }}
-                  onFocus={e => e.target.style.borderColor = '#0009fa'}
+                  onFocus={e => e.target.style.borderColor = '#2d43e8'}
                   onBlur={e => e.target.style.borderColor = '#cbd5e1'}
                 />
               </div>
@@ -232,7 +232,7 @@ export default function OnboardingModal({ user, onComplete }) {
                     onChange={e => setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ''))}
                     placeholder="username"
                     style={{ width: '100%', padding: '0.8rem 1rem 0.8rem 2.2rem', borderRadius: '12px', border: `1px solid ${usernameError ? '#ef4444' : '#cbd5e1'}`, fontSize: '0.95rem', outline: 'none', transition: 'border-color 0.2s', boxSizing: 'border-box' }}
-                    onFocus={e => e.target.style.borderColor = usernameError ? '#ef4444' : '#0009fa'}
+                    onFocus={e => e.target.style.borderColor = usernameError ? '#ef4444' : '#2d43e8'}
                     onBlur={e => e.target.style.borderColor = usernameError ? '#ef4444' : '#cbd5e1'}
                   />
                   {checkingUsername && (
@@ -246,7 +246,7 @@ export default function OnboardingModal({ user, onComplete }) {
                 onClick={nextStep}
                 disabled={!step1Valid}
                 style={{ 
-                  marginTop: '1rem', width: '100%', padding: '0.9rem', background: step1Valid ? '#0009fa' : '#cbd5e1', color: 'white', border: 'none', borderRadius: '12px', fontWeight: 700, fontSize: '0.95rem', cursor: step1Valid ? 'pointer' : 'not-allowed', transition: 'all 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem'
+                  marginTop: '1rem', width: '100%', padding: '0.9rem', background: step1Valid ? '#2d43e8' : '#cbd5e1', color: 'white', border: 'none', borderRadius: '12px', fontWeight: 700, fontSize: '0.95rem', cursor: step1Valid ? 'pointer' : 'not-allowed', transition: 'all 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem'
                 }}
               >
                 Continue <ArrowRight size={16} />
@@ -273,7 +273,7 @@ export default function OnboardingModal({ user, onComplete }) {
                   rows={3}
                   maxLength={150}
                   style={{ width: '100%', padding: '0.8rem 1rem', borderRadius: '12px', border: '1px solid #cbd5e1', fontSize: '0.95rem', outline: 'none', resize: 'none', transition: 'border-color 0.2s', boxSizing: 'border-box' }}
-                  onFocus={e => e.target.style.borderColor = '#0009fa'}
+                  onFocus={e => e.target.style.borderColor = '#2d43e8'}
                   onBlur={e => e.target.style.borderColor = '#cbd5e1'}
                 />
               </div>
@@ -290,9 +290,9 @@ export default function OnboardingModal({ user, onComplete }) {
                         style={{
                           padding: '0.4rem 0.8rem',
                           borderRadius: '20px',
-                          border: isSelected ? '1px solid #0009fa' : '1px solid #e2e8f0',
-                          background: isSelected ? 'rgba(0, 9, 250, 0.05)' : 'white',
-                          color: isSelected ? '#0009fa' : '#64748b',
+                          border: isSelected ? '1px solid #2d43e8' : '1px solid #e2e8f0',
+                          background: isSelected ? 'rgba(45, 67, 232, 0.05)' : 'white',
+                          color: isSelected ? '#2d43e8' : '#64748b',
                           fontSize: '0.8rem',
                           fontWeight: 600,
                           cursor: 'pointer',
@@ -322,7 +322,7 @@ export default function OnboardingModal({ user, onComplete }) {
                 <button
                   onClick={nextStep}
                   disabled={!step2Valid || submitting}
-                  style={{ padding: '0.9rem', background: step2Valid ? '#0009fa' : '#cbd5e1', color: 'white', border: 'none', borderRadius: '12px', fontWeight: 700, fontSize: '0.95rem', cursor: step2Valid && !submitting ? 'pointer' : 'not-allowed', transition: 'all 0.2s', flex: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}
+                  style={{ padding: '0.9rem', background: step2Valid ? '#2d43e8' : '#cbd5e1', color: 'white', border: 'none', borderRadius: '12px', fontWeight: 700, fontSize: '0.95rem', cursor: step2Valid && !submitting ? 'pointer' : 'not-allowed', transition: 'all 0.2s', flex: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}
                 >
                   {submitting ? <Loader2 size={18} style={{ animation: 'spin 1s linear infinite' }} /> : 'Complete Profile'}
                 </button>

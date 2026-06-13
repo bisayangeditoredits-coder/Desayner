@@ -20,7 +20,7 @@ function timeAgo(dateStr) {
 }
 
 const POST_TYPE_STYLES = {
-  share:    { label: 'Share',    bg: '#f0f0f0', color: '#0a0a0a' },
+  share:    { label: 'Share',    bg: '#f0f0f0', color: '#231f20' },
   help:     { label: 'Help',     bg: '#fff0f0', color: '#ff3b3b' },
   feedback: { label: 'Feedback', bg: '#f0f8ff', color: '#0ea5e9' },
 };
@@ -65,7 +65,7 @@ function PostCard({ post, currentUser, currentProfile }) {
         </Link>
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '0.45rem' }}>
-            <Link href={post.profiles?.username ? `/profile/${post.profiles.username}` : '#'} style={{ fontWeight: 700, fontSize: '0.875rem', color: '#0a0a0a' }}>
+            <Link href={post.profiles?.username ? `/profile/${post.profiles.username}` : '#'} style={{ fontWeight: 700, fontSize: '0.875rem', color: '#231f20' }}>
               {post.profiles?.full_name || post.profiles?.username || 'User'}
             </Link>
             <span style={{ fontSize: '0.72rem', color: '#9b9b9b' }}>{timeAgo(post.created_at)}</span>
@@ -75,7 +75,7 @@ function PostCard({ post, currentUser, currentProfile }) {
               </span>
             )}
           </div>
-          <p style={{ fontSize: '0.9rem', lineHeight: 1.65, color: '#0a0a0a', whiteSpace: 'pre-wrap' }}>{post.body}</p>
+          <p style={{ fontSize: '0.9rem', lineHeight: 1.65, color: '#231f20', whiteSpace: 'pre-wrap' }}>{post.body}</p>
           {post.image_url && (
             <img src={post.image_url} alt="" style={{ width: '100%', maxHeight: '400px', objectFit: 'cover', border: '1px solid #e8e8e8', marginTop: '0.75rem' }} />
           )}
@@ -90,8 +90,8 @@ function PostCard({ post, currentUser, currentProfile }) {
           {post.comments_count > 0 ? post.comments_count : ''} Reply
           {showComments ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
         </button>
-        <button onClick={toggleSave} style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', background: 'none', border: 'none', cursor: 'pointer', color: saved ? '#0a0a0a' : '#c0c0c0', fontSize: '0.78rem', fontFamily: 'inherit', padding: '0.3rem' }}>
-          <Bookmark size={14} fill={saved ? '#0a0a0a' : 'none'} />
+        <button onClick={toggleSave} style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', background: 'none', border: 'none', cursor: 'pointer', color: saved ? '#231f20' : '#c0c0c0', fontSize: '0.78rem', fontFamily: 'inherit', padding: '0.3rem' }}>
+          <Bookmark size={14} fill={saved ? '#231f20' : 'none'} />
         </button>
       </div>
 
@@ -157,7 +157,7 @@ export default function CommunityPage() {
               <h1 style={{ fontSize: '0.95rem', fontWeight: 800, letterSpacing: '-0.02em' }}>Community</h1>
               <div style={{ display: 'flex', gap: '0.3rem' }}>
                 {FILTERS.map(f => (
-                  <button key={f} onClick={() => setFilter(f)} style={{ padding: '0.3rem 0.65rem', border: '1px solid', borderColor: filter === f ? '#0a0a0a' : '#e8e8e8', background: filter === f ? '#0a0a0a' : 'white', color: filter === f ? 'white' : '#6b6b6b', fontSize: '0.72rem', fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>
+                  <button key={f} onClick={() => setFilter(f)} style={{ padding: '0.3rem 0.65rem', border: '1px solid', borderColor: filter === f ? '#231f20' : '#e8e8e8', background: filter === f ? '#231f20' : 'white', color: filter === f ? 'white' : '#6b6b6b', fontSize: '0.72rem', fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>
                     {f}
                   </button>
                 ))}

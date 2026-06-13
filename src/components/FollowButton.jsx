@@ -49,8 +49,8 @@ export default function FollowButton({ targetUserId, currentUserId, initialFollo
       style={{
         padding: compact ? '0.4rem 1.1rem' : '0.6rem 1.5rem',
         border: '1px solid',
-        borderColor: following ? '#e8e8e8' : '#0a0a0a',
-        background: following ? 'white' : '#0a0a0a',
+        borderColor: following ? '#e8e8e8' : '#231f20',
+        background: following ? 'white' : '#231f20',
         color: following ? '#6b6b6b' : 'white',
         fontSize: compact ? '0.8rem' : '0.875rem',
         fontWeight: 700,

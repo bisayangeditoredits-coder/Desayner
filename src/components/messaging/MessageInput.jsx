@@ -83,22 +83,17 @@ const MessageInput = memo(function MessageInput({ onSend, onTyping, sending, dis
     if (imageFile) {
       setUploading(true);
       try {
-        // Get presigned URL from existing /api/upload
-        const ext = 'webp';
-        const key = `chat/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+        const formData = new FormData();
+        formData.append('cover', imageFile, 'chat_image.webp');
+        formData.append('thumb', imageFile, 'chat_thumb.webp');
+        formData.append('folder', 'chat');
+
         const upRes = await fetch('/api/upload', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ key, contentType: 'image/webp' }),
+          body: formData,
         });
         if (!upRes.ok) throw new Error('Upload URL failed');
-        const { url: presignedUrl, publicUrl } = await upRes.json();
-
-        await fetch(presignedUrl, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'image/webp' },
-          body: imageFile,
-        });
+        const { publicUrl } = await upRes.json();
 
         imageUrl = publicUrl;
       } catch {

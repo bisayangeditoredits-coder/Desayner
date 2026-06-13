@@ -122,7 +122,7 @@ export const viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
-  themeColor: "#0009fa",
+  themeColor: "#2d43e8",
 };
 
 import CookieBanner from "@/components/CookieBanner";

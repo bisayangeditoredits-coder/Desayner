@@ -94,7 +94,7 @@ function FontCard({ font, previewText, loaded }) {
             margin: '0 0 0.25rem',
             fontSize: '0.82rem',
             fontWeight: 700,
-            color: '#0a0a0a',
+            color: '#231f20',
             fontFamily: 'var(--font-grotesk, inherit)',
             overflow: 'hidden',
             textOverflow: 'ellipsis',
@@ -133,7 +133,7 @@ function FontCard({ font, previewText, loaded }) {
             alignItems: 'center',
             gap: '0.3rem',
             padding: '0.38rem 0.75rem',
-            background: '#0a0a0a',
+            background: '#231f20',
             color: 'white',
             borderRadius: 6,
             fontSize: '0.72rem',
@@ -144,8 +144,8 @@ function FontCard({ font, previewText, loaded }) {
             fontFamily: 'var(--font-grotesk, inherit)',
             transition: 'background 0.15s',
           }}
-          onMouseOver={e => e.currentTarget.style.background = '#0009fa'}
-          onMouseOut={e => e.currentTarget.style.background = '#0a0a0a'}
+          onMouseOver={e => e.currentTarget.style.background = '#2d43e8'}
+          onMouseOut={e => e.currentTarget.style.background = '#231f20'}
         >
           <Download size={11} />
           Download
@@ -290,7 +290,7 @@ function FontsInner() {
       {/* ── Hero ── */}
       <div style={{
         position: 'relative',
-        background: 'linear-gradient(135deg, #0009fa 0%, #0006a8 60%, #000473 100%)',
+        background: 'linear-gradient(135deg, #2d43e8 0%, #0006a8 60%, #000473 100%)',
         padding: '2.5rem 1.5rem',
         textAlign: 'center',
         overflow: 'hidden',
@@ -338,7 +338,7 @@ function FontsInner() {
           position: 'relative', zIndex: 1,
           display: 'flex', maxWidth: 660, margin: '0 auto',
           background: 'white', borderRadius: 12, overflow: 'hidden',
-          boxShadow: '0 8px 32px rgba(0,9,250,0.25)',
+          boxShadow: '0 8px 32px rgba(45, 67, 232,0.25)',
         }}>
           <div style={{ display: 'flex', alignItems: 'center', paddingLeft: '1.1rem' }}>
             <Search size={18} color="#9b9b9b" />
@@ -352,7 +352,7 @@ function FontsInner() {
             style={{
               flex: 1, border: 'none', outline: 'none',
               padding: '1rem 0.75rem', fontSize: '1rem',
-              fontFamily: 'inherit', background: 'transparent', color: '#0a0a0a',
+              fontFamily: 'inherit', background: 'transparent', color: '#231f20',
             }}
           />
           {query && (
@@ -364,7 +364,7 @@ function FontsInner() {
             </button>
           )}
           <button onClick={() => doFetch(query, category, 1)} style={{
-            padding: '0 1.5rem', background: '#0a0a0a', color: 'white',
+            padding: '0 1.5rem', background: '#231f20', color: 'white',
             border: 'none', fontWeight: 700, fontSize: '0.875rem',
             cursor: 'pointer', fontFamily: 'inherit', whiteSpace: 'nowrap',
           }}>
@@ -385,7 +385,7 @@ function FontsInner() {
               style={{
                 padding: '0.3rem 0.85rem',
                 background: query === tag ? 'white' : 'rgba(255,255,255,0.1)',
-                color: query === tag ? '#0a0a0a' : 'rgba(255,255,255,0.75)',
+                color: query === tag ? '#231f20' : 'rgba(255,255,255,0.75)',
                 border: query === tag ? 'none' : '1px solid rgba(255,255,255,0.15)',
                 borderRadius: 20, fontSize: '0.75rem', fontWeight: 600,
                 cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.15s',
@@ -419,7 +419,7 @@ function FontsInner() {
             background: '#f5f5f5', border: '1.5px solid #e0e0e0', borderRadius: 8,
             padding: '0.45rem 0.85rem', flex: 1, maxWidth: 340,
           }}>
-            <Type size={14} color="#0009fa" style={{ flexShrink: 0 }} />
+            <Type size={14} color="#2d43e8" style={{ flexShrink: 0 }} />
             <input
               type="text"
               value={preview}
@@ -428,7 +428,7 @@ function FontsInner() {
               maxLength={60}
               style={{
                 border: 'none', background: 'transparent', outline: 'none',
-                fontSize: '0.85rem', color: '#0a0a0a', fontFamily: 'inherit',
+                fontSize: '0.85rem', color: '#231f20', fontFamily: 'inherit',
                 width: '100%',
               }}
               aria-label="Font preview text"
@@ -457,7 +457,7 @@ function FontsInner() {
               onClick={() => handleCategory(c.value)}
               style={{
                 padding: '0.3rem 0.75rem',
-                background: category === c.value ? '#0a0a0a' : '#f5f5f5',
+                background: category === c.value ? '#231f20' : '#f5f5f5',
                 color: category === c.value ? 'white' : '#6b6b6b',
                 border: 'none', borderRadius: 6,
                 fontSize: '0.75rem', fontWeight: 600,
@@ -483,7 +483,7 @@ function FontsInner() {
           ) : fonts.length === 0 ? (
             <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '5rem 2rem' }}>
               <Type size={48} style={{ color: '#d1d5db', marginBottom: '1rem', display: 'block', margin: '0 auto 1rem' }} />
-              <p style={{ fontWeight: 800, fontSize: '1.25rem', color: '#0a0a0a', marginBottom: '0.4rem' }}>
+              <p style={{ fontWeight: 800, fontSize: '1.25rem', color: '#231f20', marginBottom: '0.4rem' }}>
                 No fonts found for &ldquo;{query}&rdquo;
               </p>
               <p style={{ color: '#9b9b9b', fontSize: '0.9rem' }}>Try a different name or change the category filter.</p>
@@ -508,7 +508,7 @@ function FontsInner() {
               disabled={loadingMore}
               style={{
                 padding: '0.75rem 2.5rem',
-                background: '#0a0a0a', color: 'white', border: 'none',
+                background: '#231f20', color: 'white', border: 'none',
                 borderRadius: 10, fontWeight: 700, fontSize: '0.9rem',
                 cursor: loadingMore ? 'not-allowed' : 'pointer',
                 fontFamily: 'inherit',
@@ -531,11 +531,11 @@ function FontsInner() {
       }}>
         <p style={{ fontSize: '0.8rem', color: '#9b9b9b' }}>
           Fonts provided by{' '}
-          <a href="https://fonts.bunny.net" target="_blank" rel="noreferrer" style={{ color: '#0a0a0a', fontWeight: 700 }}>
+          <a href="https://fonts.bunny.net" target="_blank" rel="noreferrer" style={{ color: '#231f20', fontWeight: 700 }}>
             Bunny Fonts
           </a>
           {' '}· Downloads via{' '}
-          <a href="https://fonts.google.com" target="_blank" rel="noreferrer" style={{ color: '#0a0a0a', fontWeight: 700 }}>
+          <a href="https://fonts.google.com" target="_blank" rel="noreferrer" style={{ color: '#231f20', fontWeight: 700 }}>
             Google Fonts
           </a>
           {' '}· All fonts are free to use under their respective open-source licenses.

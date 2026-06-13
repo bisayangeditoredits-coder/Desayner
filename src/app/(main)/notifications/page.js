@@ -55,9 +55,9 @@ export default function NotificationsPage() {
   }, []);
 
   function getIcon(type) {
-    if (type === 'like') return <Heart size={16} fill="#0009fa" color="#0009fa" />;
-    if (type === 'save') return <Bookmark size={16} fill="#0a0a0a" color="#0a0a0a" />;
-    if (type === 'comment') return <MessageCircle size={16} fill="#0009fa" color="#0009fa" />;
+    if (type === 'like') return <Heart size={16} fill="#2d43e8" color="#2d43e8" />;
+    if (type === 'save') return <Bookmark size={16} fill="#231f20" color="#231f20" />;
+    if (type === 'comment') return <MessageCircle size={16} fill="#2d43e8" color="#2d43e8" />;
     if (type === 'follow') return <UserPlus size={16} color="#1a8a3b" />;
     return <Bell size={16} />;
   }
@@ -123,7 +123,7 @@ export default function NotificationsPage() {
                     </div>
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <p style={{ fontSize: '0.9rem', color: '#0a0a0a', lineHeight: 1.4, marginBottom: '0.3rem' }}>
+                    <p style={{ fontSize: '0.9rem', color: '#231f20', lineHeight: 1.4, marginBottom: '0.3rem' }}>
                       {getMessage(n)}
                     </p>
                     <span style={{ fontSize: '0.75rem', color: '#9b9b9b' }}>{timeAgo(n.created_at)}</span>

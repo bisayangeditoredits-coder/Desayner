@@ -210,7 +210,7 @@ export default function FeedbackUploadModal({ onClose, onSuccess }) {
                 <span>{progress}%</span>
               </div>
               <div style={{ width: '100%', height: '6px', background: '#f1f5f9', borderRadius: '3px', overflow: 'hidden' }}>
-                <div style={{ width: `${progress}%`, height: '100%', background: '#0a0a0a', transition: 'width 0.15s ease' }} />
+                <div style={{ width: `${progress}%`, height: '100%', background: '#231f20', transition: 'width 0.15s ease' }} />
               </div>
             </div>
           )}

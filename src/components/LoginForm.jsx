@@ -45,7 +45,7 @@ export default function LoginForm({ isModal = false }) {
           <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
             <img src="/desayner-logo.png" alt="Desayner" style={{ width: 160, height: 'auto' }} />
           </div>
-          <h2 style={{ fontSize: '1.6rem', fontWeight: 800, color: '#0a0a0a', marginBottom: '0.4rem', letterSpacing: '-0.03em', textAlign: 'center' }}>
+          <h2 style={{ fontSize: '1.6rem', fontWeight: 800, color: '#231f20', marginBottom: '0.4rem', letterSpacing: '-0.03em', textAlign: 'center' }}>
             Welcome back
           </h2>
           <p style={{ fontSize: '0.875rem', color: '#64748b', marginBottom: '1.75rem', textAlign: 'center' }}>
@@ -71,7 +71,7 @@ export default function LoginForm({ isModal = false }) {
       display: 'flex',
       minHeight: '100vh',
       fontFamily: '"Inter", "Segoe UI", sans-serif',
-      background: '#0a0a0a',
+      background: '#231f20',
     }}>
 
       {/* ── LEFT: video panel ── */}
@@ -104,7 +104,7 @@ export default function LoginForm({ isModal = false }) {
         <div style={{
           position: 'absolute',
           inset: 0,
-          background: 'linear-gradient(135deg, rgba(0,9,250,0.35) 0%, rgba(0,0,0,0.55) 100%)',
+          background: 'linear-gradient(135deg, rgba(45, 67, 232,0.35) 0%, rgba(0,0,0,0.55) 100%)',
           zIndex: 1,
         }} />
 
@@ -175,7 +175,7 @@ export default function LoginForm({ isModal = false }) {
           <h1 style={{
             fontSize: '1.85rem',
             fontWeight: 900,
-            color: '#0a0a0a',
+            color: '#231f20',
             marginBottom: '0.4rem',
             letterSpacing: '-0.03em',
           }}>
@@ -205,7 +205,7 @@ export default function LoginForm({ isModal = false }) {
           .login-mobile-logo { display: block !important; }
         }
         @keyframes spin { to { transform: rotate(360deg); } }
-        .login-input:focus { border-color: #0009fa !important; }
+        .login-input:focus { border-color: #2d43e8 !important; }
       `}</style>
     </div>
   );
@@ -236,7 +236,7 @@ function FormFields({
           gap: '0.65rem',
           fontWeight: 600,
           fontSize: '0.9rem',
-          color: '#0a0a0a',
+          color: '#231f20',
           transition: 'background 0.15s, border-color 0.15s',
           marginBottom: '1.5rem',
         }}
@@ -262,7 +262,7 @@ function FormFields({
       {/* Email + password form */}
       <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
         <div>
-          <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, color: '#0a0a0a', marginBottom: '0.5rem' }}>
+          <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, color: '#231f20', marginBottom: '0.5rem' }}>
             Email
           </label>
           <input
@@ -274,7 +274,7 @@ function FormFields({
             required
             style={{
               width: '100%', padding: '0.85rem 1rem', borderRadius: 8,
-              border: '1px solid #e2e8f0', fontSize: '0.9rem', color: '#0a0a0a',
+              border: '1px solid #e2e8f0', fontSize: '0.9rem', color: '#231f20',
               background: '#fafafa', boxSizing: 'border-box', outline: 'none',
               transition: 'border-color 0.2s',
             }}
@@ -283,8 +283,8 @@ function FormFields({
 
         <div>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-            <label style={{ fontSize: '0.8rem', fontWeight: 700, color: '#0a0a0a' }}>Password</label>
-            <Link href="/forgot-password" style={{ fontSize: '0.78rem', color: '#0009fa', fontWeight: 600, textDecoration: 'none' }}>
+            <label style={{ fontSize: '0.8rem', fontWeight: 700, color: '#231f20' }}>Password</label>
+            <Link href="/forgot-password" style={{ fontSize: '0.78rem', color: '#2d43e8', fontWeight: 600, textDecoration: 'none' }}>
               Forgot password?
             </Link>
           </div>
@@ -298,7 +298,7 @@ function FormFields({
               required
               style={{
                 width: '100%', padding: '0.85rem 3rem 0.85rem 1rem', borderRadius: 8,
-                border: '1px solid #e2e8f0', fontSize: '0.9rem', color: '#0a0a0a',
+                border: '1px solid #e2e8f0', fontSize: '0.9rem', color: '#231f20',
                 background: '#fafafa', boxSizing: 'border-box', outline: 'none',
                 transition: 'border-color 0.2s',
               }}
@@ -324,7 +324,7 @@ function FormFields({
             style={{
               width: 17, height: 17, borderRadius: 4,
               border: rememberMe ? 'none' : '1px solid #cbd5e1',
-              background: rememberMe ? '#0009fa' : 'white',
+              background: rememberMe ? '#2d43e8' : 'white',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               transition: 'background 0.15s', flexShrink: 0, cursor: 'pointer',
             }}
@@ -349,15 +349,15 @@ function FormFields({
           disabled={loading}
           style={{
             width: '100%', padding: '0.9rem', borderRadius: 8,
-            background: '#0a0a0a', color: 'white', border: 'none',
+            background: '#231f20', color: 'white', border: 'none',
             cursor: loading ? 'not-allowed' : 'pointer', fontWeight: 700,
             fontSize: '0.9rem', display: 'flex', alignItems: 'center',
             justifyContent: 'center', gap: '0.5rem',
             opacity: loading ? 0.75 : 1, transition: 'opacity 0.2s, background 0.2s',
             marginTop: '0.25rem',
           }}
-          onMouseOver={e => !loading && (e.currentTarget.style.background = '#0009fa')}
-          onMouseOut={e => !loading && (e.currentTarget.style.background = '#0a0a0a')}
+          onMouseOver={e => !loading && (e.currentTarget.style.background = '#2d43e8')}
+          onMouseOut={e => !loading && (e.currentTarget.style.background = '#231f20')}
         >
           {loading && <Loader2 size={15} style={{ animation: 'spin 1s linear infinite' }} />}
           {loading ? 'Signing in…' : 'Sign In'}
@@ -366,7 +366,7 @@ function FormFields({
 
       <p style={{ textAlign: 'center', marginTop: '1.75rem', fontSize: '0.85rem', color: '#64748b' }}>
         Don&apos;t have an account?{' '}
-        <Link href="/signup" style={{ color: '#0009fa', fontWeight: 700, textDecoration: 'none' }}>
+        <Link href="/signup" style={{ color: '#2d43e8', fontWeight: 700, textDecoration: 'none' }}>
           Sign up free
         </Link>
       </p>

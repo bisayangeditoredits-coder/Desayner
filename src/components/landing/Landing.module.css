@@ -59,7 +59,7 @@
   text-decoration: none;
 }
 .navLink:hover, .navLink:focus-visible {
-  color: #0a0a0a;
+  color: #231f20;
 }
 
 .navButton {
@@ -67,7 +67,7 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.6rem 1.25rem;
-  background: #0a0a0a;
+  background: #231f20;
   color: white;
   border-radius: 4px;
   font-size: 0.85rem;
@@ -101,7 +101,7 @@
 .heroBadge {
   background: #f0f9ff;
   border: 1px solid #bae6fd;
-  color: #0009fa;
+  color: #2d43e8;
   padding: 0.4rem 1rem;
   border-radius: 4px;
   font-size: 0.75rem;
@@ -122,11 +122,11 @@
   max-width: 1100px;
   margin: 0 auto;
   letter-spacing: -0.04em;
-  color: #0a0a0a;
+  color: #231f20;
 }
 
 .heroTitleHighlight {
-  background: linear-gradient(135deg, #0a0a0a 0%, #0009fa 100%);
+  background: linear-gradient(135deg, #231f20 0%, #2d43e8 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -148,7 +148,7 @@
 
 .heroBtnPrimary {
   padding: 1rem 2.5rem;
-  background: #0009fa;
+  background: #2d43e8;
   color: white;
   font-size: 1rem;
   font-weight: 700;
@@ -164,7 +164,7 @@
 .heroBtnSecondary {
   padding: 1rem 2.5rem;
   background: white;
-  color: #0a0a0a;
+  color: #231f20;
   border: 1px solid #e8e8e8;
   font-size: 1rem;
   font-weight: 700;
@@ -258,7 +258,7 @@
 }
 
 .featuresBadge {
-  color: #0009fa;
+  color: #2d43e8;
   font-weight: 700;
   font-size: 0.85rem;
   text-transform: uppercase;
@@ -272,7 +272,7 @@
   font-weight: 800;
   margin-bottom: 1.5rem;
   letter-spacing: -0.03em;
-  color: #0a0a0a;
+  color: #231f20;
 }
 
 .featuresDesc {
@@ -300,7 +300,7 @@
   cursor: default;
 }
 .featureCard:hover {
-  border-color: #0009fa;
+  border-color: #2d43e8;
 }
 
 .featureIcon {
@@ -312,7 +312,7 @@
   align-items: center;
   justify-content: center;
   border-radius: 8px;
-  color: #0a0a0a;
+  color: #231f20;
   margin-bottom: 1.5rem;
 }
 
@@ -320,7 +320,7 @@
   font-size: 1.25rem;
   font-weight: 800;
   margin-bottom: 0.75rem;
-  color: #0a0a0a;
+  color: #231f20;
 }
 
 .featureCardDesc {
@@ -336,7 +336,7 @@
 }
 
 .ctaBox {
-  background: #0a0a0a;
+  background: #231f20;
   color: white;
   padding: 6rem 2rem;
   border-radius: 12px;
@@ -374,7 +374,7 @@
 .ctaBtn {
   padding: 1rem 3rem;
   background: white;
-  color: #0a0a0a;
+  color: #231f20;
   font-size: 1rem;
   font-weight: 800;
   border-radius: 4px;

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { ArrowUpRight, BriefcaseBusiness, Building2, CalendarDays, MapPin } from 'lucide-react';
 
 function formatDate(value) {
@@ -72,29 +73,34 @@ export default function JobCard({ job, onSelectJob }) {
             justifyContent: 'center',
             flexShrink: 0,
             overflow: 'hidden',
-            color: '#475569',
-            fontWeight: 800,
-            fontSize: '0.9rem',
             padding: '6px',
             boxShadow: '0 2px 10px rgba(0,0,0,0.03)',
           }}
         >
-          {job.logo && !logoFailed ? (
-            <img
+          {(!job.logo || logoFailed) ? (
+            <div style={{
+              width: '100%', height: '100%', borderRadius: '8px',
+              background: `linear-gradient(135deg, hsl(${(job.company.charCodeAt(0) * 15) % 360}, 80%, 65%), hsl(${(job.company.charCodeAt(1) * 25) % 360}, 80%, 45%))`,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              color: 'white', fontWeight: 800, fontSize: '1.2rem', textShadow: '0 1px 2px rgba(0,0,0,0.2)'
+            }}>
+              {job.company.charAt(0).toUpperCase()}
+            </div>
+          ) : (
+            <Image
               src={job.logo}
               alt={job.company}
-              loading="lazy"
-              decoding="async"
+              width={48}
+              height={48}
+              unoptimized={true}
               onError={() => setLogoFailed(true)}
               style={{ width: '100%', height: '100%', objectFit: 'contain' }}
             />
-          ) : (
-            initials || <Building2 size={20} />
           )}
         </div>
 
         <div style={{ minWidth: 0, flex: 1 }}>
-          <div style={{ color: '#0009fa', fontSize: '0.7rem', fontWeight: 800, textTransform: 'uppercase', marginBottom: '0.35rem', letterSpacing: '0.04em' }}>
+          <div style={{ color: '#2d43e8', fontSize: '0.7rem', fontWeight: 800, textTransform: 'uppercase', marginBottom: '0.35rem', letterSpacing: '0.04em' }}>
             {job.category}
           </div>
           <h2
@@ -211,7 +217,7 @@ export default function JobCard({ job, onSelectJob }) {
             display: 'inline-flex',
             alignItems: 'center',
             gap: '0.4rem',
-            background: '#0a0a0a',
+            background: '#231f20',
             color: 'white',
             textDecoration: 'none',
             boxShadow: '0 4px 12px rgba(0,0,0,0.1)'

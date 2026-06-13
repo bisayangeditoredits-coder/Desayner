@@ -21,14 +21,14 @@ export async function sendWelcomeEmail({ toEmail, toName }) {
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Welcome to Desayner</title>
       </head>
-      <body style="margin:0;padding:0;background:#0a0a0a;font-family:'Inter','Segoe UI',sans-serif;">
-        <table width="100%" cellpadding="0" cellspacing="0" style="background:#0a0a0a;padding:40px 16px;">
+      <body style="margin:0;padding:0;background:#231f20;font-family:'Inter','Segoe UI',sans-serif;">
+        <table width="100%" cellpadding="0" cellspacing="0" style="background:#231f20;padding:40px 16px;">
           <tr>
             <td align="center">
               <table width="560" cellpadding="0" cellspacing="0" style="background:#111111;border-radius:16px;overflow:hidden;border:1px solid #222;">
                 <!-- Header -->
                 <tr>
-                  <td style="background:linear-gradient(135deg,#0009fa 0%,#0a0a0a 100%);padding:40px 40px 32px;text-align:center;">
+                  <td style="background:linear-gradient(135deg,#2d43e8 0%,#231f20 100%);padding:40px 40px 32px;text-align:center;">
                     <img src="${APP_URL}/desayner-logo-whiteversiom.png" alt="Desayner" width="140" style="display:block;margin:0 auto 20px;" />
                     <h1 style="margin:0;font-size:28px;font-weight:900;color:#ffffff;letter-spacing:-0.03em;">
                       Welcome, ${toName || 'Designer'}! 👋
@@ -74,7 +74,7 @@ export async function sendWelcomeEmail({ toEmail, toName }) {
                     <table width="100%" cellpadding="0" cellspacing="0">
                       <tr>
                         <td align="center">
-                          <a href="${APP_URL}" style="display:inline-block;padding:14px 36px;background:#0009fa;color:#ffffff;font-size:15px;font-weight:700;text-decoration:none;border-radius:10px;letter-spacing:-0.01em;">
+                          <a href="${APP_URL}" style="display:inline-block;padding:14px 36px;background:#2d43e8;color:#ffffff;font-size:15px;font-weight:700;text-decoration:none;border-radius:10px;letter-spacing:-0.01em;">
                             Go to Desayner →
                           </a>
                         </td>
@@ -88,7 +88,7 @@ export async function sendWelcomeEmail({ toEmail, toName }) {
                   <td style="padding:20px 40px;border-top:1px solid #1e1e1e;text-align:center;">
                     <p style="margin:0;font-size:12px;color:#475569;">
                       You received this email because you signed up at
-                      <a href="${APP_URL}" style="color:#0009fa;text-decoration:none;">desayner.com</a>.
+                      <a href="${APP_URL}" style="color:#2d43e8;text-decoration:none;">desayner.com</a>.
                     </p>
                     <p style="margin:6px 0 0;font-size:12px;color:#334155;">
                       © ${new Date().getFullYear()} Desayner. All rights reserved.
@@ -116,7 +116,7 @@ export async function sendLikeNotificationEmail({ toEmail, toName, likerName, pr
     html: `
       <!DOCTYPE html>
       <html>
-      <body style="margin:0;padding:40px 16px;background:#0a0a0a;font-family:'Inter','Segoe UI',sans-serif;">
+      <body style="margin:0;padding:40px 16px;background:#231f20;font-family:'Inter','Segoe UI',sans-serif;">
         <table width="100%" cellpadding="0" cellspacing="0">
           <tr><td align="center">
             <table width="520" cellpadding="0" cellspacing="0" style="background:#111;border-radius:14px;border:1px solid #222;overflow:hidden;">
@@ -131,7 +131,7 @@ export async function sendLikeNotificationEmail({ toEmail, toName, likerName, pr
               </tr>
               <tr>
                 <td style="padding:0 36px 32px;text-align:center;">
-                  <a href="${projectUrl}" style="display:inline-block;padding:12px 28px;background:#0009fa;color:#fff;font-size:14px;font-weight:700;text-decoration:none;border-radius:8px;">
+                  <a href="${projectUrl}" style="display:inline-block;padding:12px 28px;background:#2d43e8;color:#fff;font-size:14px;font-weight:700;text-decoration:none;border-radius:8px;">
                     View Project →
                   </a>
                 </td>
@@ -139,7 +139,7 @@ export async function sendLikeNotificationEmail({ toEmail, toName, likerName, pr
               <tr>
                 <td style="padding:16px 36px;border-top:1px solid #1e1e1e;text-align:center;">
                   <p style="margin:0;font-size:11px;color:#475569;">
-                    <a href="${APP_URL}/settings" style="color:#0009fa;text-decoration:none;">Manage email notifications</a>
+                    <a href="${APP_URL}/settings" style="color:#2d43e8;text-decoration:none;">Manage email notifications</a>
                   </p>
                 </td>
               </tr>
@@ -163,7 +163,7 @@ export async function sendFollowNotificationEmail({ toEmail, toName, followerNam
     html: `
       <!DOCTYPE html>
       <html>
-      <body style="margin:0;padding:40px 16px;background:#0a0a0a;font-family:'Inter','Segoe UI',sans-serif;">
+      <body style="margin:0;padding:40px 16px;background:#231f20;font-family:'Inter','Segoe UI',sans-serif;">
         <table width="100%" cellpadding="0" cellspacing="0">
           <tr><td align="center">
             <table width="520" cellpadding="0" cellspacing="0" style="background:#111;border-radius:14px;border:1px solid #222;overflow:hidden;">
@@ -180,7 +180,7 @@ export async function sendFollowNotificationEmail({ toEmail, toName, followerNam
               </tr>
               <tr>
                 <td style="padding:0 36px 32px;text-align:center;">
-                  <a href="${APP_URL}/profile/${followerUsername}" style="display:inline-block;padding:12px 28px;background:#0009fa;color:#fff;font-size:14px;font-weight:700;text-decoration:none;border-radius:8px;">
+                  <a href="${APP_URL}/profile/${followerUsername}" style="display:inline-block;padding:12px 28px;background:#2d43e8;color:#fff;font-size:14px;font-weight:700;text-decoration:none;border-radius:8px;">
                     View Their Profile →
                   </a>
                 </td>
@@ -188,7 +188,7 @@ export async function sendFollowNotificationEmail({ toEmail, toName, followerNam
               <tr>
                 <td style="padding:16px 36px;border-top:1px solid #1e1e1e;text-align:center;">
                   <p style="margin:0;font-size:11px;color:#475569;">
-                    <a href="${APP_URL}/settings" style="color:#0009fa;text-decoration:none;">Manage email notifications</a>
+                    <a href="${APP_URL}/settings" style="color:#2d43e8;text-decoration:none;">Manage email notifications</a>
                   </p>
                 </td>
               </tr>

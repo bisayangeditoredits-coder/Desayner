@@ -165,7 +165,7 @@ export default function StockPhotosPage() {
       {/* ── Hero / Search Header ────────────────────────────────────────── */}
       <div style={{
         position: 'relative',
-        background: 'linear-gradient(135deg, #0009fa 0%, #0006a8 60%, #000473 100%)',
+        background: 'linear-gradient(135deg, #2d43e8 0%, #0006a8 60%, #000473 100%)',
         padding: '2.5rem 1.5rem',
         textAlign: 'center',
         overflow: 'hidden',
@@ -202,7 +202,7 @@ export default function StockPhotosPage() {
           background: 'white',
           borderRadius: 12,
           overflow: 'hidden',
-          boxShadow: '0 8px 32px rgba(0,9,250,0.25)',
+          boxShadow: '0 8px 32px rgba(45, 67, 232,0.25)',
         }}>
           <div style={{ display: 'flex', alignItems: 'center', paddingLeft: '1.1rem' }}>
             <Search size={18} color="#9b9b9b" />
@@ -217,7 +217,7 @@ export default function StockPhotosPage() {
               flex: 1, border: 'none', outline: 'none',
               padding: '1rem 0.75rem',
               fontSize: '1rem', fontFamily: 'inherit',
-              background: 'transparent', color: '#0a0a0a',
+              background: 'transparent', color: '#231f20',
             }}
           />
           {query && (
@@ -229,7 +229,7 @@ export default function StockPhotosPage() {
             onClick={() => doSearch(query, 1)}
             style={{
               padding: '0 1.5rem',
-              background: '#0a0a0a',
+              background: '#231f20',
               color: 'white',
               border: 'none',
               fontWeight: 700,
@@ -252,7 +252,7 @@ export default function StockPhotosPage() {
               style={{
                 padding: '0.3rem 0.85rem',
                 background: query === tag ? 'white' : 'rgba(255,255,255,0.1)',
-                color: query === tag ? '#0a0a0a' : 'rgba(255,255,255,0.75)',
+                color: query === tag ? '#231f20' : 'rgba(255,255,255,0.75)',
                 border: query === tag ? 'none' : '1px solid rgba(255,255,255,0.15)',
                 borderRadius: 20,
                 fontSize: '0.75rem',
@@ -290,7 +290,7 @@ export default function StockPhotosPage() {
               onClick={() => setOrientation(o.value)}
               style={{
                 padding: '0.3rem 0.75rem',
-                background: orientation === o.value ? '#0a0a0a' : '#f5f5f5',
+                background: orientation === o.value ? '#231f20' : '#f5f5f5',
                 color: orientation === o.value ? 'white' : '#6b6b6b',
                 border: 'none',
                 borderRadius: 6,
@@ -375,7 +375,7 @@ export default function StockPhotosPage() {
                       top: '0.75rem',
                       right: '0.75rem',
                       background: savedPhotoIds.has(photo.id) ? '#ef4444' : 'rgba(255,255,255,0.9)',
-                      color: savedPhotoIds.has(photo.id) ? 'white' : '#0a0a0a',
+                      color: savedPhotoIds.has(photo.id) ? 'white' : '#231f20',
                       border: 'none',
                       borderRadius: '50%',
                       width: '2.2rem',
@@ -442,7 +442,7 @@ export default function StockPhotosPage() {
                       width: '100%',
                       padding: '0.55rem 0.75rem',
                       background: dlDone === photo.id ? '#16a34a' : 'white',
-                      color: dlDone === photo.id ? 'white' : '#0a0a0a',
+                      color: dlDone === photo.id ? 'white' : '#231f20',
                       border: 'none',
                       borderRadius: 7,
                       fontWeight: 700,
@@ -474,7 +474,7 @@ export default function StockPhotosPage() {
         {!loading && results.length === 0 && !error && (
           <div style={{ textAlign: 'center', padding: '5rem 2rem' }}>
             <ImageIcon size={48} style={{ color: '#d1d5db', marginBottom: '1rem' }} />
-            <p style={{ fontWeight: 800, fontSize: '1.25rem', color: '#0a0a0a', marginBottom: '0.4rem' }}>
+            <p style={{ fontWeight: 800, fontSize: '1.25rem', color: '#231f20', marginBottom: '0.4rem' }}>
               No photos found for &ldquo;{query}&rdquo;
             </p>
             <p style={{ color: '#9b9b9b', fontSize: '0.9rem' }}>Try a different keyword</p>
@@ -489,7 +489,7 @@ export default function StockPhotosPage() {
               disabled={loadingMore}
               style={{
                 padding: '0.75rem 2.5rem',
-                background: '#0a0a0a',
+                background: '#231f20',
                 color: 'white',
                 border: 'none',
                 borderRadius: 10,
@@ -525,7 +525,7 @@ export default function StockPhotosPage() {
             href="https://unsplash.com/?utm_source=desayner&utm_medium=referral"
             target="_blank"
             rel="noopener noreferrer"
-            style={{ color: '#0a0a0a', fontWeight: 700, textDecoration: 'none' }}
+            style={{ color: '#231f20', fontWeight: 700, textDecoration: 'none' }}
           >
             Unsplash
           </a>

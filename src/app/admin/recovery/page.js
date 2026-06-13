@@ -107,7 +107,7 @@ export default function RecoveryPage() {
                 <button 
                   onClick={() => handleRestore('projects', p.id)} 
                   disabled={restoring}
-                  style={{ background: '#0a0a0a', color: 'white', padding: '0.5rem 1rem', borderRadius: '6px', cursor: 'pointer' }}
+                  style={{ background: '#231f20', color: 'white', padding: '0.5rem 1rem', borderRadius: '6px', cursor: 'pointer' }}
                 >
                   Restore
                 </button>
@@ -132,7 +132,7 @@ export default function RecoveryPage() {
                 <button 
                   onClick={() => handleRestore('assets', a.id)} 
                   disabled={restoring}
-                  style={{ background: '#0a0a0a', color: 'white', padding: '0.5rem 1rem', borderRadius: '6px', cursor: 'pointer' }}
+                  style={{ background: '#231f20', color: 'white', padding: '0.5rem 1rem', borderRadius: '6px', cursor: 'pointer' }}
                 >
                   Restore
                 </button>

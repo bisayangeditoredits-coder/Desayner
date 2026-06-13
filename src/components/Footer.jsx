@@ -19,7 +19,7 @@ export default function Footer() {
           {/* Brand */}
           <div style={{ minWidth: 0 }}>
             <div style={{ fontSize: '1.5rem', fontWeight: 900, letterSpacing: '-0.02em', marginBottom: '1rem', color: '#0f172a' }}>
-              Desayner<span style={{ color: '#0009fa' }}>.</span>
+              Desayner<span style={{ color: '#2d43e8' }}>.</span>
             </div>
             <p style={{ color: '#64748b', fontSize: '0.9rem', lineHeight: 1.6, maxWidth: '300px' }}>
               The premium platform for modern creators. Share your work, find inspiration, and get hired by top brands globally.

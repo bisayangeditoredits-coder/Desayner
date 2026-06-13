@@ -91,7 +91,7 @@ export default function SignupForm({ isModal = false }) {
           <p style={{ color: '#64748b', lineHeight: 1.6, marginBottom: '2rem' }}>
             We sent a confirmation link to <strong>{email}</strong>. Click the link to activate your Desayner account.
           </p>
-          <Link href="/login" replace={isModal} style={{ padding: '0.9rem 2rem', borderRadius: '12px', background: '#0a0a0a', color: 'white', fontWeight: 700, fontSize: '0.95rem', display: 'inline-block', textDecoration: 'none' }}>
+          <Link href="/login" replace={isModal} style={{ padding: '0.9rem 2rem', borderRadius: '12px', background: '#231f20', color: 'white', fontWeight: 700, fontSize: '0.95rem', display: 'inline-block', textDecoration: 'none' }}>
             Back to Login
           </Link>
         </div>
@@ -107,7 +107,7 @@ export default function SignupForm({ isModal = false }) {
           <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
             <img src="/desayner-logo.png" alt="Desayner" style={{ width: 160, height: 'auto' }} />
           </div>
-          <h2 style={{ fontSize: '1.6rem', fontWeight: 800, color: '#0a0a0a', marginBottom: '0.4rem', letterSpacing: '-0.03em', textAlign: 'center' }}>
+          <h2 style={{ fontSize: '1.6rem', fontWeight: 800, color: '#231f20', marginBottom: '0.4rem', letterSpacing: '-0.03em', textAlign: 'center' }}>
             Create an account
           </h2>
           <p style={{ fontSize: '0.875rem', color: '#64748b', marginBottom: '1.75rem', textAlign: 'center' }}>
@@ -134,7 +134,7 @@ export default function SignupForm({ isModal = false }) {
       display: 'flex',
       minHeight: '100vh',
       fontFamily: '"Inter", "Segoe UI", sans-serif',
-      background: '#0a0a0a',
+      background: '#231f20',
     }}>
 
       {/* ── LEFT: video panel ── */}
@@ -167,7 +167,7 @@ export default function SignupForm({ isModal = false }) {
         <div style={{
           position: 'absolute',
           inset: 0,
-          background: 'linear-gradient(135deg, rgba(0,9,250,0.35) 0%, rgba(0,0,0,0.55) 100%)',
+          background: 'linear-gradient(135deg, rgba(45, 67, 232,0.35) 0%, rgba(0,0,0,0.55) 100%)',
           zIndex: 1,
         }} />
 
@@ -238,7 +238,7 @@ export default function SignupForm({ isModal = false }) {
           <h1 style={{
             fontSize: '1.85rem',
             fontWeight: 900,
-            color: '#0a0a0a',
+            color: '#231f20',
             marginBottom: '0.4rem',
             letterSpacing: '-0.03em',
           }}>
@@ -269,7 +269,7 @@ export default function SignupForm({ isModal = false }) {
           .login-mobile-logo { display: block !important; }
         }
         @keyframes spin { to { transform: rotate(360deg); } }
-        .login-input:focus { border-color: #0009fa !important; }
+        .login-input:focus { border-color: #2d43e8 !important; }
       `}</style>
     </div>
   );
@@ -304,7 +304,7 @@ function FormFields({
           gap: '0.65rem',
           fontWeight: 600,
           fontSize: '0.9rem',
-          color: '#0a0a0a',
+          color: '#231f20',
           transition: 'background 0.15s, border-color 0.15s',
           marginBottom: '1.5rem',
         }}
@@ -345,7 +345,7 @@ function FormFields({
         </div>
 
         <div>
-          <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, color: '#0a0a0a', marginBottom: '0.5rem' }}>
+          <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, color: '#231f20', marginBottom: '0.5rem' }}>
             Full Name
           </label>
           <input
@@ -357,7 +357,7 @@ function FormFields({
             required
             style={{
               width: '100%', padding: '0.85rem 1rem', borderRadius: 8,
-              border: '1px solid #e2e8f0', fontSize: '0.9rem', color: '#0a0a0a',
+              border: '1px solid #e2e8f0', fontSize: '0.9rem', color: '#231f20',
               background: '#fafafa', boxSizing: 'border-box', outline: 'none',
               transition: 'border-color 0.2s',
             }}
@@ -365,7 +365,7 @@ function FormFields({
         </div>
 
         <div>
-          <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, color: '#0a0a0a', marginBottom: '0.5rem' }}>
+          <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, color: '#231f20', marginBottom: '0.5rem' }}>
             Email
           </label>
           <input
@@ -377,7 +377,7 @@ function FormFields({
             required
             style={{
               width: '100%', padding: '0.85rem 1rem', borderRadius: 8,
-              border: '1px solid #e2e8f0', fontSize: '0.9rem', color: '#0a0a0a',
+              border: '1px solid #e2e8f0', fontSize: '0.9rem', color: '#231f20',
               background: '#fafafa', boxSizing: 'border-box', outline: 'none',
               transition: 'border-color 0.2s',
             }}
@@ -385,7 +385,7 @@ function FormFields({
         </div>
 
         <div>
-          <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, color: '#0a0a0a', marginBottom: '0.5rem' }}>
+          <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, color: '#231f20', marginBottom: '0.5rem' }}>
             Password
           </label>
           <div style={{ position: 'relative' }}>
@@ -399,7 +399,7 @@ function FormFields({
               minLength={8}
               style={{
                 width: '100%', padding: '0.85rem 3rem 0.85rem 1rem', borderRadius: 8,
-                border: '1px solid #e2e8f0', fontSize: '0.9rem', color: '#0a0a0a',
+                border: '1px solid #e2e8f0', fontSize: '0.9rem', color: '#231f20',
                 background: '#fafafa', boxSizing: 'border-box', outline: 'none',
                 transition: 'border-color 0.2s',
               }}
@@ -434,10 +434,10 @@ function FormFields({
             type="checkbox" 
             checked={agreed}
             onChange={(e) => setAgreed(e.target.checked)}
-            style={{ marginTop: '0.15rem', accentColor: '#0009fa', width: '16px', height: '16px' }}
+            style={{ marginTop: '0.15rem', accentColor: '#2d43e8', width: '16px', height: '16px' }}
           />
           <span style={{ fontSize: '0.8rem', color: '#475569', lineHeight: 1.5 }}>
-            I agree to the <Link href="/terms" style={{ color: '#0009fa', fontWeight: 600, textDecoration: 'none' }}>Terms of Service</Link> and <Link href="/privacy" style={{ color: '#0009fa', fontWeight: 600, textDecoration: 'none' }}>Privacy Policy</Link>.
+            I agree to the <Link href="/terms" style={{ color: '#2d43e8', fontWeight: 600, textDecoration: 'none' }}>Terms of Service</Link> and <Link href="/privacy" style={{ color: '#2d43e8', fontWeight: 600, textDecoration: 'none' }}>Privacy Policy</Link>.
           </span>
         </label>
 
@@ -456,15 +456,15 @@ function FormFields({
           disabled={loading || !agreed}
           style={{
             width: '100%', padding: '0.9rem', borderRadius: 8,
-            background: '#0a0a0a', color: 'white', border: 'none',
+            background: '#231f20', color: 'white', border: 'none',
             cursor: (loading || !agreed) ? 'not-allowed' : 'pointer', fontWeight: 700,
             fontSize: '0.9rem', display: 'flex', alignItems: 'center',
             justifyContent: 'center', gap: '0.5rem',
             opacity: (loading || !agreed) ? 0.6 : 1, transition: 'opacity 0.2s, background 0.2s',
             marginTop: '0.5rem',
           }}
-          onMouseOver={e => (!loading && agreed) && (e.currentTarget.style.background = '#0009fa')}
-          onMouseOut={e => (!loading && agreed) && (e.currentTarget.style.background = '#0a0a0a')}
+          onMouseOver={e => (!loading && agreed) && (e.currentTarget.style.background = '#2d43e8')}
+          onMouseOut={e => (!loading && agreed) && (e.currentTarget.style.background = '#231f20')}
         >
           {loading && <Loader2 size={15} style={{ animation: 'spin 1s linear infinite' }} />}
           {loading ? 'Creating account…' : 'Create Free Account'}
@@ -481,7 +481,7 @@ function FormFields({
 
       <p style={{ textAlign: 'center', marginTop: '1.75rem', fontSize: '0.85rem', color: '#64748b' }}>
         Already have an account?{' '}
-        <Link href="/login" replace={isModal} style={{ color: '#0009fa', fontWeight: 700, textDecoration: 'none' }}>
+        <Link href="/login" replace={isModal} style={{ color: '#2d43e8', fontWeight: 700, textDecoration: 'none' }}>
           Sign in
         </Link>
       </p>

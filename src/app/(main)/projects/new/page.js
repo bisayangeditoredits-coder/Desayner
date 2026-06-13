@@ -186,7 +186,7 @@ export default function NewProjectPage() {
                   placeholder="My Awesome Project"
                   maxLength={100}
                   required
-                  onFocus={(e) => (e.target.style.borderColor = '#0a0a0a')}
+                  onFocus={(e) => (e.target.style.borderColor = '#231f20')}
                   onBlur={(e)  => (e.target.style.borderColor = '#d1d5db')}
                 />
               </div>
@@ -199,7 +199,7 @@ export default function NewProjectPage() {
                   value={form.description}
                   onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))}
                   placeholder="Describe your project, process, tools used..."
-                  onFocus={(e) => (e.target.style.borderColor = '#0a0a0a')}
+                  onFocus={(e) => (e.target.style.borderColor = '#231f20')}
                   onBlur={(e)  => (e.target.style.borderColor = '#d1d5db')}
                 />
               </div>
@@ -215,7 +215,7 @@ export default function NewProjectPage() {
                   value={form.external_link}
                   onChange={(e) => setForm((p) => ({ ...p, external_link: e.target.value }))}
                   placeholder="https://behance.net/... or Live Demo URL"
-                  onFocus={(e) => (e.target.style.borderColor = '#0a0a0a')}
+                  onFocus={(e) => (e.target.style.borderColor = '#231f20')}
                   onBlur={(e)  => (e.target.style.borderColor = '#d1d5db')}
                 />
               </div>
@@ -250,7 +250,7 @@ export default function NewProjectPage() {
                 {tags.length > 0 && (
                   <div style={{ display: 'flex', gap: '0.35rem', flexWrap: 'wrap', marginBottom: '0.5rem' }}>
                     {tags.map((tag) => (
-                      <span key={tag} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', padding: '0.25rem 0.6rem', background: '#0a0a0a', color: 'white', fontSize: '0.75rem', fontWeight: 600, borderRadius: '4px' }}>
+                      <span key={tag} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', padding: '0.25rem 0.6rem', background: '#231f20', color: 'white', fontSize: '0.75rem', fontWeight: 600, borderRadius: '4px' }}>
                         #{tag}
                         <button type="button" onClick={() => setTags((p) => p.filter((t) => t !== tag))} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.6)', cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center' }}>
                           <X size={10} />
@@ -266,13 +266,13 @@ export default function NewProjectPage() {
                     onChange={(e) => setTagInput(e.target.value)}
                     placeholder="Add a tag and press Enter..."
                     onKeyDown={(e) => e.key === 'Enter' && addTag(e)}
-                    onFocus={(e) => (e.target.style.borderColor = '#0a0a0a')}
+                    onFocus={(e) => (e.target.style.borderColor = '#231f20')}
                     onBlur={(e)  => (e.target.style.borderColor = '#d1d5db')}
                   />
                   <button
                     onClick={addTag}
                     type="button"
-                    style={{ padding: '0.7rem 1rem', background: 'white', color: '#0a0a0a', border: '1px solid #d1d5db', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 700, fontFamily: 'inherit', display: 'flex', alignItems: 'center', borderRadius: '10px' }}
+                    style={{ padding: '0.7rem 1rem', background: 'white', color: '#231f20', border: '1px solid #d1d5db', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 700, fontFamily: 'inherit', display: 'flex', alignItems: 'center', borderRadius: '10px' }}
                   >
                     <Plus size={14} />
                   </button>
@@ -293,9 +293,9 @@ export default function NewProjectPage() {
                         style={{
                           display: 'flex', alignItems: 'center', gap: '0.4rem',
                           padding: '0.4rem 0.8rem', borderRadius: '20px',
-                          border: isSelected ? '1px solid #0009fa' : '1px solid #e8e8e8',
+                          border: isSelected ? '1px solid #2d43e8' : '1px solid #e8e8e8',
                           background: isSelected ? '#eef0ff' : 'white',
-                          color: isSelected ? '#0009fa' : '#0a0a0a',
+                          color: isSelected ? '#2d43e8' : '#231f20',
                           fontSize: '0.8rem', fontWeight: 600, cursor: 'pointer',
                           transition: 'all 0.15s',
                         }}
@@ -315,7 +315,7 @@ export default function NewProjectPage() {
                   id="published"
                   checked={form.published}
                   onChange={(e) => setForm((p) => ({ ...p, published: e.target.checked }))}
-                  style={{ width: '18px', height: '18px', cursor: 'pointer', accentColor: '#0a0a0a' }}
+                  style={{ width: '18px', height: '18px', cursor: 'pointer', accentColor: '#231f20' }}
                 />
                 <label htmlFor="published" style={{ cursor: 'pointer' }}>
                   <span style={{ display: 'block', fontSize: '0.95rem', fontWeight: 600, color: '#111827' }}>Publish immediately</span>
@@ -328,7 +328,7 @@ export default function NewProjectPage() {
                 <button
                   type="submit"
                   disabled={submitting}
-                  style={{ padding: '0.85rem 2.5rem', background: '#0a0a0a', color: 'white', border: 'none', borderRadius: '8px', fontSize: '0.95rem', fontWeight: 600, cursor: submitting ? 'not-allowed' : 'pointer', opacity: submitting ? 0.7 : 1, transition: 'all 0.2s', fontFamily: 'inherit' }}
+                  style={{ padding: '0.85rem 2.5rem', background: '#231f20', color: 'white', border: 'none', borderRadius: '8px', fontSize: '0.95rem', fontWeight: 600, cursor: submitting ? 'not-allowed' : 'pointer', opacity: submitting ? 0.7 : 1, transition: 'all 0.2s', fontFamily: 'inherit' }}
                 >
                   {submitting ? 'Publishing...' : form.published ? 'Publish Project' : 'Save Draft'}
                 </button>

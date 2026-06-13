@@ -68,7 +68,7 @@ export default function ColorsPage() {
         boxShadow: '0 2px 10px rgba(0,0,0,0.02)'
       }}>
         <div>
-          <h1 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 900, color: '#0a0a0a' }}>Explore Palettes</h1>
+          <h1 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 900, color: '#231f20' }}>Explore Palettes</h1>
           <p style={{ margin: '0.25rem 0 0 0', color: '#6b6b6b', fontSize: '0.9rem' }}>
             Discover and copy infinite harmonious color combinations
           </p>
@@ -91,7 +91,7 @@ export default function ColorsPage() {
                     padding: '0.45rem 1rem',
                     borderRadius: 20,
                     border: activeHue === hue ? 'none' : '1px solid #e5e5e5',
-                    background: activeHue === hue ? '#0a0a0a' : 'white',
+                    background: activeHue === hue ? '#231f20' : 'white',
                     color: activeHue === hue ? 'white' : '#6b6b6b',
                     fontWeight: 600,
                     fontSize: '0.85rem',
@@ -122,7 +122,7 @@ export default function ColorsPage() {
                 fontSize: '0.9rem',
                 cursor: 'pointer',
                 outline: 'none',
-                color: '#0a0a0a'
+                color: '#231f20'
               }}
             >
               {[3, 4, 5, 6, 7, 8].map(num => (
@@ -196,7 +196,7 @@ export default function ColorsPage() {
               {/* Details & Actions */}
               <div style={{ padding: '1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div style={{ overflow: 'hidden' }}>
-                  <h3 style={{ margin: '0 0 0.25rem 0', fontSize: '1rem', fontWeight: 800, color: '#0a0a0a', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
+                  <h3 style={{ margin: '0 0 0.25rem 0', fontSize: '1rem', fontWeight: 800, color: '#231f20', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
                     {palette.title}
                   </h3>
                   <div style={{ display: 'flex', gap: '0.3rem' }}>
@@ -209,7 +209,7 @@ export default function ColorsPage() {
                 <button
                   style={{
                     background: copiedPaletteId === palette.id ? '#16a34a' : '#f5f5f5',
-                    color: copiedPaletteId === palette.id ? 'white' : '#0a0a0a',
+                    color: copiedPaletteId === palette.id ? 'white' : '#231f20',
                     border: 'none', borderRadius: 10, padding: '0.6rem',
                     cursor: 'pointer', transition: 'all 0.2s',
                     display: 'flex', alignItems: 'center', justifyContent: 'center'
@@ -226,7 +226,7 @@ export default function ColorsPage() {
         {/* Load More & Loading States */}
         <div style={{ textAlign: 'center', padding: '3rem 0' }}>
           {exploreLoading && explorePalettes.length === 0 ? (
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem', color: '#0009fa' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem', color: '#2d43e8' }}>
               <RefreshCw size={32} style={{ animation: 'spin 1s linear infinite' }} />
               <span style={{ fontWeight: 700 }}>Generating infinite palettes...</span>
             </div>
@@ -235,10 +235,10 @@ export default function ColorsPage() {
               onClick={() => fetchExplorePalettes(explorePage + 1, colorCount, activeHue)}
               disabled={exploreLoading}
               style={{
-                padding: '0.85rem 2.5rem', background: '#0009fa', color: 'white',
+                padding: '0.85rem 2.5rem', background: '#2d43e8', color: 'white',
                 border: 'none', borderRadius: 12,
                 fontWeight: 800, cursor: exploreLoading ? 'not-allowed' : 'pointer',
-                boxShadow: '0 8px 20px rgba(0,9,250,0.2)', 
+                boxShadow: '0 8px 20px rgba(45, 67, 232,0.2)', 
                 display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
                 fontSize: '1rem', transition: 'all 0.2s'
               }}

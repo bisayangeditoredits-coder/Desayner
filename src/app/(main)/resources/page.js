@@ -138,7 +138,7 @@ export default function ResourcesPage() {
                     )}
                   </div>
                   <div style={{ padding: '1rem' }}>
-                    <div style={{ fontSize: '0.7rem', fontWeight: 700, color: '#0009fa', textTransform: 'uppercase', marginBottom: '0.3rem' }}>{res.category}</div>
+                    <div style={{ fontSize: '0.7rem', fontWeight: 700, color: '#2d43e8', textTransform: 'uppercase', marginBottom: '0.3rem' }}>{res.category}</div>
                     <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--text-main)', marginBottom: '0.3rem', display: '-webkit-box', WebkitLineClamp: 1, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{res.title}</h3>
                     <p style={{ fontSize: '0.85rem', color: 'var(--text-dim)', marginBottom: '1rem', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{res.description}</p>
                     

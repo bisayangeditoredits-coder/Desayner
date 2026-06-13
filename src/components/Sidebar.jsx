@@ -74,6 +74,17 @@ export default function Sidebar({ className = '' }) {
     };
   }, [supabase]);
 
+  // Listen for profile updates from Settings
+  useEffect(() => {
+    async function refreshProfile() {
+      if (!user?.id) return;
+      const { data } = await supabase.from('profiles').select('*').eq('id', user.id).single();
+      if (data) setProfile(data);
+    }
+    window.addEventListener('profile_updated', refreshProfile);
+    return () => window.removeEventListener('profile_updated', refreshProfile);
+  }, [user?.id, supabase]);
+
   async function signOut() {
     await supabase.auth.signOut();
     window.location.href = '/login';
@@ -206,7 +217,7 @@ export default function Sidebar({ className = '' }) {
             >
               <UserAvatar src={profile.avatar_url} name={profile.full_name || profile.username} size={28} />
               <div style={{ flex: 1, textAlign: 'left', overflow: 'hidden' }}>
-                <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#0a0a0a', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#231f20', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   {profile.full_name || profile.username}
                 </div>
                 <div style={{ fontSize: '0.7rem', color: '#9b9b9b', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>

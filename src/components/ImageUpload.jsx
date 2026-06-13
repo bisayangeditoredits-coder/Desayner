@@ -69,35 +69,26 @@ export default function ImageUpload({
         type: 'image/webp',
       });
 
-      // 1. Get presigned URL
+      // 1. Upload via FormData to /api/upload
+      const formData = new FormData();
+      formData.append('cover', finalFile, 'cover.webp');
+      formData.append('thumb', finalFile, 'thumb.webp'); // ImageUpload doesn't have a separate thumb logic yet
+      formData.append('folder', folder);
+
       let res;
       try {
         res = await fetch('/api/upload', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ filename: finalFile.name, contentType: finalFile.type, folder }),
+          body: formData,
         });
       } catch (err) {
         throw new Error('API fetch failed: ' + err.message);
       }
       
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Failed to get upload URL');
+      if (!res.ok) throw new Error(data.error || 'Upload to storage failed');
 
-      // 2. PUT file directly to R2
-      let putRes;
-      try {
-        putRes = await fetch(data.uploadUrl, {
-          method: 'PUT',
-          headers: { 'Content-Type': finalFile.type },
-          body: finalFile,
-        });
-      } catch (err) {
-        throw new Error('R2 PUT failed: ' + err.message);
-      }
-      if (!putRes.ok) throw new Error('Upload to storage failed');
-
-      // 3. Return the public URL
+      // 2. Return the public URL
       onUploaded(data.publicUrl);
     } catch (err) {
       setError(err.message);
@@ -113,31 +104,23 @@ export default function ImageUpload({
 
     try {
       const filename = `cropped_${Date.now()}.webp`;
+      const formData = new FormData();
+      formData.append('cover', croppedBlob, 'cropped.webp');
+      formData.append('thumb', croppedBlob, 'cropped_thumb.webp');
+      formData.append('folder', folder);
+
       let res;
       try {
         res = await fetch('/api/upload', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ filename, contentType: 'image/webp', folder }),
+          body: formData,
         });
       } catch (err) {
         throw new Error('API fetch failed: ' + err.message);
       }
       
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Failed to get upload URL');
-
-      let putRes;
-      try {
-        putRes = await fetch(data.uploadUrl, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'image/webp' },
-          body: croppedBlob,
-        });
-      } catch (err) {
-        throw new Error('R2 PUT failed: ' + err.message);
-      }
-      if (!putRes.ok) throw new Error('Upload to storage failed');
+      if (!res.ok) throw new Error(data.error || 'Upload to storage failed');
 
       onUploaded(data.publicUrl);
     } catch (err) {
@@ -201,7 +184,7 @@ export default function ImageUpload({
         onDragLeave={onDragLeave}
         onDrop={onDrop}
         style={{
-          border: `1px dashed ${dragging ? '#0a0a0a' : error ? '#ff3b3b' : '#d0d0d0'}`,
+          border: `1px dashed ${dragging ? '#231f20' : error ? '#ff3b3b' : '#d0d0d0'}`,
           background: dragging ? '#f5f5f5' : '#fafafa',
           padding: '2.5rem 1rem',
           textAlign: 'center',
@@ -219,10 +202,10 @@ export default function ImageUpload({
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.6rem' }}>
             <div style={{ width: '40px', height: '40px', border: '1px solid #e8e8e8', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'white', borderRadius: '8px' }}>
-              {dragging ? <Upload size={18} color="#0a0a0a" /> : <ImageIcon size={18} color="#9b9b9b" />}
+              {dragging ? <Upload size={18} color="#231f20" /> : <ImageIcon size={18} color="#9b9b9b" />}
             </div>
             <div>
-              <p style={{ fontSize: '0.875rem', fontWeight: 600, color: '#0a0a0a', marginBottom: '0.2rem' }}>
+              <p style={{ fontSize: '0.875rem', fontWeight: 600, color: '#231f20', marginBottom: '0.2rem' }}>
                 {dragging ? 'Drop to upload' : 'Click or drag an image here'}
               </p>
               <p style={{ fontSize: '0.75rem', color: '#9b9b9b' }}>PNG, JPG, WebP, GIF — max 10 MB</p>

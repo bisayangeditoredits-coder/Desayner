@@ -204,7 +204,7 @@ export default function UnsplashPicker({ onSelectPhoto, onClose }) {
               style={{
                 flex: 1, border: 'none', outline: 'none',
                 fontSize: '0.9rem', fontFamily: 'inherit',
-                background: 'transparent', color: '#0a0a0a',
+                background: 'transparent', color: '#231f20',
               }}
             />
             {query && (
@@ -249,7 +249,7 @@ export default function UnsplashPicker({ onSelectPhoto, onClose }) {
               onClick={() => updateQuery(tag)}
               style={{
                 padding: '0.3rem 0.75rem',
-                background: query === tag ? '#0a0a0a' : '#f0f0f0',
+                background: query === tag ? '#231f20' : '#f0f0f0',
                 color: query === tag ? 'white' : '#6b6b6b',
                 border: 'none', borderRadius: 20,
                 fontSize: '0.75rem', fontWeight: 600,
@@ -269,7 +269,7 @@ export default function UnsplashPicker({ onSelectPhoto, onClose }) {
           {!query && !loading && results.length === 0 && (
             <div style={{ textAlign: 'center', padding: '3rem 2rem', color: '#9b9b9b' }}>
               <ImageIcon size={40} style={{ marginBottom: '0.75rem', opacity: 0.3 }} />
-              <p style={{ fontWeight: 700, color: '#0a0a0a', marginBottom: '0.35rem' }}>Search Unsplash</p>
+              <p style={{ fontWeight: 700, color: '#231f20', marginBottom: '0.35rem' }}>Search Unsplash</p>
               <p style={{ fontSize: '0.875rem' }}>Millions of free high-quality photos</p>
             </div>
           )}
@@ -350,7 +350,7 @@ export default function UnsplashPicker({ onSelectPhoto, onClose }) {
                           flex: 1,
                           padding: '0.45rem 0.6rem',
                           background: 'white',
-                          color: '#0a0a0a',
+                          color: '#231f20',
                           border: 'none',
                           borderRadius: 6,
                           fontSize: '0.72rem',
@@ -405,7 +405,7 @@ export default function UnsplashPicker({ onSelectPhoto, onClose }) {
                 onClick={loadMore}
                 style={{
                   padding: '0.6rem 2rem',
-                  background: '#0a0a0a',
+                  background: '#231f20',
                   color: 'white',
                   border: 'none',
                   borderRadius: 8,
@@ -446,7 +446,7 @@ export default function UnsplashPicker({ onSelectPhoto, onClose }) {
             rel="noopener noreferrer"
             style={{ fontSize: '0.72rem', color: '#9b9b9b', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.3rem' }}
           >
-            Photos provided by <strong style={{ color: '#0a0a0a' }}>Unsplash</strong>
+            Photos provided by <strong style={{ color: '#231f20' }}>Unsplash</strong>
           </a>
         </div>
       </div>

@@ -57,7 +57,7 @@ function ResetPasswordForm() {
       display: 'flex',
       minHeight: '100vh',
       fontFamily: '"Inter", "Segoe UI", sans-serif',
-      background: '#0a0a0a',
+      background: '#231f20',
     }}>
       
       {/* ── LEFT: video panel ── */}
@@ -88,7 +88,7 @@ function ResetPasswordForm() {
         <div style={{
           position: 'absolute',
           inset: 0,
-          background: 'linear-gradient(135deg, rgba(0,9,250,0.35) 0%, rgba(0,0,0,0.55) 100%)',
+          background: 'linear-gradient(135deg, rgba(45, 67, 232,0.35) 0%, rgba(0,0,0,0.55) 100%)',
           zIndex: 1,
         }} />
 
@@ -152,7 +152,7 @@ function ResetPasswordForm() {
             <img src="/desayner-logo.png" alt="Desayner" style={{ width: 160, height: 'auto' }} />
           </div>
 
-          <h1 style={{ fontSize: '1.85rem', fontWeight: 900, color: '#0a0a0a', marginBottom: '0.4rem', letterSpacing: '-0.03em' }}>
+          <h1 style={{ fontSize: '1.85rem', fontWeight: 900, color: '#231f20', marginBottom: '0.4rem', letterSpacing: '-0.03em' }}>
             Set new password
           </h1>
           <p style={{ fontSize: '0.875rem', color: '#64748b', marginBottom: '2.5rem', lineHeight: '1.5' }}>
@@ -164,7 +164,7 @@ function ResetPasswordForm() {
               <div style={{ width: '48px', height: '48px', background: '#dcfce7', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem' }}>
                 <CheckCircle2 size={24} color="#16a34a" />
               </div>
-              <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#0a0a0a', marginBottom: '0.5rem' }}>Password reset</h3>
+              <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#231f20', marginBottom: '0.5rem' }}>Password reset</h3>
               <p style={{ fontSize: '0.95rem', color: '#64748b', marginBottom: '2rem', lineHeight: '1.5' }}>
                 Your password has been successfully reset. <br/>
                 Click below to continue to the dashboard.
@@ -173,12 +173,12 @@ function ResetPasswordForm() {
                 href="/"
                 style={{
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  width: '100%', padding: '0.95rem', borderRadius: '8px', background: '#0a0a0a',
+                  width: '100%', padding: '0.95rem', borderRadius: '8px', background: '#231f20',
                   color: 'white', border: 'none', cursor: 'pointer', textDecoration: 'none',
                   fontWeight: 600, fontSize: '0.95rem', transition: 'background 0.2s',
                 }}
-                onMouseOver={e => e.currentTarget.style.background = '#0009fa'}
-                onMouseOut={e => e.currentTarget.style.background = '#0a0a0a'}
+                onMouseOver={e => e.currentTarget.style.background = '#2d43e8'}
+                onMouseOut={e => e.currentTarget.style.background = '#231f20'}
               >
                 Go to Dashboard
               </Link>
@@ -186,7 +186,7 @@ function ResetPasswordForm() {
           ) : (
             <form onSubmit={handleUpdatePassword} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
               <div>
-                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, color: '#0a0a0a', marginBottom: '0.5rem' }}>
+                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, color: '#231f20', marginBottom: '0.5rem' }}>
                   New Password <span style={{ color: '#ef4444' }}>*</span>
                 </label>
                 <div style={{ position: 'relative' }}>
@@ -198,11 +198,11 @@ function ResetPasswordForm() {
                     required
                     style={{
                       width: '100%', padding: '0.85rem 3rem 0.85rem 1rem', borderRadius: '8px',
-                      border: '1px solid #e2e8f0', fontSize: '0.9rem', color: '#0a0a0a',
+                      border: '1px solid #e2e8f0', fontSize: '0.9rem', color: '#231f20',
                       background: '#fafafa', boxSizing: 'border-box', outline: 'none',
                       transition: 'border-color 0.2s',
                     }}
-                    onFocus={(e) => e.target.style.borderColor = '#0009fa'}
+                    onFocus={(e) => e.target.style.borderColor = '#2d43e8'}
                     onBlur={(e) => e.target.style.borderColor = '#e2e8f0'}
                   />
                   <button
@@ -220,7 +220,7 @@ function ResetPasswordForm() {
               </div>
 
               <div>
-                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, color: '#0a0a0a', marginBottom: '0.5rem' }}>
+                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, color: '#231f20', marginBottom: '0.5rem' }}>
                   Confirm New Password <span style={{ color: '#ef4444' }}>*</span>
                 </label>
                 <input
@@ -231,11 +231,11 @@ function ResetPasswordForm() {
                   required
                   style={{
                     width: '100%', padding: '0.85rem 1rem', borderRadius: '8px',
-                    border: '1px solid #e2e8f0', fontSize: '0.9rem', color: '#0a0a0a',
+                    border: '1px solid #e2e8f0', fontSize: '0.9rem', color: '#231f20',
                     background: '#fafafa', boxSizing: 'border-box', outline: 'none',
                     transition: 'border-color 0.2s',
                   }}
-                  onFocus={(e) => e.target.style.borderColor = '#0009fa'}
+                  onFocus={(e) => e.target.style.borderColor = '#2d43e8'}
                   onBlur={(e) => e.target.style.borderColor = '#e2e8f0'}
                 />
               </div>
@@ -250,14 +250,14 @@ function ResetPasswordForm() {
                 type="submit"
                 disabled={loading}
                 style={{
-                  width: '100%', padding: '0.9rem', borderRadius: '8px', background: '#0a0a0a',
+                  width: '100%', padding: '0.9rem', borderRadius: '8px', background: '#231f20',
                   color: 'white', border: 'none', cursor: loading ? 'not-allowed' : 'pointer',
                   fontWeight: 700, fontSize: '0.9rem', display: 'flex', alignItems: 'center',
                   justifyContent: 'center', gap: '0.5rem', opacity: loading ? 0.75 : 1,
                   marginTop: '0.25rem', transition: 'background 0.2s, opacity 0.2s'
                 }}
-                onMouseOver={e => !loading && (e.currentTarget.style.background = '#0009fa')}
-                onMouseOut={e => !loading && (e.currentTarget.style.background = '#0a0a0a')}
+                onMouseOver={e => !loading && (e.currentTarget.style.background = '#2d43e8')}
+                onMouseOut={e => !loading && (e.currentTarget.style.background = '#231f20')}
               >
                 {loading && <Loader2 size={15} strokeWidth={2} style={{ animation: 'spin 1s linear infinite' }} />}
                 {loading ? 'Resetting password...' : 'Reset password'}

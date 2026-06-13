@@ -48,10 +48,10 @@ function HireMeButton({ profileId }) {
         className="profile-pill-btn"
         style={{ 
           cursor: loading ? 'wait' : 'pointer', 
-          background: '#0009fa', 
+          background: '#2d43e8', 
           color: 'white', 
-          borderColor: '#0009fa',
-          boxShadow: '0 4px 14px rgba(0, 9, 250, 0.3)'
+          borderColor: '#2d43e8',
+          boxShadow: '0 4px 14px rgba(45, 67, 232, 0.3)'
         }}
       >
         <MessageSquare size={13} />
@@ -283,7 +283,7 @@ export default function ProfilePage() {
             <div>
               <button 
                 onClick={() => setSelectedCollection(null)} 
-                style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 600, fontSize: '0.9rem', marginBottom: '1.5rem', color: '#0a0a0a' }}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 600, fontSize: '0.9rem', marginBottom: '1.5rem', color: '#231f20' }}
               >
                 <ArrowLeft size={16} /> Back to Collections
               </button>
@@ -317,7 +317,7 @@ export default function ProfilePage() {
                 onMouseOver={(e) => e.currentTarget.style.borderColor = '#d1d1d1'}
                 onMouseOut={(e) => e.currentTarget.style.borderColor = '#e8e8e8'}
               >
-                <Folder size={24} color="#0a0a0a" />
+                <Folder size={24} color="#231f20" />
                 <div>
                   <h3 style={{ fontWeight: 600, fontSize: '1rem', marginBottom: '0.2rem' }}>All Saved Items</h3>
                   <p style={{ color: '#9b9b9b', fontSize: '0.85rem' }}>{savedProjects.length} items</p>
@@ -332,7 +332,7 @@ export default function ProfilePage() {
                   onMouseOver={(e) => e.currentTarget.style.borderColor = '#d1d1d1'}
                   onMouseOut={(e) => e.currentTarget.style.borderColor = '#e8e8e8'}
                 >
-                  <Folder size={24} color="#0a0a0a" />
+                  <Folder size={24} color="#231f20" />
                   <div>
                     <h3 style={{ fontWeight: 600, fontSize: '1rem', marginBottom: '0.2rem' }}>{col.name}</h3>
                     <p style={{ color: '#9b9b9b', fontSize: '0.85rem' }}>{col.items.length} items</p>

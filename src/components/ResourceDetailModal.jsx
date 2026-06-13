@@ -80,7 +80,7 @@ export default function ResourceDetailModal({ resourceId, onClose }) {
               }
             </div>
 
-            <h2 style={{ fontSize: '1rem', fontWeight: 700, color: '#0a0a0a', marginBottom: '0.75rem' }}>
+            <h2 style={{ fontSize: '1rem', fontWeight: 700, color: '#231f20', marginBottom: '0.75rem' }}>
               About this resource
             </h2>
             <p style={{ fontSize: '0.9rem', color: '#404040', lineHeight: 1.7, whiteSpace: 'pre-wrap', margin: 0 }}>
@@ -98,7 +98,7 @@ export default function ResourceDetailModal({ resourceId, onClose }) {
             {/* Category badge */}
             <span style={{
               display: 'inline-block', padding: '0.25rem 0.75rem',
-              background: '#eef0ff', color: '#0009fa',
+              background: '#eef0ff', color: '#2d43e8',
               fontSize: '0.7rem', fontWeight: 700,
               textTransform: 'uppercase', letterSpacing: '0.06em',
               alignSelf: 'flex-start',
@@ -117,7 +117,7 @@ export default function ResourceDetailModal({ resourceId, onClose }) {
               )}
               <div>
                 <div style={{ fontSize: '0.7rem', color: '#9b9b9b', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Shared by</div>
-                <div style={{ fontSize: '0.875rem', fontWeight: 700, color: '#0a0a0a' }}>
+                <div style={{ fontSize: '0.875rem', fontWeight: 700, color: '#231f20' }}>
                   {resource.profiles?.full_name || resource.profiles?.username}
                 </div>
               </div>

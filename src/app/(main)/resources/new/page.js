@@ -13,7 +13,7 @@ const inputStyle = {
   width: '100%', padding: '0.7rem 0.9rem',
   border: '1px solid #e8e8e8', background: 'white',
   fontSize: '0.9rem', outline: 'none', borderRadius: '0px',
-  fontFamily: 'inherit', color: '#0a0a0a', transition: 'border-color 0.15s',
+  fontFamily: 'inherit', color: '#231f20', transition: 'border-color 0.15s',
 };
 
 const labelStyle = {
@@ -162,7 +162,7 @@ export default function NewResourcePage() {
               <button
                 type="submit"
                 disabled={submitting || !agreed}
-                style={{ padding: '0.75rem 2rem', background: '#0a0a0a', color: 'white', border: 'none', fontSize: '0.875rem', fontWeight: 700, cursor: (submitting || !agreed) ? 'not-allowed' : 'pointer', opacity: (submitting || !agreed) ? 0.7 : 1, fontFamily: 'inherit' }}
+                style={{ padding: '0.75rem 2rem', background: '#231f20', color: 'white', border: 'none', fontSize: '0.875rem', fontWeight: 700, cursor: (submitting || !agreed) ? 'not-allowed' : 'pointer', opacity: (submitting || !agreed) ? 0.7 : 1, fontFamily: 'inherit' }}
               >
                 {submitting ? 'Sharing...' : 'Share Resource'}
               </button>

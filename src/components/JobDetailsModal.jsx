@@ -137,20 +137,27 @@ export default function JobDetailsModal({ job, onClose, isSaved = false, onToggl
                 boxShadow: '0 4px 16px rgba(0,0,0,0.04)'
               }}
             >
-              {job.logo && !logoFailed ? (
+              {(!job.logo || logoFailed) ? (
+                <div style={{
+                  width: '100%', height: '100%', borderRadius: '10px',
+                  background: `linear-gradient(135deg, hsl(${(job.company.charCodeAt(0) * 15) % 360}, 80%, 65%), hsl(${(job.company.charCodeAt(1) * 25) % 360}, 80%, 45%))`,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  color: 'white', fontWeight: 900, fontSize: '1.6rem', textShadow: '0 1px 2px rgba(0,0,0,0.2)'
+                }}>
+                  {job.company.charAt(0).toUpperCase()}
+                </div>
+              ) : (
                 <img
                   src={job.logo}
                   alt={job.company}
                   onError={() => setLogoFailed(true)}
                   style={{ width: '100%', height: '100%', objectFit: 'contain' }}
                 />
-              ) : (
-                <span style={{ fontFamily: 'var(--font-jakarta)' }}>{initials || job.company.charAt(0).toUpperCase()}</span>
               )}
             </div>
 
             <div>
-              <div style={{ color: '#0009fa', fontSize: '0.8rem', fontWeight: 800, textTransform: 'uppercase', marginBottom: '0.5rem', letterSpacing: '0.04em' }}>
+              <div style={{ color: '#2d43e8', fontSize: '0.8rem', fontWeight: 800, textTransform: 'uppercase', marginBottom: '0.5rem', letterSpacing: '0.04em' }}>
                 {job.category}
               </div>
               <h1 style={{ color: '#0f172a', fontSize: '1.75rem', lineHeight: 1.15, fontWeight: 900, margin: 0, fontFamily: 'var(--font-jakarta)', letterSpacing: '-0.03em', marginBottom: '0.5rem' }}>
@@ -226,7 +233,7 @@ export default function JobDetailsModal({ job, onClose, isSaved = false, onToggl
               margin-bottom: 0.5rem;
             }
             .job-description-prose a {
-              color: #0009fa;
+              color: #2d43e8;
               text-decoration: underline;
             }
             .job-description-prose strong {
@@ -304,7 +311,7 @@ export default function JobDetailsModal({ job, onClose, isSaved = false, onToggl
               display: 'inline-flex',
               alignItems: 'center',
               gap: '0.5rem',
-              background: '#0a0a0a',
+              background: '#231f20',
               color: 'white',
               textDecoration: 'none',
               boxShadow: '0 8px 24px rgba(0,0,0,0.15)'

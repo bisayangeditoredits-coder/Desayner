@@ -6,7 +6,7 @@ import UserAvatar from './UserAvatar';
 import ImageUpload from './ImageUpload';
 
 const POST_TYPES = [
-  { value: 'share', label: 'Share Work', color: '#0a0a0a' },
+  { value: 'share', label: 'Share Work', color: '#231f20' },
   { value: 'help', label: 'Ask for Help', color: '#ff3b3b' },
   { value: 'feedback', label: 'Get Feedback', color: '#0ea5e9' },
 ];
@@ -80,7 +80,7 @@ export default function PostComposer({ currentUser, onPosted }) {
                 width: '100%', padding: '0.6rem 0', border: 'none',
                 borderBottom: '1px solid #e8e8e8', background: 'transparent',
                 fontSize: '0.9rem', outline: 'none', resize: 'none',
-                fontFamily: 'inherit', color: '#0a0a0a', lineHeight: 1.5,
+                fontFamily: 'inherit', color: '#231f20', lineHeight: 1.5,
               }}
             />
 
@@ -112,7 +112,7 @@ export default function PostComposer({ currentUser, onPosted }) {
                 type="submit"
                 disabled={submitting || !body.trim()}
                 style={{
-                  padding: '0.5rem 1.25rem', background: '#0a0a0a', color: 'white',
+                  padding: '0.5rem 1.25rem', background: '#231f20', color: 'white',
                   border: 'none', fontSize: '0.8rem', fontWeight: 700,
                   cursor: submitting || !body.trim() ? 'not-allowed' : 'pointer',
                   opacity: !body.trim() ? 0.4 : 1, fontFamily: 'inherit', borderRadius: '8px',

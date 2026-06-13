@@ -50,7 +50,7 @@ export default function ReactionBar({ postId, currentUserId, initialReaction = n
           fontSize: '0.8rem',
           fontWeight: 600,
           fontFamily: 'inherit',
-          color: '#0a0a0a',
+          color: '#231f20',
         }}
       >
         {userReaction || '❤️'} {count > 0 && count}

@@ -65,7 +65,7 @@
   font-size: 1.25rem;
   font-weight: 800;
   letter-spacing: -0.02em;
-  color: #0a0a0a;
+  color: #231f20;
 }
 
 .conv-list__search {
@@ -86,7 +86,7 @@
 
 .conv-list__search-input:focus {
   background: white;
-  border-color: #0009fa;
+  border-color: #2d43e8;
 }
 
 .conv-list__items {
@@ -128,12 +128,12 @@
 
 .conv-item--unread .conv-item__name {
   font-weight: 800;
-  color: #0a0a0a;
+  color: #231f20;
 }
 
 .conv-item--unread .conv-item__last-msg {
   font-weight: 600;
-  color: #0a0a0a;
+  color: #231f20;
 }
 
 .conv-item__avatar {
@@ -238,7 +238,7 @@
   padding: 0.5rem;
   margin-left: -0.5rem;
   cursor: pointer;
-  color: #0a0a0a;
+  color: #231f20;
 }
 
 @media (max-width: 768px) {
@@ -258,7 +258,7 @@
   display: block;
   font-size: 0.9rem;
   font-weight: 700;
-  color: #0a0a0a;
+  color: #231f20;
 }
 
 .chat-header__handle {
@@ -293,7 +293,7 @@
   width: 1.5rem;
   height: 1.5rem;
   border: 2px solid #e8e8e8;
-  border-top-color: #0009fa;
+  border-top-color: #2d43e8;
   border-radius: 50%;
   animation: spin 1.2s linear infinite;
 }
@@ -352,12 +352,12 @@
 .msg-bubble--theirs {
   background: white;
   border: 1px solid #e8e8e8;
-  color: #0a0a0a;
+  color: #231f20;
   border-bottom-left-radius: 4px;
 }
 
 .msg-bubble--mine {
-  background: #0009fa;
+  background: #2d43e8;
   color: white;
   border-bottom-right-radius: 4px;
 }
@@ -457,7 +457,7 @@
 }
 
 .msg-input__icon-btn:hover {
-  color: #0009fa;
+  color: #2d43e8;
 }
 
 .msg-input__icon-btn:disabled {
@@ -476,7 +476,7 @@
   max-height: 120px;
   padding: 0.4rem 0;
   font-family: inherit;
-  color: #0a0a0a;
+  color: #231f20;
 }
 
 .msg-input__send {
@@ -495,7 +495,7 @@
 }
 
 .msg-input__send--active {
-  background: #0009fa;
+  background: #2d43e8;
   color: white;
   cursor: pointer;
 }

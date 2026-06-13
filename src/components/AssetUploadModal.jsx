@@ -255,7 +255,7 @@ export default function AssetUploadModal({ onClose, onSuccess }) {
                 <div
                   style={{
                     width: `${progress}%`, height: '100%',
-                    background: 'var(--accent-blue, #0009fa)', transition: 'width 0.15s ease',
+                    background: 'var(--accent-blue, #2d43e8)', transition: 'width 0.15s ease',
                   }}
                 />
               </div>

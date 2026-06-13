@@ -100,7 +100,7 @@ export default function ResourceDetailPage({ params }) {
                 )}
               </div>
 
-              <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0a0a0a', marginBottom: '1rem' }}>About this resource</h2>
+              <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#231f20', marginBottom: '1rem' }}>About this resource</h2>
               <div style={{ fontSize: '0.95rem', color: '#404040', lineHeight: 1.7, whiteSpace: 'pre-wrap' }}>
                 {resource.description || 'No description provided for this resource.'}
               </div>
@@ -108,11 +108,11 @@ export default function ResourceDetailPage({ params }) {
 
             {/* Right: Details & Actions */}
             <div style={{ background: 'white', border: '1px solid #e8e8e8', borderRadius: '8px', padding: '1.5rem', position: 'sticky', top: '80px' }}>
-              <div style={{ display: 'inline-block', padding: '0.3rem 0.8rem', background: '#eef0ff', color: '#0009fa', fontSize: '0.75rem', fontWeight: 700, borderRadius: '4px', textTransform: 'uppercase', marginBottom: '1rem' }}>
+              <div style={{ display: 'inline-block', padding: '0.3rem 0.8rem', background: '#eef0ff', color: '#2d43e8', fontSize: '0.75rem', fontWeight: 700, borderRadius: '4px', textTransform: 'uppercase', marginBottom: '1rem' }}>
                 {resource.category}
               </div>
               
-              <h1 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#0a0a0a', marginBottom: '1.5rem', lineHeight: 1.2 }}>
+              <h1 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#231f20', marginBottom: '1.5rem', lineHeight: 1.2 }}>
                 {resource.title}
               </h1>
 
@@ -127,7 +127,7 @@ export default function ResourceDetailPage({ params }) {
                 )}
                 <div>
                   <div style={{ fontSize: '0.75rem', color: '#9b9b9b', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Shared by</div>
-                  <div style={{ fontSize: '0.95rem', fontWeight: 700, color: '#0a0a0a' }}>{resource.profiles?.full_name || resource.profiles?.username}</div>
+                  <div style={{ fontSize: '0.95rem', fontWeight: 700, color: '#231f20' }}>{resource.profiles?.full_name || resource.profiles?.username}</div>
                 </div>
               </div>
 
@@ -144,16 +144,16 @@ export default function ResourceDetailPage({ params }) {
                     }
                   }}
                   className="get-resource-btn"
-                  style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', width: '100%', padding: '0.9rem', background: '#0009fa', color: 'white', textDecoration: 'none', fontWeight: 700, borderRadius: '6px', fontSize: '0.95rem', transition: 'background 0.15s' }}
+                  style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', width: '100%', padding: '0.9rem', background: '#2d43e8', color: 'white', textDecoration: 'none', fontWeight: 700, borderRadius: '6px', fontSize: '0.95rem', transition: 'background 0.15s' }}
                   onMouseOver={e => e.currentTarget.style.background = '#333333'}
-                  onMouseOut={e => e.currentTarget.style.background = '#0009fa'}
+                  onMouseOut={e => e.currentTarget.style.background = '#2d43e8'}
                 >
                   <Download size={18} /> Get Resource <ExternalLink size={14} style={{ opacity: 0.7 }} />
                 </a>
 
                 <button 
                   onClick={toggleSave}
-                  style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', width: '100%', padding: '0.9rem', background: saved ? '#0a0a0a' : 'white', color: saved ? 'white' : '#0a0a0a', border: saved ? '1px solid #0a0a0a' : '1px solid #e8e8e8', fontWeight: 700, borderRadius: '6px', fontSize: '0.95rem', cursor: 'pointer', transition: 'all 0.15s' }}
+                  style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', width: '100%', padding: '0.9rem', background: saved ? '#231f20' : 'white', color: saved ? 'white' : '#231f20', border: saved ? '1px solid #231f20' : '1px solid #e8e8e8', fontWeight: 700, borderRadius: '6px', fontSize: '0.95rem', cursor: 'pointer', transition: 'all 0.15s' }}
                 >
                   <Bookmark size={18} fill={saved ? 'white' : 'none'} /> {saved ? 'Saved' : 'Save for later'}
                 </button>

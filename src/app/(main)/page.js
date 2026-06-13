@@ -31,7 +31,7 @@ function timeAgo(dateStr) {
 }
 
 const POST_TYPE_STYLES = {
-  share: { label: 'Share', bg: '#f0f0f0', color: '#0a0a0a' },
+  share: { label: 'Share', bg: '#f0f0f0', color: '#231f20' },
   help: { label: 'Help', bg: '#fff0f0', color: '#ff3b3b' },
   feedback: { label: 'Feedback', bg: '#f0f8ff', color: '#0ea5e9' },
 };
@@ -164,7 +164,7 @@ export default function Dashboard() {
                       <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#6b6b6b', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'flex', alignItems: 'center', gap: '0.4rem' }} className="font-grotesk">
                         <Users size={13} /> Top Designers
                       </span>
-                      <Link href="/designers" style={{ fontSize: '0.8rem', fontWeight: 700, color: '#0a0a0a', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                      <Link href="/designers" style={{ fontSize: '0.8rem', fontWeight: 700, color: '#231f20', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
                         View all <ArrowRight size={13} />
                       </Link>
                     </div>
@@ -213,10 +213,10 @@ export default function Dashboard() {
                                     onError={(e) => { e.currentTarget.style.display = 'none'; }}
                                     style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.8, position: 'relative', zIndex: 1 }} 
                                   />
-                                  <div style={{ width: '100%', height: '100%', background: 'linear-gradient(45deg, #0a0a0a, #4b5563)', position: 'absolute', inset: 0, zIndex: 0 }} />
+                                  <div style={{ width: '100%', height: '100%', background: 'linear-gradient(45deg, #231f20, #4b5563)', position: 'absolute', inset: 0, zIndex: 0 }} />
                                 </>
                               ) : (
-                                <div style={{ width: '100%', height: '100%', background: 'linear-gradient(45deg, #0a0a0a, #4b5563)' }} />
+                                <div style={{ width: '100%', height: '100%', background: 'linear-gradient(45deg, #231f20, #4b5563)' }} />
                               )}
                             </div>
                             
@@ -256,7 +256,7 @@ export default function Dashboard() {
                     <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#6b6b6b', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'flex', alignItems: 'center', gap: '0.4rem' }} className="font-grotesk">
                       <TrendingUp size={13} /> Trending
                     </span>
-                    <Link href="/projects" style={{ fontSize: '0.8rem', fontWeight: 700, color: '#0a0a0a', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                    <Link href="/projects" style={{ fontSize: '0.8rem', fontWeight: 700, color: '#231f20', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
                       View all <ArrowRight size={13} />
                     </Link>
                   </div>
@@ -277,7 +277,7 @@ export default function Dashboard() {
                     <div style={{ textAlign: 'center', padding: '4rem 2rem', border: '1px solid #e8e8e8', background: 'white' }}>
                       <FolderOpen size={32} style={{ color: '#e8e8e8', display: 'block', margin: '0 auto 1rem' }} />
                       <p style={{ color: '#9b9b9b', marginBottom: '1rem', fontSize: '0.9rem' }}>No projects yet. Be the first!</p>
-                      <Link href="/projects/new" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', padding: '0.5rem 1.25rem', background: '#0a0a0a', color: 'white', fontSize: '0.8rem', fontWeight: 700 }}>
+                      <Link href="/projects/new" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', padding: '0.5rem 1.25rem', background: '#231f20', color: 'white', fontSize: '0.8rem', fontWeight: 700 }}>
                         Create Project
                       </Link>
                     </div>
@@ -402,7 +402,7 @@ export default function Dashboard() {
                   { label: 'Community Feed', href: '/community' },
                   { label: 'Saved Items', href: '/saved' },
                 ].map(item => (
-                  <Link key={item.href} href={item.href} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.5rem 0', fontSize: '0.8rem', color: '#0a0a0a', fontWeight: 500, borderBottom: '1px solid #f0f0f0' }}>
+                  <Link key={item.href} href={item.href} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.5rem 0', fontSize: '0.8rem', color: '#231f20', fontWeight: 500, borderBottom: '1px solid #f0f0f0' }}>
                     {item.label} <ArrowRight size={12} color="#9b9b9b" />
                   </Link>
                 ))}
@@ -420,7 +420,7 @@ export default function Dashboard() {
                       <UserAvatar src={u.avatar_url} name={u.full_name || u.username} size={30} />
                     </Link>
                     <div style={{ flex: 1, overflow: 'hidden' }}>
-                      <Link href={`/profile/${u.username}`} style={{ display: 'block', fontWeight: 700, fontSize: '0.78rem', color: '#0a0a0a', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      <Link href={`/profile/${u.username}`} style={{ display: 'block', fontWeight: 700, fontSize: '0.78rem', color: '#231f20', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {u.full_name || u.username}
                       </Link>
                       <span style={{ fontSize: '0.7rem', color: '#9b9b9b' }}>{u.projects_count || 0} projects</span>

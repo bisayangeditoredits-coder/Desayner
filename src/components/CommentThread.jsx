@@ -51,7 +51,7 @@ export default function CommentThread({ targetId, targetType = 'project', commen
                 <span style={{ fontWeight: 700, fontSize: '0.85rem' }}>{c.profiles?.full_name || c.profiles?.username || 'User'}</span>
                 <span style={{ fontSize: '0.75rem', color: '#9b9b9b' }}>{timeAgo(c.created_at)}</span>
               </div>
-              <p style={{ fontSize: '0.875rem', color: '#0a0a0a', lineHeight: 1.5 }}>{c.body}</p>
+              <p style={{ fontSize: '0.875rem', color: '#231f20', lineHeight: 1.5 }}>{c.body}</p>
             </div>
           </div>
         ))}
@@ -73,16 +73,16 @@ export default function CommentThread({ targetId, targetType = 'project', commen
                 flex: 1, padding: '0.5rem 0.75rem',
                 border: '1px solid #e8e8e8', background: 'white',
                 fontSize: '0.875rem', outline: 'none', borderRadius: '0px',
-                fontFamily: 'inherit', color: '#0a0a0a',
+                fontFamily: 'inherit', color: '#231f20',
               }}
-              onFocus={e => e.target.style.borderColor = '#0a0a0a'}
+              onFocus={e => e.target.style.borderColor = '#231f20'}
               onBlur={e => e.target.style.borderColor = '#e8e8e8'}
             />
             <button
               type="submit"
               disabled={submitting || !body.trim()}
               style={{
-                padding: '0.5rem 1rem', background: '#0a0a0a', color: 'white',
+                padding: '0.5rem 1rem', background: '#231f20', color: 'white',
                 border: 'none', fontSize: '0.8rem', fontWeight: 700,
                 cursor: submitting ? 'not-allowed' : 'pointer',
                 opacity: !body.trim() ? 0.4 : 1, fontFamily: 'inherit', borderRadius: '0px',

@@ -9,7 +9,8 @@
  *  - Unique keys via UUID: folder/userId/uuid.webp
  */
 
-import { getUploadUrl, getAssetUrl } from '@/lib/storage/r2';
+import { getAssetUrl } from '@/lib/storage/r2';
+import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
@@ -56,18 +57,26 @@ export async function POST(request) {
       );
     }
 
-    // ── Parse & validate body ───────────────────────────────────────────────
-    const body = await request.json();
-    const {
-      filename          = 'image.webp',
-      thumbnailFilename = 'thumb.webp',
-      contentType       = 'image/webp',
-      folder            = 'uploads',
-    } = body;
+    // ── Configure R2 Client ────────────────────────────────────────────────
+    const R2 = new S3Client({
+      region: 'auto',
+      endpoint: `https://${process.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
+      credentials: {
+        accessKeyId: process.env.R2_ACCESS_KEY_ID,
+        secretAccessKey: process.env.R2_SECRET_ACCESS_KEY,
+      },
+    });
+    const BUCKET = process.env.R2_BUCKET_NAME;
 
-    if (!ALLOWED_TYPES.includes(contentType)) {
+    // ── Parse & validate body ───────────────────────────────────────────────
+    const formData = await request.formData();
+    const coverFile = formData.get('cover');
+    const thumbFile = formData.get('thumb');
+    const folder = formData.get('folder') || 'uploads';
+
+    if (!coverFile || !thumbFile) {
       return NextResponse.json(
-        { error: `File type "${contentType}" is not allowed. Client must convert to WebP before uploading.` },
+        { error: 'Missing image files in request.' },
         { status: 400 }
       );
     }
@@ -78,18 +87,32 @@ export async function POST(request) {
     const key          = `${folder}/${user.id}/${uid}.webp`;
     const thumbnailKey = `${folder}/thumbs/${user.id}/${thumbUid}.webp`;
 
-    // ── Get presigned URLs for both blobs ───────────────────────────────────
-    const [uploadUrl, thumbnailUploadUrl] = await Promise.all([
-      getUploadUrl(key, 'image/webp'),
-      getUploadUrl(thumbnailKey, 'image/webp'),
+    // ── Get ArrayBuffers ───────────────────────────────────────────────────
+    const [coverBuffer, thumbBuffer] = await Promise.all([
+      coverFile.arrayBuffer(),
+      thumbFile.arrayBuffer(),
+    ]);
+
+    // ── Upload directly to R2 ───────────────────────────────────────────────
+    await Promise.all([
+      R2.send(new PutObjectCommand({
+        Bucket: BUCKET,
+        Key: key,
+        Body: new Uint8Array(coverBuffer),
+        ContentType: 'image/webp',
+      })),
+      R2.send(new PutObjectCommand({
+        Bucket: BUCKET,
+        Key: thumbnailKey,
+        Body: new Uint8Array(thumbBuffer),
+        ContentType: 'image/webp',
+      })),
     ]);
 
     const publicUrl    = getAssetUrl(key);
     const thumbnailUrl = getAssetUrl(thumbnailKey);
 
     return NextResponse.json({
-      uploadUrl,
-      thumbnailUploadUrl,
       publicUrl,
       thumbnailUrl,
       key,

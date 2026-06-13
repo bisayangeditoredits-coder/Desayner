@@ -8,8 +8,8 @@ export default function TagPill({ label, active, onClick, small }) {
       style={{
         padding: small ? '0.25rem 0.6rem' : '0.35rem 0.8rem',
         border: '1px solid',
-        borderColor: active ? '#0a0a0a' : '#e8e8e8',
-        background: active ? '#0a0a0a' : 'white',
+        borderColor: active ? '#231f20' : '#e8e8e8',
+        background: active ? '#231f20' : 'white',
         color: active ? 'white' : '#6b6b6b',
         fontSize: small ? '0.72rem' : '0.78rem',
         fontWeight: 600,

@@ -125,27 +125,24 @@ export default function MultiUploadZone({ folder = 'uploads', value = [], onResu
 
       if (!mountedRef.current) return;
 
-      // ── 3. Presigned URLs ─────────────────────────────────────────────────
+      // ── 3. Upload to backend via FormData ─────────────────────────────────────────────────
       dispatch({ type: 'UPDATE_ITEM', id, patch: { status: 'uploading', progress: 52 } });
+      const formData = new FormData();
+      formData.append('cover', optimizedBlob, 'gallery.webp');
+      formData.append('thumb', thumbnailBlob, 'thumb.webp');
+      formData.append('folder', folder);
+
       const res = await fetch('/api/upload', {
         method:  'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ filename: 'gallery.webp', thumbnailFilename: 'thumb.webp', contentType: 'image/webp', folder }),
+        body: formData,
       });
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
         throw new Error(err.error || `Server error ${res.status}`);
       }
-      const { uploadUrl, thumbnailUploadUrl, publicUrl, thumbnailUrl } = await res.json();
+      const { publicUrl, thumbnailUrl } = await res.json();
       if (!mountedRef.current) return;
-      dispatch({ type: 'UPDATE_ITEM', id, patch: { progress: 62 } });
-
-      // ── 4. PUT both blobs to R2 in parallel ──────────────────────────────
-      const [r1, r2] = await Promise.all([
-        fetch(uploadUrl,          { method: 'PUT', headers: { 'Content-Type': 'image/webp' }, body: optimizedBlob }),
-        fetch(thumbnailUploadUrl, { method: 'PUT', headers: { 'Content-Type': 'image/webp' }, body: thumbnailBlob }),
-      ]);
-      if (!r1.ok || !r2.ok) throw new Error('Upload to storage failed');
+      dispatch({ type: 'UPDATE_ITEM', id, patch: { progress: 100 } });
 
       if (!mountedRef.current) return;
       dispatch({ type: 'UPDATE_ITEM', id, patch: { status: 'done', progress: 100, publicUrl, thumbnailUrl } });
@@ -301,7 +298,7 @@ export default function MultiUploadZone({ folder = 'uploads', value = [], onResu
         onDragLeave={() => setDragging(false)}
         onDrop={handleDrop}
         style={{
-          border: `1.5px dashed ${dragging ? '#0009fa' : '#d0d0d0'}`,
+          border: `1.5px dashed ${dragging ? '#2d43e8' : '#d0d0d0'}`,
           background: dragging ? '#f0f2ff' : '#fafafa',
           padding: '1.75rem 1rem',
           textAlign: 'center',
@@ -312,8 +309,8 @@ export default function MultiUploadZone({ folder = 'uploads', value = [], onResu
         }}
       >
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
-          <Upload size={20} color={dragging ? '#0009fa' : '#9b9b9b'} />
-          <p style={{ fontSize: '0.875rem', fontWeight: 600, color: '#0a0a0a' }}>
+          <Upload size={20} color={dragging ? '#2d43e8' : '#9b9b9b'} />
+          <p style={{ fontSize: '0.875rem', fontWeight: 600, color: '#231f20' }}>
             {dragging ? 'Drop files here' : 'Add gallery images'}
           </p>
           <p style={{ fontSize: '0.72rem', color: '#9b9b9b' }}>

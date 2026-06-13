@@ -15,7 +15,7 @@ const inputStyle = {
   width: '100%', padding: '0.7rem 0.9rem',
   border: '1px solid #e8e8e8', background: 'white',
   fontSize: '0.9rem', outline: 'none',
-  fontFamily: 'inherit', color: '#0a0a0a', transition: 'border-color 0.15s',
+  fontFamily: 'inherit', color: '#231f20', transition: 'border-color 0.15s',
 };
 const labelStyle = {
   display: 'block', fontSize: '0.72rem', fontWeight: 700,
@@ -127,12 +127,12 @@ export default function EditProjectPage() {
 
             <div>
               <label style={labelStyle}>Title *</label>
-              <input style={inputStyle} value={form.title} onChange={e => setForm(p => ({ ...p, title: e.target.value }))} maxLength={100} required onFocus={e => e.target.style.borderColor = '#0a0a0a'} onBlur={e => e.target.style.borderColor = '#e8e8e8'} />
+              <input style={inputStyle} value={form.title} onChange={e => setForm(p => ({ ...p, title: e.target.value }))} maxLength={100} required onFocus={e => e.target.style.borderColor = '#231f20'} onBlur={e => e.target.style.borderColor = '#e8e8e8'} />
             </div>
 
             <div>
               <label style={labelStyle}>Description</label>
-              <textarea style={{ ...inputStyle, resize: 'vertical', minHeight: '110px', lineHeight: 1.6 }} value={form.description} onChange={e => setForm(p => ({ ...p, description: e.target.value }))} onFocus={e => e.target.style.borderColor = '#0a0a0a'} onBlur={e => e.target.style.borderColor = '#e8e8e8'} />
+              <textarea style={{ ...inputStyle, resize: 'vertical', minHeight: '110px', lineHeight: 1.6 }} value={form.description} onChange={e => setForm(p => ({ ...p, description: e.target.value }))} onFocus={e => e.target.style.borderColor = '#231f20'} onBlur={e => e.target.style.borderColor = '#e8e8e8'} />
             </div>
 
             <div>
@@ -166,7 +166,7 @@ export default function EditProjectPage() {
               {tags.length > 0 && (
                 <div style={{ display: 'flex', gap: '0.35rem', flexWrap: 'wrap', marginBottom: '0.5rem' }}>
                   {tags.map(tag => (
-                    <span key={tag} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', padding: '0.25rem 0.6rem', background: '#0a0a0a', color: 'white', fontSize: '0.75rem', fontWeight: 600 }}>
+                    <span key={tag} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', padding: '0.25rem 0.6rem', background: '#231f20', color: 'white', fontSize: '0.75rem', fontWeight: 600 }}>
                       #{tag}
                       <button type="button" onClick={() => setTags(p => p.filter(t => t !== tag))} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.6)', cursor: 'pointer', padding: 0, display: 'flex' }}>
                         <X size={10} />
@@ -176,7 +176,7 @@ export default function EditProjectPage() {
                 </div>
               )}
               <div style={{ display: 'flex', gap: '0.5rem' }}>
-                <input style={{ ...inputStyle, flex: 1 }} value={tagInput} onChange={e => setTagInput(e.target.value)} placeholder="Add a tag..." onKeyDown={e => e.key === 'Enter' && addTag(e)} onFocus={e => e.target.style.borderColor = '#0a0a0a'} onBlur={e => e.target.style.borderColor = '#e8e8e8'} />
+                <input style={{ ...inputStyle, flex: 1 }} value={tagInput} onChange={e => setTagInput(e.target.value)} placeholder="Add a tag..." onKeyDown={e => e.key === 'Enter' && addTag(e)} onFocus={e => e.target.style.borderColor = '#231f20'} onBlur={e => e.target.style.borderColor = '#e8e8e8'} />
                 <button onClick={addTag} type="button" style={{ padding: '0.7rem 1rem', background: 'white', border: '1px solid #e8e8e8', cursor: 'pointer', fontFamily: 'inherit', display: 'flex', alignItems: 'center' }}><Plus size={14} /></button>
               </div>
             </div>
@@ -195,9 +195,9 @@ export default function EditProjectPage() {
                       style={{
                         display: 'flex', alignItems: 'center', gap: '0.4rem',
                         padding: '0.4rem 0.8rem', borderRadius: '20px',
-                        border: isSelected ? '1px solid #0009fa' : '1px solid #e8e8e8',
+                        border: isSelected ? '1px solid #2d43e8' : '1px solid #e8e8e8',
                         background: isSelected ? '#eef0ff' : 'white',
-                        color: isSelected ? '#0009fa' : '#0a0a0a',
+                        color: isSelected ? '#2d43e8' : '#231f20',
                         fontSize: '0.8rem', fontWeight: 600, cursor: 'pointer',
                         transition: 'all 0.15s'
                       }}
@@ -211,14 +211,14 @@ export default function EditProjectPage() {
             </div>
 
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '1rem', background: '#f9f9f9', border: '1px solid #e8e8e8' }}>
-              <input type="checkbox" id="published" checked={form.published} onChange={e => setForm(p => ({ ...p, published: e.target.checked }))} style={{ width: '15px', height: '15px', cursor: 'pointer', accentColor: '#0a0a0a' }} />
+              <input type="checkbox" id="published" checked={form.published} onChange={e => setForm(p => ({ ...p, published: e.target.checked }))} style={{ width: '15px', height: '15px', cursor: 'pointer', accentColor: '#231f20' }} />
               <label htmlFor="published" style={{ fontSize: '0.875rem', fontWeight: 600, cursor: 'pointer' }}>
                 Published <span style={{ display: 'block', fontSize: '0.75rem', color: '#9b9b9b', fontWeight: 400 }}>Uncheck to make this project draft-only</span>
               </label>
             </div>
 
             <div style={{ display: 'flex', gap: '0.75rem' }}>
-              <button type="submit" disabled={submitting} style={{ padding: '0.75rem 2rem', background: '#0a0a0a', color: 'white', border: 'none', fontSize: '0.875rem', fontWeight: 700, cursor: submitting ? 'not-allowed' : 'pointer', opacity: submitting ? 0.7 : 1, fontFamily: 'inherit' }}>
+              <button type="submit" disabled={submitting} style={{ padding: '0.75rem 2rem', background: '#231f20', color: 'white', border: 'none', fontSize: '0.875rem', fontWeight: 700, cursor: submitting ? 'not-allowed' : 'pointer', opacity: submitting ? 0.7 : 1, fontFamily: 'inherit' }}>
                 {submitting ? 'Saving...' : 'Save Changes'}
               </button>
               <Link href={`/projects/${id}`} style={{ padding: '0.75rem 1.5rem', background: 'white', color: '#6b6b6b', border: '1px solid #e8e8e8', fontSize: '0.875rem', fontWeight: 600, display: 'inline-flex', alignItems: 'center' }}>

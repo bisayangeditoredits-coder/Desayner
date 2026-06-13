@@ -65,7 +65,7 @@ export default function NewsletterSubscribe() {
             style={{
               padding: '0.6rem 1rem',
               borderRadius: '8px',
-              background: '#0009fa',
+              background: '#2d43e8',
               color: '#fff',
               border: 'none',
               fontWeight: 600,

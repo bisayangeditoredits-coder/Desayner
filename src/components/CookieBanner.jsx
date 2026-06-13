@@ -50,7 +50,7 @@ export default function CookieBanner() {
         <div>
           <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 700, color: '#0f172a' }}>We value your privacy</h4>
           <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.85rem', color: '#64748b', lineHeight: 1.5 }}>
-            We use essential cookies to keep you logged in and ensure the platform works properly. Learn more in our <Link href="/privacy" style={{ color: '#0009fa', textDecoration: 'none', fontWeight: 600 }}>Privacy Policy</Link>.
+            We use essential cookies to keep you logged in and ensure the platform works properly. Learn more in our <Link href="/privacy" style={{ color: '#2d43e8', textDecoration: 'none', fontWeight: 600 }}>Privacy Policy</Link>.
           </p>
         </div>
       </div>

@@ -12,20 +12,15 @@ export default function JobBoardPage() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100%', width: '100%' }}>
       <div style={{ padding: 'clamp(1rem, 5vw, 2rem)', width: '100%', boxSizing: 'border-box', flex: 1 }}>
-        <div style={{
-          position: 'relative',
-          background: '#ffffff',
-          display: 'flex',
-          alignItems: 'center',
-          borderRadius: '0',
-          marginBottom: '3rem',
-          border: '1px solid rgba(0,0,0,0.08)',
-          boxShadow: '0 4px 24px rgba(0,0,0,0.02)',
-          overflow: 'hidden',
-          minHeight: '420px'
+        <div className="job-board-hero-container" style={{
+          position: 'relative', background: '#ffffff', display: 'flex', alignItems: 'center',
+          borderRadius: '0', marginBottom: '3rem', border: '1px solid rgba(0,0,0,0.08)',
+          boxShadow: '0 4px 24px rgba(0,0,0,0.02)', overflow: 'hidden', minHeight: '420px'
         }}>
           {/* Left Content */}
-          <div style={{ flex: 1, padding: 'clamp(2.5rem, 5vw, 4.5rem)', position: 'relative', zIndex: 1, width: '60%', maxWidth: '60%' }}>
+          <div className="job-board-hero-content" style={{
+            flex: 1, padding: 'clamp(2.5rem, 5vw, 4.5rem)', position: 'relative', zIndex: 1, width: '60%', maxWidth: '60%'
+          }}>
             <div style={{ 
               display: 'inline-flex', alignItems: 'center', gap: '0.5rem', 
               color: '#ffffff', fontSize: '0.65rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.15em',
@@ -46,7 +41,7 @@ export default function JobBoardPage() {
               letterSpacing: '-0.04em', 
               marginBottom: '1.5rem',
             }}>
-              Find work that <br/><span style={{ color: '#0009fa', letterSpacing: '-0.05em' }}>matters.</span>
+              Find work that <br/><span style={{ color: '#2d43e8', letterSpacing: '-0.05em' }}>matters.</span>
             </h1>
             
             <p style={{ 
@@ -61,7 +56,7 @@ export default function JobBoardPage() {
               Discover hand-picked remote opportunities for designers, developers, and creative professionals.
             </p>
 
-            <div style={{ 
+            <div className="job-board-hero-bottom" style={{ 
               display: 'flex', alignItems: 'center', gap: '2rem', flexWrap: 'wrap',
               borderTop: '1px solid rgba(0,0,0,0.06)', paddingTop: '1.5rem',
             }}>
@@ -72,10 +67,10 @@ export default function JobBoardPage() {
               {/* Trust Indicator */}
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                 <div style={{ display: 'flex', alignItems: 'center', marginLeft: '0.5rem' }}>
-                  <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix&backgroundColor=b6e3f4" alt="User" style={{ width: '28px', height: '28px', borderRadius: '50%', border: '2px solid white', marginLeft: '-0.5rem', objectFit: 'cover' }} />
-                  <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Aneka&backgroundColor=ffdfbf" alt="User" style={{ width: '28px', height: '28px', borderRadius: '50%', border: '2px solid white', marginLeft: '-0.5rem', objectFit: 'cover' }} />
-                  <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=John&backgroundColor=c0aede" alt="User" style={{ width: '28px', height: '28px', borderRadius: '50%', border: '2px solid white', marginLeft: '-0.5rem', objectFit: 'cover' }} />
-                  <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah&backgroundColor=d1d4f9" alt="User" style={{ width: '28px', height: '28px', borderRadius: '50%', border: '2px solid white', marginLeft: '-0.5rem', objectFit: 'cover' }} />
+                  <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&h=100" alt="Designer" style={{ width: '28px', height: '28px', borderRadius: '50%', border: '2px solid white', marginLeft: '-0.5rem', objectFit: 'cover' }} />
+                  <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=100&h=100" alt="Designer" style={{ width: '28px', height: '28px', borderRadius: '50%', border: '2px solid white', marginLeft: '-0.5rem', objectFit: 'cover' }} />
+                  <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&h=100" alt="Designer" style={{ width: '28px', height: '28px', borderRadius: '50%', border: '2px solid white', marginLeft: '-0.5rem', objectFit: 'cover' }} />
+                  <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=100&h=100" alt="Designer" style={{ width: '28px', height: '28px', borderRadius: '50%', border: '2px solid white', marginLeft: '-0.5rem', objectFit: 'cover' }} />
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.15rem' }}>
                   <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -92,14 +87,33 @@ export default function JobBoardPage() {
           </div>
 
           {/* Image on Right */}
-          <div style={{
-            position: 'absolute',
-            right: 0, top: 0, bottom: 0, width: '45%',
-            backgroundImage: 'linear-gradient(to right, #ffffff 0%, rgba(255,255,255,0) 40%), url("/group-graphic-designers-discussing-laptop-their-desk.jpeg")',
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            zIndex: 0
-          }} />
+          <style dangerouslySetInnerHTML={{__html: `
+            .job-board-bg {
+              position: absolute; right: 0; top: 0; bottom: 0; width: 45%;
+              background-image: linear-gradient(to right, #ffffff 0%, rgba(255,255,255,0) 40%), url('/group-graphic-designers-discussing-laptop-their-desk.jpeg');
+              background-size: cover; background-position: center; z-index: 0;
+            }
+            @media (max-width: 768px) {
+              .job-board-hero-container {
+                min-height: auto !important; padding: 0 !important; flex-direction: column-reverse !important;
+                text-align: center !important; justify-content: center !important; margin-bottom: 2rem !important;
+                border-radius: 16px !important;
+              }
+              .job-board-hero-content {
+                width: 100% !important; max-width: 100% !important; padding: 2.5rem 1.5rem !important;
+                display: flex !important; flex-direction: column !important; align-items: center !important;
+              }
+              .job-board-hero-bottom {
+                justify-content: center !important; flex-direction: column !important;
+                gap: 1.5rem !important; border-top: none !important; padding-top: 0 !important;
+              }
+              .job-board-bg {
+                display: block; position: relative !important; width: 100% !important; height: 240px !important;
+                background-image: linear-gradient(to bottom, rgba(255,255,255,0) 50%, #ffffff 100%), url('/group-graphic-designers-discussing-laptop-their-desk.jpeg') !important;
+              }
+            }
+          `}} />
+          <div className="job-board-bg" />
         </div>
 
         <JobList />

@@ -126,16 +126,19 @@ export function useUpload() {
         setProgress(52);
       });
 
-      // ── Step 2: Get presigned URLs ──────────────────────────────────────────
+      // ── Step 2: Upload to backend via FormData ──────────────────────────────
+      abortRef.current = new AbortController();
+      const { signal } = abortRef.current;
+
+      const formData = new FormData();
+      formData.append('cover', optimizedBlob, 'cover.webp');
+      formData.append('thumb', thumbnailBlob, 'thumb.webp');
+      formData.append('folder', folder);
+
       const urlRes = await fetch('/api/upload', {
         method:  'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          filename:          'cover.webp',
-          thumbnailFilename: 'thumb.webp',
-          contentType:       'image/webp',
-          folder,
-        }),
+        body: formData,
+        signal,
       });
 
       if (!urlRes.ok) {
@@ -143,32 +146,8 @@ export function useUpload() {
         throw new Error(errData.error || `Server error (${urlRes.status})`);
       }
 
-      const { uploadUrl, thumbnailUploadUrl, publicUrl, thumbnailUrl, key, thumbnailKey } = await urlRes.json();
+      const { publicUrl, thumbnailUrl, key, thumbnailKey } = await urlRes.json();
       if (!mountedRef.current) return;
-
-      safeSet(() => setProgress(62));
-
-      // ── Step 3: PUT both blobs to R2 in parallel ────────────────────────────
-      abortRef.current = new AbortController();
-      const { signal } = abortRef.current;
-
-      const [putMain, putThumb] = await Promise.all([
-        fetch(uploadUrl, {
-          method:  'PUT',
-          headers: { 'Content-Type': 'image/webp' },
-          body:    optimizedBlob,
-          signal,
-        }),
-        fetch(thumbnailUploadUrl, {
-          method:  'PUT',
-          headers: { 'Content-Type': 'image/webp' },
-          body:    thumbnailBlob,
-          signal,
-        }),
-      ]);
-
-      if (!putMain.ok)  throw new Error(`Cover upload failed (${putMain.status})`);
-      if (!putThumb.ok) throw new Error(`Thumbnail upload failed (${putThumb.status})`);
 
       retryCount.current = 0;
       safeSet(() => {

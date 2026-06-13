@@ -140,8 +140,8 @@ function SearchResults() {
                 style={{
                   display: 'flex', alignItems: 'center', gap: '0.4rem',
                   padding: '0.75rem 1.25rem', background: 'none', border: 'none',
-                  borderBottom: `2px solid ${tab === t.id ? '#0a0a0a' : 'transparent'}`,
-                  color: tab === t.id ? '#0a0a0a' : '#9b9b9b',
+                  borderBottom: `2px solid ${tab === t.id ? '#231f20' : 'transparent'}`,
+                  color: tab === t.id ? '#231f20' : '#9b9b9b',
                   fontWeight: tab === t.id ? 700 : 500, fontSize: '0.875rem',
                   cursor: 'pointer', fontFamily: 'inherit', marginBottom: '-1px',
                   transition: 'color 0.15s',
@@ -150,7 +150,7 @@ function SearchResults() {
                 <t.icon size={14} />
                 {t.label}
                 {t.count > 0 && tab === t.id && (
-                  <span style={{ fontSize: '0.72rem', background: '#0a0a0a', color: 'white', padding: '0.1rem 0.45rem', fontWeight: 700 }}>
+                  <span style={{ fontSize: '0.72rem', background: '#231f20', color: 'white', padding: '0.1rem 0.45rem', fontWeight: 700 }}>
                     {t.count}
                   </span>
                 )}
@@ -179,9 +179,9 @@ function SearchResults() {
                     padding: '0.35rem 0.75rem', border: '1px solid',
                     fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer',
                     fontFamily: 'inherit',
-                    background: sort === s.value ? '#0a0a0a' : 'white',
+                    background: sort === s.value ? '#231f20' : 'white',
                     color: sort === s.value ? 'white' : '#6b7280',
-                    borderColor: sort === s.value ? '#0a0a0a' : '#e2e8f0',
+                    borderColor: sort === s.value ? '#231f20' : '#e2e8f0',
                   }}
                 >
                   <s.icon size={11} /> {s.label}
@@ -195,7 +195,7 @@ function SearchResults() {
         {!query && (
           <div style={{ textAlign: 'center', padding: '5rem 2rem', background: 'white', border: '1px solid #e2e8f0', maxWidth: '560px', margin: '1.5rem auto' }}>
             <Search size={36} style={{ color: '#d1d5db', marginBottom: '1rem' }} />
-            <p style={{ fontWeight: 800, fontSize: '1.1rem', marginBottom: '0.4rem', color: '#0a0a0a' }}>Search Desayner</p>
+            <p style={{ fontWeight: 800, fontSize: '1.1rem', marginBottom: '0.4rem', color: '#231f20' }}>Search Desayner</p>
             <p style={{ color: '#9b9b9b', fontSize: '0.875rem', lineHeight: 1.6 }}>
               Find inspiring projects, talented designers, and premium resources shared by the community.
             </p>
@@ -217,7 +217,7 @@ function SearchResults() {
                   <button onClick={() => { setCategory('All'); setSort('newest'); }} className="btn btn-outline" style={{ padding: '0.6rem 1.25rem', fontSize: '0.85rem' }}>
                     Clear Filters
                   </button>
-                  <Link href="/projects" className="btn" style={{ padding: '0.6rem 1.25rem', fontSize: '0.85rem', background: '#0a0a0a', color: 'white', fontWeight: 700, textDecoration: 'none' }}>
+                  <Link href="/projects" className="btn" style={{ padding: '0.6rem 1.25rem', fontSize: '0.85rem', background: '#231f20', color: 'white', fontWeight: 700, textDecoration: 'none' }}>
                     Explore All Projects
                   </Link>
                 </div>
@@ -251,7 +251,7 @@ function SearchResults() {
                 <Users2 size={36} color="#d1d5db" style={{ marginBottom: '1rem', margin: '0 auto 1rem' }} />
                 <p style={{ fontWeight: 800, fontSize: '1.2rem', marginBottom: '0.4rem' }}>No designers found for &quot;{query}&quot;</p>
                 <p style={{ color: '#6b7280', fontSize: '0.9rem' }}>Try a different name or username.</p>
-                <Link href="/designers" className="btn" style={{ display: 'inline-block', marginTop: '1.5rem', padding: '0.6rem 1.25rem', fontSize: '0.85rem', background: '#0a0a0a', color: 'white', fontWeight: 700, textDecoration: 'none' }}>
+                <Link href="/designers" className="btn" style={{ display: 'inline-block', marginTop: '1.5rem', padding: '0.6rem 1.25rem', fontSize: '0.85rem', background: '#231f20', color: 'white', fontWeight: 700, textDecoration: 'none' }}>
                   Explore All Designers
                 </Link>
               </div>
@@ -278,7 +278,7 @@ function SearchResults() {
                       </Link>
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <Link href={`/profile/${creator.username}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-                          <div style={{ fontWeight: 700, fontSize: '1rem', color: '#0a0a0a', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          <div style={{ fontWeight: 700, fontSize: '1rem', color: '#231f20', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                             {creator.full_name || creator.username}
                           </div>
                           <div style={{ fontSize: '0.85rem', color: '#9b9b9b' }}>@{creator.username} · {creator.followers_count || 0} followers</div>

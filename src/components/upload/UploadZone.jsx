@@ -110,7 +110,7 @@ export default function UploadZone({ label, folder = 'uploads', value = '', thum
             <button
               type="button"
               className="upload-zone__preview-btn"
-              style={{ background: 'rgba(255,255,255,0.9)', color: '#0a0a0a' }}
+              style={{ background: 'rgba(255,255,255,0.9)', color: '#231f20' }}
               onClick={() => inputRef.current?.click()}
             >
               <RefreshCw size={12} /> Replace
@@ -203,7 +203,7 @@ export default function UploadZone({ label, folder = 'uploads', value = '', thum
         onKeyDown={(e) => e.key === 'Enter' && inputRef.current?.click()}
       >
         <div className="upload-zone__icon">
-          {dragging ? <Upload size={20} color="#0009fa" /> : <ImageIcon size={20} color="#9b9b9b" />}
+          {dragging ? <Upload size={20} color="#2d43e8" /> : <ImageIcon size={20} color="#9b9b9b" />}
         </div>
         <p className="upload-zone__title">
           {dragging ? 'Drop to upload' : 'Click or drag an image here'}

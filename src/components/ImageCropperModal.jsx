@@ -91,7 +91,7 @@ export default function ImageCropperModal({
               step={0.1}
               aria-label="Zoom"
               onChange={(e) => setZoom(Number(e.target.value))}
-              style={{ flex: 1, accentColor: '#0009fa', height: '4px', cursor: 'pointer' }}
+              style={{ flex: 1, accentColor: '#2d43e8', height: '4px', cursor: 'pointer' }}
             />
             <ZoomIn size={16} color="#71717a" />
           </div>
@@ -155,7 +155,7 @@ export default function ImageCropperModal({
         }
 
         .banner-crop-area {
-          border: 2px solid #0009fa !important;
+          border: 2px solid #2d43e8 !important;
           position: relative;
         }
 

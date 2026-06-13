@@ -19,7 +19,7 @@ export default function UserAvatar({ src, name = '', size = 32, className = '' }
     height: size,
     borderRadius: '50%',
     objectFit: 'cover',
-    background: '#0a0a0a',
+    background: '#231f20',
     color: 'white',
     display: 'flex',
     alignItems: 'center',

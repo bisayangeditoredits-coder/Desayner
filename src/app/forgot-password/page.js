@@ -36,7 +36,7 @@ function ForgotPasswordForm() {
       display: 'flex',
       minHeight: '100vh',
       fontFamily: '"Inter", "Segoe UI", sans-serif',
-      background: '#0a0a0a',
+      background: '#231f20',
     }}>
 
       {/* ── LEFT: video panel ── */}
@@ -67,7 +67,7 @@ function ForgotPasswordForm() {
         <div style={{
           position: 'absolute',
           inset: 0,
-          background: 'linear-gradient(135deg, rgba(0,9,250,0.35) 0%, rgba(0,0,0,0.55) 100%)',
+          background: 'linear-gradient(135deg, rgba(45, 67, 232,0.35) 0%, rgba(0,0,0,0.55) 100%)',
           zIndex: 1,
         }} />
 
@@ -139,7 +139,7 @@ function ForgotPasswordForm() {
           <h1 style={{
             fontSize: '1.85rem',
             fontWeight: 900,
-            color: '#0a0a0a',
+            color: '#231f20',
             marginBottom: '0.4rem',
             letterSpacing: '-0.03em',
           }}>
@@ -152,18 +152,18 @@ function ForgotPasswordForm() {
           {success ? (
             <div style={{ textAlign: 'center', padding: '2.5rem 2rem', border: '1px solid #e2e8f0', borderRadius: '12px', background: '#f8fafc' }}>
               <div style={{ width: '48px', height: '48px', background: '#e0e7ff', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem' }}>
-                <Mail size={24} color="#0009fa" />
+                <Mail size={24} color="#2d43e8" />
               </div>
-              <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#0a0a0a', marginBottom: '0.5rem' }}>Check your email</h3>
+              <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#231f20', marginBottom: '0.5rem' }}>Check your email</h3>
               <p style={{ fontSize: '0.875rem', color: '#64748b', marginBottom: '2rem', lineHeight: '1.5' }}>
                 We sent a password reset link to <br/>
-                <strong style={{ color: '#0a0a0a' }}>{email}</strong>
+                <strong style={{ color: '#231f20' }}>{email}</strong>
               </p>
               <button
                 onClick={() => setSuccess(false)}
                 style={{
                   width: '100%', padding: '0.9rem', borderRadius: '8px', background: 'white',
-                  color: '#0a0a0a', border: '1px solid #e2e8f0', cursor: 'pointer',
+                  color: '#231f20', border: '1px solid #e2e8f0', cursor: 'pointer',
                   fontWeight: 600, fontSize: '0.9rem', transition: 'background 0.2s'
                 }}
                 onMouseOver={e => e.currentTarget.style.background = '#f8fafc'}
@@ -175,7 +175,7 @@ function ForgotPasswordForm() {
           ) : (
             <form onSubmit={handleResetPassword} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <div>
-                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, color: '#0a0a0a', marginBottom: '0.5rem' }}>
+                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, color: '#231f20', marginBottom: '0.5rem' }}>
                   Email
                 </label>
                 <input
@@ -187,7 +187,7 @@ function ForgotPasswordForm() {
                   required
                   style={{
                     width: '100%', padding: '0.85rem 1rem', borderRadius: 8,
-                    border: '1px solid #e2e8f0', fontSize: '0.9rem', color: '#0a0a0a',
+                    border: '1px solid #e2e8f0', fontSize: '0.9rem', color: '#231f20',
                     background: '#fafafa', boxSizing: 'border-box', outline: 'none',
                     transition: 'border-color 0.2s',
                   }}
@@ -205,15 +205,15 @@ function ForgotPasswordForm() {
                 disabled={loading}
                 style={{
                   width: '100%', padding: '0.9rem', borderRadius: 8,
-                  background: '#0a0a0a', color: 'white', border: 'none',
+                  background: '#231f20', color: 'white', border: 'none',
                   cursor: loading ? 'not-allowed' : 'pointer', fontWeight: 700,
                   fontSize: '0.9rem', display: 'flex', alignItems: 'center',
                   justifyContent: 'center', gap: '0.5rem',
                   opacity: loading ? 0.75 : 1, transition: 'opacity 0.2s, background 0.2s',
                   marginTop: '0.25rem',
                 }}
-                onMouseOver={e => !loading && (e.currentTarget.style.background = '#0009fa')}
-                onMouseOut={e => !loading && (e.currentTarget.style.background = '#0a0a0a')}
+                onMouseOver={e => !loading && (e.currentTarget.style.background = '#2d43e8')}
+                onMouseOut={e => !loading && (e.currentTarget.style.background = '#231f20')}
               >
                 {loading && <Loader2 size={15} style={{ animation: 'spin 1s linear infinite' }} />}
                 {loading ? 'Sending link...' : 'Reset password'}
@@ -223,7 +223,7 @@ function ForgotPasswordForm() {
 
           <p style={{ textAlign: 'center', marginTop: '1.75rem', fontSize: '0.85rem', color: '#64748b' }}>
             Remember your password?{' '}
-            <Link href="/login" style={{ color: '#0009fa', fontWeight: 700, textDecoration: 'none' }}>
+            <Link href="/login" style={{ color: '#2d43e8', fontWeight: 700, textDecoration: 'none' }}>
               Log in
             </Link>
           </p>
@@ -235,7 +235,7 @@ function ForgotPasswordForm() {
           .login-video-panel { display: block !important; }
         }
         @keyframes spin { to { transform: rotate(360deg); } }
-        .login-input:focus { border-color: #0009fa !important; }
+        .login-input:focus { border-color: #2d43e8 !important; }
       `}</style>
     </div>
   );

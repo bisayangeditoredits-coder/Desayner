@@ -55,8 +55,8 @@ export default function WelcomeModal() {
         }
         .welcome-modal-left {
           flex: 1;
-          background: #0009fa;
-          background-image: linear-gradient(135deg, #0009fa 0%, #1a22ff 100%);
+          background: #2d43e8;
+          background-image: linear-gradient(135deg, #2d43e8 0%, #1a22ff 100%);
           padding: 3rem 2.5rem;
           color: white;
           display: flex;
@@ -143,8 +143,8 @@ export default function WelcomeModal() {
             <button 
               onClick={closeModal}
               style={{
-                background: '#faf600', // Yellow button like in the mockup
-                color: '#0a0a0a',
+                background: '#e6e82d', // Yellow button like in the mockup
+                color: '#231f20',
                 border: 'none',
                 padding: '0.85rem 2rem',
                 borderRadius: 30,
@@ -165,7 +165,7 @@ export default function WelcomeModal() {
         {/* Right Side: Image */}
         <div className="welcome-modal-right">
           <button className="welcome-modal-close" onClick={closeModal} aria-label="Close modal">
-            <X size={18} color="#0a0a0a" />
+            <X size={18} color="#231f20" />
           </button>
           <Image 
             src="/welcome-image.jpeg" 

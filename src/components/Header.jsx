@@ -22,9 +22,9 @@ function timeAgo(dateStr) {
 }
 
 function getIcon(type) {
-  if (type === 'like') return <Heart size={14} fill="#0009fa" color="#0009fa" />;
-  if (type === 'save') return <Bookmark size={14} fill="#0a0a0a" color="#0a0a0a" />;
-  if (type === 'comment') return <MessageCircle size={14} fill="#0009fa" color="#0009fa" />;
+  if (type === 'like') return <Heart size={14} fill="#2d43e8" color="#2d43e8" />;
+  if (type === 'save') return <Bookmark size={14} fill="#231f20" color="#231f20" />;
+  if (type === 'comment') return <MessageCircle size={14} fill="#2d43e8" color="#2d43e8" />;
   if (type === 'follow') return <UserPlus size={14} color="#1a8a3b" />;
   return <Bell size={14} />;
 }
@@ -146,6 +146,22 @@ export default function Header() {
     };
   }, []);
 
+  // Listen to profile updates from Settings page
+  useEffect(() => {
+    async function refreshProfile() {
+      if (!userId) return;
+      const { data } = await supabase
+        .from('profiles')
+        .select('username, full_name, avatar_url')
+        .eq('id', userId)
+        .single();
+      if (data) setProfile(data);
+    }
+
+    window.addEventListener('profile_updated', refreshProfile);
+    return () => window.removeEventListener('profile_updated', refreshProfile);
+  }, [userId, supabase]);
+
   // Debounced live search — routed through /api/search so it uses the FTS index + Redis cache
   const liveSearch = useCallback(async (q) => {
     if (!q.trim()) { setResults([]); setDropdownOpen(false); return; }
@@ -236,7 +252,7 @@ export default function Header() {
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           aria-label="Toggle Navigation"
         >
-          <Menu size={24} color="#0a0a0a" />
+          <Menu size={24} color="#231f20" />
         </button>
 
         <div className="search-bar" ref={searchRef} style={{ maxWidth: '400px', flex: 1 }}>
@@ -329,7 +345,7 @@ export default function Header() {
                   background: 'white', border: '1px solid #e8e8e8', borderRadius: '8px',
                   boxShadow: '0 4px 12px rgba(0,0,0,0.1)', zIndex: 100, padding: '0.5rem 0', minWidth: '160px', width: 'max-content'
                 }}>
-                  <Link href="/projects/new" onClick={() => setCreateMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.5rem 1rem', color: '#0a0a0a', fontSize: '0.875rem', textDecoration: 'none', fontWeight: 500, whiteSpace: 'nowrap' }}>
+                  <Link href="/projects/new" onClick={() => setCreateMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.5rem 1rem', color: '#231f20', fontSize: '0.875rem', textDecoration: 'none', fontWeight: 500, whiteSpace: 'nowrap' }}>
                     <Plus size={16} color="#6b7280" /> New Project
                   </Link>
                 </div>
@@ -355,7 +371,7 @@ export default function Header() {
                 <div className="notif-dropdown">
                   <div className="notif-dropdown__header">
                     Notifications
-                    <Link href="/notifications" style={{ fontSize: '0.75rem', color: '#0009fa', textDecoration: 'none', fontWeight: 600 }} onClick={() => setShowNotifs(false)}>
+                    <Link href="/notifications" style={{ fontSize: '0.75rem', color: '#2d43e8', textDecoration: 'none', fontWeight: 600 }} onClick={() => setShowNotifs(false)}>
                       View All
                     </Link>
                   </div>
@@ -378,7 +394,7 @@ export default function Header() {
                           </div>
                         </div>
                         <div style={{ flex: 1, minWidth: 0 }}>
-                          <p style={{ fontSize: '0.8rem', color: '#0a0a0a', lineHeight: 1.4, margin: '0 0 0.2rem' }}>
+                          <p style={{ fontSize: '0.8rem', color: '#231f20', lineHeight: 1.4, margin: '0 0 0.2rem' }}>
                             {getMessage(n)}
                           </p>
                           <span style={{ fontSize: '0.7rem', color: '#9b9b9b' }}>{timeAgo(n.created_at)}</span>
@@ -398,10 +414,10 @@ export default function Header() {
           </>
         ) : authLoaded ? (
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <Link href="/login" style={{ fontSize: '0.875rem', fontWeight: 700, color: '#0a0a0a', textDecoration: 'none' }}>
+            <Link href="/login" style={{ fontSize: '0.875rem', fontWeight: 700, color: '#231f20', textDecoration: 'none' }}>
               Log In
             </Link>
-            <Link href="/signup" style={{ padding: '0.5rem 1rem', background: '#0009fa', color: 'white', fontSize: '0.875rem', fontWeight: 700, textDecoration: 'none', borderRadius: '8px' }}>
+            <Link href="/signup" style={{ padding: '0.5rem 1rem', background: '#2d43e8', color: 'white', fontSize: '0.875rem', fontWeight: 700, textDecoration: 'none', borderRadius: '8px' }}>
               Sign Up
             </Link>
           </div>

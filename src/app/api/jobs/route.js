@@ -1,4 +1,7 @@
 import { NextResponse } from 'next/server';
+import { redis } from '@/lib/redis';
+
+export const dynamic = 'force-dynamic';
 
 const JOBICY_API_URL = 'https://jobicy.com/api/v2/remote-jobs?count=100';
 const REMOTE_OK_API_URL = 'https://remoteok.com/api';
@@ -6,7 +9,7 @@ const REMOTIVE_API_URL = 'https://remotive.com/api/remote-jobs';
 const HIMALAYAS_API_URL = 'https://himalayas.app/jobs/api';
 
 const CACHE_HEADERS = {
-  'Cache-Control': 's-maxage=21600, stale-while-revalidate=43200',
+  'Cache-Control': 'no-store, max-age=0',
 };
 
 const BLOCKED_PHRASES = [
@@ -74,10 +77,17 @@ function formatSalaryRange(min, max, currency = 'USD') {
   return `Up to ${currency} ${formatter.format(maximum)}`;
 }
 
-function getFallbackLogo(companyName) {
+function getCompanyLogo(companyName, originalLogo) {
+  if (originalLogo && originalLogo.startsWith('http')) {
+    // Proxy ALL external logos to bypass both CSP img-src limits and Hotlink protection
+    return `/api/proxy-image?url=${encodeURIComponent(originalLogo)}`;
+  }
+  
   if (!companyName || companyName === 'Unknown company') return '';
   const domain = companyName.toLowerCase().replace(/[^a-z0-9]/g, '') + '.com';
-  return `https://t3.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://${domain}&size=128`;
+  // Use Google Favicon as the ultimate unblockable fallback, also proxied to bypass CSP just in case
+  const fallbackUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
+  return `/api/proxy-image?url=${encodeURIComponent(fallbackUrl)}`;
 }
 
 function deriveCategory(...values) {
@@ -93,7 +103,7 @@ function normalizeHimalayasJob(job) {
     id: `himalayas-${job.guid || Math.random().toString(36)}`,
     title: cleanText(job.title || 'Untitled role'),
     company: cleanText(job.companyName || 'Unknown company'),
-    logo: job.companyLogo || getFallbackLogo(job.companyName),
+    logo: getCompanyLogo(job.companyName, job.companyLogo),
     category,
     location: cleanText(job.locationRestrictions?.join(', ') || 'Worldwide'),
     salary: formatSalaryRange(job.minSalary, job.maxSalary, job.currency || 'USD'),
@@ -115,7 +125,7 @@ function normalizeRemotiveJob(job) {
     id: `remotive-${job.id}`,
     title: cleanText(job.title || 'Untitled role'),
     company: cleanText(job.company_name || 'Unknown company'),
-    logo: job.company_logo || getFallbackLogo(job.company_name),
+    logo: getCompanyLogo(job.company_name, job.company_logo),
     category: deriveCategory(job.category, job.title, tags),
     location: cleanText(job.candidate_required_location || 'Worldwide'),
     salary: cleanText(job.salary || ''),
@@ -137,7 +147,7 @@ function normalizeJobicyJob(job) {
     id: `jobicy-${job.id}`,
     title: cleanText(job.jobTitle || 'Untitled role'),
     company: cleanText(job.companyName || 'Unknown company'),
-    logo: job.companyLogo || getFallbackLogo(job.companyName),
+    logo: getCompanyLogo(job.companyName, job.companyLogo),
     category,
     location: cleanText(job.jobGeo || 'Anywhere'),
     salary: formatSalaryRange(job.salaryMin, job.salaryMax, job.salaryCurrency || 'USD'),
@@ -159,7 +169,7 @@ function normalizeRemoteOkJob(job) {
     id: `remoteok-${job.id}`,
     title: cleanText(job.position || 'Untitled role'),
     company: cleanText(job.company || 'Unknown company'),
-    logo: job.company_logo || job.logo || getFallbackLogo(job.company),
+    logo: getCompanyLogo(job.company, job.company_logo || job.logo),
     category,
     location: cleanText(job.location || 'Remote'),
     salary: formatSalaryRange(job.salary_min, job.salary_max),
@@ -177,7 +187,7 @@ function normalizeRemoteOkJob(job) {
 async function fetchJson(url) {
   const response = await fetch(url, {
     headers: { Accept: 'application/json', 'User-Agent': 'CreldeskStudioJobBoard/1.0' },
-    next: { revalidate: 21600 },
+    cache: 'no-store'
   });
   if (!response.ok) return null;
   return response.json();
@@ -253,17 +263,42 @@ export async function GET(request) {
     const query = (searchParams.get('q') || '').trim();
     const category = (searchParams.get('category') || '').trim();
 
-    const settled = await Promise.allSettled([
-      loadHimalayasJobs(),
-      loadRemotiveJobs(),
-      loadJobicyJobs(),
-      loadRemoteOkJobs(),
-    ]);
-
-    const allJobs = settled.flatMap((result) => (result.status === 'fulfilled' ? result.value : []));
+    const CACHE_KEY = 'remote_jobs_aggregated_cache';
+    let jobs = [];
     
-    // Some APIs return duplicates or very long list. Dedupe and filter for quality.
-    const jobs = dedupeJobs(allJobs).filter(isLikelyQualityJob);
+    // 1. Try to fetch from Redis
+    try {
+      const cachedJobs = await redis.get(CACHE_KEY);
+      if (cachedJobs && Array.isArray(cachedJobs)) {
+        jobs = cachedJobs;
+      }
+    } catch (err) {
+      console.error('[Redis GET Error - Jobs]', err);
+    }
+
+    // 2. If not in cache, fetch from external APIs
+    if (jobs.length === 0) {
+      const settled = await Promise.allSettled([
+        loadHimalayasJobs(),
+        loadRemotiveJobs(),
+        loadJobicyJobs(),
+        loadRemoteOkJobs(),
+      ]);
+
+      const allJobs = settled.flatMap((result) => (result.status === 'fulfilled' ? result.value : []));
+      
+      // Dedupe and filter for quality
+      jobs = dedupeJobs(allJobs).filter(isLikelyQualityJob);
+      
+      // Save to Redis for 15 minutes (900 seconds)
+      if (jobs.length > 0) {
+        try {
+          await redis.setex(CACHE_KEY, 900, jobs);
+        } catch (err) {
+          console.error('[Redis SET Error - Jobs]', err);
+        }
+      }
+    }
     
     // Filter by search/category
     const filteredJobs = jobs.filter((job) => matchesCategory(job, category) && matchesSearch(job, query));

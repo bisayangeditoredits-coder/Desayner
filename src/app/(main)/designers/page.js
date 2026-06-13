@@ -519,7 +519,7 @@ function DesignersContent() {
                 fontSize: "0.9rem",
                 outline: "none",
               }}
-              onFocus={(e) => (e.target.style.borderColor = "#0a0a0a")}
+              onFocus={(e) => (e.target.style.borderColor = "#231f20")}
               onBlur={(e) => (e.target.style.borderColor = "#e2e8f0")}
             />
           </div>
@@ -549,9 +549,9 @@ function DesignersContent() {
                 border: "1px solid",
                 cursor: "pointer",
                 whiteSpace: "nowrap",
-                background: category === cat ? "#0a0a0a" : "white",
+                background: category === cat ? "#231f20" : "white",
                 color: category === cat ? "white" : "#4b5563",
-                borderColor: category === cat ? "#0a0a0a" : "#e2e8f0",
+                borderColor: category === cat ? "#231f20" : "#e2e8f0",
                 transition: "all 0.2s ease",
               }}
               onMouseOver={(e) => {
@@ -694,7 +694,7 @@ function DesignersContent() {
                 style={{
                   padding: "0.6rem 1.5rem",
                   fontSize: "0.9rem",
-                  background: "#0a0a0a",
+                  background: "#231f20",
                   color: "white",
                   fontWeight: 700,
                   borderRadius: "30px",
@@ -854,7 +854,7 @@ function DesignerCard({ designer, currentUserId }) {
               {designer.followers_count > 100 ? (
                 <span
                   style={{
-                    background: "#0a0a0a",
+                    background: "#231f20",
                     color: "white",
                     fontSize: "10px",
                     fontWeight: 800,
@@ -979,7 +979,7 @@ function DesignerCard({ designer, currentUserId }) {
               fontSize: "14px",
               borderRadius: "12px",
               fontWeight: 800,
-              background: "#0a0a0a",
+              background: "#231f20",
               color: "white",
               border: "none",
               cursor: "pointer",
@@ -991,7 +991,7 @@ function DesignerCard({ designer, currentUserId }) {
               e.currentTarget.style.transform = "translateY(-1px)";
             }}
             onMouseOut={(e) => {
-              e.currentTarget.style.background = "#0a0a0a";
+              e.currentTarget.style.background = "#231f20";
               e.currentTarget.style.transform = "translateY(0)";
             }}
           >

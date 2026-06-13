@@ -11,7 +11,7 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'images.unsplash.com',
+        hostname: '*.unsplash.com',
         port: '',
         pathname: '/**',
       },
@@ -99,8 +99,8 @@ const nextConfig = {
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               // Fonts: self + Google Fonts
               "font-src 'self' https://fonts.gstatic.com",
-              // Images: self + Cloudflare R2 + Unsplash + Google avatars + GitHub avatars + Supabase storage
-              "img-src 'self' data: blob: https://*.r2.dev https://images.unsplash.com https://*.googleusercontent.com https://avatars.githubusercontent.com https://*.supabase.co https://res.cloudinary.com https://base44.app",
+              // Images: self + Cloudflare R2 + Unsplash + Google avatars + GitHub avatars + Supabase storage + Job Logos
+              "img-src 'self' data: blob: https://*.r2.dev https://*.unsplash.com https://*.googleusercontent.com https://avatars.githubusercontent.com https://*.supabase.co https://res.cloudinary.com https://base44.app https://jobicy.com https://www.google.com https://logo.clearbit.com https://api.dicebear.com",
               // Media: self + R2 CDN (project videos)
               "media-src 'self' blob: https://*.r2.dev",
               // API + WebSocket connections

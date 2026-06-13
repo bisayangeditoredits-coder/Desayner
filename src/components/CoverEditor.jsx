@@ -132,7 +132,7 @@ export default function CoverEditor({ value, thumbnailUrl, onUploaded }) {
         <img src={pendingPreview} alt="Cover preview" style={previewImgStyle} />
         {isUploading && (
           <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '3px', background: '#e8e8e8' }}>
-            <div style={{ height: '100%', background: '#0009fa', width: `${progress}%`, transition: 'width 0.25s ease' }} />
+            <div style={{ height: '100%', background: '#2d43e8', width: `${progress}%`, transition: 'width 0.25s ease' }} />
           </div>
         )}
         <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', justifyContent: 'center' }}>
@@ -148,7 +148,7 @@ export default function CoverEditor({ value, thumbnailUrl, onUploaded }) {
             type="button"
             onClick={handleStartCrop}
             disabled={isUploading}
-            style={{ padding: '0.6rem 1rem', background: 'white', color: '#0a0a0a', border: '1px solid #e8e8e8', borderRadius: '6px', cursor: 'pointer', fontSize: '0.82rem', fontFamily: 'inherit', display: 'flex', alignItems: 'center', gap: '0.35rem', opacity: isUploading ? 0.5 : 1 }}
+            style={{ padding: '0.6rem 1rem', background: 'white', color: '#231f20', border: '1px solid #e8e8e8', borderRadius: '6px', cursor: 'pointer', fontSize: '0.82rem', fontFamily: 'inherit', display: 'flex', alignItems: 'center', gap: '0.35rem', opacity: isUploading ? 0.5 : 1 }}
           >
             <Crop size={14} /> Adjust crop
           </button>
@@ -156,7 +156,7 @@ export default function CoverEditor({ value, thumbnailUrl, onUploaded }) {
             type="button"
             onClick={handleUploadAsIs}
             disabled={isUploading}
-            style={{ padding: '0.6rem 1.25rem', background: isUploading ? '#94a3b8' : '#0009fa', color: 'white', border: 'none', borderRadius: '6px', cursor: isUploading ? 'not-allowed' : 'pointer', fontSize: '0.82rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.4rem', fontFamily: 'inherit' }}
+            style={{ padding: '0.6rem 1.25rem', background: isUploading ? '#94a3b8' : '#2d43e8', color: 'white', border: 'none', borderRadius: '6px', cursor: isUploading ? 'not-allowed' : 'pointer', fontSize: '0.82rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.4rem', fontFamily: 'inherit' }}
           >
             {isUploading
               ? <><Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} /> {status === 'compressing' ? 'Optimizing…' : 'Uploading…'}</>
@@ -175,7 +175,7 @@ export default function CoverEditor({ value, thumbnailUrl, onUploaded }) {
       {!imageSrc ? (
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#6b6b6b', padding: '2rem' }}>
           <ImageIcon size={64} style={{ marginBottom: '1rem', opacity: 0.35, color: '#9b9b9b' }} />
-          <h2 style={{ color: '#0a0a0a', fontWeight: 700, marginBottom: '0.5rem', fontSize: '1.25rem' }}>Project Cover</h2>
+          <h2 style={{ color: '#231f20', fontWeight: 700, marginBottom: '0.5rem', fontSize: '1.25rem' }}>Project Cover</h2>
           <p style={{ marginBottom: '1.5rem', fontSize: '0.875rem', textAlign: 'center', maxWidth: '280px' }}>
             Upload your own image.
           </p>
@@ -185,7 +185,7 @@ export default function CoverEditor({ value, thumbnailUrl, onUploaded }) {
             <button
               type="button"
               onClick={() => inputRef.current?.click()}
-              style={{ padding: '0.7rem 1.35rem', background: '#0009fa', color: 'white', fontWeight: 600, border: 'none', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+              style={{ padding: '0.7rem 1.35rem', background: '#2d43e8', color: 'white', fontWeight: 600, border: 'none', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
             >
               <Upload size={16} /> Upload Image
             </button>
@@ -211,7 +211,7 @@ export default function CoverEditor({ value, thumbnailUrl, onUploaded }) {
 
           {isUploading && (
             <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '3px', background: '#e8e8e8' }}>
-              <div style={{ height: '100%', background: '#0009fa', width: `${progress}%`, transition: 'width 0.25s ease' }} />
+              <div style={{ height: '100%', background: '#2d43e8', width: `${progress}%`, transition: 'width 0.25s ease' }} />
             </div>
           )}
 
@@ -234,7 +234,7 @@ export default function CoverEditor({ value, thumbnailUrl, onUploaded }) {
                 type="button"
                 onClick={handleSetCover}
                 disabled={isUploading}
-                style={{ padding: '0.55rem 1.35rem', background: isUploading ? '#94a3b8' : '#0009fa', color: 'white', border: 'none', borderRadius: '6px', cursor: isUploading ? 'not-allowed' : 'pointer', fontSize: '0.82rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.4rem', fontFamily: 'inherit' }}
+                style={{ padding: '0.55rem 1.35rem', background: isUploading ? '#94a3b8' : '#2d43e8', color: 'white', border: 'none', borderRadius: '6px', cursor: isUploading ? 'not-allowed' : 'pointer', fontSize: '0.82rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.4rem', fontFamily: 'inherit' }}
               >
                 {isUploading
                   ? <><Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} /> {status === 'compressing' ? 'Optimizing…' : 'Uploading…'}</>

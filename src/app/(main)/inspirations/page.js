@@ -128,7 +128,7 @@ export default function InspirationsPage() {
       <div className="inspirations-header">
         <div>
           <h1 className="inspirations-title" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <Sparkles size={22} style={{ color: 'var(--accent-blue, #0009fa)' }} /> Inspirations
+            <Sparkles size={22} style={{ color: 'var(--accent-blue, #2d43e8)' }} /> Inspirations
           </h1>
           <p className="inspirations-desc">Visual designs, layouts, and style resources shared by creators.</p>
         </div>
