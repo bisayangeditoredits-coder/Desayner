@@ -32,8 +32,6 @@ export default function TrendingProjectCard({ project, currentUserId, rank }) {
   const supabase = useMemo(() => createClient(), []);
   const author = project.profiles;
   const authorName = author?.full_name || author?.username || 'Unknown';
-  const imgSrc = stripCloudinaryProxy(project.thumbnail_url || project.cover_url);
-  const isProxied = imgSrc && imgSrc.startsWith('/api/proxy-image');
 
   async function handleLike(event) {
     event.preventDefault();
@@ -79,13 +77,14 @@ export default function TrendingProjectCard({ project, currentUserId, rank }) {
         <div className={`trending-project-card__image-shell trending-project-card__image-shell--${imageStatus}`}>
           {project.cover_url && imageStatus !== 'error' ? (
             <Image
-              src={imgSrc}
+              src={stripCloudinaryProxy(project.thumbnail_url || project.cover_url)}
               alt={project.title || 'Project cover'}
               className="trending-project-card__image"
               width={520}
               height={390}
               sizes="(max-width: 640px) 50vw, (max-width: 1100px) 33vw, 18vw"
-              unoptimized={isProxied}
+              unoptimized
+              loading="lazy"
               onLoad={() => setImageStatus('loaded')}
               onError={() => setImageStatus('error')}
             />

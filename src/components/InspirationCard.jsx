@@ -88,8 +88,6 @@ export default function InspirationCard({ inspiration, currentUserId, onClick })
   }, [liked, currentUserId, inspiration.id, router, supabase]);
 
   const creator = inspiration.profiles;
-  const imgSrc = stripCloudinaryProxy(inspiration.cover_url || inspiration.thumbnail_url || inspiration.image_url);
-  const isProxied = imgSrc && imgSrc.startsWith('/api/proxy-image');
 
   return (
     <div className="inspirations-card-wrapper">
@@ -97,13 +95,14 @@ export default function InspirationCard({ inspiration, currentUserId, onClick })
         <div className={`inspiration-image-wrap inspiration-image-wrap--${imgStatus}`}>
           {imgStatus !== 'error' ? (
               <Image
-              src={imgSrc}
+              src={stripCloudinaryProxy(inspiration.cover_url || inspiration.thumbnail_url || inspiration.image_url)}
               alt={inspiration.title || 'Inspiration'}
               className="inspiration-img"
               width={600}
               height={450}
               sizes="(max-width: 480px) 100vw, (max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
-              unoptimized={isProxied}
+              unoptimized
+              loading="lazy"
               onLoad={() => setImgStatus('loaded')}
               onError={() => setImgStatus('error')}
             />
