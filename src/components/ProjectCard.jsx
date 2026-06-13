@@ -83,6 +83,7 @@ export default function ProjectCard({ project, currentUserId }) {
                 width={600}
                 height={450}
                 sizes="(max-width: 480px) 100vw, (max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
+                unoptimized={true}
                 onLoad={() => setImgStatus('loaded')}
                 onError={() => setImgStatus('error')}
               />

@@ -83,6 +83,7 @@ export default function TrendingProjectCard({ project, currentUserId, rank }) {
               width={520}
               height={390}
               sizes="(max-width: 640px) 50vw, (max-width: 1100px) 33vw, 18vw"
+              unoptimized={true}
               onLoad={() => setImageStatus('loaded')}
               onError={() => setImageStatus('error')}
             />
