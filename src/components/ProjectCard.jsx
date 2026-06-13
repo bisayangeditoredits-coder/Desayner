@@ -60,6 +60,8 @@ export default function ProjectCard({ project, currentUserId }) {
   }
 
   const author = project.profiles;
+  const imgSrc = stripCloudinaryProxy(project.thumbnail_url || project.cover_url);
+  const isProxied = imgSrc && imgSrc.startsWith('/api/proxy-image');
 
   return (
     <div className="project-card-wrapper">
@@ -75,23 +77,18 @@ export default function ProjectCard({ project, currentUserId }) {
           onClick={saveProjectModalReturn}
         >
           <div className={`project-card__thumb project-card__thumb--${imgStatus}`}>
-            {project.cover_url && imgStatus !== 'error' ? (() => {
-              const imgSrc = stripCloudinaryProxy(project.thumbnail_url || project.cover_url);
-              const isProxied = imgSrc && imgSrc.startsWith('/api/proxy-image');
-              return (
-                <Image
-                  src={imgSrc}
-                  alt={project.title || 'Project'}
-                  className="project-card__img"
-                  width={600}
-                  height={450}
-                  sizes="(max-width: 480px) 100vw, (max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
-                  unoptimized={isProxied}
-                  onLoad={() => setImgStatus('loaded')}
-                  onError={() => setImgStatus('error')}
-                />
-              );
-            })()
+            {project.cover_url && imgStatus !== 'error' ? (
+              <Image
+                src={imgSrc}
+                alt={project.title || 'Project'}
+                className="project-card__img"
+                width={600}
+                height={450}
+                sizes="(max-width: 480px) 100vw, (max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
+                unoptimized={isProxied}
+                onLoad={() => setImgStatus('loaded')}
+                onError={() => setImgStatus('error')}
+              />
             ) : (
               <div className="project-card__no-cover">No cover</div>
             )}
