@@ -1,6 +1,7 @@
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
+import { sendWelcomeEmail } from '@/lib/email';
 
 /**
  * Supabase Auth Callback Route
@@ -77,6 +78,11 @@ export async function GET(request) {
           });
           if (!insertError) {
             inserted = true;
+            // Send welcome email in the background
+            sendWelcomeEmail({
+              toEmail: user.email,
+              toName: fullName || baseUsername,
+            }).catch(err => console.error('Failed to send welcome email:', err));
           } else if (insertError.code === '23505') {
             // Unique violation — username taken, try again with suffix
             attempts++;

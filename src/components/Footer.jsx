@@ -1,5 +1,6 @@
 'use client';
 import Link from 'next/link';
+import NewsletterSubscribe from './NewsletterSubscribe';
 
 export default function Footer() {
   return (
@@ -39,6 +40,11 @@ export default function Footer() {
             <Link href="/privacy" style={{ color: '#475569', textDecoration: 'none', fontSize: '0.9rem', transition: 'color 0.2s', fontWeight: 500 }} onMouseOver={e => e.target.style.color='#0f172a'} onMouseOut={e => e.target.style.color='#475569'}>Privacy Policy</Link>
             <Link href="/terms" style={{ color: '#475569', textDecoration: 'none', fontSize: '0.9rem', transition: 'color 0.2s', fontWeight: 500 }} onMouseOver={e => e.target.style.color='#0f172a'} onMouseOut={e => e.target.style.color='#475569'}>Terms of Service</Link>
             <Link href="/about" style={{ color: '#475569', textDecoration: 'none', fontSize: '0.9rem', transition: 'color 0.2s', fontWeight: 500 }} onMouseOver={e => e.target.style.color='#0f172a'} onMouseOut={e => e.target.style.color='#475569'}>About Us</Link>
+          </div>
+
+          {/* Newsletter */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <NewsletterSubscribe />
           </div>
         </div>
 
