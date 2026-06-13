@@ -118,7 +118,8 @@ export default function Header() {
       if (mounted) setAuthLoaded(true);
 
       // Realtime listeners — with error handling + fallback polling
-      sub = supabase.channel(`header_badges_${user.id}`)
+      const uniqueChannelName = `header_badges_${user.id}_${Date.now()}_${Math.random().toString(36).substring(7)}`;
+      sub = supabase.channel(uniqueChannelName)
         .on('postgres_changes', { event: '*', schema: 'public', table: 'notifications' }, fetchBadges)
         .on('postgres_changes', { event: '*', schema: 'public', table: 'conversation_members' }, fetchBadges)
         .subscribe((status, err) => {
