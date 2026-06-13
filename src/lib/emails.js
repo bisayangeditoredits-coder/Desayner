@@ -29,15 +29,26 @@ export async function sendNewFollowerEmail({ targetUserId, followerName, followe
       to: [recipientEmail],
       subject: `You have a new follower: ${followerName}`,
       html: `
-        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; color: #1a1a1a;">
-          <h2 style="color: #2d43e8;">New Follower! 🎉</h2>
-          <p>Hi there,</p>
-          <p><strong>${followerName}</strong> (@${followerUsername}) just started following your profile on Desayner.</p>
-          <p>Keep up the great work!</p>
-          <br/>
-          <a href="https://desayner.com/profile/${followerUsername}" style="display: inline-block; padding: 12px 24px; background-color: #2d43e8; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: bold;">View their profile</a>
-          <br/><br/>
-          <p style="color: #666; font-size: 12px;">Best,<br/>The Desayner Team</p>
+        <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff; border: 1px solid #e8e8e8; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
+          <!-- Header -->
+          <div style="background-color: #2d43e8; padding: 30px 20px; text-align: center;">
+            <h1 style="color: #e6e82d; margin: 0; font-size: 28px; letter-spacing: -0.5px;">Desayner</h1>
+          </div>
+          <!-- Body -->
+          <div style="padding: 40px 30px; color: #231f20;">
+            <h2 style="color: #231f20; margin-top: 0; font-size: 22px;">New Follower! 🎉</h2>
+            <p style="font-size: 16px; line-height: 1.6; color: #4a4a4a;">Hi there,</p>
+            <p style="font-size: 16px; line-height: 1.6; color: #4a4a4a;"><strong>${followerName}</strong> (@${followerUsername}) just started following your profile on Desayner.</p>
+            <p style="font-size: 16px; line-height: 1.6; color: #4a4a4a;">Keep creating and sharing your amazing work!</p>
+            
+            <div style="text-align: center; margin: 40px 0;">
+              <a href="https://desayner.com/profile/${followerUsername}" style="display: inline-block; padding: 14px 32px; background-color: #e6e82d; color: #231f20; text-decoration: none; border-radius: 30px; font-weight: bold; font-size: 16px; letter-spacing: 0.5px; text-transform: uppercase;">View Profile</a>
+            </div>
+          </div>
+          <!-- Footer -->
+          <div style="background-color: #f9f9f9; padding: 20px; text-align: center; border-top: 1px solid #eeeeee;">
+            <p style="color: #888888; font-size: 12px; margin: 0;">&copy; ${new Date().getFullYear()} Desayner. All rights reserved.</p>
+          </div>
         </div>
       `,
     });
@@ -59,17 +70,29 @@ export async function sendNewMessageEmail({ targetUserId, senderName, senderUser
       to: [recipientEmail],
       subject: `New message from ${senderName}`,
       html: `
-        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; color: #1a1a1a;">
-          <h2 style="color: #2d43e8;">You have a new message</h2>
-          <p>Hi there,</p>
-          <p><strong>${senderName}</strong> (@${senderUsername}) sent you a message on Desayner:</p>
-          <blockquote style="border-left: 4px solid #e5e7eb; padding-left: 16px; margin: 16px 0; font-style: italic; color: #4b5563;">
-            "${messageSnippet}"
-          </blockquote>
-          <br/>
-          <a href="https://desayner.com/messages" style="display: inline-block; padding: 12px 24px; background-color: #2d43e8; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: bold;">Reply to Message</a>
-          <br/><br/>
-          <p style="color: #666; font-size: 12px;">Best,<br/>The Desayner Team</p>
+        <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff; border: 1px solid #e8e8e8; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
+          <!-- Header -->
+          <div style="background-color: #2d43e8; padding: 30px 20px; text-align: center;">
+            <h1 style="color: #e6e82d; margin: 0; font-size: 28px; letter-spacing: -0.5px;">Desayner</h1>
+          </div>
+          <!-- Body -->
+          <div style="padding: 40px 30px; color: #231f20;">
+            <h2 style="color: #231f20; margin-top: 0; font-size: 22px;">You have a new message</h2>
+            <p style="font-size: 16px; line-height: 1.6; color: #4a4a4a;">Hi there,</p>
+            <p style="font-size: 16px; line-height: 1.6; color: #4a4a4a;"><strong>${senderName}</strong> (@${senderUsername}) sent you a message on Desayner:</p>
+            
+            <div style="background-color: #f8f9fa; border-left: 4px solid #2d43e8; padding: 20px; margin: 24px 0; border-radius: 0 8px 8px 0;">
+              <p style="margin: 0; font-style: italic; color: #231f20; font-size: 15px; line-height: 1.5;">"${messageSnippet}"</p>
+            </div>
+            
+            <div style="text-align: center; margin: 40px 0;">
+              <a href="https://desayner.com/messages" style="display: inline-block; padding: 14px 32px; background-color: #e6e82d; color: #231f20; text-decoration: none; border-radius: 30px; font-weight: bold; font-size: 16px; letter-spacing: 0.5px; text-transform: uppercase;">Reply to Message</a>
+            </div>
+          </div>
+          <!-- Footer -->
+          <div style="background-color: #f9f9f9; padding: 20px; text-align: center; border-top: 1px solid #eeeeee;">
+            <p style="color: #888888; font-size: 12px; margin: 0;">&copy; ${new Date().getFullYear()} Desayner. All rights reserved.</p>
+          </div>
         </div>
       `,
     });
