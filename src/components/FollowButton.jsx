@@ -26,13 +26,16 @@ export default function FollowButton({ targetUserId, currentUserId, initialFollo
     setFollowing(!following); // optimistic
     try {
       if (prev) {
-        await supabase.from('follows').delete()
-          .eq('follower_id', currentUserId)
-          .eq('following_id', targetUserId);
+        await fetch('/api/follows', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ following_id: targetUserId }),
+        });
       } else {
-        await supabase.from('follows').insert({
-          follower_id: currentUserId,
-          following_id: targetUserId,
+        await fetch('/api/follows', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ following_id: targetUserId }),
         });
       }
     } catch {

@@ -1,4 +1,7 @@
 import { NextResponse } from 'next/server';
+import { createClient } from '@/lib/supabase/server';
+import { waitUntil } from '@vercel/functions';
+import { sendNewMessageEmail } from '@/lib/emails';
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import { redis } from '@/lib/redis';
@@ -154,6 +157,27 @@ export async function POST(request) {
       p_conv_id: conversationId,
       p_user_id: recipientId,
     });
+
+    // Send email notification asynchronously
+    waitUntil(
+      (async () => {
+        // Fetch sender details
+        const { data: senderProfile } = await supabase
+          .from('profiles')
+          .select('full_name, username')
+          .eq('id', user.id)
+          .single();
+
+        if (senderProfile) {
+          await sendNewMessageEmail({
+            targetUserId: recipientId,
+            senderName: senderProfile.full_name || senderProfile.username,
+            senderUsername: senderProfile.username,
+            messageSnippet: snippet,
+          });
+        }
+      })()
+    );
 
     return NextResponse.json({ message: msg });
   } catch (err) {
