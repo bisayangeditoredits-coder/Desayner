@@ -45,7 +45,7 @@ export default function SignupForm({ isModal = false }) {
       console.error('Rate limit error:', err);
     }
 
-    const { data, error } = await supabase.auth.signUp({
+    const { error } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -57,13 +57,6 @@ export default function SignupForm({ isModal = false }) {
     if (error) {
       setError(error.message);
       setLoading(false);
-      return;
-    }
-
-    // If email confirmation is disabled in Supabase, data.session will exist
-    if (data?.session) {
-      router.push('/');
-      router.refresh();
       return;
     }
 
