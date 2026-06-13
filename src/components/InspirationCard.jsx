@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { Heart, Eye } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import UserAvatar from './UserAvatar';
+import { stripCloudinaryProxy } from '@/lib/utils';
 
 export default function InspirationCard({ inspiration, currentUserId, onClick }) {
   const [liked, setLiked]         = useState(inspiration.user_liked || false);
@@ -94,7 +95,7 @@ export default function InspirationCard({ inspiration, currentUserId, onClick })
         <div className={`inspiration-image-wrap inspiration-image-wrap--${imgStatus}`}>
           {imgStatus !== 'error' ? (
               <Image
-              src={inspiration.cover_url || inspiration.thumbnail_url || inspiration.image_url}
+              src={stripCloudinaryProxy(inspiration.cover_url || inspiration.thumbnail_url || inspiration.image_url)}
               alt={inspiration.title || 'Inspiration'}
               className="inspiration-img"
               width={600}

@@ -9,6 +9,7 @@ import { Bookmark, Eye, Heart, Sparkles } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import UserAvatar from './UserAvatar';
 import { saveProjectModalReturn } from '@/lib/projectModalNav';
+import { stripCloudinaryProxy } from '@/lib/utils';
 
 const SaveToCollectionModal = dynamic(() => import('./SaveToCollectionModal'), { ssr: false });
 
@@ -76,7 +77,7 @@ export default function TrendingProjectCard({ project, currentUserId, rank }) {
         <div className={`trending-project-card__image-shell trending-project-card__image-shell--${imageStatus}`}>
           {project.cover_url && imageStatus !== 'error' ? (
             <Image
-              src={project.thumbnail_url || project.cover_url}
+              src={stripCloudinaryProxy(project.thumbnail_url || project.cover_url)}
               alt={project.title || 'Project cover'}
               className="trending-project-card__image"
               width={520}

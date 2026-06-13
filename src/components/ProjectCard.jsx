@@ -10,6 +10,7 @@ import UserAvatar from './UserAvatar';
 import { saveProjectModalReturn } from '@/lib/projectModalNav';
 
 import dynamic from 'next/dynamic';
+import { stripCloudinaryProxy } from '@/lib/utils';
 const SaveToCollectionModal = dynamic(() => import('./SaveToCollectionModal'), { ssr: false });
 
 export default function ProjectCard({ project, currentUserId }) {
@@ -76,7 +77,7 @@ export default function ProjectCard({ project, currentUserId }) {
           <div className={`project-card__thumb project-card__thumb--${imgStatus}`}>
             {project.cover_url && imgStatus !== 'error' ? (
               <Image
-                src={project.thumbnail_url || project.cover_url}
+                src={stripCloudinaryProxy(project.thumbnail_url || project.cover_url)}
                 alt={project.title || 'Project'}
                 className="project-card__img"
                 width={600}

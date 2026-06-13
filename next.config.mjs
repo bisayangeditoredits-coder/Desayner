@@ -29,7 +29,7 @@ const nextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'lh3.googleusercontent.com',
+        hostname: '*.googleusercontent.com',
         port: '',
         pathname: '/**',
       },
@@ -100,7 +100,7 @@ const nextConfig = {
               // Fonts: self + Google Fonts
               "font-src 'self' https://fonts.gstatic.com",
               // Images: self + Cloudflare R2 + Unsplash + Google avatars + GitHub avatars + Supabase storage
-              "img-src 'self' data: blob: https://*.r2.dev https://images.unsplash.com https://lh3.googleusercontent.com https://avatars.githubusercontent.com https://*.supabase.co https://res.cloudinary.com https://base44.app",
+              "img-src 'self' data: blob: https://*.r2.dev https://images.unsplash.com https://*.googleusercontent.com https://avatars.githubusercontent.com https://*.supabase.co https://res.cloudinary.com https://base44.app",
               // Media: self + R2 CDN (project videos)
               "media-src 'self' blob: https://*.r2.dev",
               // API + WebSocket connections
