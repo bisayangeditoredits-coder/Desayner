@@ -51,7 +51,10 @@ export default function OnboardingGuard({ children }) {
     };
   }, [pathname, supabase]);
 
-  if (checking) return null;
+  if (checking) {
+    // Don't block rendering — show children immediately and overlay modal if needed
+    return <>{children}</>;
+  }
 
   return (
     <>

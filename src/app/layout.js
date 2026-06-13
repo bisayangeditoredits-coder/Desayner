@@ -3,9 +3,6 @@ import {
   Raleway,
   Syne,
   Plus_Jakarta_Sans,
-  Space_Grotesk,
-  DM_Serif_Display,
-  JetBrains_Mono,
 } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
@@ -46,7 +43,7 @@ const syne = Syne({
   variable: "--font-display",
   subsets: ["latin"],
   display: "swap",
-  weight: ["400", "600", "700", "800"],
+  weight: ["700", "800"],
 });
 
 /** Modern clean UI alternative to Montserrat — friendly and geometric */
@@ -54,31 +51,7 @@ const plusJakartaSans = Plus_Jakarta_Sans({
   variable: "--font-jakarta",
   subsets: ["latin"],
   display: "swap",
-  weight: ["400", "500", "600", "700"],
-});
-
-/** Labels, tags, category pills, navigation items — technical & compact */
-const spaceGrotesk = Space_Grotesk({
-  variable: "--font-grotesk",
-  subsets: ["latin"],
-  display: "swap",
-  weight: ["400", "500", "700"],
-});
-
-/** Elegant serif — for pull-quotes, featured text, creative contrast */
-const dmSerifDisplay = DM_Serif_Display({
-  variable: "--font-serif",
-  subsets: ["latin"],
-  display: "swap",
-  weight: ["400"],
-});
-
-/** Monospace — stats, numbers, code snippets, hex colour values */
-const jetbrainsMono = JetBrains_Mono({
-  variable: "--font-mono",
-  subsets: ["latin"],
-  display: "swap",
-  weight: ["400", "700"],
+  weight: ["500", "700"],
 });
 
 
@@ -138,9 +111,6 @@ export default function RootLayout({ children }) {
         monigue.variable,
         syne.variable,
         plusJakartaSans.variable,
-        spaceGrotesk.variable,
-        dmSerifDisplay.variable,
-        jetbrainsMono.variable,
       ].join(' ')}
     >
       <body>

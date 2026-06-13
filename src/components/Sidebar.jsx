@@ -61,7 +61,7 @@ export default function Sidebar({ className = '' }) {
       if (!mounted) return;
       if (user) {
         setUser(user);
-        const { data } = await supabase.from('profiles').select('*').eq('id', user.id).single();
+        const { data } = await supabase.from('profiles').select('username, full_name, avatar_url').eq('id', user.id).single();
         if (mounted && data) setProfile(data);
       } else {
         setUser(null);
@@ -78,7 +78,7 @@ export default function Sidebar({ className = '' }) {
   useEffect(() => {
     async function refreshProfile() {
       if (!user?.id) return;
-      const { data } = await supabase.from('profiles').select('*').eq('id', user.id).single();
+      const { data } = await supabase.from('profiles').select('username, full_name, avatar_url').eq('id', user.id).single();
       if (data) setProfile(data);
     }
     window.addEventListener('profile_updated', refreshProfile);
@@ -106,7 +106,7 @@ export default function Sidebar({ className = '' }) {
       <aside className={`sidebar ${className} ${isMobileMenuOpen ? 'mobile-open' : ''}`}>
       <div style={{ padding: '1.25rem 1.25rem 0', borderBottom: '1px solid #e8e8e8', paddingBottom: '1.25rem', marginBottom: '0.5rem', display: 'flex', justifyContent: 'center' }}>
         <Link href="/">
-          <img src="/desayner-logo.png" alt="Desayner" style={{ width: 'auto', height: '54px', maxWidth: '100%', objectFit: 'contain', display: 'block' }} />
+          <img src="/desayner-logo.png" alt="Desayner" fetchpriority="high" style={{ width: 'auto', height: '54px', maxWidth: '100%', objectFit: 'contain', display: 'block' }} />
         </Link>
       </div>
 
