@@ -130,8 +130,10 @@ export default function NewProjectPage() {
     }).select().single();
 
     if (err) { setError(err.message); setSubmitting(false); return; }
-    saveProjectModalReturn();
-    router.push(`/projects/${data.id}`);
+    
+    // Redirect back to the feed (closing the upload view)
+    router.push('/projects');
+    router.refresh();
   }
 
   return (

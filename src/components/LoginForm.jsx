@@ -132,7 +132,7 @@ export default function LoginForm({ isModal = false }) {
               fontWeight: 700,
               letterSpacing: '0.15em',
               textTransform: 'uppercase',
-              color: 'rgba(255,255,255,0.55)',
+              color: '#FFE600',
               marginBottom: '0.6rem',
             }}>
               Design Hub
@@ -167,8 +167,8 @@ export default function LoginForm({ isModal = false }) {
       }}>
         <div style={{ width: '100%', maxWidth: 400 }}>
 
-          {/* Logo — shown only when video panel is hidden (mobile) */}
-          <div className="login-mobile-logo" style={{ marginBottom: '2rem', display: 'none' }}>
+          {/* Logo — always shown above the form */}
+          <div style={{ marginBottom: '2rem', textAlign: 'left' }}>
             <img src="/desayner-logo.png" alt="Desayner" style={{ width: 160, height: 'auto' }} />
           </div>
 

@@ -445,8 +445,12 @@ function FontsInner() {
         </div>
 
         {/* RIGHT: category pills */}
-        <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center', flexWrap: 'wrap' }}>
-          <span style={{ fontSize: '0.75rem', color: '#9b9b9b', fontWeight: 600 }}>Category:</span>
+        <div style={{
+          display: 'flex', gap: '0.4rem', alignItems: 'center',
+          overflowX: 'auto', scrollbarWidth: 'none', maxWidth: '100%',
+          paddingBottom: '0.2rem'
+        }}>
+          <span style={{ fontSize: '0.75rem', color: '#9b9b9b', fontWeight: 600, flexShrink: 0 }}>Category:</span>
           {CATEGORIES.map(c => (
             <button
               key={c.value}
@@ -458,6 +462,7 @@ function FontsInner() {
                 border: 'none', borderRadius: 6,
                 fontSize: '0.75rem', fontWeight: 600,
                 cursor: 'pointer', fontFamily: 'inherit',
+                flexShrink: 0, whiteSpace: 'nowrap'
               }}
             >
               {c.label}
@@ -468,11 +473,10 @@ function FontsInner() {
 
 
       {/* ── Font Grid ── */}
-      <div style={{ padding: '1.5rem 1.5rem 3rem' }}>
-        <div style={{
+      <div className="fonts-grid-container" style={{ padding: '1.5rem 1.5rem 3rem' }}>
+        <div className="fonts-grid" style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(3, 1fr)',
-          gap: '0.75rem',
+          gap: '1rem',
         }}>
           {loading ? (
             <FontSkeleton />
@@ -539,11 +543,23 @@ function FontsInner() {
       </div>
 
       <style>{`
+        .fonts-grid {
+          grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        }
         .font-card-item:hover {
           box-shadow: 0 4px 16px rgba(0,0,0,0.08) !important;
           border-color: #d1d5db !important;
         }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        
+        @media (max-width: 640px) {
+          .fonts-grid-container {
+            padding: 1rem 1rem 3rem !important;
+          }
+          .fonts-grid {
+            grid-template-columns: 1fr;
+          }
+        }
       `}</style>
     </div>
   );

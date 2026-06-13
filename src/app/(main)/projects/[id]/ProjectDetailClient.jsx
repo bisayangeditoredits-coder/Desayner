@@ -366,7 +366,7 @@ export default function ProjectDetailClient({ isModal = false }) {
         </div>
 
         {/* Two-column layout */}
-        <div className="project-detail__body" style={{ maxWidth: '1440px', margin: '0 auto', padding: '0 1rem' }}>
+        <div className="project-detail__body">
 
           {/* ── LEFT: content ─────────────────────────── */}
           <article className="project-detail__main">

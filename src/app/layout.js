@@ -125,6 +125,8 @@ export const viewport = {
   themeColor: "#0009fa",
 };
 
+import CookieBanner from "@/components/CookieBanner";
+
 export default function RootLayout({ children }) {
   return (
     <html
@@ -143,6 +145,7 @@ export default function RootLayout({ children }) {
       <body>
         <PWAInstaller />
         {children}
+        <CookieBanner />
       </body>
     </html>
   );

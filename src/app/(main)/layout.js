@@ -12,9 +12,11 @@ export default function MainLayout({ children, modal }) {
       <OnboardingGuard>
         <div className="app-layout">
           <Sidebar />
-          <main className="main-content">
+          <main className="main-content" style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
             <Header />
-            {children}
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+              {children}
+            </div>
           </main>
           <MobileBottomNav />
         </div>

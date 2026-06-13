@@ -138,7 +138,7 @@ export default function ColorsPage() {
         <div style={{ 
           display: 'grid', 
           gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', 
-          gap: '2rem',
+          gap: '1rem',
           maxWidth: 1600, 
           margin: '0 auto'
         }}>

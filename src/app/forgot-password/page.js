@@ -32,47 +32,139 @@ function ForgotPasswordForm() {
   }
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: '#ffffff', fontFamily: '"Inter", "Segoe UI", sans-serif' }}>
-      
-      {/* Left Column: Form */}
+    <div style={{
+      display: 'flex',
+      minHeight: '100vh',
+      fontFamily: '"Inter", "Segoe UI", sans-serif',
+      background: '#0a0a0a',
+    }}>
+
+      {/* ── LEFT: video panel ── */}
+      <div className="login-video-panel" style={{
+        flex: '1.1',
+        position: 'relative',
+        overflow: 'hidden',
+        display: 'none', // hidden on mobile, shown via CSS
+      }}>
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          preload="metadata"
+          style={{
+            position: 'absolute',
+            inset: 0,
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            opacity: 0.75,
+          }}
+        >
+          <source src="/video-onboarding/welcome-to-desayner.mp4" type="video/mp4" />
+        </video>
+
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          background: 'linear-gradient(135deg, rgba(0,9,250,0.35) 0%, rgba(0,0,0,0.55) 100%)',
+          zIndex: 1,
+        }} />
+
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          zIndex: 2,
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'flex-end',
+          padding: '3rem',
+        }}>
+          <img
+            src="/desayner-logo-whiteversiom.png"
+            alt="Desayner"
+            style={{ width: 160, height: 'auto', marginBottom: 'auto', paddingTop: '2.5rem' }}
+          />
+
+          <div>
+            <p style={{
+              fontSize: '0.72rem',
+              fontWeight: 700,
+              letterSpacing: '0.15em',
+              textTransform: 'uppercase',
+              color: '#FFE600',
+              marginBottom: '0.6rem',
+            }}>
+              Design Hub
+            </p>
+            <h2 style={{
+              fontSize: 'clamp(1.6rem, 3vw, 2.4rem)',
+              fontWeight: 900,
+              color: 'white',
+              lineHeight: 1.2,
+              letterSpacing: '-0.03em',
+              marginBottom: '0.75rem',
+            }}>
+              Create. Share.<br />Get Discovered.
+            </h2>
+            <p style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.6)', lineHeight: 1.6 }}>
+              The platform for designers to showcase work,<br />get feedback, and grow together.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* ── RIGHT: form panel ── */}
       <div style={{
-        flex: '1',
+        flex: 1,
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
-        padding: '3rem 8%',
-        maxWidth: '700px',
-        margin: '0 auto'
+        alignItems: 'center',
+        background: '#ffffff',
+        padding: '3rem 2rem',
+        minWidth: 0,
       }}>
-        <div style={{ width: '100%', maxWidth: '440px', margin: '0 auto' }}>
+        <div style={{ width: '100%', maxWidth: 400 }}>
           
-          <Link href="/login" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', color: '#64748b', fontSize: '0.9rem', fontWeight: 600, textDecoration: 'none', marginBottom: '3rem' }}>
+          {/* Logo — always shown above the form */}
+          <div style={{ marginBottom: '2rem', textAlign: 'left' }}>
+            <img src="/desayner-logo.png" alt="Desayner" style={{ width: 160, height: 'auto' }} />
+          </div>
+
+          <Link href="/login" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', color: '#64748b', fontSize: '0.85rem', fontWeight: 600, textDecoration: 'none', marginBottom: '2rem' }}>
             <ArrowLeft size={16} /> Back to log in
           </Link>
 
-          <h1 style={{ fontSize: '2.5rem', fontWeight: 800, color: '#0a0a0a', marginBottom: '0.5rem', letterSpacing: '-0.03em' }}>
+          <h1 style={{
+            fontSize: '1.85rem',
+            fontWeight: 900,
+            color: '#0a0a0a',
+            marginBottom: '0.4rem',
+            letterSpacing: '-0.03em',
+          }}>
             Forgot password?
           </h1>
-          <p style={{ fontSize: '0.95rem', color: '#64748b', marginBottom: '2.5rem', lineHeight: '1.5' }}>
+          <p style={{ fontSize: '0.875rem', color: '#64748b', marginBottom: '2rem' }}>
             No worries, we&apos;ll send you reset instructions.
           </p>
 
           {success ? (
             <div style={{ textAlign: 'center', padding: '2.5rem 2rem', border: '1px solid #e2e8f0', borderRadius: '12px', background: '#f8fafc' }}>
               <div style={{ width: '48px', height: '48px', background: '#e0e7ff', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem' }}>
-                <Mail size={24} color="#5b45f4" />
+                <Mail size={24} color="#0009fa" />
               </div>
               <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#0a0a0a', marginBottom: '0.5rem' }}>Check your email</h3>
-              <p style={{ fontSize: '0.95rem', color: '#64748b', marginBottom: '2rem', lineHeight: '1.5' }}>
+              <p style={{ fontSize: '0.875rem', color: '#64748b', marginBottom: '2rem', lineHeight: '1.5' }}>
                 We sent a password reset link to <br/>
                 <strong style={{ color: '#0a0a0a' }}>{email}</strong>
               </p>
               <button
                 onClick={() => setSuccess(false)}
                 style={{
-                  width: '100%', padding: '0.95rem', borderRadius: '8px', background: 'white',
+                  width: '100%', padding: '0.9rem', borderRadius: '8px', background: 'white',
                   color: '#0a0a0a', border: '1px solid #e2e8f0', cursor: 'pointer',
-                  fontWeight: 600, fontSize: '0.95rem', transition: 'background 0.2s'
+                  fontWeight: 600, fontSize: '0.9rem', transition: 'background 0.2s'
                 }}
                 onMouseOver={e => e.currentTarget.style.background = '#f8fafc'}
                 onMouseOut={e => e.currentTarget.style.background = 'white'}
@@ -81,30 +173,29 @@ function ForgotPasswordForm() {
               </button>
             </div>
           ) : (
-            <form onSubmit={handleResetPassword} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+            <form onSubmit={handleResetPassword} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <div>
-                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: '#0a0a0a', marginBottom: '0.6rem' }}>
-                  Email <span style={{ color: '#ef4444' }}>*</span>
+                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, color: '#0a0a0a', marginBottom: '0.5rem' }}>
+                  Email
                 </label>
                 <input
                   type="email"
+                  className="login-input"
                   value={email}
                   onChange={e => setEmail(e.target.value)}
-                  placeholder="Enter your mail address"
+                  placeholder="you@example.com"
                   required
                   style={{
-                    width: '100%', padding: '0.95rem 1rem', borderRadius: '8px',
-                    border: '1px solid #e2e8f0', fontSize: '0.95rem', color: '#0a0a0a',
-                    background: '#ffffff', boxSizing: 'border-box', outline: 'none',
+                    width: '100%', padding: '0.85rem 1rem', borderRadius: 8,
+                    border: '1px solid #e2e8f0', fontSize: '0.9rem', color: '#0a0a0a',
+                    background: '#fafafa', boxSizing: 'border-box', outline: 'none',
                     transition: 'border-color 0.2s',
                   }}
-                  onFocus={(e) => e.target.style.borderColor = '#5b45f4'}
-                  onBlur={(e) => e.target.style.borderColor = '#e2e8f0'}
                 />
               </div>
 
               {error && (
-                <div style={{ padding: '0.75rem 1rem', borderRadius: '8px', background: '#fff1f1', border: '1px solid #fecaca', color: '#dc2626', fontSize: '0.875rem' }}>
+                <div style={{ padding: '0.7rem 1rem', borderRadius: 8, background: '#fff1f1', border: '1px solid #fecaca', color: '#dc2626', fontSize: '0.85rem' }}>
                   {error}
                 </div>
               )}
@@ -113,45 +204,38 @@ function ForgotPasswordForm() {
                 type="submit"
                 disabled={loading}
                 style={{
-                  width: '100%', padding: '1rem', borderRadius: '8px', background: '#5b45f4',
-                  color: 'white', border: 'none', cursor: loading ? 'not-allowed' : 'pointer',
-                  fontWeight: 700, fontSize: '0.95rem', display: 'flex', alignItems: 'center',
-                  justifyContent: 'center', gap: '0.5rem', opacity: loading ? 0.8 : 1,
-                  marginTop: '0.5rem', transition: 'opacity 0.2s', boxShadow: '0 4px 12px rgba(91, 69, 244, 0.2)'
+                  width: '100%', padding: '0.9rem', borderRadius: 8,
+                  background: '#0a0a0a', color: 'white', border: 'none',
+                  cursor: loading ? 'not-allowed' : 'pointer', fontWeight: 700,
+                  fontSize: '0.9rem', display: 'flex', alignItems: 'center',
+                  justifyContent: 'center', gap: '0.5rem',
+                  opacity: loading ? 0.75 : 1, transition: 'opacity 0.2s, background 0.2s',
+                  marginTop: '0.25rem',
                 }}
-                onMouseOver={e => !loading && (e.currentTarget.style.opacity = '0.9')}
-                onMouseOut={e => !loading && (e.currentTarget.style.opacity = '1')}
+                onMouseOver={e => !loading && (e.currentTarget.style.background = '#0009fa')}
+                onMouseOut={e => !loading && (e.currentTarget.style.background = '#0a0a0a')}
               >
-                {loading && <Loader2 size={16} strokeWidth={1.5} style={{ animation: 'spin 1s linear infinite' }} />}
+                {loading && <Loader2 size={15} style={{ animation: 'spin 1s linear infinite' }} />}
                 {loading ? 'Sending link...' : 'Reset password'}
               </button>
             </form>
           )}
 
-          <p style={{ textAlign: 'center', marginTop: '2.5rem', fontSize: '0.875rem', color: '#0a0a0a', fontWeight: 500 }}>
+          <p style={{ textAlign: 'center', marginTop: '1.75rem', fontSize: '0.85rem', color: '#64748b' }}>
             Remember your password?{' '}
-            <Link href="/login" style={{ color: '#5b45f4', fontWeight: 600, textDecoration: 'underline' }}>
+            <Link href="/login" style={{ color: '#0009fa', fontWeight: 700, textDecoration: 'none' }}>
               Log in
             </Link>
           </p>
         </div>
       </div>
 
-      {/* Right Column: Abstract Background */}
-      <div style={{
-        flex: '1.2',
-        display: 'none',
-        backgroundImage: 'url(/login-bg.png)',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat'
-      }} className="desktop-bg-panel" />
-
       <style>{`
-        @keyframes spin { to { transform: rotate(360deg); } }
-        @media (min-width: 900px) {
-          .desktop-bg-panel { display: block !important; }
+        @media (min-width: 768px) {
+          .login-video-panel { display: block !important; }
         }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .login-input:focus { border-color: #0009fa !important; }
       `}</style>
     </div>
   );

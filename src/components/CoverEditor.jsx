@@ -177,7 +177,7 @@ export default function CoverEditor({ value, thumbnailUrl, onUploaded }) {
           <ImageIcon size={64} style={{ marginBottom: '1rem', opacity: 0.35, color: '#9b9b9b' }} />
           <h2 style={{ color: '#0a0a0a', fontWeight: 700, marginBottom: '0.5rem', fontSize: '1.25rem' }}>Project Cover</h2>
           <p style={{ marginBottom: '1.5rem', fontSize: '0.875rem', textAlign: 'center', maxWidth: '280px' }}>
-            Upload your own image or pick a free stock photo.
+            Upload your own image.
           </p>
 
           {/* Action buttons */}
@@ -188,13 +188,6 @@ export default function CoverEditor({ value, thumbnailUrl, onUploaded }) {
               style={{ padding: '0.7rem 1.35rem', background: '#0009fa', color: 'white', fontWeight: 600, border: 'none', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
             >
               <Upload size={16} /> Upload Image
-            </button>
-            <button
-              type="button"
-              onClick={() => setShowUnsplash(true)}
-              style={{ padding: '0.7rem 1.35rem', background: '#f0f0f0', color: '#0a0a0a', fontWeight: 600, border: 'none', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
-            >
-              <Search size={16} /> Browse Stock Photos
             </button>
           </div>
 

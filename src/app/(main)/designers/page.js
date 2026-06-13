@@ -190,7 +190,7 @@ function DesignersContent() {
         page === 1 &&
         category === "All" &&
         search === "" && (
-          <section style={{ marginBottom: "1.5rem", paddingTop: "2rem" }}>
+          <section style={{ marginBottom: "1.5rem", paddingTop: "1rem" }}>
             <div className="page-content">
               <div
                 style={{
@@ -203,25 +203,25 @@ function DesignersContent() {
                   style={{
                     display: "inline-flex",
                     alignItems: "center",
-                    gap: "0.5rem",
-                    background: "rgba(0,0,0,0.05)",
-                    padding: "0.4rem 1rem",
+                    gap: "0.4rem",
+                    background: "rgba(0,0,0,0.04)",
+                    padding: "0.25rem 0.75rem",
                     borderRadius: "30px",
-                    fontSize: "0.8rem",
+                    fontSize: "0.7rem",
                     fontWeight: 700,
-                    letterSpacing: "1px",
+                    letterSpacing: "0.5px",
                     textTransform: "uppercase",
-                    marginBottom: "0.75rem",
-                    color: "#8b5cf6",
+                    marginBottom: "0.5rem",
+                    color: "#374151",
                   }}
                 >
-                  <Sparkles size={14} /> Rising Stars
+                  <Sparkles size={12} /> Rising Stars
                 </div>
                 <h1
                   style={{
-                    fontSize: "2.2rem",
+                    fontSize: "2rem",
                     fontWeight: 900,
-                    marginBottom: "0.5rem",
+                    marginBottom: "0.35rem",
                     lineHeight: 1.1,
                     letterSpacing: "-0.02em",
                     color: "#111827",
@@ -485,7 +485,7 @@ function DesignersContent() {
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
-            marginBottom: "2rem",
+            marginBottom: "1.25rem",
             flexWrap: "wrap",
             gap: "1rem",
           }}
@@ -532,8 +532,8 @@ function DesignersContent() {
             display: "flex",
             gap: "0.5rem",
             overflowX: "auto",
-            paddingBottom: "1rem",
-            marginBottom: "2rem",
+            paddingBottom: "0.5rem",
+            marginBottom: "1rem",
             scrollbarWidth: "none",
           }}
         >
@@ -542,8 +542,8 @@ function DesignersContent() {
               key={cat}
               onClick={() => setCategory(cat)}
               style={{
-                padding: "0.6rem 1.25rem",
-                fontSize: "0.9rem",
+                padding: "0.5rem 1rem",
+                fontSize: "0.85rem",
                 fontWeight: 600,
                 borderRadius: "30px",
                 border: "1px solid",
@@ -569,7 +569,7 @@ function DesignersContent() {
         </div>
 
         {/* Sort Controls */}
-        <div style={{ display: "flex", gap: "0.5rem", marginBottom: "2rem" }}>
+        <div style={{ display: "flex", gap: "0.5rem", marginBottom: "1.5rem" }}>
           {SORT_OPTIONS.map((opt) => (
             <button
               key={opt.value}
@@ -578,8 +578,8 @@ function DesignersContent() {
                 display: "flex",
                 alignItems: "center",
                 gap: "0.4rem",
-                padding: "0.5rem 1rem",
-                fontSize: "0.85rem",
+                padding: "0.4rem 0.75rem",
+                fontSize: "0.8rem",
                 fontWeight: 600,
                 borderRadius: "8px",
                 background: "transparent",
@@ -783,13 +783,22 @@ function DesignerCard({ designer, currentUserId }) {
       className="designer-card"
       style={{
         background: "white",
-        borderRadius: "16px",
-        border: "1px solid #f0f0f0",
+        borderRadius: "24px",
+        border: "1px solid rgba(0,0,0,0.05)",
         padding: "24px",
         display: "flex",
         flexDirection: "column",
-        gap: "20px",
-        boxShadow: "0 2px 10px rgba(0,0,0,0.02)",
+        gap: "24px",
+        boxShadow: "0 4px 24px rgba(0,0,0,0.02)",
+        transition: "all 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
+      }}
+      onMouseOver={(e) => {
+        e.currentTarget.style.transform = "translateY(-4px)";
+        e.currentTarget.style.boxShadow = "0 12px 32px rgba(0,0,0,0.06)";
+      }}
+      onMouseOut={(e) => {
+        e.currentTarget.style.transform = "translateY(0)";
+        e.currentTarget.style.boxShadow = "0 4px 24px rgba(0,0,0,0.02)";
       }}
     >
       {/* Top Header */}
@@ -828,12 +837,14 @@ function DesignerCard({ designer, currentUserId }) {
               >
                 <div
                   style={{
-                    fontWeight: 800,
-                    fontSize: "1.15rem",
+                    fontWeight: 900,
+                    fontSize: "1.25rem",
                     color: "#0f172a",
                     display: "flex",
                     alignItems: "center",
                     gap: "4px",
+                    fontFamily: "var(--font-jakarta)",
+                    letterSpacing: "-0.02em"
                   }}
                 >
                   {designer.username || designer.full_name}
@@ -843,12 +854,12 @@ function DesignerCard({ designer, currentUserId }) {
               {designer.followers_count > 100 ? (
                 <span
                   style={{
-                    background: "#1e293b",
+                    background: "#0a0a0a",
                     color: "white",
                     fontSize: "10px",
                     fontWeight: 800,
-                    padding: "2px 6px",
-                    borderRadius: "4px",
+                    padding: "3px 8px",
+                    borderRadius: "6px",
                     letterSpacing: "0.5px",
                   }}
                 >
@@ -857,12 +868,12 @@ function DesignerCard({ designer, currentUserId }) {
               ) : (
                 <span
                   style={{
-                    background: "#f1f5f9",
+                    background: "rgba(0,0,0,0.04)",
                     color: "#475569",
                     fontSize: "10px",
                     fontWeight: 800,
-                    padding: "2px 6px",
-                    borderRadius: "4px",
+                    padding: "3px 8px",
+                    borderRadius: "6px",
                     letterSpacing: "0.5px",
                   }}
                 >
@@ -899,25 +910,37 @@ function DesignerCard({ designer, currentUserId }) {
               }}
             >
               <span
-                style={{ display: "flex", alignItems: "center", gap: "4px" }}
+                style={{ display: "flex", alignItems: "center", gap: "6px" }}
               >
-                <Users2 size={14} /> {designer.followers_count || 0} Followers
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '22px', height: '22px', borderRadius: '50%', background: '#f1f5f9' }}>
+                  <Users2 size={12} color="#64748b" /> 
+                </div>
+                {designer.followers_count || 0} Followers
               </span>
               <span
-                style={{ display: "flex", alignItems: "center", gap: "4px" }}
+                style={{ display: "flex", alignItems: "center", gap: "6px" }}
               >
-                <MapPin size={14} /> {designer.location || "Remote"}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '22px', height: '22px', borderRadius: '50%', background: '#f1f5f9' }}>
+                  <MapPin size={12} color="#64748b" /> 
+                </div>
+                {designer.location || "Remote"}
               </span>
               <span
-                style={{ display: "flex", alignItems: "center", gap: "4px" }}
+                style={{ display: "flex", alignItems: "center", gap: "6px" }}
               >
-                <Clock size={14} /> Member since {joinedYear}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '22px', height: '22px', borderRadius: '50%', background: '#f1f5f9' }}>
+                  <Clock size={12} color="#64748b" /> 
+                </div>
+                Member since {joinedYear}
               </span>
               {designer.following_count > 0 && (
                 <span
-                  style={{ display: "flex", alignItems: "center", gap: "4px" }}
+                  style={{ display: "flex", alignItems: "center", gap: "6px" }}
                 >
-                  <Star size={14} /> Following {designer.following_count}
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '22px', height: '22px', borderRadius: '50%', background: '#f1f5f9' }}>
+                    <Star size={12} color="#64748b" /> 
+                  </div>
+                  Following {designer.following_count}
                 </span>
               )}
             </div>
@@ -951,19 +974,26 @@ function DesignerCard({ designer, currentUserId }) {
           <button
             onClick={handleMessage}
             style={{
-              padding: "0 20px",
-              height: "40px",
+              padding: "0 24px",
+              height: "44px",
               fontSize: "14px",
-              borderRadius: "24px",
-              fontWeight: 700,
-              background: "#0f172a",
+              borderRadius: "12px",
+              fontWeight: 800,
+              background: "#0a0a0a",
               color: "white",
               border: "none",
               cursor: "pointer",
-              transition: "background 0.2s",
+              transition: "all 0.2s",
+              boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
             }}
-            onMouseOver={(e) => (e.currentTarget.style.background = "#334155")}
-            onMouseOut={(e) => (e.currentTarget.style.background = "#0f172a")}
+            onMouseOver={(e) => {
+              e.currentTarget.style.background = "#27272a";
+              e.currentTarget.style.transform = "translateY(-1px)";
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.background = "#0a0a0a";
+              e.currentTarget.style.transform = "translateY(0)";
+            }}
           >
             Get in touch
           </button>
@@ -985,10 +1015,12 @@ function DesignerCard({ designer, currentUserId }) {
             <div
               key={i}
               style={{
-                borderRadius: "12px",
+                borderRadius: "16px",
                 overflow: "hidden",
-                background: "#f8fafc",
+                background: "white",
                 position: "relative",
+                border: "1px solid rgba(0,0,0,0.04)",
+                boxShadow: "inset 0 2px 4px rgba(0,0,0,0.02)"
               }}
             >
               {proj ? (
@@ -1059,14 +1091,13 @@ function DesignerCard({ designer, currentUserId }) {
           <span
             key={skill}
             style={{
-              padding: "6px 14px",
-              background: "#f8fafc",
-              color: "#64748b",
-              borderRadius: "20px",
+              padding: "6px 16px",
+              background: "rgba(0,0,0,0.03)",
+              color: "#334155",
+              borderRadius: "8px",
               fontSize: "12px",
-              fontWeight: 600,
-              textTransform: "lowercase",
-              border: "1px solid #f1f5f9",
+              fontWeight: 700,
+              textTransform: "capitalize",
             }}
           >
             {skill}

@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { Eye, EyeOff, Loader2, Check } from 'lucide-react';
 
+import { checkAuthRateLimit } from '@/app/actions/authRateLimit';
+
 export default function SignupForm({ isModal = false }) {
   const router = useRouter();
 
@@ -29,6 +31,18 @@ export default function SignupForm({ isModal = false }) {
       setSuccess(true);
       setLoading(false);
       return;
+    }
+
+    // Rate Limiting Check
+    try {
+      const rateLimitRes = await checkAuthRateLimit();
+      if (!rateLimitRes.success) {
+        setError(rateLimitRes.message);
+        setLoading(false);
+        return;
+      }
+    } catch (err) {
+      console.error('Rate limit error:', err);
     }
 
     const { error } = await supabase.auth.signUp({
@@ -261,12 +275,16 @@ export default function SignupForm({ isModal = false }) {
   );
 }
 
+import { Lock } from 'lucide-react';
+
 // ── Shared form fields ────────────────────────────────────────────────────────
 function FormFields({
   fullName, setFullName, email, setEmail, password, setPassword,
   showPw, setShowPw, loading, error, botTrap, setBotTrap,
   handleSignup, handleGoogleLogin, pwStrength, pwColors, pwLabels, isModal
 }) {
+  const [agreed, setAgreed] = useState(false);
+
   return (
     <>
       {/* Google button */}
@@ -411,6 +429,18 @@ function FormFields({
           )}
         </div>
 
+        <label style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem', marginTop: '0.25rem', cursor: 'pointer' }}>
+          <input 
+            type="checkbox" 
+            checked={agreed}
+            onChange={(e) => setAgreed(e.target.checked)}
+            style={{ marginTop: '0.15rem', accentColor: '#0009fa', width: '16px', height: '16px' }}
+          />
+          <span style={{ fontSize: '0.8rem', color: '#475569', lineHeight: 1.5 }}>
+            I agree to the <Link href="/terms" style={{ color: '#0009fa', fontWeight: 600, textDecoration: 'none' }}>Terms of Service</Link> and <Link href="/privacy" style={{ color: '#0009fa', fontWeight: 600, textDecoration: 'none' }}>Privacy Policy</Link>.
+          </span>
+        </label>
+
         {error && (
           <div style={{
             padding: '0.7rem 1rem', borderRadius: 8,
@@ -423,22 +453,30 @@ function FormFields({
 
         <button
           type="submit"
-          disabled={loading}
+          disabled={loading || !agreed}
           style={{
             width: '100%', padding: '0.9rem', borderRadius: 8,
             background: '#0a0a0a', color: 'white', border: 'none',
-            cursor: loading ? 'not-allowed' : 'pointer', fontWeight: 700,
+            cursor: (loading || !agreed) ? 'not-allowed' : 'pointer', fontWeight: 700,
             fontSize: '0.9rem', display: 'flex', alignItems: 'center',
             justifyContent: 'center', gap: '0.5rem',
-            opacity: loading ? 0.75 : 1, transition: 'opacity 0.2s, background 0.2s',
+            opacity: (loading || !agreed) ? 0.6 : 1, transition: 'opacity 0.2s, background 0.2s',
             marginTop: '0.5rem',
           }}
-          onMouseOver={e => !loading && (e.currentTarget.style.background = '#0009fa')}
-          onMouseOut={e => !loading && (e.currentTarget.style.background = '#0a0a0a')}
+          onMouseOver={e => (!loading && agreed) && (e.currentTarget.style.background = '#0009fa')}
+          onMouseOut={e => (!loading && agreed) && (e.currentTarget.style.background = '#0a0a0a')}
         >
           {loading && <Loader2 size={15} style={{ animation: 'spin 1s linear infinite' }} />}
           {loading ? 'Creating account…' : 'Create Free Account'}
         </button>
+
+        {/* Security / Trust Badge */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem', marginTop: '0.5rem' }}>
+          <Lock size={14} color="#059669" />
+          <span style={{ fontSize: '0.75rem', color: '#059669', fontWeight: 600, letterSpacing: '0.02em' }}>
+            Secured with AES-256 Encryption
+          </span>
+        </div>
       </form>
 
       <p style={{ textAlign: 'center', marginTop: '1.75rem', fontSize: '0.85rem', color: '#64748b' }}>
