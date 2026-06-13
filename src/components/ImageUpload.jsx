@@ -70,20 +70,31 @@ export default function ImageUpload({
       });
 
       // 1. Get presigned URL
-      const res = await fetch('/api/upload', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ filename: finalFile.name, contentType: finalFile.type, folder }),
-      });
+      let res;
+      try {
+        res = await fetch('/api/upload', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ filename: finalFile.name, contentType: finalFile.type, folder }),
+        });
+      } catch (err) {
+        throw new Error('API fetch failed: ' + err.message);
+      }
+      
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to get upload URL');
 
       // 2. PUT file directly to R2
-      const putRes = await fetch(data.uploadUrl, {
-        method: 'PUT',
-        headers: { 'Content-Type': finalFile.type },
-        body: finalFile,
-      });
+      let putRes;
+      try {
+        putRes = await fetch(data.uploadUrl, {
+          method: 'PUT',
+          headers: { 'Content-Type': finalFile.type },
+          body: finalFile,
+        });
+      } catch (err) {
+        throw new Error('R2 PUT failed: ' + err.message);
+      }
       if (!putRes.ok) throw new Error('Upload to storage failed');
 
       // 3. Return the public URL
@@ -102,19 +113,30 @@ export default function ImageUpload({
 
     try {
       const filename = `cropped_${Date.now()}.webp`;
-      const res = await fetch('/api/upload', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ filename, contentType: 'image/webp', folder }),
-      });
+      let res;
+      try {
+        res = await fetch('/api/upload', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ filename, contentType: 'image/webp', folder }),
+        });
+      } catch (err) {
+        throw new Error('API fetch failed: ' + err.message);
+      }
+      
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to get upload URL');
 
-      const putRes = await fetch(data.uploadUrl, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'image/webp' },
-        body: croppedBlob,
-      });
+      let putRes;
+      try {
+        putRes = await fetch(data.uploadUrl, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'image/webp' },
+          body: croppedBlob,
+        });
+      } catch (err) {
+        throw new Error('R2 PUT failed: ' + err.message);
+      }
       if (!putRes.ok) throw new Error('Upload to storage failed');
 
       onUploaded(data.publicUrl);
