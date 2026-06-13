@@ -67,10 +67,10 @@ export default function JobBoardPage() {
               {/* Trust Indicator */}
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                 <div style={{ display: 'flex', alignItems: 'center', marginLeft: '0.5rem' }}>
-                  <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&h=100" alt="Designer" style={{ width: '28px', height: '28px', borderRadius: '50%', border: '2px solid white', marginLeft: '-0.5rem', objectFit: 'cover' }} />
-                  <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=100&h=100" alt="Designer" style={{ width: '28px', height: '28px', borderRadius: '50%', border: '2px solid white', marginLeft: '-0.5rem', objectFit: 'cover' }} />
-                  <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&h=100" alt="Designer" style={{ width: '28px', height: '28px', borderRadius: '50%', border: '2px solid white', marginLeft: '-0.5rem', objectFit: 'cover' }} />
-                  <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=100&h=100" alt="Designer" style={{ width: '28px', height: '28px', borderRadius: '50%', border: '2px solid white', marginLeft: '-0.5rem', objectFit: 'cover' }} />
+                  <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Designer1&backgroundColor=e8e8e8" alt="Designer" style={{ width: '28px', height: '28px', borderRadius: '50%', border: '2px solid white', marginLeft: '-0.5rem', objectFit: 'cover', background: '#e8e8e8' }} />
+                  <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Designer2&backgroundColor=e8e8e8" alt="Designer" style={{ width: '28px', height: '28px', borderRadius: '50%', border: '2px solid white', marginLeft: '-0.5rem', objectFit: 'cover', background: '#e8e8e8' }} />
+                  <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Designer3&backgroundColor=e8e8e8" alt="Designer" style={{ width: '28px', height: '28px', borderRadius: '50%', border: '2px solid white', marginLeft: '-0.5rem', objectFit: 'cover', background: '#e8e8e8' }} />
+                  <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Designer4&backgroundColor=e8e8e8" alt="Designer" style={{ width: '28px', height: '28px', borderRadius: '50%', border: '2px solid white', marginLeft: '-0.5rem', objectFit: 'cover', background: '#e8e8e8' }} />
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.15rem' }}>
                   <div style={{ display: 'flex', alignItems: 'center' }}>
