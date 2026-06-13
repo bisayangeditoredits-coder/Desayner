@@ -32,7 +32,7 @@ export async function sendNewFollowerEmail({ targetUserId, followerName, followe
         <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff; border: 1px solid #e8e8e8; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
           <!-- Header -->
           <div style="background-color: #2d43e8; padding: 30px 20px; text-align: center;">
-            <h1 style="color: #e6e82d; margin: 0; font-size: 28px; letter-spacing: -0.5px;">Desayner</h1>
+            <img src="https://desayner.com/desayner-logo-whiteversiom.png" alt="Desayner" style="height: 35px; width: auto; display: block; margin: 0 auto;" />
           </div>
           <!-- Body -->
           <div style="padding: 40px 30px; color: #231f20;">
@@ -73,7 +73,7 @@ export async function sendNewMessageEmail({ targetUserId, senderName, senderUser
         <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff; border: 1px solid #e8e8e8; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
           <!-- Header -->
           <div style="background-color: #2d43e8; padding: 30px 20px; text-align: center;">
-            <h1 style="color: #e6e82d; margin: 0; font-size: 28px; letter-spacing: -0.5px;">Desayner</h1>
+            <img src="https://desayner.com/desayner-logo-whiteversiom.png" alt="Desayner" style="height: 35px; width: auto; display: block; margin: 0 auto;" />
           </div>
           <!-- Body -->
           <div style="padding: 40px 30px; color: #231f20;">
