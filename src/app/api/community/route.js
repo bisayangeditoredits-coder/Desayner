@@ -10,7 +10,7 @@ export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
     const filter = searchParams.get('filter') || 'All';
-    const limit = parseInt(searchParams.get('limit') || '50', 10);
+    const limit = Math.min(Math.max(parseInt(searchParams.get('limit') || '50', 10), 1), 100);
 
     const cacheKey = `community_feed:${filter}:${limit}`;
 

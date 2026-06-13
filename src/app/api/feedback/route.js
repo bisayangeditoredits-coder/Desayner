@@ -11,7 +11,8 @@ export async function GET(request) {
     const { searchParams } = new URL(request.url);
     const cursor = searchParams.get('cursor');
     const status = searchParams.get('status') || 'all';
-    const limit = parseInt(searchParams.get('limit') || '20', 10);
+    // Clamped: min 1, max 50 — prevents ?limit=999999 DB overload
+    const limit = Math.min(Math.max(parseInt(searchParams.get('limit') || '20', 10), 1), 50);
 
     const cookieStore = await cookies();
     const supabase = createServerClient(
@@ -48,9 +49,6 @@ export async function GET(request) {
       items.pop();
       nextCursor = items[items.length - 1].created_at;
     }
-
-    // Resolve current user
-    const { data: { user } } = await supabase.auth.getUser();
 
     return NextResponse.json({
       feedback: items,

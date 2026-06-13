@@ -12,7 +12,7 @@ export async function GET(request) {
     const { searchParams } = new URL(request.url);
     const cursor   = searchParams.get('cursor'); // created_at ISO string
     const category = searchParams.get('category') || 'All';
-    const limit    = parseInt(searchParams.get('limit') || '12', 10);
+    const limit = Math.min(Math.max(parseInt(searchParams.get('limit') || '12', 10), 1), 50);
 
     const cacheKey = `assets:${category}:${limit}`;
 

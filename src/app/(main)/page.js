@@ -82,7 +82,7 @@ export default function Dashboard() {
         .then(data => setSuggestedUsers(data.designers || []))
         .catch(err => console.error('Failed to fetch designers', err));
 
-      await Promise.all([authPromise, trendingPromise, postsPromise, usersPromise]);
+      await Promise.allSettled([authPromise, trendingPromise, postsPromise, usersPromise]);
       setLoading(false);
     }
     load();

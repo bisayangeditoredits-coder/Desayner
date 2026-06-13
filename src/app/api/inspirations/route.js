@@ -20,7 +20,7 @@ export async function GET(request) {
     const { searchParams } = new URL(request.url);
     const cursor   = searchParams.get('cursor'); // created_at ISO string
     const category = searchParams.get('category') || 'All';
-    const limit    = parseInt(searchParams.get('limit') || '15', 10);
+    const limit = Math.min(Math.max(parseInt(searchParams.get('limit') || '15', 10), 1), 50);
 
     const cacheKey = `inspirations:${category}:${limit}`;
 

@@ -74,6 +74,8 @@ export default function Header() {
   useEffect(() => {
     let mounted = true;
     let sub = null;
+    let fallbackInterval = null;
+
     async function load() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
@@ -81,48 +83,65 @@ export default function Header() {
         return;
       }
       if (mounted) setUserId(user.id);
-      
-      const { data } = await supabase
-        .from('profiles')
-        .select('username, full_name, avatar_url')
-        .eq('id', user.id)
-        .single();
-      if (data) setProfile(data);
 
       async function fetchBadges() {
-        // Unread notifications
-        const { count } = await supabase
-          .from('notifications')
-          .select('id', { count: 'exact', head: true })
-          .eq('user_id', user.id)
-          .eq('read', false);
-        setUnreadCount(count || 0);
-
-        // Unread messages
-        const { data: members } = await supabase
-          .from('conversation_members')
-          .select('unread_count')
-          .eq('user_id', user.id);
-        const totalMsgs = (members || []).reduce((s, m) => s + (m.unread_count || 0), 0);
-        setUnreadMsgs(totalMsgs);
+        // Parallel fetch — notifications + messages in one round-trip
+        const [notifRes, membersRes] = await Promise.all([
+          supabase
+            .from('notifications')
+            .select('id', { count: 'exact', head: true })
+            .eq('user_id', user.id)
+            .eq('read', false),
+          supabase
+            .from('conversation_members')
+            .select('unread_count')
+            .eq('user_id', user.id),
+        ]);
+        if (mounted) {
+          setUnreadCount(notifRes.count || 0);
+          const totalMsgs = (membersRes.data || []).reduce((s, m) => s + (m.unread_count || 0), 0);
+          setUnreadMsgs(totalMsgs);
+        }
       }
 
-      await fetchBadges();
+      // Parallel fetch — profile + badges together
+      const [profileRes] = await Promise.all([
+        supabase
+          .from('profiles')
+          .select('username, full_name, avatar_url')
+          .eq('id', user.id)
+          .single(),
+        fetchBadges(),
+      ]);
 
-      if (!mounted) return;
-      setAuthLoaded(true);
+      if (mounted && profileRes.data) setProfile(profileRes.data);
+      if (mounted) setAuthLoaded(true);
 
-      // Realtime listeners — stable channel name (no Date.now) to prevent leaks on remount
+      // Realtime listeners — with error handling + fallback polling
       sub = supabase.channel(`header_badges_${user.id}`)
         .on('postgres_changes', { event: '*', schema: 'public', table: 'notifications' }, fetchBadges)
         .on('postgres_changes', { event: '*', schema: 'public', table: 'conversation_members' }, fetchBadges)
-        .subscribe();
+        .subscribe((status, err) => {
+          if (status === 'CHANNEL_ERROR' || status === 'CLOSED') {
+            console.warn('Header realtime lost, falling back to polling:', err?.message);
+            if (!fallbackInterval) {
+              fallbackInterval = setInterval(fetchBadges, 30_000);
+            }
+          } else if (status === 'SUBSCRIBED') {
+            // Clear fallback polling if realtime reconnects
+            if (fallbackInterval) {
+              clearInterval(fallbackInterval);
+              fallbackInterval = null;
+            }
+          }
+        });
     }
     load();
 
     return () => {
       mounted = false;
       if (sub) supabase.removeChannel(sub);
+      if (fallbackInterval) clearInterval(fallbackInterval);
     };
   }, []);
 

@@ -81,7 +81,42 @@ const nextConfig = {
           {
             key: 'Referrer-Policy',
             value: 'origin-when-cross-origin'
-          }
+          },
+          {
+            key: 'Permissions-Policy',
+            value: 'camera=(), microphone=(), geolocation=(), payment=(self)'
+          },
+          {
+            // CSP: whitelists every external resource the app legitimately uses.
+            // Keep 'unsafe-inline' for styles (Next.js inlines critical CSS).
+            // 'unsafe-eval' is required by Sentry's source-map processing in dev.
+            key: 'Content-Security-Policy',
+            value: [
+              "default-src 'self'",
+              // Scripts: self + Sentry CDN (error replay) + Stripe.js
+              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com https://cdn.jsdelivr.net",
+              // Styles: self + Google Fonts + inline (Next.js)
+              "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+              // Fonts: self + Google Fonts
+              "font-src 'self' https://fonts.gstatic.com",
+              // Images: self + Cloudflare R2 + Unsplash + Google avatars + GitHub avatars + Supabase storage
+              "img-src 'self' data: blob: https://*.r2.dev https://images.unsplash.com https://lh3.googleusercontent.com https://avatars.githubusercontent.com https://*.supabase.co https://res.cloudinary.com https://base44.app",
+              // Media: self + R2 CDN (project videos)
+              "media-src 'self' blob: https://*.r2.dev",
+              // API + WebSocket connections
+              "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.upstash.io https://api.unsplash.com https://api.sentry.io https://js.stripe.com https://*.r2.dev",
+              // Frames: Stripe embedded UIs only
+              "frame-src https://js.stripe.com https://hooks.stripe.com",
+              // Workers: Next.js service worker
+              "worker-src 'self' blob:",
+              // Form targets: self only
+              "form-action 'self'",
+              // Prevent all plugins (Flash, etc.)
+              "object-src 'none'",
+              // Base URI locked to self
+              "base-uri 'self'",
+            ].join('; ')
+          },
         ],
       },
     ];

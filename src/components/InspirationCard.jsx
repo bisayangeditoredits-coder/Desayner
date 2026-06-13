@@ -60,22 +60,29 @@ export default function InspirationCard({ inspiration, currentUserId, onClick })
     }
 
     const wasLiked = liked;
+    // Optimistic update
     setLiked(!wasLiked);
     setLikesCount((prev) => (wasLiked ? prev - 1 : prev + 1));
 
-    if (wasLiked) {
-      await supabase
-        .from('inspiration_likes')
-        .delete()
-        .eq('user_id', currentUserId)
-        .eq('inspiration_id', inspiration.id);
-    } else {
-      await supabase
-        .from('inspiration_likes')
-        .insert({
-          user_id: currentUserId,
-          inspiration_id: inspiration.id,
-        });
+    try {
+      let error;
+      if (wasLiked) {
+        ({ error } = await supabase
+          .from('inspiration_likes')
+          .delete()
+          .eq('user_id', currentUserId)
+          .eq('inspiration_id', inspiration.id));
+      } else {
+        ({ error } = await supabase
+          .from('inspiration_likes')
+          .insert({ user_id: currentUserId, inspiration_id: inspiration.id }));
+      }
+      if (error) throw error;
+    } catch (err) {
+      console.error('Like operation failed:', err);
+      // Rollback optimistic update
+      setLiked(wasLiked);
+      setLikesCount((prev) => (wasLiked ? prev + 1 : prev - 1));
     }
   }, [liked, currentUserId, inspiration.id, router, supabase]);
 

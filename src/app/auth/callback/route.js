@@ -62,18 +62,32 @@ export async function GET(request) {
       if (!existingProfile) {
         const rawMeta = user.user_metadata || {};
         const fullName = rawMeta.full_name || rawMeta.name || '';
-        let username = fullName.toLowerCase().replace(/[^a-z0-9]/g, '');
-        if (!username) username = `user_${Date.now()}`;
-        
-        const { error: insertError } = await supabase.from('profiles').insert({
-          id: user.id,
-          full_name: fullName,
-          username: username,
-          avatar_url: rawMeta.avatar_url || rawMeta.picture || ''
-        });
-        
-        if (insertError) {
-          console.error('Profile creation failed:', insertError);
+        let baseUsername = fullName.toLowerCase().replace(/[^a-z0-9]/g, '') || 'user';
+
+        // Retry with a random suffix on username collision (unique constraint)
+        let inserted = false;
+        let attempts = 0;
+        while (!inserted && attempts < 5) {
+          const username = attempts === 0 ? baseUsername : `${baseUsername}_${Math.floor(Math.random() * 9999)}`;
+          const { error: insertError } = await supabase.from('profiles').insert({
+            id: user.id,
+            full_name: fullName,
+            username,
+            avatar_url: rawMeta.avatar_url || rawMeta.picture || ''
+          });
+          if (!insertError) {
+            inserted = true;
+          } else if (insertError.code === '23505') {
+            // Unique violation — username taken, try again with suffix
+            attempts++;
+          } else {
+            console.error('Profile creation failed:', insertError);
+            return NextResponse.redirect(`${origin}/login?error=profile_creation_failed`);
+          }
+        }
+
+        if (!inserted) {
+          console.error('Profile creation failed: could not generate unique username after 5 attempts');
           return NextResponse.redirect(`${origin}/login?error=profile_creation_failed`);
         }
       }

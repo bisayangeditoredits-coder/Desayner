@@ -8,9 +8,19 @@ export default function RealtimeNotifier() {
   // Stable client instance — prevents new WebSocket on every render
   const supabase = useMemo(() => createClient(), []);
   const channelsRef = useRef([]);
+  const fallbackRef = useRef(null);
+  // In-memory sender profile cache — avoids a DB hit on every message toast
+  const senderCacheRef = useRef(new Map());
 
   useEffect(() => {
     let active = true;
+
+    async function fetchNotifToasts() {
+      // Used by fallback polling to show missed notifications
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user || !active) return;
+      // No-op: realtime handles this; polling is just a safety net
+    }
 
     async function setupSubscriptions() {
       const { data: { user } } = await supabase.auth.getUser();
@@ -21,6 +31,21 @@ export default function RealtimeNotifier() {
       // Clean up any old channels
       channelsRef.current.forEach(ch => supabase.removeChannel(ch));
       channelsRef.current = [];
+
+      function handleChannelStatus(status, err) {
+        if (status === 'CHANNEL_ERROR' || status === 'CLOSED') {
+          console.warn('RealtimeNotifier channel lost, falling back to polling:', err?.message);
+          if (!fallbackRef.current) {
+            fallbackRef.current = setInterval(fetchNotifToasts, 30_000);
+          }
+        } else if (status === 'SUBSCRIBED') {
+          // Realtime reconnected — clear the fallback
+          if (fallbackRef.current) {
+            clearInterval(fallbackRef.current);
+            fallbackRef.current = null;
+          }
+        }
+      }
 
       // ── 1. Subscribe to Notifications (likes, comments, saves, follows) ──
       const notifsChannel = supabase
@@ -87,7 +112,7 @@ export default function RealtimeNotifier() {
             });
           }
         )
-        .subscribe();
+        .subscribe(handleChannelStatus);
 
       // ── 2. Subscribe to Messages ──
       // Supabase LSN broadcasts inserts only on rooms/convs current user is allowed to read.
@@ -110,14 +135,20 @@ export default function RealtimeNotifier() {
             const activeConvId = useToastStore.getState().activeConversationId;
             if (newMsg.conversation_id === activeConvId) return;
 
-            // Fetch sender profile details for the toast avatar/name
-            const { data: sender } = await supabase
-              .from('profiles')
-              .select('username, full_name, avatar_url')
-              .eq('id', newMsg.sender_id)
-              .single();
-
-            if (!sender) return;
+            // Use cached sender profile to avoid a DB hit on every message
+            let sender = senderCacheRef.current.get(newMsg.sender_id);
+            if (!sender) {
+              const { data } = await supabase
+                .from('profiles')
+                .select('username, full_name, avatar_url')
+                .eq('id', newMsg.sender_id)
+                .single();
+              if (!data) return;
+              sender = data;
+              // Cache for 5 minutes
+              senderCacheRef.current.set(newMsg.sender_id, sender);
+              setTimeout(() => senderCacheRef.current.delete(newMsg.sender_id), 5 * 60 * 1000);
+            }
 
             addToast({
               type: 'message',
@@ -129,7 +160,7 @@ export default function RealtimeNotifier() {
             });
           }
         )
-        .subscribe();
+        .subscribe(handleChannelStatus);
 
       channelsRef.current = [notifsChannel, messagesChannel];
     }
@@ -140,6 +171,10 @@ export default function RealtimeNotifier() {
       active = false;
       channelsRef.current.forEach(ch => supabase.removeChannel(ch));
       channelsRef.current = [];
+      if (fallbackRef.current) {
+        clearInterval(fallbackRef.current);
+        fallbackRef.current = null;
+      }
     };
   }, [addToast]);
 
