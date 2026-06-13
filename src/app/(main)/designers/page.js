@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/client";
 import UserAvatar from "@/components/UserAvatar";
 import FollowButton from "@/components/FollowButton";
 import Link from "next/link";
+import { stripCloudinaryProxy } from "@/lib/utils";
 import {
   Search,
   MapPin,
@@ -280,7 +281,7 @@ function DesignersContent() {
                     >
                       {creator.banner_url && (
                         <img
-                          src={creator.banner_url}
+                          src={stripCloudinaryProxy(creator.banner_url)}
                           alt=""
                           className="featured-banner-img"
                           loading="lazy"
@@ -1029,7 +1030,7 @@ function DesignerCard({ designer, currentUserId }) {
                   style={{ display: "block", width: "100%", height: "100%" }}
                 >
                   <img
-                    src={proj.thumbnail_url || proj.cover_url}
+                    src={stripCloudinaryProxy(proj.thumbnail_url || proj.cover_url)}
                     alt={proj.title || ""}
                     loading="lazy"
                     style={{

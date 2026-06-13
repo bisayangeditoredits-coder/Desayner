@@ -8,6 +8,7 @@ import FollowButton from '@/components/FollowButton';
 import TagPill from '@/components/TagPill';
 import Link from 'next/link';
 import { Search, FolderOpen, Users2, TrendingUp, Clock, Heart, Eye, MapPin } from 'lucide-react';
+import { stripCloudinaryProxy } from '@/lib/utils';
 import '../../App.css';
 
 const CATEGORIES = ['All', 'Design', 'Illustration', 'Photography', 'Branding', '3D', 'Motion', 'UI/UX', 'Typography', 'Other'];
@@ -104,7 +105,7 @@ function SearchResults() {
       // Batch fetch all covers in ONE query — no more N+1
       const { data: allCovers } = await supabase
         .from('projects')
-        .select('user_id, cover_url')
+        .select('user_id, cover_url, thumbnail_url')
         .in('user_id', creatorList.map(c => c.id))
         .eq('published', true)
         .order('created_at', { ascending: false });
@@ -264,8 +265,8 @@ function SearchResults() {
                       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', height: '120px', background: '#f5f5f5' }}>
                         {[0, 1, 2].map(i => (
                           <div key={i} style={{ overflow: 'hidden', background: '#eee', borderRight: i < 2 ? '1px solid white' : 'none' }}>
-                            {creator.sampleProjects[i]?.cover_url
-                              ? <img src={creator.sampleProjects[i].cover_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                            {creator.sampleProjects && creator.sampleProjects[i]
+                              ? <img src={stripCloudinaryProxy(creator.sampleProjects[i].thumbnail_url || creator.sampleProjects[i].cover_url)} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
                               : <div style={{ width: '100%', height: '100%', background: '#2a2a2a' }} />
                             }
                           </div>

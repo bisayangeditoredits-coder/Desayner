@@ -295,9 +295,9 @@ export default function Header() {
                       onClick={() => { saveProjectModalReturn(); setDropdownOpen(false); setSearchQuery(''); }}
                     >
                       <div className="search-dropdown__thumb">
-                        {p.cover_url 
-                          ? <img src={p.cover_url} alt="" loading="lazy" decoding="async" /> 
-                          : <div className="header-search-result__placeholder">No img</div>}
+                        {p.cover_url || p.thumbnail_url
+                          ? <img src={stripCloudinaryProxy(p.thumbnail_url || p.cover_url)} alt="" loading="lazy" decoding="async" /> 
+                          : <div className="header__search-placeholder"><Image size={14} /></div>}
                       </div>
                       <div className="search-dropdown__info">
                         <span className="search-dropdown__title">{p.title}</span>
