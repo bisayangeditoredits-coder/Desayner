@@ -2762,6 +2762,10 @@
     gap: 1rem;
   }
 
+  .search-bar {
+    display: none;
+  }
+
   .feed-layout {
     grid-template-columns: 1fr;
     padding: 1rem;

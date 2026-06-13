@@ -184,7 +184,7 @@ export default function ProfilePage() {
               </div>
 
               {/* Actions moved closer */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap', maxWidth: '100%' }}>
                 {isOwn ? (
                   <Link href="/settings" className="profile-pill-btn profile-pill-btn-dark">
                     Edit Profile
@@ -209,9 +209,9 @@ export default function ProfilePage() {
                     title="Website"
                     style={{ margin: 0 }}
                   >
-                    <Globe size={14} />
-                    <span>{profile.website.replace(/^https?:\/\//, '').replace(/\/$/, '')}</span>
-                    <ExternalLink size={11} style={{ opacity: 0.5 }} />
+                    <Globe size={14} style={{ flexShrink: 0 }} />
+                    <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '160px' }}>{profile.website.replace(/^https?:\/\//, '').replace(/\/$/, '')}</span>
+                    <ExternalLink size={11} style={{ opacity: 0.5, flexShrink: 0 }} />
                   </a>
                 )}
               </div>
