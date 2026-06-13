@@ -33,9 +33,10 @@ export default function UserAvatar({ src, name = '', size = 32, className = '' }
   const effectiveSrc = stripCloudinaryProxy(src);
 
   if (effectiveSrc && effectiveSrc !== 'null' && effectiveSrc !== 'undefined') {
+    const isProxied = effectiveSrc.startsWith('/api/proxy-image');
     return (
       <div style={{ ...style, position: 'relative' }} className={className}>
-        <Image src={effectiveSrc} alt={name} fill sizes={`${size}px`} style={{ objectFit: 'cover' }} />
+        <Image src={effectiveSrc} alt={name} fill sizes={`${size}px`} style={{ objectFit: 'cover' }} unoptimized={isProxied} />
       </div>
     );
   }
