@@ -34,13 +34,14 @@ export default async function sitemap() {
   // Fetch top projects
   const { data: projects } = await supabase
     .from('projects')
-    .select('id, updated_at')
+    .select('id, created_at')
+    .eq('published', true)
     .order('created_at', { ascending: false })
     .limit(500);
 
   const projectRoutes = (projects || []).map((project) => ({
     url: `${baseUrl}/projects/${project.id}`,
-    lastModified: new Date(project.updated_at || new Date()),
+    lastModified: new Date(project.created_at || new Date()),
     changeFrequency: 'weekly',
     priority: 0.8,
   }));
@@ -48,12 +49,12 @@ export default async function sitemap() {
   // Fetch profiles
   const { data: profiles } = await supabase
     .from('profiles')
-    .select('username, updated_at')
+    .select('username, created_at')
     .limit(500);
 
   const profileRoutes = (profiles || []).map((profile) => ({
     url: `${baseUrl}/profile/${profile.username}`,
-    lastModified: new Date(profile.updated_at || new Date()),
+    lastModified: new Date(profile.created_at || new Date()),
     changeFrequency: 'weekly',
     priority: 0.7,
   }));
