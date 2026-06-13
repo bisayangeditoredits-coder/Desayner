@@ -206,7 +206,15 @@ export default function Dashboard() {
                             {/* Background Image */}
                             <div style={{ position: 'absolute', inset: 0, zIndex: 0 }}>
                               {creator.banner_url ? (
-                                <img src={creator.banner_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.8 }} />
+                                <>
+                                  <img 
+                                    src={creator.banner_url} 
+                                    alt="" 
+                                    onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                                    style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.8, position: 'relative', zIndex: 1 }} 
+                                  />
+                                  <div style={{ width: '100%', height: '100%', background: 'linear-gradient(45deg, #0a0a0a, #4b5563)', position: 'absolute', inset: 0, zIndex: 0 }} />
+                                </>
                               ) : (
                                 <div style={{ width: '100%', height: '100%', background: 'linear-gradient(45deg, #0a0a0a, #4b5563)' }} />
                               )}

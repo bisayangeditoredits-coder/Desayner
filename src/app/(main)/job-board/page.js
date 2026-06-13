@@ -72,10 +72,10 @@ export default function JobBoardPage() {
               {/* Trust Indicator */}
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                 <div style={{ display: 'flex', alignItems: 'center', marginLeft: '0.5rem' }}>
-                  <img src="https://i.pravatar.cc/100?img=31" alt="User" style={{ width: '28px', height: '28px', borderRadius: '50%', border: '2px solid white', marginLeft: '-0.5rem', objectFit: 'cover' }} />
-                  <img src="https://i.pravatar.cc/100?img=32" alt="User" style={{ width: '28px', height: '28px', borderRadius: '50%', border: '2px solid white', marginLeft: '-0.5rem', objectFit: 'cover' }} />
-                  <img src="https://i.pravatar.cc/100?img=33" alt="User" style={{ width: '28px', height: '28px', borderRadius: '50%', border: '2px solid white', marginLeft: '-0.5rem', objectFit: 'cover' }} />
-                  <img src="https://i.pravatar.cc/100?img=44" alt="User" style={{ width: '28px', height: '28px', borderRadius: '50%', border: '2px solid white', marginLeft: '-0.5rem', objectFit: 'cover' }} />
+                  <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix&backgroundColor=b6e3f4" alt="User" style={{ width: '28px', height: '28px', borderRadius: '50%', border: '2px solid white', marginLeft: '-0.5rem', objectFit: 'cover' }} />
+                  <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Aneka&backgroundColor=ffdfbf" alt="User" style={{ width: '28px', height: '28px', borderRadius: '50%', border: '2px solid white', marginLeft: '-0.5rem', objectFit: 'cover' }} />
+                  <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=John&backgroundColor=c0aede" alt="User" style={{ width: '28px', height: '28px', borderRadius: '50%', border: '2px solid white', marginLeft: '-0.5rem', objectFit: 'cover' }} />
+                  <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah&backgroundColor=d1d4f9" alt="User" style={{ width: '28px', height: '28px', borderRadius: '50%', border: '2px solid white', marginLeft: '-0.5rem', objectFit: 'cover' }} />
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.15rem' }}>
                   <div style={{ display: 'flex', alignItems: 'center' }}>

@@ -77,7 +77,7 @@ function formatSalaryRange(min, max, currency = 'USD') {
 function getFallbackLogo(companyName) {
   if (!companyName || companyName === 'Unknown company') return '';
   const domain = companyName.toLowerCase().replace(/[^a-z0-9]/g, '') + '.com';
-  return `https://logo.clearbit.com/${domain}`;
+  return `https://t3.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://${domain}&size=128`;
 }
 
 function deriveCategory(...values) {
