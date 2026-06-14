@@ -75,7 +75,12 @@ export default function ProfilePage() {
   const [isFollowing, setIsFollowing]   = useState(false);
   const [followerCount, setFollowerCount] = useState(0);
   const [loading, setLoading]           = useState(true);
+  const [coverError, setCoverError]     = useState(false);
   const supabase = useMemo(() => createClient(), []);
+
+  useEffect(() => {
+    setCoverError(false);
+  }, [username]);
 
   useEffect(() => {
     async function load() {
@@ -135,8 +140,13 @@ export default function ProfilePage() {
 
       {/* ── Cover Banner ── */}
       <div className="profile-v2__cover">
-        {coverSrc ? (
-          <img src={coverSrc} alt="Cover" className="profile-v2__cover-img" />
+        {coverSrc && !coverError ? (
+          <img
+            src={coverSrc}
+            alt="Cover"
+            className="profile-v2__cover-img"
+            onError={() => setCoverError(true)}
+          />
         ) : (
           <div className="profile-v2__cover-placeholder" />
         )}

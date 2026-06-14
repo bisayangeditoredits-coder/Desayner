@@ -1,9 +1,14 @@
 'use client';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 import { stripCloudinaryProxy } from '@/lib/utils';
 
 export default function UserAvatar({ src, name = '', size = 32, className = '' }) {
+  const [imgError, setImgError] = useState(false);
+
+  useEffect(() => {
+    setImgError(false);
+  }, [src]);
   const safeName = typeof name === 'string' ? name : String(name || '');
   const initials = safeName
     .split(' ')
@@ -30,8 +35,13 @@ export default function UserAvatar({ src, name = '', size = 32, className = '' }
   };
 
   const effectiveSrc = stripCloudinaryProxy(src);
+  const showImage =
+    effectiveSrc &&
+    effectiveSrc !== 'null' &&
+    effectiveSrc !== 'undefined' &&
+    !imgError;
 
-  if (effectiveSrc && effectiveSrc !== 'null' && effectiveSrc !== 'undefined') {
+  if (showImage) {
     return (
       <div style={{ ...style, position: 'relative' }} className={className}>
         <img
@@ -39,6 +49,7 @@ export default function UserAvatar({ src, name = '', size = 32, className = '' }
           alt={name}
           loading="lazy"
           decoding="async"
+          onError={() => setImgError(true)}
           style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
         />
       </div>

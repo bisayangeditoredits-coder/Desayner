@@ -1,13 +1,18 @@
 /**
- * Strips legacy Cloudinary fetch-proxy URLs so we hit the origin directly.
- * base44.app images are routed through our streaming proxy because base44.app
- * blocks direct fetches from Vercel edge servers (requires browser headers).
+ * Normalizes legacy image URLs and routes blocked origins through our proxy.
+ * base44.app blocks direct browser hotlinks; wsrv.nl is blocked by many ad
+ * blockers — so migrated users' avatars/covers go through /api/proxy-image.
  */
 export function stripCloudinaryProxy(url) {
   if (!url) return url;
   if (typeof url === 'string') {
-    // Already a proxy or local/data URI
-    if (url.startsWith('https://wsrv.nl') || url.startsWith('/') || url.startsWith('data:')) {
+    // Already proxied or local
+    if (
+      url.startsWith('/api/') ||
+      url.startsWith('https://wsrv.nl') ||
+      url.startsWith('/') ||
+      url.startsWith('data:')
+    ) {
       return url;
     }
 
@@ -51,11 +56,9 @@ export function stripCloudinaryProxy(url) {
       return targetUrl;
     }
 
-    // Proxy all other external images (Supabase, base44.app, R2 etc) through wsrv.nl.
-    // This solves Vercel Serverless timeout/OOM errors on large remote images 
-    // (which trigger the "No cover" UI state) and provides free global CDN resizing 
-    // for future scale, drastically reducing Next.js Image Optimization costs.
-    return `https://wsrv.nl/?url=${encodeURIComponent(targetUrl)}&w=800&output=webp&default=https://desayner.com/banner-event-homepage.jpeg`;
+    // Same-origin proxy: reliable for base44.app and not blocked by ad blockers
+    // (unlike wsrv.nl, which breaks avatars/covers for many users).
+    return `/api/proxy-image?url=${encodeURIComponent(targetUrl)}`;
   }
   return url;
 }
