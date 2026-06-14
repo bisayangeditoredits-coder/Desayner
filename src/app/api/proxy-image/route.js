@@ -45,19 +45,22 @@ export async function GET(request) {
 
     const contentType = response.headers.get('content-type') || 'image/jpeg';
 
-    // Stream the response body directly to the client — no buffering,
-    // so time-to-first-byte is fast and memory usage stays low.
-    return new Response(response.body, {
+    // Buffer the response instead of streaming. Vercel Node.js Serverless 
+    // functions notoriously drop ReadableStreams from fetch() prematurely,
+    // causing 500/504 errors on production. Buffering guarantees delivery.
+    const buffer = await response.arrayBuffer();
+
+    return new Response(buffer, {
       status: 200,
       headers: {
         'Content-Type': contentType,
         'Cache-Control': 'public, max-age=86400, stale-while-revalidate=604800',
         'Vary': 'Accept',
-        // Let CDN/browser cache by URL
         ...(response.headers.get('etag') ? { 'ETag': response.headers.get('etag') } : {}),
       },
     });
-  } catch {
+  } catch (err) {
+    console.error('Proxy Image Error:', err);
     return getFallbackResponse();
   }
 }
