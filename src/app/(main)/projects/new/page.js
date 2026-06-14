@@ -115,6 +115,12 @@ export default function NewProjectPage() {
       return;
     }
 
+    const { count: existingCount } = await supabase
+      .from('projects')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', user.id)
+      .eq('published', true);
+
     const { data, error: err } = await supabase.from('projects').insert({
       user_id:       user.id,
       title:         form.title.trim(),
@@ -130,9 +136,20 @@ export default function NewProjectPage() {
     }).select().single();
 
     if (err) { setError(err.message); setSubmitting(false); return; }
-    
-    // Redirect back to the feed (closing the upload view)
-    router.push('/projects');
+
+    const { data: userProfile } = await supabase
+      .from('profiles')
+      .select('username')
+      .eq('id', user.id)
+      .single();
+
+    window.dispatchEvent(new Event('profile_updated'));
+
+    if ((existingCount || 0) === 0 && userProfile?.username) {
+      router.push(`/profile/${userProfile.username}?firstProject=1`);
+    } else {
+      router.push('/projects');
+    }
     router.refresh();
   }
 

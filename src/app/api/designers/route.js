@@ -66,7 +66,7 @@ export async function GET(request) {
       
       const { data: risingData } = await supabase
         .from('profiles')
-        .select('id, username, full_name, avatar_url, bio, followers_count, projects_count')
+        .select('id, username, full_name, avatar_url, bio, followers_count, projects_count, tools, created_at')
         .gte('created_at', thirtyDaysAgo.toISOString())
         .order('followers_count', { ascending: false })
         .limit(4);
@@ -101,7 +101,7 @@ export async function GET(request) {
     // 3. Fetch Main Creators Grid
     let query = supabase
       .from('profiles')
-      .select('id, username, full_name, avatar_url, bio, location, followers_count, following_count, projects_count, created_at')
+      .select('id, username, full_name, avatar_url, bio, location, followers_count, following_count, projects_count, created_at, tools')
       .not('username', 'is', null)
       .range((page - 1) * PAGE_SIZE, page * PAGE_SIZE - 1);
 
@@ -122,9 +122,15 @@ export async function GET(request) {
       }
     }
 
-    if (sort === 'followers') query = query.order('followers_count', { ascending: false, nullsFirst: false });
-    else if (sort === 'newest') query = query.order('created_at', { ascending: false });
-    else if (sort === 'projects') query = query.order('projects_count', { ascending: false, nullsFirst: false });
+    if (sort === 'followers') {
+      query = query
+        .order('projects_count', { ascending: false, nullsFirst: false })
+        .order('followers_count', { ascending: false, nullsFirst: false });
+    } else if (sort === 'newest') {
+      query = query.order('created_at', { ascending: false });
+    } else if (sort === 'projects') {
+      query = query.order('projects_count', { ascending: false, nullsFirst: false });
+    }
 
     const { data: gridCreators, error: gridError } = await query;
     if (gridError) throw gridError;

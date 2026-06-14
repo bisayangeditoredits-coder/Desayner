@@ -78,10 +78,13 @@ export default function ProjectCard({ project, currentUserId }) {
               <img
                 src={stripCloudinaryProxy(project.thumbnail_url || project.cover_url)}
                 alt={project.title || 'Project'}
-                className="project-card__img"
+                className="project-card__img img-fade-in"
                 loading="lazy"
                 decoding="async"
-                onLoad={() => setImgStatus('loaded')}
+                onLoad={(e) => {
+                  e.currentTarget.classList.add('loaded');
+                  setImgStatus('loaded');
+                }}
                 onError={() => setImgStatus('error')}
               />
             ) : (

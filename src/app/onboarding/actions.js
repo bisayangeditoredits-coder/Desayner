@@ -33,7 +33,7 @@ export async function saveProfileAdmin(profileData) {
     }
 
     // 2. Whitelist allowed fields to prevent unauthorized updates (e.g., is_admin)
-    const ALLOWED_FIELDS = ['avatar_url', 'full_name', 'bio', 'tools', 'username', 'website'];
+    const ALLOWED_FIELDS = ['avatar_url', 'full_name', 'bio', 'tools', 'skills', 'username', 'website'];
     const safeProfileData = {
       id: user.id,  // Force correct user ID
       updated_at: new Date().toISOString(),

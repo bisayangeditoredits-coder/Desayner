@@ -5,7 +5,8 @@ import UserAvatar from '@/components/UserAvatar';
 import ImageUpload from '@/components/ImageUpload';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Save, User, Lock, Trash2, ArrowLeft } from 'lucide-react';
+import { Save, User, Lock, Trash2, ArrowLeft, X } from 'lucide-react';
+import ProfileCompletenessCard from '@/components/ProfileCompletenessCard';
 import { CREATIVE_TOOLS } from '@/lib/constants';
 import '../../App.css';
 
@@ -30,7 +31,7 @@ const labelStyle = {
 export default function SettingsPage() {
   const [tab, setTab]         = useState('profile');
   const [profile, setProfile] = useState(null);
-  const [form, setForm]       = useState({ full_name: '', username: '', bio: '', website: '', location: '', tools: [] });
+  const [form, setForm]       = useState({ full_name: '', username: '', bio: '', website: '', location: '', tools: [], skills: [] });
   const [avatarUrl, setAvatarUrl] = useState('');
   const [coverUrl, setCoverUrl]   = useState('');
   const [saving, setSaving]   = useState(false);
@@ -40,6 +41,7 @@ export default function SettingsPage() {
   const [newPass, setNewPass]     = useState('');
   const [authSaving, setAuthSaving] = useState(false);
   const [authMsg, setAuthMsg]   = useState('');
+  const [tagInput, setTagInput] = useState('');
   const supabase = useMemo(() => createClient(), []);
   const router = useRouter();
 
@@ -57,6 +59,7 @@ export default function SettingsPage() {
           website:   data.website   || '',
           location:  data.location  || '',
           tools:     data.tools     || [],
+          skills:    data.skills    || [],
         });
         setAvatarUrl(data.avatar_url || '');
         setCoverUrl(data.cover_url || '');
@@ -70,19 +73,27 @@ export default function SettingsPage() {
     e.preventDefault();
     if (!form.username.trim()) { setError('Username is required.'); return; }
     setSaving(true); setError(''); setSaved(false);
-    const { error: err } = await supabase
-      .from('profiles')
-      .update({
-        full_name: form.full_name.trim() || null,
-        username:  form.username.trim(),
-        bio:       form.bio.trim()      || null,
-        website:   form.website.trim()  || null,
-        location:  form.location.trim() || null,
-        avatar_url: avatarUrl           || null,
-        cover_url:  coverUrl            || null,
-        tools:      form.tools,
-      })
-      .eq('id', profile.id);
+    const payload = {
+      full_name: form.full_name.trim() || null,
+      username:  form.username.trim(),
+      bio:       form.bio.trim()      || null,
+      website:   form.website.trim()  || null,
+      location:  form.location.trim() || null,
+      avatar_url: avatarUrl           || null,
+      cover_url:  coverUrl            || null,
+      tools:      form.tools,
+    };
+
+    let { error: err } = await supabase.from('profiles').update(payload).eq('id', profile.id);
+
+    if (!err && form.skills.length > 0) {
+      const skillsResult = await supabase.from('profiles').update({ skills: form.skills }).eq('id', profile.id);
+      if (skillsResult.error?.message?.includes('skills')) {
+        console.warn('skills column not migrated yet — run skills_migration.sql in Supabase');
+      } else {
+        err = skillsResult.error;
+      }
+    }
     if (err) {
       setError(err.message);
     } else {
@@ -159,6 +170,11 @@ export default function SettingsPage() {
           {/* ── Profile Tab ── */}
           {tab === 'profile' && (
             <form onSubmit={saveProfile} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+              {profile && (
+                <ProfileCompletenessCard
+                  profile={{ ...profile, ...form, avatar_url: avatarUrl, cover_url: coverUrl }}
+                />
+              )}
               {error && <div style={{ padding: '0.75rem 1rem', background: '#fff0f0', border: '1px solid #ffd0d0', color: '#ff3b3b', fontSize: '0.85rem' }}>{error}</div>}
               {saved && <div style={{ padding: '0.75rem 1rem', background: '#f0fff4', border: '1px solid #b7f5c8', color: '#1a8a3b', fontSize: '0.85rem' }}>✓ Profile saved successfully!</div>}
 
@@ -308,6 +324,55 @@ export default function SettingsPage() {
                   onFocus={e => e.target.style.borderColor = '#231f20'}
                   onBlur={e => e.target.style.borderColor = '#e8e8e8'}
                 />
+              </div>
+
+              {/* Skills / specialties */}
+              <div>
+                <label style={labelStyle}>Skills & Specialties</label>
+                <p style={{ fontSize: '0.78rem', color: '#9b9b9b', margin: '0 0 0.65rem' }}>
+                  Help clients find you before you publish projects (e.g. UI Design, Branding, Web Design).
+                </p>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.65rem' }}>
+                  {form.skills.map((skill) => (
+                    <span
+                      key={skill}
+                      style={{
+                        display: 'inline-flex', alignItems: 'center', gap: '0.35rem',
+                        padding: '0.35rem 0.75rem', borderRadius: '20px',
+                        background: '#eef0ff', color: '#2d43e8', fontSize: '0.8rem', fontWeight: 600,
+                      }}
+                    >
+                      {skill}
+                      <button
+                        type="button"
+                        onClick={() => setForm((p) => ({ ...p, skills: p.skills.filter((s) => s !== skill) }))}
+                        style={{ border: 'none', background: 'none', cursor: 'pointer', padding: 0, display: 'flex', color: 'inherit' }}
+                        aria-label={`Remove ${skill}`}
+                      >
+                        <X size={12} />
+                      </button>
+                    </span>
+                  ))}
+                </div>
+                {form.skills.length < 8 && (
+                  <input
+                    style={inputStyle}
+                    value={tagInput}
+                    onChange={(e) => setTagInput(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        const skill = tagInput.trim();
+                        if (skill && !form.skills.includes(skill)) {
+                          setForm((p) => ({ ...p, skills: [...p.skills, skill] }));
+                          setTagInput('');
+                        }
+                      }
+                    }}
+                    placeholder="Type a skill and press Enter"
+                    maxLength={30}
+                  />
+                )}
               </div>
 
               {/* Tools & Creative Fields */}

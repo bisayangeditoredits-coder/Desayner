@@ -9,6 +9,11 @@ import Link from 'next/link';
 import { Globe, MapPin, Calendar, MessageSquare, ExternalLink, Folder, ArrowLeft } from 'lucide-react';
 import { CREATIVE_TOOLS } from '@/lib/constants';
 import { stripCloudinaryProxy } from '@/lib/utils';
+import ProfileCompletenessCard from '@/components/ProfileCompletenessCard';
+import EmptyState from '@/components/EmptyState';
+import FirstProjectCelebration from '@/components/FirstProjectCelebration';
+import { Suspense } from 'react';
+import { FolderOpen } from 'lucide-react';
 import '../../../App.css';
 
 /** Prominent Hire Me button that opens a chat for job inquiries */
@@ -137,6 +142,15 @@ export default function ProfilePage() {
 
   return (
     <div className="profile-v2">
+      <Suspense fallback={null}>
+        <FirstProjectCelebration username={isOwn ? profile.username : null} />
+      </Suspense>
+
+      {isOwn && (
+        <div className="profile-v2__content" style={{ paddingBottom: 0 }}>
+          <ProfileCompletenessCard profile={profile} />
+        </div>
+      )}
 
       {/* ── Cover Banner ── */}
       <div className="profile-v2__cover">
@@ -270,16 +284,19 @@ export default function ProfilePage() {
         {/* Work tab */}
         {tab === 'projects' && (
           projects.length === 0 ? (
-            <div className="profile-v2__empty">
-              <p style={{ fontWeight: 600, marginBottom: '0.4rem', fontSize: '0.95rem' }}>
-                {isOwn ? "You haven't published any projects yet." : `${profile.full_name || profile.username} hasn't shared any projects yet.`}
-              </p>
-              {isOwn && (
-                <Link href="/projects/new" className="btn btn-dark" style={{ borderRadius: '20px', fontSize: '0.8rem', marginTop: '1rem' }}>
-                  Create First Project
-                </Link>
-              )}
-            </div>
+            <EmptyState
+              icon={FolderOpen}
+              title={isOwn ? "You haven't published any projects yet" : `${profile.full_name || profile.username} hasn't shared work yet`}
+              description={
+                isOwn
+                  ? 'Upload your best work to get discovered by clients and fellow designers.'
+                  : 'Check back later — they may publish something soon.'
+              }
+              actionLabel={isOwn ? 'Create first project' : undefined}
+              actionHref={isOwn ? '/projects/new' : undefined}
+              secondaryLabel={isOwn ? 'Complete your profile' : undefined}
+              secondaryHref={isOwn ? '/settings' : undefined}
+            />
           ) : (
             <div className="projects-masonry">
               {projects.map(project => (
@@ -367,6 +384,18 @@ export default function ProfilePage() {
                   {profile.bio || <span style={{ color: '#9b9b9b', fontStyle: 'italic' }}>No biography provided.</span>}
                 </p>
               </section>
+
+              {/* Skills */}
+              {profile.skills && profile.skills.length > 0 && (
+                <section className="profile-v2__about-section">
+                  <h3 className="profile-v2__about-label">Skills & Specialties</h3>
+                  <div className="profile-v2__tools-list">
+                    {profile.skills.map((skill) => (
+                      <span key={skill} className="profile-v2__tool-pill">{skill}</span>
+                    ))}
+                  </div>
+                </section>
+              )}
 
               {/* Tools */}
               {profile.tools && profile.tools.length > 0 && (

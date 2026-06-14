@@ -50,7 +50,9 @@ export default function UserAvatar({ src, name = '', size = 32, className = '' }
           loading="lazy"
           decoding="async"
           onError={() => setImgError(true)}
+          onLoad={(e) => e.currentTarget.classList.add('loaded')}
           style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
+          className="img-fade-in"
         />
       </div>
     );

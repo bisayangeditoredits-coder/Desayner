@@ -6,7 +6,7 @@ import Image from 'next/image';
 import {
   Home, FolderOpen, Users, Users2, Bookmark, Plus, Settings,
   LogOut, ChevronDown, ChevronUp, Library, MessageSquare, Briefcase, ShoppingBag, Box, PlaySquare, Compass, MessageSquareCode, Image as ImageIcon,
-  Palette, Type
+  Palette, Type, LayoutTemplate
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import UserAvatar from './UserAvatar';
@@ -29,9 +29,9 @@ const COMMUNITY_ITEMS = [
 ];
 
 const DESIGN_HUB_ITEMS = [
-  // { href: '/asset-store',  icon: ShoppingBag,   label: 'ASSET STORE', public: true },
   { href: '/colors',       icon: Palette,       label: 'COLORS',       public: true },
   { href: '/stock-assets', icon: Box,           label: 'STOCK ASSETS', public: true },
+  { href: '/mockups',      icon: LayoutTemplate,label: 'FREE MOCKUPS', public: true },
   { href: '/stock-photos', icon: ImageIcon,     label: 'STOCK PHOTOS', public: true },
   { href: '/fonts',        icon: Type,          label: 'FONTS',        public: true },
 ];

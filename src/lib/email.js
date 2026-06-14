@@ -200,3 +200,49 @@ export async function sendFollowNotificationEmail({ toEmail, toName, followerNam
     `,
   });
 }
+
+/**
+ * Day-3 nudge for users who signed up but haven't published yet.
+ */
+export async function sendPortfolioNudgeEmail({ toEmail, toName, username }) {
+  const profileUrl = `${APP_URL}/profile/${username}`;
+
+  return resend.emails.send({
+    from: `Desayner <${FROM}>`,
+    to: toEmail,
+    subject: 'Your portfolio is waiting — publish your first project 🎨',
+    html: `
+      <!DOCTYPE html>
+      <html>
+      <body style="margin:0;padding:40px 16px;background:#231f20;font-family:'Inter','Segoe UI',sans-serif;">
+        <table width="100%" cellpadding="0" cellspacing="0">
+          <tr><td align="center">
+            <table width="560" cellpadding="0" cellspacing="0" style="background:#111;border-radius:16px;border:1px solid #222;overflow:hidden;">
+              <tr>
+                <td style="padding:36px 40px 24px;text-align:center;">
+                  <h2 style="margin:0;font-size:24px;font-weight:900;color:#f1f5f9;">
+                    Hey ${toName || 'Designer'}, your profile is almost ready
+                  </h2>
+                  <p style="margin:12px 0 0;font-size:15px;color:#94a3b8;line-height:1.6;">
+                    Designers with at least one published project get discovered faster on Desayner. Upload your best work today.
+                  </p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:0 40px 32px;text-align:center;">
+                  <a href="${APP_URL}/projects/new" style="display:inline-block;padding:14px 32px;background:#2d43e8;color:#fff;font-size:15px;font-weight:700;text-decoration:none;border-radius:10px;margin-right:8px;">
+                    Publish a project
+                  </a>
+                  <a href="${profileUrl}" style="display:inline-block;padding:14px 32px;background:#1e293b;color:#e2e8f0;font-size:15px;font-weight:700;text-decoration:none;border-radius:10px;">
+                    View profile
+                  </a>
+                </td>
+              </tr>
+            </table>
+          </td></tr>
+        </table>
+      </body>
+      </html>
+    `,
+  });
+}

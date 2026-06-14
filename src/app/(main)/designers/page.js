@@ -3,8 +3,11 @@ import { useState, useEffect, useCallback, useRef, useMemo} from "react";
 import { createClient } from "@/lib/supabase/client";
 import UserAvatar from "@/components/UserAvatar";
 import FollowButton from "@/components/FollowButton";
+import EmptyState from "@/components/EmptyState";
 import Link from "next/link";
 import { stripCloudinaryProxy } from "@/lib/utils";
+import { formatMemberSince, isNewMember } from "@/lib/memberSince";
+import { CREATIVE_TOOLS } from "@/lib/constants";
 import {
   Search,
   MapPin,
@@ -52,7 +55,7 @@ function DesignersContent() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState(initialSearch);
   const [category, setCategory] = useState(initialCategory);
-  const [sort, setSort] = useState("followers");
+  const [sort, setSort] = useState("projects");
   const [currentUserId, setCurrentUserId] = useState(null);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(false);
@@ -657,54 +660,24 @@ function DesignersContent() {
             ))}
           </div>
         ) : filteredDesigners.length === 0 ? (
-          <div
-            style={{
-              textAlign: "center",
-              padding: "6rem 2rem",
-              background: "white",
-              borderRadius: "24px",
-              border: "1px dashed #d1d5db",
-            }}
-          >
-            <Sparkles
-              size={48}
-              color="#d1d5db"
-              style={{ marginBottom: "1.5rem", margin: "0 auto" }}
-            />
-            <p
-              style={{
-                fontWeight: 800,
-                fontSize: "1.25rem",
-                marginBottom: "0.5rem",
-              }}
-            >
-              No professionals found
-            </p>
-            <p style={{ fontSize: "1rem", color: "#6b7280" }}>
-              {search
-                ? `No results match "${search}"`
-                : `No professionals found in ${category}`}
-            </p>
-            <div style={{ marginTop: "1.5rem" }}>
-              <button
-                onClick={() => {
-                  setSearch("");
-                  setCategory("All");
-                }}
-                className="btn"
-                style={{
-                  padding: "0.6rem 1.5rem",
-                  fontSize: "0.9rem",
-                  background: "#231f20",
-                  color: "white",
-                  fontWeight: 700,
-                  borderRadius: "30px",
-                }}
-              >
-                Clear Filters
-              </button>
-            </div>
-          </div>
+          <EmptyState
+            icon={Sparkles}
+            title="No professionals found"
+            description={
+              search
+                ? `No results match "${search}". Try a different name or clear your filters.`
+                : `No professionals found in ${category} yet.`
+            }
+            actionLabel={search || category !== "All" ? "Clear filters" : undefined}
+            onAction={
+              search || category !== "All"
+                ? () => {
+                    setSearch("");
+                    setCategory("All");
+                  }
+                : undefined
+            }
+          />
         ) : (
           <div
             style={{ display: "flex", flexDirection: "column", gap: "2rem" }}
@@ -758,13 +731,22 @@ function DesignersContent() {
 // Components
 // ---------------------------------------------------------------------------
 
+function getDesignerSkills(designer) {
+  const fromProjects = (designer.sampleProjects || [])
+    .map((p) => p.category)
+    .filter(Boolean);
+  const fromSkills = designer.skills || [];
+  const fromTools = (designer.tools || [])
+    .map((id) => CREATIVE_TOOLS.find((t) => t.id === id)?.name)
+    .filter(Boolean);
+
+  return Array.from(new Set([...fromProjects, ...fromSkills, ...fromTools])).slice(0, 6);
+}
+
 function DesignerCard({ designer, currentUserId }) {
-  const skills = Array.from(
-    new Set(
-      (designer.sampleProjects || []).map((p) => p.category).filter(Boolean),
-    ),
-  );
-  if (skills.length === 0) skills.push("ui design", "branding", "web design");
+  const skills = getDesignerSkills(designer);
+  const projects = designer.sampleProjects || [];
+  const isNew = isNewMember(designer.created_at);
 
   const handleMessage = (e) => {
     e.preventDefault();
@@ -775,9 +757,7 @@ function DesignerCard({ designer, currentUserId }) {
     window.location.href = `/messages?open=${designer.id}`;
   };
 
-  const joinedYear = designer.created_at
-    ? new Date(designer.created_at).getFullYear()
-    : "2023";
+  const memberLabel = formatMemberSince(designer.created_at);
 
   return (
     <div
@@ -851,6 +831,10 @@ function DesignerCard({ designer, currentUserId }) {
                   {designer.username || designer.full_name}
                 </div>
               </Link>
+
+              {isNew && (
+                <span className="designer-card__new-badge">New</span>
+              )}
 
               {designer.followers_count > 100 ? (
                 <span
@@ -932,7 +916,7 @@ function DesignerCard({ designer, currentUserId }) {
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '22px', height: '22px', borderRadius: '50%', background: '#f1f5f9' }}>
                   <Clock size={12} color="#64748b" /> 
                 </div>
-                Member since {joinedYear}
+                {memberLabel}
               </span>
               {designer.following_count > 0 && (
                 <span
@@ -950,28 +934,11 @@ function DesignerCard({ designer, currentUserId }) {
 
         {/* Right: Actions */}
         <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-          <div
-            style={{
-              width: "40px",
-              height: "40px",
-              borderRadius: "50%",
-              border: "1px solid #e2e8f0",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              cursor: "pointer",
-              color: "#0f172a",
-              transition: "all 0.2s",
-            }}
-            onMouseOver={(e) => {
-              e.currentTarget.style.borderColor = "#0f172a";
-            }}
-            onMouseOut={(e) => {
-              e.currentTarget.style.borderColor = "#e2e8f0";
-            }}
-          >
-            <Star size={18} />
-          </div>
+          <FollowButton
+            targetUserId={designer.id}
+            currentUserId={currentUserId}
+            compact
+          />
           <button
             onClick={handleMessage}
             style={{
@@ -1001,83 +968,35 @@ function DesignerCard({ designer, currentUserId }) {
         </div>
       </div>
 
-      {/* Middle Projects (up to 4, larger) */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(4, 1fr)",
-          gap: "16px",
-          height: "220px",
-        }}
-      >
-        {[0, 1, 2, 3].map((i) => {
-          const proj = designer.sampleProjects && designer.sampleProjects[i];
-          return (
-            <div
-              key={i}
-              style={{
-                borderRadius: "16px",
-                overflow: "hidden",
-                background: "white",
-                position: "relative",
-                border: "1px solid rgba(0,0,0,0.04)",
-                boxShadow: "inset 0 2px 4px rgba(0,0,0,0.02)"
-              }}
-            >
-              {proj ? (
-                <Link
-                  href={`/projects/${proj.id}`}
-                  style={{ display: "block", width: "100%", height: "100%" }}
-                >
-                  <img
-                    src={stripCloudinaryProxy(proj.thumbnail_url || proj.cover_url)}
-                    alt={proj.title || ""}
-                    loading="lazy"
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "cover",
-                      transition: "transform 0.4s ease",
-                    }}
-                    onMouseOver={(e) =>
-                      (e.currentTarget.style.transform = "scale(1.05)")
-                    }
-                    onMouseOut={(e) =>
-                      (e.currentTarget.style.transform = "scale(1)")
-                    }
-                  />
-                </Link>
-              ) : (
-                <div
-                  style={{
-                    width: "100%",
-                    height: "100%",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    color: "#e2e8f0",
+      {/* Middle Projects */}
+      {projects.length === 0 ? (
+        <div className="designer-card__no-work">No work published yet</div>
+      ) : (
+        <div className="designer-card__projects-grid">
+          {projects.slice(0, 4).map((proj) => (
+            <div key={proj.id} className="designer-card__project-tile">
+              <Link
+                href={`/projects/${proj.id}`}
+                style={{ display: "block", width: "100%", height: "100%" }}
+              >
+                <img
+                  src={stripCloudinaryProxy(proj.thumbnail_url || proj.cover_url)}
+                  alt={proj.title || ""}
+                  loading="lazy"
+                  className="img-fade-in"
+                  onLoad={(e) => e.currentTarget.classList.add("loaded")}
+                  onMouseOver={(e) => {
+                    e.currentTarget.style.transform = "scale(1.05)";
                   }}
-                >
-                  <div
-                    style={{
-                      width: "32px",
-                      height: "32px",
-                      borderRadius: "50%",
-                      background: "white",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      boxShadow: "0 2px 5px rgba(0,0,0,0.05)",
-                    }}
-                  >
-                    <Star size={14} opacity={0.5} />
-                  </div>
-                </div>
-              )}
+                  onMouseOut={(e) => {
+                    e.currentTarget.style.transform = "scale(1)";
+                  }}
+                />
+              </Link>
             </div>
-          );
-        })}
-      </div>
+          ))}
+        </div>
+      )}
 
       {/* Bottom Skills */}
       <div
@@ -1088,22 +1007,26 @@ function DesignerCard({ designer, currentUserId }) {
           alignItems: "center",
         }}
       >
-        {skills.slice(0, 6).map((skill) => (
-          <span
-            key={skill}
-            style={{
-              padding: "6px 16px",
-              background: "rgba(0,0,0,0.03)",
-              color: "#334155",
-              borderRadius: "8px",
-              fontSize: "12px",
-              fontWeight: 700,
-              textTransform: "capitalize",
-            }}
-          >
-            {skill}
-          </span>
-        ))}
+        {skills.length === 0 ? (
+          <span className="designer-card__skills-empty">Skills not listed yet</span>
+        ) : (
+          skills.map((skill) => (
+            <span
+              key={skill}
+              style={{
+                padding: "6px 16px",
+                background: "rgba(0,0,0,0.03)",
+                color: "#334155",
+                borderRadius: "8px",
+                fontSize: "12px",
+                fontWeight: 700,
+                textTransform: "capitalize",
+              }}
+            >
+              {skill}
+            </span>
+          ))
+        )}
         {skills.length > 6 && (
           <span
             style={{

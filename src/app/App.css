@@ -3661,3 +3661,359 @@
     flex-direction: row;
   }
 }
+
+/* ── Empty state (shared) ─────────────────────────────────────────── */
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: white;
+  border: 1px solid #e8eaed;
+  border-radius: 16px;
+  max-width: 520px;
+  margin: 0 auto;
+}
+.empty-state__icon {
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 1.25rem;
+  border-radius: 50%;
+  background: #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #94a3b8;
+}
+.empty-state__title {
+  font-weight: 800;
+  font-size: 1.15rem;
+  margin: 0 0 0.5rem;
+  letter-spacing: -0.02em;
+  color: #0f172a;
+}
+.empty-state__desc {
+  color: #64748b;
+  font-size: 0.875rem;
+  line-height: 1.55;
+  margin: 0 auto 1.5rem;
+  max-width: 360px;
+}
+.empty-state__actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+.empty-state__btn {
+  border-radius: 20px !important;
+  font-size: 0.85rem !important;
+}
+.empty-state__link {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #64748b;
+  text-decoration: none;
+}
+
+/* ── Onboarding checklist ─────────────────────────────────────────── */
+.onboarding-checklist {
+  margin: 0 1.5rem 1rem;
+  padding: 1.25rem 1.5rem;
+  background: linear-gradient(135deg, #eef0ff 0%, #f8fafc 100%);
+  border: 1px solid #dbeafe;
+  border-radius: 16px;
+}
+.onboarding-checklist__header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: flex-start;
+}
+.onboarding-checklist__eyebrow {
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #2d43e8;
+  margin: 0 0 0.25rem;
+}
+.onboarding-checklist__title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #0f172a;
+}
+.onboarding-checklist__subtitle {
+  margin: 0.35rem 0 0;
+  font-size: 0.82rem;
+  color: #64748b;
+}
+.onboarding-checklist__close {
+  border: none;
+  background: white;
+  border-radius: 8px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #64748b;
+}
+.onboarding-checklist__bar,
+.profile-completeness__bar {
+  height: 6px;
+  background: rgba(255,255,255,0.8);
+  border-radius: 999px;
+  overflow: hidden;
+  margin: 1rem 0;
+}
+.onboarding-checklist__bar-fill,
+.profile-completeness__bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #2d43e8, #6366f1);
+  border-radius: 999px;
+  transition: width 0.4s ease;
+}
+.onboarding-checklist__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.5rem;
+}
+.onboarding-checklist__list li {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  font-size: 0.85rem;
+}
+.onboarding-checklist__list li.done {
+  color: #64748b;
+  text-decoration: line-through;
+}
+.onboarding-checklist__list a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: #0f172a;
+  font-weight: 600;
+  text-decoration: none;
+}
+.onboarding-checklist__check {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid #cbd5e1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: white;
+}
+.onboarding-checklist__list li.done .onboarding-checklist__check {
+  background: #2d43e8;
+  border-color: #2d43e8;
+  color: white;
+}
+
+/* ── Profile completeness ─────────────────────────────────────────── */
+.profile-completeness {
+  padding: 1rem 1.25rem;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  margin-bottom: 1.5rem;
+}
+.profile-completeness--compact {
+  margin-bottom: 1rem;
+}
+.profile-completeness__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+.profile-completeness__label {
+  margin: 0;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #64748b;
+}
+.profile-completeness__percent {
+  margin: 0.15rem 0 0;
+  font-size: 1rem;
+  font-weight: 800;
+  color: #0f172a;
+}
+.profile-completeness__cta {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #2d43e8;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.profile-completeness__steps {
+  list-style: none;
+  margin: 0.75rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+.profile-completeness__steps a {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #334155;
+  text-decoration: none;
+}
+
+/* ── First project celebration ────────────────────────────────────── */
+.celebration-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background: rgba(0,0,0,0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+.celebration-modal {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  background: white;
+  border-radius: 20px;
+  padding: 2rem;
+  text-align: center;
+}
+.celebration-modal__close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  border: none;
+  background: #f1f5f9;
+  border-radius: 8px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.celebration-modal__icon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 1rem;
+  border-radius: 50%;
+  background: #eef0ff;
+  color: #2d43e8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.celebration-modal h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1.5rem;
+  font-weight: 900;
+}
+.celebration-modal p {
+  margin: 0 0 1.5rem;
+  color: #64748b;
+  line-height: 1.5;
+}
+.celebration-modal__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+.celebration-modal__actions .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 12px;
+}
+
+/* ── Designer card projects grid ──────────────────────────────────── */
+.designer-card__projects-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  min-height: 180px;
+}
+.designer-card__project-tile {
+  border-radius: 16px;
+  overflow: hidden;
+  background: white;
+  position: relative;
+  border: 1px solid rgba(0,0,0,0.04);
+  aspect-ratio: 4/3;
+}
+.designer-card__project-tile img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease, opacity 0.35s ease;
+  opacity: 0;
+}
+.designer-card__project-tile img.loaded {
+  opacity: 1;
+}
+.designer-card__no-work {
+  min-height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 16px;
+  background: #f8fafc;
+  border: 1px dashed #e2e8f0;
+  color: #94a3b8;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+.designer-card__new-badge {
+  background: #dcfce7;
+  color: #166534;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 6px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.designer-card__skills-empty {
+  font-size: 12px;
+  color: #94a3b8;
+  font-weight: 500;
+  font-style: italic;
+}
+
+@media (max-width: 900px) {
+  .designer-card__projects-grid {
+    grid-template-columns: repeat(2, 1fr);
+    min-height: auto;
+  }
+}
+
+@media (max-width: 640px) {
+  .onboarding-checklist {
+    margin: 0 1rem 1rem;
+    padding: 1rem;
+  }
+  .designer-card__projects-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+}
+
+/* Image fade-in for cards */
+.img-fade-in {
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+.img-fade-in.loaded {
+  opacity: 1;
+}
