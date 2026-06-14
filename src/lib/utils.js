@@ -28,13 +28,17 @@ export function stripCloudinaryProxy(url) {
     // List of safe/small domains that don't need resizing/proxying
     // or domains that shouldn't be proxied
     const noProxyDomains = [
+      // Our own CDNs — already serve resized WebP thumbnails; direct load is faster
+      // and avoids routing every card image through a third-party proxy.
+      'r2.dev',
+      'supabase.co',
       'googleusercontent.com',
       'githubusercontent.com',
       'logo.clearbit.com',
       'api.dicebear.com',
       'cdn.pixabay.com',
       'pixabay.com',
-      'unsplash.com'
+      'unsplash.com',
     ];
 
     try {

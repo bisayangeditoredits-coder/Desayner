@@ -1,6 +1,5 @@
 'use client';
 import React from 'react';
-import Image from 'next/image';
 
 import { stripCloudinaryProxy } from '@/lib/utils';
 
@@ -31,12 +30,17 @@ export default function UserAvatar({ src, name = '', size = 32, className = '' }
   };
 
   const effectiveSrc = stripCloudinaryProxy(src);
-  const isProxy = effectiveSrc?.startsWith('/api/') || effectiveSrc?.startsWith('https://wsrv.nl');
 
   if (effectiveSrc && effectiveSrc !== 'null' && effectiveSrc !== 'undefined') {
     return (
       <div style={{ ...style, position: 'relative' }} className={className}>
-        <Image src={effectiveSrc} alt={name} fill sizes={`${size}px`} unoptimized={isProxy} style={{ objectFit: 'cover' }} />
+        <img
+          src={effectiveSrc}
+          alt={name}
+          loading="lazy"
+          decoding="async"
+          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
+        />
       </div>
     );
   }

@@ -2,7 +2,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { Heart, Bookmark, Eye } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
@@ -76,24 +75,15 @@ export default function ProjectCard({ project, currentUserId }) {
         >
           <div className={`project-card__thumb project-card__thumb--${imgStatus}`}>
             {(project.thumbnail_url || project.cover_url) && imgStatus !== 'error' ? (
-              (() => {
-                const imgSrc = stripCloudinaryProxy(project.thumbnail_url || project.cover_url);
-                const isProxy = imgSrc?.startsWith('/api/') || imgSrc?.startsWith('https://wsrv.nl');
-                return (
-                  <Image
-                    src={imgSrc}
-                    alt={project.title || 'Project'}
-                    className="project-card__img"
-                    width={600}
-                    height={450}
-                    sizes="(max-width: 480px) 100vw, (max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
-                    unoptimized={isProxy}
-                    loading="lazy"
-                    onLoad={() => setImgStatus('loaded')}
-                    onError={() => setImgStatus('error')}
-                  />
-                );
-              })()
+              <img
+                src={stripCloudinaryProxy(project.thumbnail_url || project.cover_url)}
+                alt={project.title || 'Project'}
+                className="project-card__img"
+                loading="lazy"
+                decoding="async"
+                onLoad={() => setImgStatus('loaded')}
+                onError={() => setImgStatus('error')}
+              />
             ) : (
               <div className="project-card__no-cover">No cover</div>
             )}

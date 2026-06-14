@@ -1,11 +1,14 @@
 'use client';
 import { useState } from 'react';
-import Image from 'next/image';
 import { stripCloudinaryProxy } from '@/lib/utils';
 
-function isProxyUrl(url) {
-  return url?.startsWith('/api/') || url?.startsWith('https://wsrv.nl');
-}
+const fillStyle = {
+  position: 'absolute',
+  inset: 0,
+  width: '100%',
+  height: '100%',
+  objectFit: 'cover',
+};
 
 export default function ProgressiveImage({
   src,
@@ -20,8 +23,6 @@ export default function ProgressiveImage({
 
   const effectiveSrc = stripCloudinaryProxy(rawSrc);
   const effectiveThumb = stripCloudinaryProxy(rawThumb);
-  const isSrcProxy = isProxyUrl(effectiveSrc);
-  const isThumbProxy = isProxyUrl(effectiveThumb);
 
   const [isLoaded, setIsLoaded] = useState(false);
 
@@ -44,14 +45,13 @@ export default function ProgressiveImage({
           }}
         >
           {effectiveThumb && effectiveThumb !== effectiveSrc && (
-            <Image
+            <img
               src={effectiveThumb}
               alt=""
               aria-hidden="true"
-              fill
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-              unoptimized={isThumbProxy}
-              style={{ objectFit: 'cover', filter: 'blur(10px)', opacity: 0.5 }}
+              loading="lazy"
+              decoding="async"
+              style={{ ...fillStyle, filter: 'blur(10px)', opacity: 0.5 }}
             />
           )}
         </div>
@@ -59,15 +59,14 @@ export default function ProgressiveImage({
 
       {/* Main Full Image */}
       {effectiveSrc && (
-        <Image
+        <img
           src={effectiveSrc}
           alt={alt}
-          fill
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-          unoptimized={isSrcProxy}
+          loading="lazy"
+          decoding="async"
           onLoad={() => setIsLoaded(true)}
           style={{
-            objectFit: 'cover',
+            ...fillStyle,
             opacity: isLoaded ? 1 : 0,
             transition: 'opacity 0.4s ease-in-out',
             zIndex: 2,
