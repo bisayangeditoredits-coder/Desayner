@@ -30,7 +30,6 @@ export default function Footer() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             <h4 style={{ fontSize: '0.9rem', fontWeight: 800, color: '#0f172a' }}>Platform</h4>
             <Link href="/" style={{ color: '#475569', textDecoration: 'none', fontSize: '0.9rem', transition: 'color 0.2s', fontWeight: 500 }} onMouseOver={e => e.target.style.color='#0f172a'} onMouseOut={e => e.target.style.color='#475569'}>Explore Work</Link>
-            <Link href="/job-board" style={{ color: '#475569', textDecoration: 'none', fontSize: '0.9rem', transition: 'color 0.2s', fontWeight: 500 }} onMouseOver={e => e.target.style.color='#0f172a'} onMouseOut={e => e.target.style.color='#475569'}>Remote Jobs</Link>
             <Link href="/designers" style={{ color: '#475569', textDecoration: 'none', fontSize: '0.9rem', transition: 'color 0.2s', fontWeight: 500 }} onMouseOver={e => e.target.style.color='#0f172a'} onMouseOut={e => e.target.style.color='#475569'}>Find Creators</Link>
           </div>
 

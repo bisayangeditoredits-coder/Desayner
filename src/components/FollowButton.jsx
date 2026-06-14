@@ -3,7 +3,7 @@ import { useState, useMemo} from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
 
-export default function FollowButton({ targetUserId, currentUserId, initialFollowing = false, compact = false }) {
+export default function FollowButton({ targetUserId, currentUserId, initialFollowing = false, compact = false, variant = 'solid' }) {
   const [following, setFollowing] = useState(initialFollowing);
   const [loading, setLoading] = useState(false);
   const supabase = useMemo(() => createClient(), []);
@@ -43,6 +43,28 @@ export default function FollowButton({ targetUserId, currentUserId, initialFollo
     } finally {
       setLoading(false);
     }
+  }
+
+  if (variant === 'text') {
+    return (
+      <button
+        onClick={toggle}
+        disabled={loading}
+        style={{
+          background: 'none',
+          border: 'none',
+          padding: 0,
+          color: following ? '#64748b' : '#0f172a',
+          fontSize: '0.85rem',
+          fontWeight: 600,
+          cursor: loading ? 'not-allowed' : 'pointer',
+          fontFamily: 'inherit',
+          opacity: loading ? 0.7 : 1,
+        }}
+      >
+        {following ? 'Following' : 'Follow'}
+      </button>
+    );
   }
 
   return (

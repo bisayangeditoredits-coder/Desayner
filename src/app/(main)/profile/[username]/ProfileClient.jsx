@@ -16,55 +16,33 @@ import { Suspense } from 'react';
 import { FolderOpen } from 'lucide-react';
 import '../../../App.css';
 
-/** Prominent Hire Me button that opens a chat for job inquiries */
-function HireMeButton({ profileId }) {
-  const router = useRouter();
-  const [loading, setLoading] = React.useState(false);
-  const [error, setError] = React.useState('');
-
-  async function startChat() {
-    setLoading(true);
-    setError('');
-    try {
-      const res = await fetch('/api/conversations/start', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ recipientId: profileId }),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        setError(data.error || 'Could not start conversation');
-        return;
-      }
-      if (data.conversationId) {
-        window.location.href = `/messages?open=${data.conversationId}`;
-      }
-    } catch {
-      setError('Could not start conversation');
-    } finally {
-      setLoading(false);
-    }
-  }
+/** Prominent Contact button that links externally */
+function HireMeButton({ profile }) {
+  // If they have no website, we don't show the Hire Me button
+  // In a real app, you might use a mailto: link if they had a public email
+  if (!profile?.website) return null;
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '0.25rem' }}>
-      <button
-        onClick={startChat}
-        disabled={loading}
-        className="profile-pill-btn"
-        style={{ 
-          cursor: loading ? 'wait' : 'pointer', 
-          background: '#2d43e8', 
-          color: 'white', 
-          borderColor: '#2d43e8',
-          boxShadow: '0 4px 14px rgba(45, 67, 232, 0.3)'
-        }}
-      >
-        <MessageSquare size={13} />
-        {loading ? 'Connecting…' : 'Hire Me'}
-      </button>
-      {error && <span style={{ fontSize: '0.7rem', color: '#ef4444' }}>{error}</span>}
-    </div>
+    <a
+      href={profile.website.startsWith('http') ? profile.website : `https://${profile.website}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="profile-pill-btn"
+      style={{ 
+        cursor: 'pointer', 
+        background: '#2d43e8', 
+        color: 'white', 
+        borderColor: '#2d43e8',
+        boxShadow: '0 4px 14px rgba(45, 67, 232, 0.3)',
+        textDecoration: 'none',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '0.4rem'
+      }}
+    >
+      <MessageSquare size={13} />
+      Hire Me
+    </a>
   );
 }
 
@@ -223,7 +201,7 @@ export default function ProfilePage() {
                       initialFollowing={isFollowing}
                       compact={true}
                     />
-                    {currentUser && <HireMeButton profileId={profile.id} />}
+                    {currentUser && <HireMeButton profile={profile} />}
                   </>
                 )}
                 {profile.website && (

@@ -3,9 +3,11 @@ import Header from '@/components/Header';
 import MobileBottomNav from '@/components/MobileBottomNav';
 import { MobileNavProvider } from '@/components/MobileNavProvider';
 import OnboardingGuard from '@/components/OnboardingGuard';
-import OnboardingChecklist from '@/components/OnboardingChecklist';
-import RealtimeNotifier from '@/components/RealtimeNotifier';
-import ToastContainer from '@/components/ToastContainer';
+import dynamic from 'next/dynamic';
+
+const OnboardingChecklist = dynamic(() => import('@/components/OnboardingChecklist'));
+const RealtimeNotifier = dynamic(() => import('@/components/RealtimeNotifier'));
+const ToastContainer = dynamic(() => import('@/components/ToastContainer'));
 
 export default function MainLayout({ children, modal }) {
   return (

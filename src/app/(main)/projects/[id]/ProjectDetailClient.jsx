@@ -20,59 +20,7 @@ function formatDate(dateStr) {
   });
 }
 
-/** Contact Creator button — starts a DM from the project page */
-function ContactButton({ authorId, router }) {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
 
-  async function startChat() {
-    if (!authorId) return;
-    setLoading(true);
-    setError('');
-    try {
-      const res = await fetch('/api/conversations/start', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ recipientId: authorId }),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        setError(data.error || 'Could not start conversation');
-        return;
-      }
-      if (data.conversationId) {
-        // Use hard navigation to break out of the Next.js intercepted modal bug
-        window.location.href = `/messages?open=${data.conversationId}`;
-      }
-    } catch {
-      setError('Could not start conversation');
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  return (
-    <div>
-      <button
-        onClick={startChat}
-        disabled={loading}
-        className="project-detail__action-btn"
-        style={{
-          width: '100%',
-          justifyContent: 'center',
-          marginTop: '0.5rem',
-          background: '#2d43e8',
-          color: 'white',
-          borderColor: '#2d43e8',
-        }}
-      >
-        <MessageSquare size={16} />
-        <span>{loading ? 'Opening…' : 'Contact Creator'}</span>
-      </button>
-      {error && <p style={{ fontSize: '0.75rem', color: '#ef4444', marginTop: '0.35rem', textAlign: 'center' }}>{error}</p>}
-    </div>
-  );
-}
 
 // ─── Sub-components ──────────────────────────────────────────────────────────
 
@@ -351,18 +299,37 @@ export default function ProjectDetailClient({ isModal = false }) {
           </div>
         </div>
 
+        {/* Minimal Header (Dribbble Style) */}
+        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '1rem 1.5rem 1.5rem' }}>
+          <h1 style={{ fontSize: '1.6rem', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.02em', marginBottom: '1.25rem', fontFamily: '"Inter", "Segoe UI", sans-serif' }}>
+            {project.title}
+          </h1>
+          
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
+            {/* Author Info */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+              <a href={profileHref} onClick={goToAuthorProfile} style={{ textDecoration: 'none' }}>
+                <UserAvatar src={author?.avatar_url} name={author?.full_name || author?.username} size={44} />
+              </a>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.15rem' }}>
+                <a href={profileHref} onClick={goToAuthorProfile} style={{ textDecoration: 'none', color: '#0f172a', fontWeight: 700, fontSize: '0.9rem', fontFamily: '"Inter", "Segoe UI", sans-serif' }}>
+                  {author?.full_name || author?.username || 'Designer'}
+                </a>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.8rem', fontFamily: '"Inter", "Segoe UI", sans-serif' }}>
+                  <span style={{ color: '#10b981', fontWeight: 600 }}>Available for work</span>
+                  <span style={{ color: '#cbd5e1' }}>•</span>
+                  <FollowButton targetUserId={author?.id} initialIsFollowing={isFollowing} variant="text" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Two-column layout */}
-        <div className="project-detail__body">
+        <div className="project-detail__body" style={{ marginTop: '0' }}>
 
           {/* ── LEFT: content ─────────────────────────── */}
-          <article className="project-detail__main">
-            {/* Title block */}
-            <header className="project-detail__header">
-              {project.category && (
-                <span className="project-detail__category">{project.category}</span>
-              )}
-              <h1 className="project-detail__title">{project.title}</h1>
-            </header>
+          <article className="project-detail__main" style={{ width: '100%', maxWidth: '1000px', margin: '0 auto' }}>
 
             {/* Full-width image gallery */}
             <ImageGallery images={allImages} title={project.title} />
@@ -422,75 +389,26 @@ export default function ProjectDetailClient({ isModal = false }) {
           </article>
 
           {/* ── RIGHT: sidebar ────────────────────────── */}
-          <aside className="project-detail__sidebar" style={{ position: 'sticky', top: '100px' }}>
-
-            {/* Action buttons */}
-            <div className="project-detail__actions">
-              <button
-                onClick={toggleLike}
-                className={`project-detail__action-btn ${liked ? 'project-detail__action-btn--active-red' : ''}`}
-              >
-                <Heart size={16} fill={liked ? 'currentColor' : 'none'} />
-                <span>{liked ? 'Liked' : 'Like'}</span>
-                {likeCount > 0 && <span className="project-detail__action-count">{likeCount}</span>}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', position: 'sticky', top: '100px' }}>
+            
+            {/* Action Buttons Aligned with Sidebar */}
+            <div className="desktop-actions" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
+              <button onClick={toggleLike} style={{ width: '40px', height: '40px', borderRadius: '50%', border: '1px solid #e2e8f0', background: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: liked ? '#ef4444' : '#64748b', transition: 'all 0.2s', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
+                <Heart size={18} fill={liked ? 'currentColor' : 'none'} />
               </button>
-
-              <button
-                onClick={() => {
-                  if (!currentUser) {
-                    router.push('/login?redirectTo=' + encodeURIComponent(window.location.pathname));
-                  } else {
-                    setShowColModal(true);
-                  }
-                }}
-                className="project-detail__action-btn"
-              >
-                <Bookmark size={16} />
-                <span>Save</span>
+              <button onClick={() => { if (!currentUser) { router.push('/login?redirectTo=' + encodeURIComponent(window.location.pathname)); } else { setShowColModal(true); } }} style={{ width: '40px', height: '40px', borderRadius: '50%', border: '1px solid #e2e8f0', background: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#64748b', transition: 'all 0.2s', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
+                <Bookmark size={18} />
               </button>
-
-              <button
-                onClick={handleShare}
-                className="project-detail__action-btn"
-              >
-                {shareToast ? <Check size={16} color="#1a8a3b" /> : <Share size={16} />}
-                <span style={shareToast ? { color: '#1a8a3b', fontWeight: 600 } : {}}>{shareToast ? 'Link Copied!' : 'Share'}</span>
+              <button onClick={handleShare} style={{ width: '40px', height: '40px', borderRadius: '50%', border: '1px solid #e2e8f0', background: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#64748b', transition: 'all 0.2s', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
+                {shareToast ? <Check size={18} color="#1a8a3b" /> : <Share size={18} />}
               </button>
-
-              {project.external_link && (
-                <a
-                  href={project.external_link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="project-detail__action-btn"
-                  style={{ textDecoration: 'none', color: 'inherit' }}
-                >
-                  <Globe size={16} />
-                  <span>Visit Project</span>
-                </a>
-              )}
-
-              {/* Edit Project — owner only */}
-              {currentUser?.id === project.user_id && (
-                <button
-                  onClick={() => window.location.href = `/projects/${id}/edit`}
-                  className="project-detail__action-btn"
-                  style={{
-                    color: 'white',
-                    background: '#2d43e8',
-                    borderColor: '#2d43e8',
-                    fontWeight: 700,
-                    justifyContent: 'center',
-                    cursor: 'pointer',
-                  }}
-                >
-                  <Edit size={16} />
-                  <span>Edit Project</span>
-                </button>
-              )}
+              <a href={`mailto:${author?.email || 'hello@desayner.com'}`} style={{ padding: '0 1.5rem', height: '40px', borderRadius: '20px', border: 'none', background: '#0f172a', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 600, textDecoration: 'none', marginLeft: '0.25rem', fontFamily: '"Inter", "Segoe UI", sans-serif' }}>
+                Get in touch
+              </a>
             </div>
 
-            {/* Stats */}
+            <aside className="project-detail__sidebar" style={{ position: 'static', marginTop: 0 }}>
+
             <div className="project-detail__stats">
               <div className="project-detail__stat">
                 <Heart size={13} />
@@ -559,13 +477,31 @@ export default function ProjectDetailClient({ isModal = false }) {
               />
 
               {/* Contact Creator — only shown if viewing someone else's project */}
-              {currentUser && currentUser.id !== project.user_id && (
-                <ContactButton authorId={author?.id} router={router} />
+              {currentUser && currentUser.id !== project.user_id && author?.website && (
+                <a
+                  href={author.website.startsWith('http') ? author.website : `https://${author.website}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="project-detail__action-btn"
+                  style={{
+                    width: '100%',
+                    justifyContent: 'center',
+                    marginTop: '0.5rem',
+                    background: '#2d43e8',
+                    color: 'white',
+                    borderColor: '#2d43e8',
+                    textDecoration: 'none'
+                  }}
+                >
+                  <MessageSquare size={16} />
+                  <span>Contact Creator</span>
+                </a>
               )}
             </div>
 
           </aside>
         </div>
+      </div>
       {showDeleteModal && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
           <div style={{ background: 'white', padding: '2rem', borderRadius: '8px', maxWidth: '400px', width: '90%' }}>
@@ -588,6 +524,25 @@ export default function ProjectDetailClient({ isModal = false }) {
           onClose={() => setShowColModal(false)}
         />
       )}
+
+      {/* Mobile Fixed Action Bar */}
+      <div className="mobile-actions">
+        <button onClick={toggleLike} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.2rem', background: 'none', border: 'none', cursor: 'pointer', color: liked ? '#ef4444' : '#64748b', fontWeight: 600, fontSize: '0.7rem' }}>
+          <Heart size={22} fill={liked ? 'currentColor' : 'none'} />
+          <span>{project?.likes_count || 0}</span>
+        </button>
+        <button onClick={() => { if (!currentUser) { router.push('/login?redirectTo=' + encodeURIComponent(window.location.pathname)); } else { setShowColModal(true); } }} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.2rem', background: 'none', border: 'none', cursor: 'pointer', color: '#64748b', fontWeight: 600, fontSize: '0.7rem' }}>
+          <Bookmark size={22} />
+          <span>Save</span>
+        </button>
+        <button onClick={handleShare} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.2rem', background: 'none', border: 'none', cursor: 'pointer', color: '#64748b', fontWeight: 600, fontSize: '0.7rem' }}>
+          {shareToast ? <Check size={22} color="#1a8a3b" /> : <Share size={22} />}
+          <span>Share</span>
+        </button>
+        <a href={`mailto:${author?.email || 'hello@desayner.com'}`} style={{ padding: '0 1.2rem', height: '38px', borderRadius: '20px', border: 'none', background: '#0f172a', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 600, textDecoration: 'none', fontFamily: '"Inter", "Segoe UI", sans-serif' }}>
+          Contact
+        </a>
+      </div>
     </>
   );
 }

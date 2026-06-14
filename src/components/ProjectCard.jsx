@@ -2,6 +2,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { Heart, Bookmark, Eye } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
@@ -75,12 +76,13 @@ export default function ProjectCard({ project, currentUserId }) {
         >
           <div className={`project-card__thumb project-card__thumb--${imgStatus}`}>
             {(project.thumbnail_url || project.cover_url) && imgStatus !== 'error' ? (
-              <img
+              <Image
                 src={stripCloudinaryProxy(project.thumbnail_url || project.cover_url)}
                 alt={project.title || 'Project'}
                 className="project-card__img img-fade-in"
-                loading="lazy"
-                decoding="async"
+                width={500}
+                height={380}
+                style={{ objectFit: 'cover', width: '100%', height: '100%' }}
                 onLoad={(e) => {
                   e.currentTarget.classList.add('loaded');
                   setImgStatus('loaded');

@@ -46,5 +46,39 @@ export async function generateMetadata({ params }) {
 }
 
 export default async function ProjectPage({ params }) {
-  return <ProjectDetailClient />;
+  const { id } = await params;
+  const supabase = await createClient();
+  
+  const { data: project } = await supabase
+    .from('projects')
+    .select('title, description, cover_url, created_at, profiles(username, full_name)')
+    .eq('id', id)
+    .single();
+
+  const jsonLd = project ? {
+    '@context': 'https://schema.org',
+    '@type': 'CreativeWork',
+    name: project.title,
+    description: project.description || `A design project by ${project.profiles?.full_name || 'Creator'}`,
+    image: project.cover_url || 'https://desayner.com/default-og.png',
+    author: {
+      '@type': 'Person',
+      name: project.profiles?.full_name || 'Creator',
+      url: `https://desayner.com/profile/${project.profiles?.username || ''}`
+    },
+    datePublished: project.created_at,
+    url: `https://desayner.com/projects/${id}`
+  } : null;
+
+  return (
+    <>
+      {jsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      )}
+      <ProjectDetailClient />
+    </>
+  );
 }

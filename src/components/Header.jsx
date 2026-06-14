@@ -32,7 +32,6 @@ function getIcon(type) {
 function getMessage(n) {
   const actorName = n.actor?.full_name || n.actor?.username || 'Someone';
   if (n.type === 'like') {
-    if (n.inspiration_id) return <span><strong>{actorName}</strong> liked your inspiration</span>;
     return <span><strong>{actorName}</strong> liked your project</span>;
   }
   if (n.type === 'save') return <span><strong>{actorName}</strong> saved your project</span>;
@@ -44,7 +43,6 @@ function getMessage(n) {
 function getLink(n) {
   if (n.type === 'follow') return `/profile/${n.actor?.username}`;
   if (n.project_id) return `/projects/${n.project_id}`;
-  if (n.inspiration_id) return '/inspirations';
   return '#';
 }
 
@@ -58,7 +56,6 @@ export default function Header() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [createMenuOpen, setCreateMenuOpen] = useState(false);
   const [unreadCount, setUnreadCount]   = useState(0);
-  const [unreadMsgs, setUnreadMsgs]     = useState(0);
   const [showNotifs, setShowNotifs]     = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [notifsLoading, setNotifsLoading] = useState(false);
@@ -85,22 +82,16 @@ export default function Header() {
       if (mounted) setUserId(user.id);
 
       async function fetchBadges() {
-        // Parallel fetch — notifications + messages in one round-trip
-        const [notifRes, membersRes] = await Promise.all([
+        // Parallel fetch — notifications
+        const [notifRes] = await Promise.all([
           supabase
             .from('notifications')
             .select('id', { count: 'exact', head: true })
             .eq('user_id', user.id)
             .eq('read', false),
-          supabase
-            .from('conversation_members')
-            .select('unread_count')
-            .eq('user_id', user.id),
         ]);
         if (mounted) {
           setUnreadCount(notifRes.count || 0);
-          const totalMsgs = (membersRes.data || []).reduce((s, m) => s + (m.unread_count || 0), 0);
-          setUnreadMsgs(totalMsgs);
         }
       }
 
@@ -121,7 +112,6 @@ export default function Header() {
       const uniqueChannelName = `header_badges_${user.id}_${Date.now()}_${Math.random().toString(36).substring(7)}`;
       sub = supabase.channel(uniqueChannelName)
         .on('postgres_changes', { event: '*', schema: 'public', table: 'notifications' }, fetchBadges)
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'conversation_members' }, fetchBadges)
         .subscribe((status, err) => {
           if (status === 'CHANNEL_ERROR' || status === 'CLOSED') {
             console.warn('Header realtime lost, falling back to polling:', err?.message);
@@ -222,8 +212,7 @@ export default function Header() {
         .select(`
           *,
           actor:profiles!notifications_actor_id_fkey(username, full_name, avatar_url),
-          project:projects(title),
-          inspiration:inspirations(title)
+          project:projects(title)
         `)
         .eq('user_id', userId)
         .order('created_at', { ascending: false })
@@ -352,12 +341,7 @@ export default function Header() {
               )}
             </div>
 
-            <Link href="/messages" className="icon-btn" title="Messages" style={{ position: 'relative' }}>
-              <MessageSquare size={18} strokeWidth={1.5} />
-              {unreadMsgs > 0 && (
-                <span className="notif-badge"></span>
-              )}
-            </Link>
+
 
             <div style={{ position: 'relative' }} ref={notifRef}>
               <button onClick={toggleNotifs} className="icon-btn" id="notification-btn" title="Notifications" style={{ position: 'relative' }}>

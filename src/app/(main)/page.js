@@ -6,8 +6,10 @@ import ReactionBar from '@/components/ReactionBar';
 import UserAvatar from '@/components/UserAvatar';
 import FollowButton from '@/components/FollowButton';
 import ToolsMarquee from '@/components/ToolsMarquee';
-import WelcomeModal from '@/components/WelcomeModal';
-import AdBanner from '@/components/AdBanner';
+import dynamic from 'next/dynamic';
+
+const WelcomeModal = dynamic(() => import('@/components/WelcomeModal'), { ssr: false });
+
 import Link from 'next/link';
 import Image from 'next/image';
 import { MessageCircle, Bookmark, TrendingUp, ArrowRight, Users, FolderOpen } from 'lucide-react';
@@ -314,11 +316,7 @@ export default function Dashboard() {
                 ))}
               </div>
               
-              {/* Sidebar Ad Placement */}
-              <div style={{ marginTop: '2.5rem', position: 'sticky', top: '2rem' }}>
-                <span style={{ fontSize: '0.65rem', color: '#ccc', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: '0.5rem', textAlign: 'center' }}>Advertisement</span>
-                <AdBanner variant="vertical" style={{ height: '480px' }} />
-              </div>
+
             </div>
           </div>
         </div>

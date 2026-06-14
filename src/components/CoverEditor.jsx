@@ -60,12 +60,8 @@ export default function CoverEditor({ value, thumbnailUrl, onUploaded }) {
   const handleFileChange = async (e) => {
     if (!e.target.files?.length) return;
     const file = e.target.files[0];
-    const imageDataUrl = await readFile(file);
-    setPendingFile(file);
-    setPendingPreview(imageDataUrl);
-    setImageSrc(null);
-    setCropMode(false);
     if (inputRef.current) inputRef.current.value = '';
+    await uploadFile(file, 'projects/covers');
   };
 
   const handleUploadAsIs = async () => {
@@ -122,50 +118,7 @@ export default function CoverEditor({ value, thumbnailUrl, onUploaded }) {
     );
   }
 
-  // Pending file — upload as-is (default) or adjust crop
-  if (pendingPreview && !cropMode) {
-    return (
-      <div style={{ ...previewPanelStyle, flexDirection: 'column', gap: '1rem' }}>
-        <img src={pendingPreview} alt="Cover preview" style={previewImgStyle} />
-        {isUploading && (
-          <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '3px', background: '#e8e8e8' }}>
-            <div style={{ height: '100%', background: '#2d43e8', width: `${progress}%`, transition: 'width 0.25s ease' }} />
-          </div>
-        )}
-        <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', justifyContent: 'center' }}>
-          <button
-            type="button"
-            onClick={resetPending}
-            disabled={isUploading}
-            style={{ padding: '0.6rem 1rem', background: 'white', color: '#6b6b6b', border: '1px solid #e8e8e8', borderRadius: '6px', cursor: 'pointer', fontSize: '0.82rem', fontFamily: 'inherit', opacity: isUploading ? 0.5 : 1 }}
-          >
-            Cancel
-          </button>
-          <button
-            type="button"
-            onClick={handleStartCrop}
-            disabled={isUploading}
-            style={{ padding: '0.6rem 1rem', background: 'white', color: '#231f20', border: '1px solid #e8e8e8', borderRadius: '6px', cursor: 'pointer', fontSize: '0.82rem', fontFamily: 'inherit', display: 'flex', alignItems: 'center', gap: '0.35rem', opacity: isUploading ? 0.5 : 1 }}
-          >
-            <Crop size={14} /> Adjust crop
-          </button>
-          <button
-            type="button"
-            onClick={handleUploadAsIs}
-            disabled={isUploading}
-            style={{ padding: '0.6rem 1.25rem', background: isUploading ? '#94a3b8' : '#2d43e8', color: 'white', border: 'none', borderRadius: '6px', cursor: isUploading ? 'not-allowed' : 'pointer', fontSize: '0.82rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.4rem', fontFamily: 'inherit' }}
-          >
-            {isUploading
-              ? <><Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} /> {status === 'compressing' ? 'Optimizing…' : 'Uploading…'}</>
-              : <><Check size={14} /> Use this image</>
-            }
-          </button>
-        </div>
-        <input ref={inputRef} type="file" accept="image/*" onChange={handleFileChange} style={{ display: 'none' }} />
-        <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
-      </div>
-    );
-  }
+  // The pending file UI is removed. It uploads automatically.
 
   return (
     <div style={{ position: 'relative', width: '100%', height: '100%', minHeight: '280px', background: '#f0f0f0', display: 'flex', flexDirection: 'column' }}>
@@ -177,14 +130,24 @@ export default function CoverEditor({ value, thumbnailUrl, onUploaded }) {
             Upload your own image.
           </p>
 
-          {/* Upload button */}
-          <button
-            type="button"
-            onClick={() => inputRef.current?.click()}
-            style={{ padding: '0.7rem 1.35rem', background: '#2d43e8', color: 'white', fontWeight: 600, border: 'none', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
-          >
-            <Upload size={16} /> Upload Image
-          </button>
+          {isUploading ? (
+            <button
+              type="button"
+              disabled
+              style={{ padding: '0.7rem 1.35rem', background: '#94a3b8', color: 'white', fontWeight: 600, border: 'none', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'not-allowed' }}
+            >
+              <Loader2 size={16} style={{ animation: 'spin 1s linear infinite' }} /> 
+              {status === 'compressing' ? `Optimizing… ${progress}%` : `Uploading… ${progress}%`}
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={() => inputRef.current?.click()}
+              style={{ padding: '0.7rem 1.35rem', background: '#2d43e8', color: 'white', fontWeight: 600, border: 'none', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+            >
+              <Upload size={16} /> Upload Image
+            </button>
+          )}
 
           <p style={{ marginTop: '1.5rem', fontSize: '0.72rem', opacity: 0.55, letterSpacing: '0.02em' }}>
             JPG / PNG / WebP · Auto-converted to WebP · max 10 MB

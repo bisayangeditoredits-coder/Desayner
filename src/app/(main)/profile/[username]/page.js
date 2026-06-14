@@ -46,5 +46,40 @@ export async function generateMetadata({ params }) {
 }
 
 export default async function ProfilePage({ params }) {
-  return <ProfileClient />;
+  const { username } = await params;
+  const supabase = await createClient();
+  
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('full_name, username, bio, avatar_url, created_at')
+    .eq('username', username)
+    .single();
+
+  const name = profile?.full_name || profile?.username || 'Designer';
+
+  const jsonLd = profile ? {
+    '@context': 'https://schema.org',
+    '@type': 'ProfilePage',
+    dateCreated: profile.created_at,
+    mainEntity: {
+      '@type': 'Person',
+      name: name,
+      alternateName: profile.username,
+      description: profile.bio || `Check out ${name}'s design portfolio on Desayner.`,
+      image: profile.avatar_url || 'https://desayner.com/default-avatar.png',
+      url: `https://desayner.com/profile/${profile.username}`
+    }
+  } : null;
+
+  return (
+    <>
+      {jsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      )}
+      <ProfileClient />
+    </>
+  );
 }

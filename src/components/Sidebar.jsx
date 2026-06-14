@@ -15,24 +15,9 @@ import { useMobileNav } from '@/components/MobileNavProvider';
 const MAIN_NAV_ITEMS = [
   { href: '/',             icon: Home,          label: 'Home',        public: true },
   { href: '/projects',     icon: Compass,       label: 'Explore',     public: true },
-];
-
-const PROJECT_SUB_ITEMS = [
-  { href: '/job-board',         label: 'JOB BOARD',         public: true },
-  { href: '/challenges',        label: 'CHALLENGES',        public: true },
-];
-
-const COMMUNITY_ITEMS = [
   { href: '/designers',    icon: Users2,        label: 'Designers',   public: true },
-  { href: '/resources',    icon: Library,       label: 'Resources',   public: true },
-];
-
-const DESIGN_HUB_ITEMS = [
-  { href: '/colors',       icon: Palette,       label: 'COLORS',       public: true },
-  { href: '/stock-assets', icon: Box,           label: 'STOCK ASSETS', public: true },
-  { href: '/mockups',      icon: LayoutTemplate,label: 'FREE MOCKUPS', public: true },
-  { href: '/stock-photos', icon: ImageIcon,     label: 'STOCK PHOTOS', public: true },
-  { href: '/fonts',        icon: Type,          label: 'FONTS',        public: true },
+  { href: '/design-hub',   icon: Palette,       label: 'Design Hub',  public: true },
+  { href: '/saved',        icon: Bookmark,      label: 'Saved',       reqAuth: true },
 ];
 
 export default function Sidebar({ className = '' }) {
@@ -51,7 +36,6 @@ export default function Sidebar({ className = '' }) {
   }, []);
   const [profile, setProfile] = useState(null);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
-  const [projectsExpanded, setProjectsExpanded] = useState(true);
   const supabase = useMemo(() => createClient(), []);
 
   useEffect(() => {
@@ -121,62 +105,17 @@ export default function Sidebar({ className = '' }) {
         </Link>
       </div>
 
-      {/* Nav */}
+    {/* Nav */}
       <nav className="sidebar-nav">
-        {MAIN_NAV_ITEMS.map(({ href, icon: Icon, label }) => (
-          <Link key={href} href={href} className={`nav-item ${isActive(href) ? 'active' : ''}`}>
-            <Icon size={16} strokeWidth={isActive(href) ? 2.5 : 1.75} />
-            {label}
-          </Link>
-        ))}
-
-        <Link 
-          href="/feedback" 
-          className={`nav-item ${isActive('/feedback') ? 'active' : ''}`}
-        >
-          <MessageSquareCode size={16} strokeWidth={isActive('/feedback') ? 2.5 : 1.75} />
-          Feedback
-        </Link>
-
-
-
-        {/* Collapsible Projects */}
-        <div className={`nav-item ${pathname.startsWith('/projects') ? 'active' : ''}`} style={{ paddingRight: '0' }}>
-          <Link href="/projects" style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '0.75rem', textDecoration: 'none', color: 'inherit' }}>
-            <FolderOpen size={16} strokeWidth={pathname.startsWith('/projects') ? 2.5 : 1.75} />
-            <span style={{ flex: 1, textAlign: 'left' }}>Projects</span>
-          </Link>
-          <button onClick={() => setProjectsExpanded(!projectsExpanded)} style={{ background: 'none', border: 'none', color: 'inherit', cursor: 'pointer', padding: '0 1rem', height: '100%', display: 'flex', alignItems: 'center' }}>
-            {projectsExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-          </button>
-        </div>
-
-        {projectsExpanded && (
-          <div className="sidebar-sub-menu">
-            {PROJECT_SUB_ITEMS.map(({ href, label }) => (
-              <Link key={href} href={href} className={`nav-sub-item ${isActive(href) ? 'active' : ''}`}>
-                {label}
-              </Link>
-            ))}
-          </div>
-        )}
-
-        {/* Community Items */}
-        {COMMUNITY_ITEMS.map(({ href, icon: Icon, label }) => (
-          <Link key={href} href={href} className={`nav-item ${isActive(href) ? 'active' : ''}`}>
-            <Icon size={16} strokeWidth={isActive(href) ? 2.5 : 1.75} />
-            {label}
-          </Link>
-        ))}
-
-        {/* Design Hub Section */}
-        <div className="sidebar-section-title font-grotesk">DESIGN HUB</div>
-        {DESIGN_HUB_ITEMS.map(({ href, icon: Icon, label }) => (
-          <Link key={href} href={href} className={`nav-item ${isActive(href) ? 'active' : ''}`}>
-            <Icon size={16} strokeWidth={isActive(href) ? 2.5 : 1.75} />
-            {label}
-          </Link>
-        ))}
+        {MAIN_NAV_ITEMS.map(({ href, icon: Icon, label, reqAuth }) => {
+          if (reqAuth && !user) return null;
+          return (
+            <Link key={href} href={href} className={`nav-item ${isActive(href) ? 'active' : ''}`}>
+              <Icon size={16} strokeWidth={isActive(href) ? 2.5 : 1.75} />
+              {label}
+            </Link>
+          );
+        })}
       </nav>
 
       {/* --- PROMO WIDGET --- */}

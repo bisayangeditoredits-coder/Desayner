@@ -25,7 +25,7 @@ import {
   SortDesc,
   ChevronDown
 } from "lucide-react";
-import AdBanner from '@/components/AdBanner';
+
 import "../../App.css";
 export const runtime = 'edge';
 
@@ -609,11 +609,6 @@ function DesignersContent() {
           ))}
         </div>
         
-        {/* Ad Placement */}
-        <div style={{ marginBottom: '2rem', display: 'flex', justifyContent: 'center' }}>
-          <AdBanner style={{ width: '100%', maxWidth: '100%', padding: '1rem', background: 'white' }} />
-        </div>
-
         {/* Main Grid */}
         {loading && page === 1 ? (
           <div
@@ -761,14 +756,7 @@ function DesignerCard({ designer, currentUserId }) {
   const projects = designer.sampleProjects || [];
   const isNew = isNewMember(designer.created_at);
 
-  const handleMessage = (e) => {
-    e.preventDefault();
-    if (!currentUserId) {
-      window.location.href = `/login?redirect=/designers`;
-      return;
-    }
-    window.location.href = `/messages?open=${designer.id}`;
-  };
+
 
   const memberLabel = formatMemberSince(designer.created_at);
 
@@ -952,32 +940,38 @@ function DesignerCard({ designer, currentUserId }) {
             currentUserId={currentUserId}
             compact
           />
-          <button
-            onClick={handleMessage}
-            style={{
-              padding: "0 24px",
-              height: "44px",
-              fontSize: "14px",
-              borderRadius: "12px",
-              fontWeight: 800,
-              background: "#231f20",
-              color: "white",
-              border: "none",
-              cursor: "pointer",
-              transition: "all 0.2s",
-              boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-            }}
-            onMouseOver={(e) => {
-              e.currentTarget.style.background = "#27272a";
-              e.currentTarget.style.transform = "translateY(-1px)";
-            }}
-            onMouseOut={(e) => {
-              e.currentTarget.style.background = "#231f20";
-              e.currentTarget.style.transform = "translateY(0)";
-            }}
-          >
-            Get in touch
-          </button>
+          {designer.website && (
+            <a
+              href={designer.website.startsWith('http') ? designer.website : `https://${designer.website}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                padding: "0 24px",
+                height: "44px",
+                fontSize: "14px",
+                borderRadius: "12px",
+                fontWeight: 800,
+                background: "#231f20",
+                color: "white",
+                textDecoration: "none",
+                transition: "all 0.2s",
+                boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.background = "#27272a";
+                e.currentTarget.style.transform = "translateY(-1px)";
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.background = "#231f20";
+                e.currentTarget.style.transform = "translateY(0)";
+              }}
+            >
+              Get in touch
+            </a>
+          )}
         </div>
       </div>
 

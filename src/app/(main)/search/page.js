@@ -86,13 +86,16 @@ function SearchResults() {
     if (!query.trim() || tab !== 'designers') return;
     async function searchDesigners() {
       setLoadingDesigners(true);
-      const { data } = await supabase
+      const safeQuery = query.replace(/"/g, '""');
+      const { data, error } = await supabase
         .from('profiles')
         .select('id, username, full_name, avatar_url, bio, location, followers_count')
         .not('username', 'is', null)
-        .or(`username.ilike.%${query}%,full_name.ilike.%${query}%,bio.ilike.%${query}%`)
+        .or(`username.ilike."%${safeQuery}%",full_name.ilike."%${safeQuery}%",bio.ilike."%${safeQuery}%"`)
         .order('followers_count', { ascending: false, nullsFirst: false })
         .limit(24);
+
+      if (error) console.error('Error fetching designers:', error);
 
       const creatorList = data || [];
 
@@ -208,7 +211,7 @@ function SearchResults() {
           <>
             {loadingProjects && page === 1 ? (
               <div className="projects-masonry">
-                {[...Array(8)].map((_, i) => <div key={i} style={{ background: '#f0f0f0', aspectRatio: '4/3' }} />)}
+                {[...Array(8)].map((_, i) => <div key={i} className="shimmer-box" style={{ aspectRatio: '4/3' }} />)}
               </div>
             ) : projects.length === 0 && !loadingProjects ? (
               <div style={{ textAlign: 'center', padding: '4rem 2rem', background: 'white', border: '1px solid #e2e8f0', borderRadius: '16px' }}>
@@ -245,7 +248,7 @@ function SearchResults() {
           <>
             {loadingDesigners ? (
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '4px' }}>
-                {[...Array(6)].map((_, i) => <div key={i} style={{ background: '#f0f0f0', height: '200px' }} />)}
+                {[...Array(6)].map((_, i) => <div key={i} className="shimmer-box" style={{ height: '200px', borderRadius: '12px' }} />)}
               </div>
             ) : designers.length === 0 ? (
               <div style={{ textAlign: 'center', padding: '4rem 2rem', background: 'white', border: '1px solid #e2e8f0', borderRadius: '16px' }}>
