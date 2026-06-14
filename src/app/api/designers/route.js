@@ -106,12 +106,14 @@ export async function GET(request) {
       .range((page - 1) * PAGE_SIZE, page * PAGE_SIZE - 1);
 
     if (category !== 'All') {
-      // Find users who have published projects in this category
+      // Find users who have published projects in this category (Limit to 5000 recent to prevent OOM on large scale)
       const { data: catUsers } = await supabase
         .from('projects')
         .select('user_id')
         .eq('category', category)
-        .eq('published', true);
+        .eq('published', true)
+        .order('created_at', { ascending: false })
+        .limit(5000);
         
       const userIds = Array.from(new Set((catUsers || []).map(p => p.user_id)));
       if (userIds.length > 0) {

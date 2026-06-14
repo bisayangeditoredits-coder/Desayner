@@ -31,7 +31,8 @@ export async function GET(request) {
       .select('id, username, full_name, projects_count, created_at')
       .eq('projects_count', 0)
       .gte('created_at', fourDaysAgo.toISOString())
-      .lte('created_at', threeDaysAgo.toISOString());
+      .lte('created_at', threeDaysAgo.toISOString())
+      .limit(100);
 
     if (error) throw error;
 
@@ -39,16 +40,17 @@ export async function GET(request) {
     let failed = 0;
     let skipped = 0;
 
-    for (const profile of candidates || []) {
+    // Process in parallel for faster execution
+    const promises = (candidates || []).map(async (profile) => {
       const alreadySent = await redis.get(`portfolio_nudge:${profile.id}`);
       if (alreadySent) {
         skipped++;
-        continue;
+        return;
       }
 
       const { data: authUser } = await supabase.auth.admin.getUserById(profile.id);
       const email = authUser?.user?.email;
-      if (!email) continue;
+      if (!email) return;
 
       try {
         await sendPortfolioNudgeEmail({
@@ -63,7 +65,9 @@ export async function GET(request) {
         console.error('[portfolio-nudge]', profile.id, err);
         failed++;
       }
-    }
+    });
+
+    await Promise.all(promises);
 
     return NextResponse.json({
       success: true,

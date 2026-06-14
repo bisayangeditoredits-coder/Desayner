@@ -50,7 +50,8 @@ export async function GET(request, { params }) {
         .select('*, profiles!projects_user_id_fkey(username, full_name, avatar_url)')
         .eq('user_id', profileData.id)
         .eq('published', true)
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false })
+        .limit(50);
 
       profile = profileData;
       projects = projectsData || [];
@@ -80,7 +81,8 @@ export async function GET(request, { params }) {
           .from('project_saves')
           .select('projects(*, profiles!projects_user_id_fkey(username, full_name, avatar_url))')
           .eq('user_id', profile.id)
-          .order('created_at', { ascending: false });
+          .order('created_at', { ascending: false })
+          .limit(50);
           
         savedProjects = (savedData || []).map(r => r.projects).filter(Boolean);
 
@@ -89,7 +91,8 @@ export async function GET(request, { params }) {
           .from('collections')
           .select('id, name, created_at, collection_items(projects(*, profiles!projects_user_id_fkey(username, full_name, avatar_url)))')
           .eq('user_id', profile.id)
-          .order('created_at', { ascending: false });
+          .order('created_at', { ascending: false })
+          .limit(50);
 
         if (colsData) {
           collections = colsData.map(c => ({

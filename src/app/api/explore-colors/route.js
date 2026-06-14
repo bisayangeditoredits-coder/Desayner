@@ -90,6 +90,8 @@ export async function GET(request) {
   }
 }
 
+import { redis } from '@/lib/redis';
+
 // --- COLOR MIND API (For AI Panel) ---
 
 function rgbToHex([r, g, b]) {
@@ -111,6 +113,22 @@ export async function POST(request) {
       return NextResponse.json({ error: 'input array required' }, { status: 400 });
     }
 
+    const cacheKey = `colormind:${model}:${JSON.stringify(input)}:${count}`;
+    
+    // 1. Try Redis cache first to avoid hitting Colormind API
+    try {
+      const cached = await redis.get(cacheKey);
+      if (cached) {
+        // Generate new ID and title so UI treats it as a fresh generation
+        cached.id = Math.random().toString(36).slice(2, 9);
+        cached.title = randomName();
+        return NextResponse.json({ palette: cached }, { headers: { 'Cache-Control': 'no-store' } });
+      }
+    } catch (err) {
+      console.error('[Colormind Redis GET Error]', err);
+    }
+
+    // 2. Fetch from Colormind if cache miss
     const res = await fetch('http://colormind.io/api/', {
       method: 'POST',
       body: JSON.stringify({ model, input: input.slice(0, 5) }), // Colormind expects max 5
@@ -128,6 +146,13 @@ export async function POST(request) {
       title: randomName(),
       colors: finalColors,
     };
+
+    // 3. Save result to Redis for 24 hours
+    try {
+      await redis.setex(cacheKey, 86400, palette);
+    } catch (err) {
+      console.error('[Colormind Redis SET Error]', err);
+    }
 
     return NextResponse.json({ palette }, { headers: { 'Cache-Control': 'no-store' } });
   } catch (error) {
