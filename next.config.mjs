@@ -19,6 +19,14 @@ const nextConfig = {
         pathname: '/api/proxy-image',
         search: '**',
       },
+      {
+        pathname: '/api/unsplash/image',
+        search: '**',
+      },
+      {
+        pathname: '/api/pixabay/image',
+        search: '**',
+      },
       // Explicitly allow all other local images (like /banner-event-homepage.jpeg)
       // because defining localPatterns overrides the default of allowing all local files.
       {
@@ -138,7 +146,7 @@ const nextConfig = {
               // Fonts: self + Google Fonts
               "font-src 'self' https://fonts.gstatic.com",
               // Images: self + Cloudflare R2 + Unsplash + Google avatars + GitHub avatars + Supabase storage + Job Logos + Microsoft Clarity + wsrv.nl
-              "img-src 'self' data: blob: https://*.r2.dev https://*.unsplash.com https://*.googleusercontent.com https://avatars.githubusercontent.com https://*.supabase.co https://res.cloudinary.com https://base44.app https://jobicy.com https://www.google.com https://logo.clearbit.com https://api.dicebear.com https://*.clarity.ms https://c.bing.com https://wsrv.nl",
+              "img-src 'self' data: blob: https://*.r2.dev https://images.unsplash.com https://*.unsplash.com https://*.googleusercontent.com https://avatars.githubusercontent.com https://*.supabase.co https://res.cloudinary.com https://base44.app https://jobicy.com https://www.google.com https://logo.clearbit.com https://api.dicebear.com https://cdn.pixabay.com https://pixabay.com https://*.clarity.ms https://c.bing.com https://wsrv.nl",
               // Media: self + R2 CDN (project videos)
               "media-src 'self' blob: https://*.r2.dev",
               // API + WebSocket connections + Microsoft Clarity

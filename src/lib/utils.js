@@ -59,3 +59,18 @@ export function stripCloudinaryProxy(url) {
   }
   return url;
 }
+
+/** Same-origin proxy for Unsplash hotlinked thumbnails (avoids CSP / loader issues). */
+export function unsplashImageSrc(url) {
+  if (!url) return url;
+  if (url.startsWith('/api/')) return url;
+  return `/api/unsplash/image?url=${encodeURIComponent(url)}`;
+}
+
+/** Prefer Pixabay CDN previews in grids; proxy signed /get/ URLs when needed. */
+export function pixabayImageSrc(url, preview) {
+  if (preview && preview.includes('cdn.pixabay.com')) return preview;
+  if (!url) return url;
+  if (url.startsWith('/api/')) return url;
+  return `/api/pixabay/image?url=${encodeURIComponent(url)}`;
+}

@@ -3,6 +3,7 @@ import { useState, useEffect, useRef, useCallback, useMemo} from 'react';
 import { Search, Download, X, Loader2, ExternalLink, Box, ChevronDown, Check, PenTool } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import Link from 'next/link';
+import { pixabayImageSrc } from '@/lib/utils';
 import '../../App.css';
 
 const QUICK_SEARCHES = [
@@ -291,9 +292,10 @@ export default function StockAssetsPage() {
                 }} />
 
                 <img
-                  src={`/api/pixabay/image?url=${encodeURIComponent(photo.urls.webformat)}`}
+                  src={pixabayImageSrc(photo.urls.webformat, photo.urls.preview)}
                   alt={photo.tags || `Vector by ${photo.user.name}`}
                   loading="lazy"
+                  decoding="async"
                   style={{ width: '100%', display: 'block', position: 'relative', zIndex: 1 }}
                 />
 

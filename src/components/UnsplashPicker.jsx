@@ -16,6 +16,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Search, Download, Image as ImageIcon, X, Loader2, ExternalLink, ChevronRight } from 'lucide-react';
+import { unsplashImageSrc } from '@/lib/utils';
 
 // ── Inline shimmer keyframes ──────────────────────────────────────────────────
 const shimmerStyle = `
@@ -308,7 +309,7 @@ export default function UnsplashPicker({ onSelectPhoto, onClose }) {
                   className="unsplash-photo-card"
                 >
                   <img
-                    src={photo.urls.small}
+                    src={unsplashImageSrc(photo.urls.small)}
                     alt={photo.description}
                     loading="lazy"
                     style={{ width: '100%', display: 'block' }}

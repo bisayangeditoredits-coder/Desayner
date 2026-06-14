@@ -3,6 +3,7 @@ import { useState, useEffect, useRef, useCallback, useMemo} from 'react';
 import { Search, Download, X, Loader2, ExternalLink, ImageIcon, ChevronDown, Check, Heart } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import Link from 'next/link';
+import { unsplashImageSrc } from '@/lib/utils';
 import '../../App.css';
 
 const QUICK_SEARCHES = [
@@ -347,9 +348,10 @@ export default function StockPhotosPage() {
                 className="stock-photo-card"
               >
                 <img
-                  src={photo.urls.small}
+                  src={unsplashImageSrc(photo.urls.small)}
                   alt={photo.description || `Photo by ${photo.user.name}`}
                   loading="lazy"
+                  decoding="async"
                   style={{ width: '100%', display: 'block' }}
                 />
 

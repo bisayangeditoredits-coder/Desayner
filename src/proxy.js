@@ -29,6 +29,7 @@ const PUBLIC_READ_API_PREFIXES = [
   '/api/search',
   '/api/trending',
   '/api/unsplash/search',
+  '/api/unsplash/image',
   '/api/pixabay/search',
   '/api/pixabay/image',
 ];

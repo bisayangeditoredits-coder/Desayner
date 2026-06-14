@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Search, Download, Image as ImageIcon, X, Loader2, ExternalLink, ChevronRight, PenTool } from 'lucide-react';
+import { pixabayImageSrc } from '@/lib/utils';
 
 // ── Inline shimmer keyframes ──────────────────────────────────────────────────
 const shimmerStyle = `
@@ -301,7 +302,7 @@ export default function PixabayPicker({ onSelectPhoto, onClose }) {
                   }} />
                   
                   <img
-                    src={`/api/pixabay/image?url=${encodeURIComponent(photo.urls.webformat)}`}
+                    src={pixabayImageSrc(photo.urls.webformat, photo.urls.preview)}
                     alt={photo.tags}
                     loading="lazy"
                     style={{ width: '100%', display: 'block', position: 'relative', zIndex: 1 }}
