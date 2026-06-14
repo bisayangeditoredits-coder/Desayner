@@ -1040,6 +1040,66 @@ function DesignerCard({ designer, currentUserId }) {
           </span>
         )}
       </div>
+      <style jsx>{`
+        .designer-card__projects-grid {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 16px;
+          min-height: 180px;
+          width: 100%;
+        }
+        .designer-card__project-tile {
+          border-radius: 16px;
+          overflow: hidden;
+          background: #f1f5f9;
+          position: relative;
+          border: 1px solid rgba(0,0,0,0.04);
+          aspect-ratio: 4/3;
+          width: 100%;
+        }
+        .designer-card__project-tile img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          display: block;
+          transition: transform 0.4s ease, opacity 0.35s ease;
+        }
+        .designer-card__no-work {
+          min-height: 120px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 16px;
+          background: #f8fafc;
+          border: 1px dashed #e2e8f0;
+          color: #94a3b8;
+          font-size: 0.875rem;
+          font-weight: 600;
+          width: 100%;
+        }
+        .designer-card__new-badge {
+          background: #dcfce7;
+          color: #166534;
+          font-size: 10px;
+          font-weight: 800;
+          padding: 3px 8px;
+          border-radius: 6px;
+          letter-spacing: 0.04em;
+          text-transform: uppercase;
+        }
+        .designer-card__skills-empty {
+          font-size: 12px;
+          color: #94a3b8;
+          font-weight: 500;
+          font-style: italic;
+        }
+        @media (max-width: 900px) {
+          .designer-card__projects-grid {
+            grid-template-columns: repeat(2, 1fr);
+            min-height: auto;
+          }
+        }
+      `}</style>
     </div>
   );
 }
