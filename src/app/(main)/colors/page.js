@@ -232,41 +232,68 @@ function InlinePicker({ hex, onChange, onClose }) {
 
 function ColorSlot({ index, hex, isPinned, isActive, onTogglePin, onColorChange, onActivate, allowAI, isFirst, isLast }) {
   const lum = getLum(hexToRgb(hex));
-  const textColor = lum > 140 ? 'rgba(0,0,0,0.8)' : 'rgba(255,255,255,0.95)';
+  const textColor = lum > 140 ? 'rgba(0,0,0,0.45)' : 'rgba(255,255,255,0.6)';
+  const activeTextColor = lum > 140 ? 'rgba(0,0,0,1)' : 'rgba(255,255,255,1)';
 
   return (
     <div
+      className="hero-color-slot"
       onClick={() => onActivate(index)}
       style={{
         position: 'relative',
-        flex: isActive ? 1.15 : 1,
+        flex: isActive ? 1.6 : 1,
         height: '100%',
         background: hex,
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        justifyContent: 'flex-end',
-        paddingBottom: '1.25rem',
+        justifyContent: 'center',
         cursor: 'pointer',
-        transition: 'flex 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-        borderRight: isLast ? 'none' : '1px solid rgba(0,0,0,0.04)',
-        borderTopLeftRadius: isFirst ? 16 : 0,
-        borderTopRightRadius: isLast ? 16 : 0,
+        transition: 'flex 0.4s cubic-bezier(0.16, 1, 0.3, 1), background 0.3s ease',
       }}
     >
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.6rem', opacity: isActive ? 1 : 0.9 }}>
+      <div 
+        className="slot-content"
+        style={{ 
+          display: 'flex', 
+          flexDirection: 'column', 
+          alignItems: 'center', 
+          gap: '1.25rem', 
+          transition: 'all 0.3s ease',
+        }}
+      >
         {allowAI && (
           <button
             onClick={e=>{ e.stopPropagation(); onTogglePin(index); }}
-            style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: '0.25rem', display: 'flex' }}
+            className="slot-pin-btn"
+            style={{ 
+              background: 'transparent', 
+              border: 'none', 
+              cursor: 'pointer',
+              opacity: isPinned ? 1 : (isActive ? 0.8 : 0),
+              transition: 'all 0.2s ease',
+              padding: '0.5rem',
+              transform: isPinned || isActive ? 'scale(1)' : 'scale(0.8)'
+            }}
             title={isPinned ? 'Unpin' : 'Pin'}
           >
-            {isPinned ? <Lock size={15} color={textColor} /> : <Unlock size={15} color={textColor} style={{ opacity: 0.5 }} />}
+            {isPinned ? <Lock size={26} color={activeTextColor} /> : <Unlock size={26} color={textColor} />}
           </button>
         )}
-        {!allowAI && <div style={{ height: 23 }} />}
-        <span style={{ fontSize: '0.85rem', fontWeight: 700, color: textColor, letterSpacing: '0.04em', fontFamily: 'monospace' }}>
-          {(isPinned || !allowAI) ? hex.toUpperCase() : 'AI'}
+
+        <span 
+          className="slot-hex-text"
+          style={{ 
+            fontSize: isActive ? '1.75rem' : '1.15rem', 
+            fontWeight: 900, 
+            color: isPinned || isActive ? activeTextColor : textColor, 
+            letterSpacing: '0.08em', 
+            fontFamily: 'var(--font-mono, monospace)',
+            textTransform: 'uppercase',
+            transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+          }}
+        >
+          {(!allowAI) ? hex.replace('#', '') : (isPinned || isActive ? hex.replace('#', '') : 'AI')}
         </span>
       </div>
     </div>
@@ -407,11 +434,11 @@ function AIGeneratorPanel({ models, onGenerate, generating, result, onSave, save
   };
 
   return (
-    <div style={{ marginBottom: '2.5rem' }}>
-      <div style={{ background:'white', borderRadius: 16, border:'1px solid #e5e7eb', boxShadow:'0 4px 20px rgba(0,0,0,0.03)', position: 'relative' }}>
+    <div style={{ width: '100%' }}>
+      <div style={{ background:'white', position: 'relative', width: '100%' }}>
         
-        {/* Color Strip */}
-        <div ref={pickerRef} style={{ position:'relative', height: 220, display: 'flex', width: '100%' }}>
+        {/* Color Strip (Zero Padding, Full Bleed) */}
+        <div ref={pickerRef} style={{ position:'relative', height: 400, display: 'flex', width: '100%' }}>
           {slotHexes.slice(0, count).map((hex, i) => (
             <ColorSlot
               key={i}
@@ -423,16 +450,17 @@ function AIGeneratorPanel({ models, onGenerate, generating, result, onSave, save
               onColorChange={handleColorChange}
               onActivate={handleActivate}
               allowAI={allowAI}
-              isFirst={i === 0}
-              isLast={i === count - 1}
+              isFirst={false}
+              isLast={false}
             />
           ))}
 
           {/* Inline picker popover */}
           {activeSlot !== null && activeSlot < count && (
             <div style={{
-              position:'absolute', top:'100%', zIndex:400, marginTop: '0.5rem',
+              position:'absolute', top:'100%', zIndex:400, marginTop: '1rem',
               left: `${Math.min(activeSlot * (100/count), 100 - (260 / (pickerRef.current?.offsetWidth || 1000) * 100))}%`,
+              transform: 'translateX(-20px)'
             }}>
               <InlinePicker
                 hex={slotHexes[activeSlot]}
@@ -444,7 +472,7 @@ function AIGeneratorPanel({ models, onGenerate, generating, result, onSave, save
         </div>
 
         {/* Toolbar */}
-        <div style={{ padding: '1rem 1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem', background: 'white', borderBottomLeftRadius: 16, borderBottomRightRadius: 16 }}>
+        <div style={{ padding: '1rem 2.5rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem', background: 'white', borderBottom: '1px solid #e8e8e8', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
             <div style={{ display:'flex', alignItems:'center', justifyContent:'center', width: 40, height: 40, borderRadius: 10, background: '#f3f4f6' }}>
                <Sparkles size={20} color="#111827" />
@@ -489,7 +517,7 @@ function AIGeneratorPanel({ models, onGenerate, generating, result, onSave, save
       </div>
 
       {result && allowAI && (
-        <div style={{ marginTop: '1.5rem' }}>
+        <div style={{ padding: '2.5rem 2.5rem 0', maxWidth: 1600, margin: '0 auto' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem' }}>
             <Sparkles size={14} color="#10b981" />
             <span style={{ fontWeight: 700, fontSize: '0.8rem', color: '#10b981' }}>Generated Palette</span>
@@ -667,20 +695,20 @@ export default function ColorsPage() {
         </div>
       </div>
 
-      <div style={{ padding:'1.75rem 2rem', maxWidth:1600, margin:'0 auto' }}>
+      {/* AI Panel (Full Bleed - Zero Padding) */}
+      <AIGeneratorPanel
+        models={models}
+        onGenerate={handleAIGenerate}
+        generating={generating}
+        result={aiResult}
+        onSave={handleSave}
+        savedIds={savedIds}
+        count={colorCount}
+        onCopy={handleCopy}
+        copiedId={copiedId}
+      />
 
-        {/* AI Panel */}
-        <AIGeneratorPanel
-          models={models}
-          onGenerate={handleAIGenerate}
-          generating={generating}
-          result={aiResult}
-          onSave={handleSave}
-          savedIds={savedIds}
-          count={colorCount}
-          onCopy={handleCopy}
-          copiedId={copiedId}
-        />
+      <div style={{ padding:'2.5rem 2.5rem', maxWidth:1600, margin:'0 auto' }}>
 
         {/* Saved Palettes */}
         {saved.length > 0 && (
@@ -735,7 +763,12 @@ export default function ColorsPage() {
         .palette-card:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(0,0,0,0.1) !important; }
         .color-swatch:hover { flex: 1.6 !important; }
         .color-swatch:hover .hex-label { opacity: 1 !important; }
-        .color-swatch-sm:hover .hex-label-sm { opacity: 1 !important; }
+        
+        /* Hero Slot Hover Enhancements */
+        .hero-color-slot:hover .slot-pin-btn { opacity: 1 !important; transform: scale(1) !important; }
+        .hero-color-slot:hover .slot-hex-text { opacity: 1 !important; font-size: 1.75rem !important; }
+        .hero-color-slot:hover { z-index: 10; box-shadow: 0 0 40px rgba(0,0,0,0.15); }
+        
         @keyframes spin { to { transform: rotate(360deg); } }
       `}</style>
     </div>
