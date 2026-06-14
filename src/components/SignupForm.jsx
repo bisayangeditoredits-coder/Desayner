@@ -111,7 +111,7 @@ export default function SignupForm({ isModal = false }) {
             Create an account
           </h2>
           <p style={{ fontSize: '0.875rem', color: '#64748b', marginBottom: '1.75rem', textAlign: 'center' }}>
-            Join the community of creators
+            Join the network of creators
           </p>
           <FormFields
             fullName={fullName} setFullName={setFullName}
@@ -245,7 +245,7 @@ export default function SignupForm({ isModal = false }) {
             Create an account
           </h1>
           <p style={{ fontSize: '0.875rem', color: '#64748b', marginBottom: '2rem' }}>
-            Join the community of creators
+            Join the network of creators
           </p>
 
           <FormFields

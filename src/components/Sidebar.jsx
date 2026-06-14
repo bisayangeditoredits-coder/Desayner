@@ -24,7 +24,6 @@ const PROJECT_SUB_ITEMS = [
 
 const COMMUNITY_ITEMS = [
   { href: '/designers',    icon: Users2,        label: 'Designers',   public: true },
-  { href: '/community',    icon: Users,         label: 'Community',   public: true },
   { href: '/resources',    icon: Library,       label: 'Resources',   public: true },
 ];
 

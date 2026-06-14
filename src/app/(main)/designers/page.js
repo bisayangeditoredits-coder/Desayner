@@ -18,8 +18,16 @@ import {
   Sparkles,
   Award,
   Users2,
+  Link as LinkIcon,
+  Briefcase,
+  Plus,
+  Filter,
+  SortDesc,
+  ChevronDown
 } from "lucide-react";
+import AdBanner from '@/components/AdBanner';
 import "../../App.css";
+export const runtime = 'edge';
 
 const CATEGORIES = [
   "All",
@@ -599,6 +607,11 @@ function DesignersContent() {
               {opt.label}
             </button>
           ))}
+        </div>
+        
+        {/* Ad Placement */}
+        <div style={{ marginBottom: '2rem', display: 'flex', justifyContent: 'center' }}>
+          <AdBanner style={{ width: '100%', maxWidth: '100%', padding: '1rem', background: 'white' }} />
         </div>
 
         {/* Main Grid */}

@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Compass, Plus, Users, User } from 'lucide-react';
+import { Home, Compass, Plus, Bookmark, User } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import './MobileBottomNav.css';
 
@@ -65,9 +65,9 @@ export default function MobileBottomNav() {
         </div>
       </Link>
       
-      <Link href="/community" className={`mobile-nav-item ${isActive('/community') ? 'active' : ''}`}>
-        <Users size={20} strokeWidth={isActive('/community') ? 2.5 : 1.75} />
-        <span className="mobile-nav-label">Community</span>
+      <Link href="/saved" className={`mobile-nav-item ${isActive('/saved') ? 'active' : ''}`}>
+        <Bookmark size={20} strokeWidth={isActive('/saved') ? 2.5 : 1.75} />
+        <span className="mobile-nav-label">Saved</span>
       </Link>
       
       <Link href={profileLink} className={`mobile-nav-item ${pathname.startsWith('/profile') || pathname.startsWith('/login') ? 'active' : ''}`}>

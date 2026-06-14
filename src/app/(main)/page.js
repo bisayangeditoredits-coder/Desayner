@@ -2,12 +2,12 @@
 import { useState, useEffect, useMemo } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import TrendingProjectCard from '@/components/TrendingProjectCard';
-import PostComposer from '@/components/PostComposer';
 import ReactionBar from '@/components/ReactionBar';
 import UserAvatar from '@/components/UserAvatar';
 import FollowButton from '@/components/FollowButton';
 import ToolsMarquee from '@/components/ToolsMarquee';
 import WelcomeModal from '@/components/WelcomeModal';
+import AdBanner from '@/components/AdBanner';
 import Link from 'next/link';
 import Image from 'next/image';
 import { MessageCircle, Bookmark, TrendingUp, ArrowRight, Users, FolderOpen } from 'lucide-react';
@@ -45,9 +45,7 @@ export default function Dashboard() {
     return () => clearInterval(timer);
   }, []);
 
-  const [tab, setTab] = useState('projects');
   const [projects, setProjects] = useState([]);
-  const [posts, setPosts] = useState([]);
   const [suggestedUsers, setSuggestedUsers] = useState([]);
   const [currentUser, setCurrentUser] = useState(null);
   const [currentProfile, setCurrentProfile] = useState(null);
@@ -71,25 +69,16 @@ export default function Dashboard() {
         .then(data => setProjects(data.projects || []))
         .catch(err => console.error('Failed to fetch trending', err));
 
-      const postsPromise = fetch('/api/community/recent')
-        .then(res => res.json())
-        .then(data => setPosts(data.posts || []))
-        .catch(err => console.error('Failed to fetch posts', err));
-
       const usersPromise = fetch('/api/designers/top')
         .then(res => res.json())
         .then(data => setSuggestedUsers(data.designers || []))
         .catch(err => console.error('Failed to fetch designers', err));
 
-      await Promise.allSettled([authPromise, trendingPromise, postsPromise, usersPromise]);
+      await Promise.allSettled([authPromise, trendingPromise, usersPromise]);
       setLoading(false);
     }
     load();
   }, []);
-
-  function onPosted(newPost) {
-    setPosts(prev => [{ ...newPost, profiles: currentProfile }, ...prev]);
-  }
 
   return (
     <>
@@ -144,18 +133,8 @@ export default function Dashboard() {
               </div>
             )}
           </div>
-            <div className="tabs homepage-tabs">
-              <button className={`tab-btn ${tab === 'projects' ? 'active' : ''}`} onClick={() => setTab('projects')}>
-                Projects
-              </button>
-              <button className={`tab-btn ${tab === 'community' ? 'active' : ''}`} onClick={() => setTab('community')}>
-                Community
-              </button>
-            </div>
 
             <div style={{ paddingTop: '0.5rem' }}>
-              {tab === 'projects' && (
-                <div>
                   {/* --- TOP CREATORS SECTION --- */}
                   <div style={{ marginBottom: '1rem' }}>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
@@ -291,102 +270,6 @@ export default function Dashboard() {
                       ))}
                     </div>
                   )}
-                </div>
-              )}
-
-              {tab === 'community' && (
-                <div style={{ maxWidth: '680px', margin: '0 auto' }}>
-                  {currentProfile && (
-                    <div style={{ marginBottom: '1.5rem', background: 'white', borderRadius: '16px', border: '1px solid #e5e7eb', overflow: 'hidden', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}>
-                      <PostComposer currentUser={currentProfile} onPosted={onPosted} />
-                    </div>
-                  )}
-
-                  {loading ? (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                      {[...Array(4)].map((_, i) => <div key={i} className="shimmer-box" style={{ height: '140px', borderRadius: '16px', border: '1px solid #f3f4f6' }} />)}
-                    </div>
-                  ) : posts.length === 0 ? (
-                    <div style={{ textAlign: 'center', padding: '4rem 2rem', background: 'white', borderRadius: '16px', border: '1px dashed #d1d5db' }}>
-                      <p style={{ color: '#6b7280', fontSize: '0.95rem', fontWeight: 500 }}>No posts yet. Start the conversation!</p>
-                    </div>
-                  ) : (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                      {posts.map(post => (
-                        <div key={post.id} style={{
-                          background: 'white',
-                          borderRadius: '16px',
-                          border: '1px solid #e5e7eb',
-                          padding: '1.25rem 1.5rem',
-                          transition: 'box-shadow 0.2s ease',
-                          cursor: 'pointer'
-                        }}
-                        onMouseOver={e => e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.03)'}
-                        onMouseOut={e => e.currentTarget.style.boxShadow = 'none'}
-                        >
-                          {/* Post Header */}
-                          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.85rem', marginBottom: '0.85rem' }}>
-                            <Link href={post.profiles?.username ? `/profile/${post.profiles.username}` : '#'}>
-                              <UserAvatar src={post.profiles?.avatar_url} name={post.profiles?.full_name || post.profiles?.username} size={42} />
-                            </Link>
-                            <div style={{ flex: 1 }}>
-                              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', flexWrap: 'wrap' }}>
-                                <Link href={post.profiles?.username ? `/profile/${post.profiles.username}` : '#'} style={{ fontWeight: 800, fontSize: '0.95rem', color: '#111827', textDecoration: 'none' }}>
-                                  {post.profiles?.full_name || post.profiles?.username}
-                                </Link>
-                                <span style={{ fontSize: '0.8rem', color: '#9ca3af', fontWeight: 500 }}>@{post.profiles?.username}</span>
-                                <span style={{ color: '#d1d5db', fontSize: '0.8rem' }}>•</span>
-                                <span style={{ fontSize: '0.8rem', color: '#9ca3af', fontWeight: 500 }}>{timeAgo(post.created_at)}</span>
-                              </div>
-                              {post.post_type && post.post_type !== 'share' && (
-                                <span style={{ 
-                                  display: 'inline-block',
-                                  marginTop: '0.2rem',
-                                  padding: '0.15rem 0.6rem', 
-                                  background: POST_TYPE_STYLES[post.post_type]?.bg, 
-                                  color: POST_TYPE_STYLES[post.post_type]?.color, 
-                                  fontSize: '0.7rem', 
-                                  fontWeight: 800,
-                                  borderRadius: '6px'
-                                }}>
-                                  {POST_TYPE_STYLES[post.post_type]?.label}
-                                </span>
-                              )}
-                            </div>
-                          </div>
-
-                          {/* Post Content */}
-                          <div style={{ paddingLeft: '3.4rem' }}>
-                            <p style={{ fontSize: '0.95rem', color: '#1f2937', lineHeight: 1.6, margin: '0 0 1rem 0', whiteSpace: 'pre-wrap' }}>
-                              {post.body}
-                            </p>
-                            {post.image_url && (
-                              <div style={{ borderRadius: '12px', overflow: 'hidden', border: '1px solid #e5e7eb', marginBottom: '1rem' }}>
-                                <img src={post.image_url} alt="Post image" style={{ width: '100%', maxHeight: '400px', objectFit: 'cover', display: 'block' }} />
-                              </div>
-                            )}
-
-                            {/* Action Bar */}
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', marginTop: '0.5rem' }}>
-                              <ReactionBar postId={post.id} currentUserId={currentUser?.id} reactionsCount={post.reactions_count} />
-                              
-                              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#6b7280', transition: 'color 0.2s ease', cursor: 'pointer' }}
-                                onMouseOver={e => e.currentTarget.style.color = '#3b82f6'}
-                                onMouseOut={e => e.currentTarget.style.color = '#6b7280'}
-                              >
-                                <div style={{ padding: '0.4rem', borderRadius: '50%', background: 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                  <MessageCircle size={18} strokeWidth={2} />
-                                </div>
-                                <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>{post.comments_count || 0}</span>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )}
             </div>
           </div>
 
@@ -397,7 +280,6 @@ export default function Dashboard() {
                 <p style={{ fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#6b6b6b', marginBottom: '0.75rem' }} className="font-grotesk">Quick Links</p>
                 {[
                   { label: 'Explore Projects', href: '/projects' },
-                  { label: 'Community Feed', href: '/community' },
                   { label: 'Saved Items', href: '/saved' },
                 ].map(item => (
                   <Link key={item.href} href={item.href} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.5rem 0', fontSize: '0.8rem', color: '#231f20', fontWeight: 500, borderBottom: '1px solid #f0f0f0' }}>
@@ -430,6 +312,12 @@ export default function Dashboard() {
                     />
                   </div>
                 ))}
+              </div>
+              
+              {/* Sidebar Ad Placement */}
+              <div style={{ marginTop: '2.5rem', position: 'sticky', top: '2rem' }}>
+                <span style={{ fontSize: '0.65rem', color: '#ccc', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: '0.5rem', textAlign: 'center' }}>Advertisement</span>
+                <AdBanner variant="vertical" style={{ height: '480px' }} />
               </div>
             </div>
           </div>

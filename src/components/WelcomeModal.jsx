@@ -129,14 +129,8 @@ export default function WelcomeModal() {
             Welcome
           </h2>
           
-          <p style={{ 
-            fontSize: '0.9rem', 
-            lineHeight: 1.6, 
-            color: 'rgba(255,255,255,0.9)', 
-            marginBottom: '2rem',
-            textAlign: 'justify'
-          }}>
-            Welcome to Desayner, the ultimate creative sanctuary built exclusively for passionate designers, digital artists, and visionaries. Dive into our massive, high-quality library of free stock photos, instantly generate infinite aesthetic color palettes, and seamlessly organize your visual inspiration into personalized moodboards. Beyond just tools, Desayner is a thriving community where you can connect with fellow creatives, showcase your latest masterpieces, and receive valuable feedback to level up your skills. Whether you are building your professional portfolio or simply looking for your next big spark of inspiration, you have finally found your home. Your design journey starts right here, right now.
+          <p style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.9)', lineHeight: 1.6, textAlign: 'justify', marginBottom: '1.5rem', whiteSpace: 'pre-line' }}>
+            Welcome to Desayner, the ultimate creative sanctuary built exclusively for passionate designers, digital artists, and visionaries. Dive into our massive, high-quality library of free stock photos, instantly generate infinite aesthetic color palettes, and seamlessly organize your visual inspiration into personalized moodboards. Beyond just tools, Desayner is a thriving platform where you can build your professional portfolio and showcase your latest masterpieces to the world. Whether you are hunting for clients or simply looking for your next big spark of inspiration, you have finally found your home. Your design journey starts right here, right now.
           </p>
 
           <div>
