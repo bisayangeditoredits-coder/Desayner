@@ -94,17 +94,24 @@ export default function InspirationCard({ inspiration, currentUserId, onClick })
       <div className="inspiration-card" onClick={handleCardClick}>
         <div className={`inspiration-image-wrap inspiration-image-wrap--${imgStatus}`}>
           {imgStatus !== 'error' ? (
-              <Image
-              src={stripCloudinaryProxy(inspiration.cover_url || inspiration.thumbnail_url || inspiration.image_url)}
-              alt={inspiration.title || 'Inspiration'}
-              className="inspiration-img"
-              width={600}
-              height={450}
-              sizes="(max-width: 480px) 100vw, (max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
-              loading="lazy"
-              onLoad={() => setImgStatus('loaded')}
-              onError={() => setImgStatus('error')}
-            />
+            (() => {
+              const imgSrc = stripCloudinaryProxy(inspiration.cover_url || inspiration.thumbnail_url || inspiration.image_url);
+              const isProxy = imgSrc?.startsWith('/api/');
+              return (
+                <Image
+                  src={imgSrc}
+                  alt={inspiration.title || 'Inspiration'}
+                  className="inspiration-img"
+                  width={600}
+                  height={450}
+                  sizes="(max-width: 480px) 100vw, (max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
+                  unoptimized={isProxy}
+                  loading="lazy"
+                  onLoad={() => setImgStatus('loaded')}
+                  onError={() => setImgStatus('error')}
+                />
+              );
+            })()
           ) : (
             <div style={{ width: '100%', aspectRatio: '4/3', background: '#1a1a1a' }} />
           )}

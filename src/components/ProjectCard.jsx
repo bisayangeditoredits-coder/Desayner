@@ -76,17 +76,24 @@ export default function ProjectCard({ project, currentUserId }) {
         >
           <div className={`project-card__thumb project-card__thumb--${imgStatus}`}>
             {project.cover_url && imgStatus !== 'error' ? (
-              <Image
-                src={stripCloudinaryProxy(project.thumbnail_url || project.cover_url)}
-                alt={project.title || 'Project'}
-                className="project-card__img"
-                width={600}
-                height={450}
-                sizes="(max-width: 480px) 100vw, (max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
-                loading="lazy"
-                onLoad={() => setImgStatus('loaded')}
-                onError={() => setImgStatus('error')}
-              />
+              (() => {
+                const imgSrc = stripCloudinaryProxy(project.thumbnail_url || project.cover_url);
+                const isProxy = imgSrc?.startsWith('/api/');
+                return (
+                  <Image
+                    src={imgSrc}
+                    alt={project.title || 'Project'}
+                    className="project-card__img"
+                    width={600}
+                    height={450}
+                    sizes="(max-width: 480px) 100vw, (max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
+                    unoptimized={isProxy}
+                    loading="lazy"
+                    onLoad={() => setImgStatus('loaded')}
+                    onError={() => setImgStatus('error')}
+                  />
+                );
+              })()
             ) : (
               <div className="project-card__no-cover">No cover</div>
             )}
