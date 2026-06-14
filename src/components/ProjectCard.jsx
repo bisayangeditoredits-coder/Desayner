@@ -75,7 +75,7 @@ export default function ProjectCard({ project, currentUserId }) {
           onClick={saveProjectModalReturn}
         >
           <div className={`project-card__thumb project-card__thumb--${imgStatus}`}>
-            {project.cover_url && imgStatus !== 'error' ? (
+            {(project.thumbnail_url || project.cover_url) && imgStatus !== 'error' ? (
               (() => {
                 const imgSrc = stripCloudinaryProxy(project.thumbnail_url || project.cover_url);
                 const isProxy = imgSrc?.startsWith('/api/') || imgSrc?.startsWith('https://wsrv.nl');

@@ -1,20 +1,10 @@
 'use client';
 import { useState } from 'react';
 import Image from 'next/image';
+import { stripCloudinaryProxy } from '@/lib/utils';
 
-function stripCloudinaryProxy(url) {
-  if (!url) return url;
-  if (typeof url === 'string' && url.includes('res.cloudinary.com') && url.includes('/fetch/')) {
-    const match = url.match(/(https?%3A%2F%2F.*|https?:\/\/.*)$/i);
-    if (match) {
-      try {
-        return decodeURIComponent(match[1]);
-      } catch (e) {
-        return url;
-      }
-    }
-  }
-  return url;
+function isProxyUrl(url) {
+  return url?.startsWith('/api/') || url?.startsWith('https://wsrv.nl');
 }
 
 export default function ProgressiveImage({
@@ -27,10 +17,12 @@ export default function ProgressiveImage({
 }) {
   const rawSrc = src || thumbnail || '';
   const rawThumb = thumbnail || src || '';
-  
-  const effectiveSrc   = stripCloudinaryProxy(rawSrc);
+
+  const effectiveSrc = stripCloudinaryProxy(rawSrc);
   const effectiveThumb = stripCloudinaryProxy(rawThumb);
-  
+  const isSrcProxy = isProxyUrl(effectiveSrc);
+  const isThumbProxy = isProxyUrl(effectiveThumb);
+
   const [isLoaded, setIsLoaded] = useState(false);
 
   return (
@@ -58,6 +50,7 @@ export default function ProgressiveImage({
               aria-hidden="true"
               fill
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              unoptimized={isThumbProxy}
               style={{ objectFit: 'cover', filter: 'blur(10px)', opacity: 0.5 }}
             />
           )}
@@ -71,6 +64,7 @@ export default function ProgressiveImage({
           alt={alt}
           fill
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          unoptimized={isSrcProxy}
           onLoad={() => setIsLoaded(true)}
           style={{
             objectFit: 'cover',

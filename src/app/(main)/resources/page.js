@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/client';
 import Link from 'next/link';
 import { Plus, Library } from 'lucide-react';
 import ResourceDetailModal from '@/components/ResourceDetailModal';
+import { stripCloudinaryProxy } from '@/lib/utils';
 import '../../App.css';
 
 const CATEGORIES = ['All', 'Templates', 'Mockups', 'Fonts', 'Icons', 'UI Kits', 'Tutorials'];
@@ -130,7 +131,7 @@ export default function ResourcesPage() {
                 >
                   <div style={{ aspectRatio: '16/9', width: '100%', background: 'var(--secondary-bg)', position: 'relative' }}>
                     {res.thumbnail_url ? (
-                      <img src={res.thumbnail_url} alt={res.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      <img src={stripCloudinaryProxy(res.thumbnail_url)} alt={res.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     ) : (
                       <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)' }}>
                         <Library size={32} />

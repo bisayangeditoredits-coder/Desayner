@@ -2,7 +2,6 @@
 import React, { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { Bookmark, Download } from 'lucide-react';
-import { createClient } from '@/lib/supabase/client';
 import UserAvatar from './UserAvatar';
 import ProgressiveImage from './ProgressiveImage';
 import dynamic from 'next/dynamic';
@@ -17,7 +16,6 @@ export default function AssetCard({ asset, currentUserId, onClick }) {
   const [saved, setSaved]         = useState(asset.user_saved || false);
   const [savesCount, setSavesCount] = useState(asset.saves_count || 0);
   const [showColModal, setShowColModal] = useState(false);
-  const supabase = useMemo(() => createClient(), []);
   const router   = useRouter();
 
   const handleSave = useCallback(async (e) => {

@@ -8,6 +8,7 @@ import UserAvatar from '@/components/UserAvatar';
 import Link from 'next/link';
 import { Globe, MapPin, Calendar, MessageSquare, ExternalLink, Folder, ArrowLeft } from 'lucide-react';
 import { CREATIVE_TOOLS } from '@/lib/constants';
+import { stripCloudinaryProxy } from '@/lib/utils';
 import '../../../App.css';
 
 /** Prominent Hire Me button that opens a chat for job inquiries */
@@ -126,7 +127,8 @@ export default function ProfilePage() {
     </div>
   );
 
-  const coverSrc = profile.cover_url || (projects.length > 0 ? projects[0].cover_url : null);
+  const rawCoverSrc = profile.cover_url || (projects.length > 0 ? projects[0].cover_url : null);
+  const coverSrc = rawCoverSrc ? stripCloudinaryProxy(rawCoverSrc) : null;
 
   return (
     <div className="profile-v2">

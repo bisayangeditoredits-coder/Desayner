@@ -75,19 +75,25 @@ export default function TrendingProjectCard({ project, currentUserId, rank }) {
         aria-label={`Open ${project.title || 'project'}`}
       >
         <div className={`trending-project-card__image-shell trending-project-card__image-shell--${imageStatus}`}>
-          {project.cover_url && imageStatus !== 'error' ? (
-            <Image
-              src={stripCloudinaryProxy(project.thumbnail_url || project.cover_url)}
-              alt={project.title || 'Project cover'}
-              className="trending-project-card__image"
-              width={520}
-              height={390}
-              sizes="(max-width: 640px) 50vw, (max-width: 1100px) 33vw, 18vw"
-              unoptimized={stripCloudinaryProxy(project.thumbnail_url || project.cover_url)?.startsWith('/api/')}
-              loading="lazy"
-              onLoad={() => setImageStatus('loaded')}
-              onError={() => setImageStatus('error')}
-            />
+          {(project.thumbnail_url || project.cover_url) && imageStatus !== 'error' ? (
+            (() => {
+              const imgSrc = stripCloudinaryProxy(project.thumbnail_url || project.cover_url);
+              const isProxy = imgSrc?.startsWith('/api/') || imgSrc?.startsWith('https://wsrv.nl');
+              return (
+                <Image
+                  src={imgSrc}
+                  alt={project.title || 'Project cover'}
+                  className="trending-project-card__image"
+                  width={520}
+                  height={390}
+                  sizes="(max-width: 640px) 50vw, (max-width: 1100px) 33vw, 18vw"
+                  unoptimized={isProxy}
+                  loading="lazy"
+                  onLoad={() => setImageStatus('loaded')}
+                  onError={() => setImageStatus('error')}
+                />
+              );
+            })()
           ) : (
             <div className="trending-project-card__empty">
               <Sparkles size={18} />

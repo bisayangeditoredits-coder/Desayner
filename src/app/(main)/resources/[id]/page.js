@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import Link from 'next/link';
 import { ArrowLeft, ExternalLink, Bookmark, Download, Library, ShieldCheck, User } from 'lucide-react';
+import { stripCloudinaryProxy } from '@/lib/utils';
 import '../../../App.css';
 
 export default function ResourceDetailPage({ params }) {
@@ -94,7 +95,7 @@ export default function ResourceDetailPage({ params }) {
             <div>
               <div style={{ width: '100%', aspectRatio: '16/9', background: '#f5f5f5', borderRadius: '8px', overflow: 'hidden', marginBottom: '2rem', border: '1px solid #e8e8e8', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 {resource.thumbnail_url ? (
-                  <img src={resource.thumbnail_url} alt={resource.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  <img src={stripCloudinaryProxy(resource.thumbnail_url)} alt={resource.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 ) : (
                   <Library size={48} color="#d0d0d0" />
                 )}

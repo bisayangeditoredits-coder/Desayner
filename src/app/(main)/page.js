@@ -11,6 +11,7 @@ import WelcomeModal from '@/components/WelcomeModal';
 import Link from 'next/link';
 import Image from 'next/image';
 import { MessageCircle, Bookmark, TrendingUp, ArrowRight, Users, FolderOpen } from 'lucide-react';
+import { stripCloudinaryProxy } from '@/lib/utils';
 import '../App.css';
 
 // Static constant — declared outside component to avoid recreation on every render
@@ -208,7 +209,7 @@ export default function Dashboard() {
                               {creator.banner_url ? (
                                 <>
                                   <img 
-                                    src={creator.banner_url} 
+                                    src={stripCloudinaryProxy(creator.banner_url)} 
                                     alt="" 
                                     onError={(e) => { e.currentTarget.style.display = 'none'; }}
                                     style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.8, position: 'relative', zIndex: 1 }} 
