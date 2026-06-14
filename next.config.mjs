@@ -13,6 +13,13 @@ const nextConfig = {
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
     // Minimum TTL so CDN caches optimized images for 1 day
     minimumCacheTTL: 86400,
+    // Next.js 16 requires localPatterns for local URLs with query strings
+    localPatterns: [
+      {
+        pathname: '/api/proxy-image',
+        search: '**',
+      },
+    ],
     remotePatterns: [
       {
         protocol: 'https',
