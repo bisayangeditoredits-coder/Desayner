@@ -78,10 +78,13 @@ export default function TrendingProjectCard({ project, currentUserId, rank }) {
             <img
               src={stripCloudinaryProxy(project.thumbnail_url || project.cover_url)}
               alt={project.title || 'Project cover'}
-              className="trending-project-card__image"
+              className="trending-project-card__image img-fade-in"
               loading="lazy"
               decoding="async"
-              onLoad={() => setImageStatus('loaded')}
+              onLoad={(e) => {
+                e.currentTarget.classList.add('loaded');
+                setImageStatus('loaded');
+              }}
               onError={() => setImageStatus('error')}
             />
           ) : (
