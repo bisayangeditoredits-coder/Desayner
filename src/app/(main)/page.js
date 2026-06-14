@@ -14,11 +14,9 @@ import { MessageCircle, Bookmark, TrendingUp, ArrowRight, Users, FolderOpen } fr
 import { stripCloudinaryProxy } from '@/lib/utils';
 import '../App.css';
 
-// Static constant — declared outside component to avoid recreation on every render
+// Only use the custom main banner requested by the user
 const BANNERS = [
-  '/banner-event-homepage.jpeg',
-  'https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=2000&auto=format&fit=crop',
-  'https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=2000&auto=format&fit=crop',
+  '/banner-event-homepage.jpeg'
 ];
 
 function timeAgo(dateStr) {
@@ -127,26 +125,24 @@ export default function Dashboard() {
               />
             ))}
             {/* Carousel Navigation Dots */}
-            <div style={{ position: 'absolute', bottom: '1rem', left: 0, right: 0, display: 'flex', justifyContent: 'center', gap: '0.6rem', zIndex: 10 }}>
-              {BANNERS.map((_, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => setCurrentBanner(idx)}
-                  style={{
-                    width: '8px',
-                    height: '8px',
-                    borderRadius: '50%',
-                    background: currentBanner === idx ? '#ffffff' : 'rgba(255, 255, 255, 0.4)',
-                    border: currentBanner === idx ? '1px solid rgba(0,0,0,0.1)' : 'none',
-                    padding: 0,
-                    cursor: 'pointer',
-                    transition: 'all 0.3s ease',
-                    boxShadow: '0 1px 3px rgba(0,0,0,0.3)'
-                  }}
-                  aria-label={`Go to slide ${idx + 1}`}
-                />
-              ))}
-            </div>
+            {BANNERS.length > 1 && (
+              <div style={{ position: 'absolute', bottom: '1rem', left: 0, right: 0, display: 'flex', justifyContent: 'center', gap: '0.6rem', zIndex: 10 }}>
+                {BANNERS.map((_, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setCurrentBanner(idx)}
+                    style={{
+                      width: '8px',
+                      height: '8px',
+                      borderRadius: '50%',
+                      background: currentBanner === idx ? '#ffffff' : 'rgba(255, 255, 255, 0.4)',
+                      transition: 'background 0.3s'
+                    }}
+                    aria-label={`Go to slide ${idx + 1}`}
+                  />
+                ))}
+              </div>
+            )}
           </div>
             <div className="tabs homepage-tabs">
               <button className={`tab-btn ${tab === 'projects' ? 'active' : ''}`} onClick={() => setTab('projects')}>
