@@ -59,6 +59,23 @@ export async function proxy(request) {
   const { pathname } = request.nextUrl;
   let supabaseResponse = NextResponse.next({ request });
 
+  // ── Maintenance Mode ───────────────────────────────────────
+  const MAINTENANCE_MODE = true;
+  if (MAINTENANCE_MODE) {
+    if (
+      pathname !== '/maintenance' &&
+      !pathname.startsWith('/api') &&
+      !pathname.startsWith('/_next') &&
+      !pathname.includes('.') &&
+      pathname !== '/favicon.ico' &&
+      pathname !== '/icon.png'
+    ) {
+      const url = request.nextUrl.clone();
+      url.pathname = '/maintenance';
+      return NextResponse.redirect(url);
+    }
+  }
+
   // ── Rate Limiting (API Routes) ───────────────────────────────
   if (pathname.startsWith('/api') && ratelimit && !isPublicReadApi(request, pathname)) {
     const ip = request.ip ?? request.headers.get('x-forwarded-for') ?? '127.0.0.1';
