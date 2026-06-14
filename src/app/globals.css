@@ -25,12 +25,24 @@
   --transition-smooth: background 0.18s ease, color 0.18s ease, border-color 0.18s ease;
   --card-shadow: 0 1px 3px rgba(0,0,0,0.06);
   --card-shadow-hover: 0 4px 12px rgba(0,0,0,0.08);
-  --sidebar-width: 260px;
+  --sidebar-width: 234px;
   /* Spacing scale */
   --space-sm: 0.75rem;
   --space-md: 1.25rem;
   --space-lg: 2rem;
   --space-xl: 3rem;
+}
+
+html {
+  /* Scale down base font size to ~90% (14.4px) to make the UI look zoomed out on desktop */
+  font-size: 14.4px;
+}
+
+@media (max-width: 768px) {
+  html {
+    /* Keep mobile at standard 16px for readability */
+    font-size: 16px;
+  }
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
