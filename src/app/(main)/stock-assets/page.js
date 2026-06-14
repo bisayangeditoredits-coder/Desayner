@@ -293,10 +293,10 @@ export default function StockAssetsPage() {
 
                 <img
                   src={pixabayImageSrc(photo.urls.webformat, photo.urls.preview)}
-                  alt={photo.tags || `Vector by ${photo.user.name}`}
+                  alt={photo.user?.name ? `Vector by ${photo.user.name}` : 'Stock vector'}
                   loading="lazy"
                   decoding="async"
-                  style={{ width: '100%', display: 'block', position: 'relative', zIndex: 1 }}
+                  style={{ width: '100%', display: 'block', position: 'relative', zIndex: 1, objectFit: 'contain' }}
                 />
 
                 {/* Hover overlay */}

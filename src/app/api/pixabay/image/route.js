@@ -8,6 +8,10 @@ export async function GET(request) {
     return new Response('Missing url parameter', { status: 400 });
   }
 
+  if (!/^https:\/\/(cdn\.pixabay\.com|pixabay\.com)\//i.test(url)) {
+    return new Response('Invalid image URL', { status: 400 });
+  }
+
   try {
     const res = await fetch(url, {
       headers: {

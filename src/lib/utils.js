@@ -67,10 +67,10 @@ export function unsplashImageSrc(url) {
   return `/api/unsplash/image?url=${encodeURIComponent(url)}`;
 }
 
-/** Prefer Pixabay CDN previews in grids; proxy signed /get/ URLs when needed. */
+/** Proxy Pixabay thumbnails through our API (CDN blocks third-party browser referrers). */
 export function pixabayImageSrc(url, preview) {
-  if (preview && preview.includes('cdn.pixabay.com')) return preview;
-  if (!url) return url;
-  if (url.startsWith('/api/')) return url;
-  return `/api/pixabay/image?url=${encodeURIComponent(url)}`;
+  const target = preview || url;
+  if (!target) return target;
+  if (target.startsWith('/api/')) return target;
+  return `/api/pixabay/image?url=${encodeURIComponent(target)}`;
 }
