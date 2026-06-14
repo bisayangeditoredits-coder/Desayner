@@ -9,16 +9,18 @@ import './MobileBottomNav.css';
 
 export default function MobileBottomNav() {
   const pathname = usePathname();
-  const [profile, setProfile] = useState(() => {
-    if (typeof window === 'undefined') return null;
+  const [mounted, setMounted] = useState(false);
+  const [profile, setProfile] = useState(null);
+
+  useEffect(() => {
+    setMounted(true);
     const cached = sessionStorage.getItem('mnav_profile');
-    if (!cached) return null;
-    try {
-      return JSON.parse(cached);
-    } catch {
-      return null;
+    if (cached) {
+      try {
+        setProfile(JSON.parse(cached));
+      } catch {}
     }
-  });
+  }, []);
   const supabase = useMemo(() => createClient(), []);
 
   useEffect(() => {
@@ -43,7 +45,7 @@ export default function MobileBottomNav() {
   }
 
   // Profile link fallback to /login if not logged in
-  const profileLink = profile ? `/profile/${profile.username}` : '/login';
+  const profileLink = (mounted && profile) ? `/profile/${profile.username}` : '/login';
 
   return (
     <nav className="mobile-bottom-nav">

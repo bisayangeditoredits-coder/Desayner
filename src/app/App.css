@@ -17,7 +17,7 @@
   flex-direction: column;
   background: var(--card-bg);
   z-index: 1000;
-  overflow-y: auto;
+  overflow: hidden;
 }
 
 .sidebar-logo {
@@ -31,7 +31,17 @@
   flex-direction: column;
   flex: 1;
   padding: 0.5rem 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  min-height: 0;
 }
+
+.sidebar-nav::-webkit-scrollbar {
+  display: none;
+}
+
 
 .nav-section-label {
   font-size: 0.7rem;

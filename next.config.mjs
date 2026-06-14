@@ -8,6 +8,11 @@ const nextConfig = {
   },
   images: {
     formats: ['image/avif', 'image/webp'],
+    // Larger device sizes to serve sharp images on high-DPI screens
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+    // Minimum TTL so CDN caches optimized images for 1 day
+    minimumCacheTTL: 86400,
     remotePatterns: [
       {
         protocol: 'https',
@@ -39,6 +44,8 @@ const nextConfig = {
         port: '',
         pathname: '/**',
       },
+      // base44.app — legacy uploads; allowlisted so Next.js optimizer
+      // can fetch, resize, and serve WebP/AVIF directly without the proxy
       {
         protocol: 'https',
         hostname: 'base44.app',
@@ -48,6 +55,19 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: 'res.cloudinary.com',
+        port: '',
+        pathname: '/**',
+      },
+      // Pixabay CDN — stock photos & vectors
+      {
+        protocol: 'https',
+        hostname: 'cdn.pixabay.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'pixabay.com',
         port: '',
         pathname: '/**',
       },
@@ -93,18 +113,18 @@ const nextConfig = {
             key: 'Content-Security-Policy',
             value: [
               "default-src 'self'",
-              // Scripts: self + Sentry CDN (error replay) + Stripe.js
-              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com https://cdn.jsdelivr.net",
+              // Scripts: self + Sentry CDN (error replay) + Stripe.js + Microsoft Clarity
+              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com https://cdn.jsdelivr.net https://www.clarity.ms",
               // Styles: self + Google Fonts + inline (Next.js)
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               // Fonts: self + Google Fonts
               "font-src 'self' https://fonts.gstatic.com",
-              // Images: self + Cloudflare R2 + Unsplash + Google avatars + GitHub avatars + Supabase storage + Job Logos
-              "img-src 'self' data: blob: https://*.r2.dev https://*.unsplash.com https://*.googleusercontent.com https://avatars.githubusercontent.com https://*.supabase.co https://res.cloudinary.com https://base44.app https://jobicy.com https://www.google.com https://logo.clearbit.com https://api.dicebear.com",
+              // Images: self + Cloudflare R2 + Unsplash + Google avatars + GitHub avatars + Supabase storage + Job Logos + Microsoft Clarity
+              "img-src 'self' data: blob: https://*.r2.dev https://*.unsplash.com https://*.googleusercontent.com https://avatars.githubusercontent.com https://*.supabase.co https://res.cloudinary.com https://base44.app https://jobicy.com https://www.google.com https://logo.clearbit.com https://api.dicebear.com https://*.clarity.ms https://c.bing.com",
               // Media: self + R2 CDN (project videos)
               "media-src 'self' blob: https://*.r2.dev",
-              // API + WebSocket connections
-              "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.upstash.io https://api.unsplash.com https://api.sentry.io https://js.stripe.com https://*.r2.dev",
+              // API + WebSocket connections + Microsoft Clarity
+              "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.upstash.io https://api.unsplash.com https://api.sentry.io https://js.stripe.com https://*.r2.dev https://*.clarity.ms",
               // Frames: Stripe embedded UIs only
               "frame-src https://js.stripe.com https://hooks.stripe.com",
               // Workers: Next.js service worker

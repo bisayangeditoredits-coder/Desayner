@@ -2,7 +2,8 @@ import { NextResponse } from 'next/server';
 
 export const runtime = 'edge';
 
-// Helper to convert HSL to HEX
+// --- MATH GENERATOR (For Explore Grid) ---
+
 function hslToHex(h, s, l) {
   l /= 100;
   const a = s * Math.min(l, 1 - l) / 100;
@@ -14,30 +15,22 @@ function hslToHex(h, s, l) {
   return `${f(0)}${f(8)}${f(4)}`.toUpperCase();
 }
 
-// Helper to generate a random number within a range
 const randomRange = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
 
-// Generate a visually pleasing palette
 function generateAestheticPalette(colorCount = 5, forcedHue = null) {
-  // Use forced hue or pick a random one
   const baseHue = forcedHue !== null ? forcedHue + randomRange(-15, 15) : randomRange(0, 360);
   const baseSat = randomRange(60, 90);
   
-  // We dynamically generate arrays of length `colorCount`
   const harmonies = [
-    // Analogous (Hue shifts slowly)
     () => Array.from({ length: colorCount }, (_, i) => 
       hslToHex((baseHue + (i * 30)) % 360, baseSat, 40 + (i * (40 / colorCount)))
     ),
-    // Monochromatic (Same hue, varying lightness)
     () => Array.from({ length: colorCount }, (_, i) => 
       hslToHex(baseHue, baseSat, 20 + (i * (70 / colorCount)))
     ),
-    // Triadic / Split (Wider hue shifts)
     () => Array.from({ length: colorCount }, (_, i) => 
       hslToHex((baseHue + (i * (120 / (colorCount - 1 || 1)))) % 360, baseSat, 50 + (i % 2 === 0 ? 10 : -10))
     ),
-    // Random harmonious jumps
     () => Array.from({ length: colorCount }, (_, i) => 
       hslToHex((baseHue + (i * 75)) % 360, baseSat - (i * 5), 60 + (i % 2 === 0 ? 20 : 0))
     )
@@ -71,7 +64,6 @@ export async function GET(request) {
   const hueParam = searchParams.get('hue');
   const perPage = 40;
 
-  // Map requested hue name to base degree
   let forcedHue = null;
   if (hueParam && hueParam.toLowerCase() !== 'all') {
     const hueMap = {
@@ -88,8 +80,6 @@ export async function GET(request) {
       { palettes: palettes },
       {
         headers: {
-          // Cache this specific combination of page+colorCount on the CDN for 1 hour.
-          // This makes the "infinite" random generation completely free at scale.
           'Cache-Control': 's-maxage=3600, stale-while-revalidate=86400',
         },
       }
@@ -97,5 +87,51 @@ export async function GET(request) {
   } catch (error) {
     console.error('[Explore Colors Generator Error]', error);
     return NextResponse.json({ error: 'Failed to generate palettes' }, { status: 500 });
+  }
+}
+
+// --- COLOR MIND API (For AI Panel) ---
+
+function rgbToHex([r, g, b]) {
+  return [r, g, b].map(v => v.toString(16).padStart(2, '0')).join('').toUpperCase();
+}
+
+const ADJECTIVES = ['Silk', 'Muted', 'Vibrant', 'Retro', 'Neon', 'Pastel', 'Electric', 'Warm', 'Cool', 'Deep', 'Soft', 'Vivid'];
+const NOUNS = ['Horizon', 'Drift', 'Glow', 'Bloom', 'Pulse', 'Echo', 'Haze', 'Dusk', 'Dawn', 'Tide', 'Spark', 'Shade'];
+function randomName() {
+  return `${ADJECTIVES[Math.floor(Math.random() * ADJECTIVES.length)]} ${NOUNS[Math.floor(Math.random() * NOUNS.length)]}`;
+}
+
+export async function POST(request) {
+  try {
+    const body = await request.json();
+    const { model = 'default', input, count = 5 } = body;
+
+    if (!input || !Array.isArray(input)) {
+      return NextResponse.json({ error: 'input array required' }, { status: 400 });
+    }
+
+    const res = await fetch('http://colormind.io/api/', {
+      method: 'POST',
+      body: JSON.stringify({ model, input: input.slice(0, 5) }), // Colormind expects max 5
+      headers: { 'Content-Type': 'application/json' },
+    });
+
+    if (!res.ok) throw new Error(`Colormind ${res.status}`);
+    const { result } = await res.json();
+    
+    // Trim to requested count if user asked for fewer than 5
+    const finalColors = result.slice(0, count).map(rgb => rgbToHex(rgb));
+
+    const palette = {
+      id: Math.random().toString(36).slice(2, 9),
+      title: randomName(),
+      colors: finalColors,
+    };
+
+    return NextResponse.json({ palette }, { headers: { 'Cache-Control': 'no-store' } });
+  } catch (error) {
+    console.error('[Colormind POST Error]', error);
+    return NextResponse.json({ error: 'Failed to generate palette' }, { status: 500 });
   }
 }

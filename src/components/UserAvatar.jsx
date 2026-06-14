@@ -35,7 +35,7 @@ export default function UserAvatar({ src, name = '', size = 32, className = '' }
   if (effectiveSrc && effectiveSrc !== 'null' && effectiveSrc !== 'undefined') {
     return (
       <div style={{ ...style, position: 'relative' }} className={className}>
-        <Image src={effectiveSrc} alt={name} fill sizes={`${size}px`} style={{ objectFit: 'cover' }} unoptimized />
+        <Image src={effectiveSrc} alt={name} fill sizes={`${size}px`} style={{ objectFit: 'cover' }} />
       </div>
     );
   }

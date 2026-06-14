@@ -29,6 +29,8 @@ const PUBLIC_READ_API_PREFIXES = [
   '/api/search',
   '/api/trending',
   '/api/unsplash/search',
+  '/api/pixabay/search',
+  '/api/pixabay/image',
 ];
 
 function isPublicReadApi(request, pathname) {

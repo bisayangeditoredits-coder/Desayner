@@ -1,12 +1,9 @@
 'use client';
 import { useState, useCallback, useRef, useEffect } from 'react';
 import Cropper from 'react-easy-crop';
-import dynamic from 'next/dynamic';
-import { Image as ImageIcon, Upload, Loader2, Check, RefreshCw, Crop, Search } from 'lucide-react';
+import { Image as ImageIcon, Upload, Loader2, Check, RefreshCw, Crop } from 'lucide-react';
 import getCroppedImg from '@/lib/cropImage';
 import { useUpload } from '@/hooks/useUpload';
-
-const UnsplashPicker = dynamic(() => import('@/components/UnsplashPicker'), { ssr: false });
 
 const previewPanelStyle = {
   position: 'relative',
@@ -39,7 +36,7 @@ export default function CoverEditor({ value, thumbnailUrl, onUploaded }) {
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
   const [isCropping, setIsCropping] = useState(false);
-  const [showUnsplash, setShowUnsplash] = useState(false); // ← new
+
 
   const inputRef = useRef(null);
   const reportedRef = useRef(null);
@@ -180,16 +177,14 @@ export default function CoverEditor({ value, thumbnailUrl, onUploaded }) {
             Upload your own image.
           </p>
 
-          {/* Action buttons */}
-          <div style={{ display: 'flex', gap: '0.65rem', flexWrap: 'wrap', justifyContent: 'center' }}>
-            <button
-              type="button"
-              onClick={() => inputRef.current?.click()}
-              style={{ padding: '0.7rem 1.35rem', background: '#2d43e8', color: 'white', fontWeight: 600, border: 'none', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
-            >
-              <Upload size={16} /> Upload Image
-            </button>
-          </div>
+          {/* Upload button */}
+          <button
+            type="button"
+            onClick={() => inputRef.current?.click()}
+            style={{ padding: '0.7rem 1.35rem', background: '#2d43e8', color: 'white', fontWeight: 600, border: 'none', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+          >
+            <Upload size={16} /> Upload Image
+          </button>
 
           <p style={{ marginTop: '1.5rem', fontSize: '0.72rem', opacity: 0.55, letterSpacing: '0.02em' }}>
             JPG / PNG / WebP · Auto-converted to WebP · max 10 MB
@@ -248,6 +243,8 @@ export default function CoverEditor({ value, thumbnailUrl, onUploaded }) {
 
       <input ref={inputRef} type="file" accept="image/jpeg,image/png,image/webp,image/gif" onChange={handleFileChange} style={{ display: 'none' }} />
       <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
+      
+
     </div>
   );
 }

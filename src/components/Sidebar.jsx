@@ -31,6 +31,7 @@ const COMMUNITY_ITEMS = [
 const DESIGN_HUB_ITEMS = [
   // { href: '/asset-store',  icon: ShoppingBag,   label: 'ASSET STORE', public: true },
   { href: '/colors',       icon: Palette,       label: 'COLORS',       public: true },
+  { href: '/stock-assets', icon: Box,           label: 'STOCK ASSETS', public: true },
   { href: '/stock-photos', icon: ImageIcon,     label: 'STOCK PHOTOS', public: true },
   { href: '/fonts',        icon: Type,          label: 'FONTS',        public: true },
 ];
@@ -106,7 +107,7 @@ export default function Sidebar({ className = '' }) {
       <aside className={`sidebar ${className} ${isMobileMenuOpen ? 'mobile-open' : ''}`}>
       <div style={{ padding: '1.25rem 1.25rem 0', borderBottom: '1px solid #e8e8e8', paddingBottom: '1.25rem', marginBottom: '0.5rem', display: 'flex', justifyContent: 'center' }}>
         <Link href="/">
-          <img src="/desayner-logo.png" alt="Desayner" fetchpriority="high" style={{ width: 'auto', height: '54px', maxWidth: '100%', objectFit: 'contain', display: 'block' }} />
+          <img src="/desayner-logo.png" alt="Desayner" fetchPriority="high" style={{ width: 'auto', height: '54px', maxWidth: '100%', objectFit: 'contain', display: 'block' }} />
         </Link>
       </div>
 
