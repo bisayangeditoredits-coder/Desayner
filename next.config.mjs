@@ -131,8 +131,8 @@ const nextConfig = {
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               // Fonts: self + Google Fonts
               "font-src 'self' https://fonts.gstatic.com",
-              // Images: self + Cloudflare R2 + Unsplash + Google avatars + GitHub avatars + Supabase storage + Job Logos + Microsoft Clarity
-              "img-src 'self' data: blob: https://*.r2.dev https://*.unsplash.com https://*.googleusercontent.com https://avatars.githubusercontent.com https://*.supabase.co https://res.cloudinary.com https://base44.app https://jobicy.com https://www.google.com https://logo.clearbit.com https://api.dicebear.com https://*.clarity.ms https://c.bing.com",
+              // Images: self + Cloudflare R2 + Unsplash + Google avatars + GitHub avatars + Supabase storage + Job Logos + Microsoft Clarity + wsrv.nl
+              "img-src 'self' data: blob: https://*.r2.dev https://*.unsplash.com https://*.googleusercontent.com https://avatars.githubusercontent.com https://*.supabase.co https://res.cloudinary.com https://base44.app https://jobicy.com https://www.google.com https://logo.clearbit.com https://api.dicebear.com https://*.clarity.ms https://c.bing.com https://wsrv.nl",
               // Media: self + R2 CDN (project videos)
               "media-src 'self' blob: https://*.r2.dev",
               // API + WebSocket connections + Microsoft Clarity
