@@ -19,6 +19,11 @@ const nextConfig = {
         pathname: '/api/proxy-image',
         search: '**',
       },
+      // Explicitly allow all other local images (like /banner-event-homepage.jpeg)
+      // because defining localPatterns overrides the default of allowing all local files.
+      {
+        pathname: '/**',
+      },
     ],
     remotePatterns: [
       {

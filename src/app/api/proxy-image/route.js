@@ -1,5 +1,7 @@
-export const runtime = 'edge';
-
+// Remove Edge runtime because Vercel Edge (which runs on Cloudflare Workers)
+// blocks fetch requests to other Cloudflare-hosted domains (like base44.app).
+// Using the Node.js runtime (AWS Lambda) bypasses this cross-zone blocking.
+export const dynamic = 'force-dynamic';
 // A simple placeholder SVG that looks like a blank document/logo to avoid red 404 console errors
 const FALLBACK_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128"><rect width="128" height="128" fill="#f8fafc"/><path d="M44 38h40v10H44zm0 20h40v10H44zm0 20h24v10H44z" fill="#cbd5e1"/></svg>`;
 
@@ -31,6 +33,8 @@ export async function GET(request) {
         'Accept': 'image/webp,image/avif,image/apng,image/*,*/*;q=0.8',
         'Referer': new URL(url).origin + '/',
       },
+      // Add a timeout so Vercel Serverless doesn't hang indefinitely
+      signal: AbortSignal.timeout ? AbortSignal.timeout(8000) : undefined,
     });
 
     if (!response.ok || !response.body) return getFallbackResponse();

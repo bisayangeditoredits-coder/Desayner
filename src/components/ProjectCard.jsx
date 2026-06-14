@@ -78,7 +78,6 @@ export default function ProjectCard({ project, currentUserId }) {
             {project.cover_url && imgStatus !== 'error' ? (
               (() => {
                 const imgSrc = stripCloudinaryProxy(project.thumbnail_url || project.cover_url);
-                const isProxy = imgSrc?.startsWith('/api/');
                 return (
                   <Image
                     src={imgSrc}
@@ -87,7 +86,6 @@ export default function ProjectCard({ project, currentUserId }) {
                     width={600}
                     height={450}
                     sizes="(max-width: 480px) 100vw, (max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
-                    unoptimized={isProxy}
                     loading="lazy"
                     onLoad={() => setImgStatus('loaded')}
                     onError={() => setImgStatus('error')}
