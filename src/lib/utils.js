@@ -7,7 +7,9 @@ export function stripCloudinaryProxy(url) {
   if (!url) return url;
   if (typeof url === 'string') {
     if (url.includes('base44.app')) {
-      return `/api/proxy-image?url=${encodeURIComponent(url)}`;
+      // Use wsrv.nl (Images.weserv.nl) to proxy, cache, and resize the massive base44.app images.
+      // This bypasses Vercel Serverless limitations (timeouts, 500 errors) and Cloudflare blocks completely.
+      return `https://wsrv.nl/?url=${encodeURIComponent(url)}&w=800&output=webp&default=https://desayner.com/banner-event-homepage.jpeg`;
     }
     if (url.includes('res.cloudinary.com') && url.includes('/fetch/')) {
       const match = url.match(/(https?%3A%2F%2F.*|https?:\/\/.*)$/i);

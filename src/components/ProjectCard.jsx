@@ -78,7 +78,7 @@ export default function ProjectCard({ project, currentUserId }) {
             {project.cover_url && imgStatus !== 'error' ? (
               (() => {
                 const imgSrc = stripCloudinaryProxy(project.thumbnail_url || project.cover_url);
-                const isProxy = imgSrc?.startsWith('/api/');
+                const isProxy = imgSrc?.startsWith('/api/') || imgSrc?.startsWith('https://wsrv.nl');
                 return (
                   <Image
                     src={imgSrc}

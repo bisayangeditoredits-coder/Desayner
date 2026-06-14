@@ -96,7 +96,7 @@ export default function InspirationCard({ inspiration, currentUserId, onClick })
           {imgStatus !== 'error' ? (
             (() => {
               const imgSrc = stripCloudinaryProxy(inspiration.cover_url || inspiration.thumbnail_url || inspiration.image_url);
-              const isProxy = imgSrc?.startsWith('/api/');
+              const isProxy = imgSrc?.startsWith('/api/') || imgSrc?.startsWith('https://wsrv.nl');
               return (
                 <Image
                   src={imgSrc}

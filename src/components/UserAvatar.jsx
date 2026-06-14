@@ -31,7 +31,7 @@ export default function UserAvatar({ src, name = '', size = 32, className = '' }
   };
 
   const effectiveSrc = stripCloudinaryProxy(src);
-  const isProxy = effectiveSrc?.startsWith('/api/');
+  const isProxy = effectiveSrc?.startsWith('/api/') || effectiveSrc?.startsWith('https://wsrv.nl');
 
   if (effectiveSrc && effectiveSrc !== 'null' && effectiveSrc !== 'undefined') {
     return (
