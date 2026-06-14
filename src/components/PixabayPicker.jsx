@@ -303,7 +303,7 @@ export default function PixabayPicker({ onSelectPhoto, onClose }) {
                   
                   <img
                     src={pixabayImageSrc(photo.urls.webformat, photo.urls.preview)}
-                    alt={photo.tags}
+                    alt={photo.user?.name ? `Vector by ${photo.user.name}` : 'Stock vector'}
                     loading="lazy"
                     style={{ width: '100%', display: 'block', position: 'relative', zIndex: 1 }}
                   />
