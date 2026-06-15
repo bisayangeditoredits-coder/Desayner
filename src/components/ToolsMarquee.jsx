@@ -77,7 +77,6 @@ export default function ToolsMarquee() {
                 width={36}
                 height={36}
                 className="tool-icon"
-                unoptimized
               />
             </div>
           ))}
@@ -91,7 +90,6 @@ export default function ToolsMarquee() {
                 width={36}
                 height={36}
                 className="tool-icon"
-                unoptimized
               />
             </div>
           ))}

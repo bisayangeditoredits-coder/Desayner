@@ -166,7 +166,6 @@ export default function WelcomeModal() {
             alt="Designers collaborating" 
             fill
             priority
-            unoptimized
             sizes="(max-width: 768px) 0vw, 450px"
             style={{ 
               objectFit: 'cover',

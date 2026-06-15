@@ -49,11 +49,18 @@ export default function ProjectCard({ project, currentUserId, isLiked, isSaved }
     const wasLiked = liked;
     setLiked(!wasLiked);
     setLikeCount((c) => (wasLiked ? c - 1 : c + 1));
-    if (wasLiked) {
-      await supabase.from('project_likes').delete()
-        .eq('user_id', currentUserId).eq('project_id', project.id);
-    } else {
-      await supabase.from('project_likes').insert({ user_id: currentUserId, project_id: project.id });
+    
+    try {
+      await fetch(`/api/projects/${project.id}/like`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: wasLiked ? 'unlike' : 'like' })
+      });
+    } catch (err) {
+      console.error('Like failed', err);
+      // Revert optimistic UI on failure
+      setLiked(wasLiked);
+      setLikeCount((c) => (wasLiked ? c + 1 : c - 1));
     }
   }
 
@@ -90,7 +97,6 @@ export default function ProjectCard({ project, currentUserId, isLiked, isSaved }
                 className="project-card__img img-fade-in"
                 width={500}
                 height={380}
-                unoptimized
                 style={{ objectFit: 'cover', width: '100%', height: '100%' }}
                 onLoad={(e) => {
                   e.currentTarget.classList.add('loaded');

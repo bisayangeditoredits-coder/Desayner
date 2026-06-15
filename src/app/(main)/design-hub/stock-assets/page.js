@@ -123,45 +123,39 @@ export default function StockAssetsPage() {
       {/* ── Hero / Search Header ────────────────────────────────────────── */}
       <div style={{
         position: 'relative',
-        background: 'linear-gradient(135deg, #e82d8c 0%, #a8005b 60%, #73003b 100%)',
-        padding: '2.5rem 1.5rem',
+        background: '#f8f8f8',
+        padding: '5rem 1.5rem',
         textAlign: 'center',
-        overflow: 'hidden',
+        borderBottom: '1px solid #f0f0f0',
       }}>
-        {/* Subtle pattern background overlay */}
-        <div style={{
-          position: 'absolute', inset: 0, zIndex: 0, opacity: 0.1,
-          backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)',
-          backgroundSize: '24px 24px',
-        }} />
-
         <div style={{ position: 'relative', zIndex: 1 }}>
-          <p style={{ fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.15em', color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', marginBottom: '0.75rem' }}>
-            Powered by Pixabay · Free vectors & illustrations
-          </p>
-          <h1 style={{ fontSize: 'clamp(1.75rem, 4vw, 2.75rem)', fontWeight: 900, color: 'white', marginBottom: '0.5rem', lineHeight: 1.15 }}>
+          <h1 style={{ fontSize: 'clamp(2.5rem, 5vw, 3.5rem)', fontWeight: 800, color: '#0d0c22', marginBottom: '1rem', lineHeight: 1.1, letterSpacing: '-0.03em' }}>
             Free Stock Assets
           </h1>
-          <p style={{ color: 'rgba(255,255,255,0.8)', fontSize: '1rem', marginBottom: '2rem' }}>
-            Thousands of high-quality vector illustrations and design assets.
+          <p style={{ color: '#6e6d7a', fontSize: '1.125rem', marginBottom: '2.5rem', fontWeight: 400, maxWidth: 600, margin: '0 auto 2.5rem' }}>
+            Thousands of high-quality vector illustrations and design assets. <br/>Powered by Pixabay.
           </p>
         </div>
 
         {/* Search bar */}
-        <div style={{
-          position: 'relative', zIndex: 1,
-          display: 'flex',
-          maxWidth: 660,
-          margin: '0 auto',
-          background: 'rgba(255, 255, 255, 0.1)',
-          backdropFilter: 'blur(12px)',
-          border: '1px solid rgba(255, 255, 255, 0.2)',
-          borderRadius: 12,
-          overflow: 'hidden',
-          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', paddingLeft: '1.1rem' }}>
-            <Search size={18} color="rgba(255, 255, 255, 0.8)" />
+        <div 
+          style={{
+            position: 'relative', zIndex: 1,
+            display: 'flex',
+            maxWidth: 660,
+            margin: '0 auto',
+            background: '#ffffff',
+            border: '1px solid #e7e7e9',
+            borderRadius: 100,
+            overflow: 'hidden',
+            boxShadow: '0 8px 30px rgba(0, 0, 0, 0.04)',
+            transition: 'box-shadow 0.2s',
+          }}
+          onMouseOver={e => e.currentTarget.style.boxShadow = '0 8px 30px rgba(0, 0, 0, 0.08)'}
+          onMouseOut={e => e.currentTarget.style.boxShadow = '0 8px 30px rgba(0, 0, 0, 0.04)'}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', paddingLeft: '1.5rem' }}>
+            <Search size={20} color="#9e9ea7" strokeWidth={2.5} />
           </div>
           <input
             ref={inputRef}
@@ -171,55 +165,70 @@ export default function StockAssetsPage() {
             placeholder="Search vectors, illustrations, pngs..."
             style={{
               flex: 1, border: 'none', outline: 'none',
-              padding: '1rem 0.75rem',
+              padding: '1.25rem 1rem',
               fontSize: '1rem', fontFamily: 'inherit',
-              background: 'transparent', color: 'white',
+              background: 'transparent', color: '#0d0c22',
+              fontWeight: 500,
             }}
-            className="placeholder-white-dim"
           />
           {query && (
-            <button onClick={() => setQuery('')} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '0 0.75rem', color: 'rgba(255,255,255,0.7)', display: 'flex', alignItems: 'center' }}>
-              <X size={16} />
+            <button onClick={() => setQuery('')} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '0 0.75rem', color: '#9e9ea7', display: 'flex', alignItems: 'center' }}>
+              <X size={18} strokeWidth={2.5} />
             </button>
           )}
           <button
             onClick={() => doSearch(query, 1)}
             style={{
-              padding: '0 1.5rem',
-              background: 'rgba(255,255,255,0.95)',
-              color: '#1a1a1a',
+              padding: '0 2rem',
+              background: '#2d43e8', // Brand blue
+              color: 'white',
               border: 'none',
-              fontWeight: 800,
-              fontSize: '0.875rem',
+              fontWeight: 700,
+              fontSize: '0.9375rem',
               cursor: 'pointer',
               fontFamily: 'inherit',
               whiteSpace: 'nowrap',
-              transition: 'all 0.15s',
+              transition: 'all 0.2s',
+              margin: '0.35rem 0.35rem 0.35rem 0',
+              borderRadius: 100,
             }}
-            onMouseOver={e => e.currentTarget.style.background = 'white'}
-            onMouseOut={e => e.currentTarget.style.background = 'rgba(255,255,255,0.95)'}
+            onMouseOver={e => e.currentTarget.style.background = '#1f32b8'}
+            onMouseOut={e => e.currentTarget.style.background = '#2d43e8'}
           >
             Search
           </button>
         </div>
 
         {/* Quick search chips */}
-        <div style={{ position: 'relative', zIndex: 1, display: 'flex', gap: '0.4rem', flexWrap: 'wrap', justifyContent: 'center', marginTop: '1.25rem' }}>
+        <div style={{ position: 'relative', zIndex: 1, display: 'flex', gap: '0.6rem', flexWrap: 'wrap', justifyContent: 'center', marginTop: '1.75rem' }}>
           {QUICK_SEARCHES.map(tag => (
             <button
               key={tag}
               onClick={() => setQuery(tag)}
               style={{
-                padding: '0.3rem 0.85rem',
-                background: query === tag ? 'white' : 'rgba(255,255,255,0.1)',
-                color: query === tag ? '#231f20' : 'rgba(255,255,255,0.75)',
-                border: query === tag ? 'none' : '1px solid rgba(255,255,255,0.15)',
-                borderRadius: 20,
-                fontSize: '0.75rem',
+                padding: '0.45rem 1.1rem',
+                background: query === tag ? '#0d0c22' : '#ffffff',
+                color: query === tag ? 'white' : '#6e6d7a',
+                border: query === tag ? '1px solid #0d0c22' : '1px solid #e7e7e9',
+                borderRadius: 100,
+                fontSize: '0.8125rem',
                 fontWeight: 600,
                 cursor: 'pointer',
                 fontFamily: 'inherit',
-                transition: 'all 0.15s',
+                transition: 'all 0.2s',
+                boxShadow: '0 2px 6px rgba(0,0,0,0.02)',
+              }}
+              onMouseOver={e => {
+                if (query !== tag) {
+                  e.currentTarget.style.borderColor = '#d1d1d4';
+                  e.currentTarget.style.color = '#0d0c22';
+                }
+              }}
+              onMouseOut={e => {
+                if (query !== tag) {
+                  e.currentTarget.style.borderColor = '#e7e7e9';
+                  e.currentTarget.style.color = '#6e6d7a';
+                }
               }}
             >
               {tag}
@@ -230,21 +239,21 @@ export default function StockAssetsPage() {
 
       {/* ── Filters bar ─────────────────────────────────────────────────── */}
       <div style={{
-        background: 'white',
-        borderBottom: '1px solid #e8e8e8',
-        padding: '0.75rem 1.5rem',
+        background: '#ffffff',
+        borderBottom: '1px solid #f0f0f0',
+        padding: '1rem 1.5rem',
         display: 'flex',
         alignItems: 'center',
         gap: '1rem',
         flexWrap: 'wrap',
       }}>
-        <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#6b6b6b' }}>
+        <span style={{ fontSize: '0.875rem', fontWeight: 600, color: '#0d0c22' }}>
           {loading ? 'Searching…' : total > 0 ? `${total.toLocaleString()} vectors for "${query}"` : ''}
         </span>
       </div>
 
       {/* ── Photo Grid ──────────────────────────────────────────────────── */}
-      <div style={{ padding: '1.5rem 1.5rem 3rem' }}>
+      <div style={{ padding: '2rem 1.5rem 4rem', maxWidth: 1600, margin: '0 auto' }}>
 
         {error && (
           <div style={{
@@ -261,11 +270,11 @@ export default function StockAssetsPage() {
 
         {/* Masonry grid */}
         <div style={{
-          columns: 'clamp(200px, 22vw, 300px)',
-          columnGap: '0.75rem',
+          columns: 'clamp(240px, 22vw, 320px)',
+          columnGap: '1.25rem',
         }}>
           {loading ? (
-            <div style={{ columns: 'unset', display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '0.75rem' }}>
+            <div style={{ columns: 'unset', display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '1.25rem' }}>
               <VectorSkeleton />
             </div>
           ) : (
@@ -274,24 +283,25 @@ export default function StockAssetsPage() {
                 key={photo.id}
                 style={{
                   breakInside: 'avoid',
-                  marginBottom: '0.75rem',
-                  borderRadius: 10,
+                  marginBottom: '1.25rem',
+                  borderRadius: 12,
                   overflow: 'hidden',
                   position: 'relative',
                   background: 'white',
-                  border: '1px solid #e8e8e8',
-                  cursor: 'default',
+                  border: '1px solid #f0f0f0',
+                  cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  padding: '1rem',
+                  padding: '1.5rem',
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.03)',
                 }}
                 className="stock-photo-card"
               >
                 {/* Checkerboard background for transparency indication */}
                 <div style={{
                   position: 'absolute', inset: 0, zIndex: 0, opacity: 0.4,
-                  backgroundImage: 'repeating-linear-gradient(45deg, #f0f0f0 25%, transparent 25%, transparent 75%, #f0f0f0 75%, #f0f0f0), repeating-linear-gradient(45deg, #f0f0f0 25%, #ffffff 25%, #ffffff 75%, #f0f0f0 75%, #f0f0f0)',
+                  backgroundImage: 'repeating-linear-gradient(45deg, #f8f8f8 25%, transparent 25%, transparent 75%, #f8f8f8 75%, #f8f8f8), repeating-linear-gradient(45deg, #f8f8f8 25%, #ffffff 25%, #ffffff 75%, #f8f8f8 75%, #f8f8f8)',
                   backgroundPosition: '0 0, 10px 10px',
                   backgroundSize: '20px 20px',
                 }} />
@@ -301,7 +311,9 @@ export default function StockAssetsPage() {
                   alt={photo.user?.name ? `Vector by ${photo.user.name}` : 'Stock vector'}
                   loading="lazy"
                   decoding="async"
-                  style={{ width: '100%', display: 'block', position: 'relative', zIndex: 1, objectFit: 'contain' }}
+                  style={{ width: '100%', display: 'block', position: 'relative', zIndex: 1, objectFit: 'contain', transition: 'transform 0.3s ease' }}
+                  onMouseOver={e => e.currentTarget.style.transform = 'scale(1.02)'}
+                  onMouseOut={e => e.currentTarget.style.transform = 'scale(1)'}
                 />
 
                 {/* Hover overlay */}

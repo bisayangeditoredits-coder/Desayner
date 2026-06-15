@@ -45,10 +45,16 @@ export default function TrendingProjectCard({ project, currentUserId, rank }) {
     setLiked(!wasLiked);
     setLikeCount((count) => Math.max(0, wasLiked ? count - 1 : count + 1));
 
-    if (wasLiked) {
-      await supabase.from('project_likes').delete().eq('user_id', currentUserId).eq('project_id', project.id);
-    } else {
-      await supabase.from('project_likes').insert({ user_id: currentUserId, project_id: project.id });
+    try {
+      await fetch(`/api/projects/${project.id}/like`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: wasLiked ? 'unlike' : 'like' })
+      });
+    } catch (err) {
+      console.error('Like failed', err);
+      setLiked(wasLiked);
+      setLikeCount((count) => Math.max(0, wasLiked ? count + 1 : count - 1));
     }
   }
 

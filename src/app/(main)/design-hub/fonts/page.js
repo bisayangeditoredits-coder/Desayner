@@ -72,12 +72,13 @@ function FontCard({ font, previewText, loaded }) {
       className="font-card-item"
       style={{
         background: 'white',
-        border: '1px solid #e8e8e8',
-        borderRadius: 10,
+        border: '1px solid #f0f0f0',
+        borderRadius: 12,
         overflow: 'hidden',
         display: 'flex',
         flexDirection: 'column',
-        transition: 'box-shadow 0.2s, border-color 0.18s',
+        transition: 'box-shadow 0.2s, border-color 0.18s, transform 0.2s ease',
+        boxShadow: '0 4px 12px rgba(0,0,0,0.03)',
       }}
     >
       {/* Header row */}
@@ -132,20 +133,26 @@ function FontCard({ font, previewText, loaded }) {
             display: 'inline-flex',
             alignItems: 'center',
             gap: '0.3rem',
-            padding: '0.38rem 0.75rem',
-            background: '#231f20',
-            color: 'white',
-            borderRadius: 6,
-            fontSize: '0.72rem',
+            padding: '0.45rem 0.85rem',
+            background: 'rgba(45, 67, 232, 0.08)',
+            color: '#2d43e8',
+            borderRadius: 100,
+            fontSize: '0.75rem',
             fontWeight: 700,
             textDecoration: 'none',
             whiteSpace: 'nowrap',
             flexShrink: 0,
             fontFamily: 'var(--font-grotesk, inherit)',
-            transition: 'background 0.15s',
+            transition: 'all 0.15s',
           }}
-          onMouseOver={e => e.currentTarget.style.background = '#2d43e8'}
-          onMouseOut={e => e.currentTarget.style.background = '#231f20'}
+          onMouseOver={e => {
+            e.currentTarget.style.background = '#2d43e8';
+            e.currentTarget.style.color = 'white';
+          }}
+          onMouseOut={e => {
+            e.currentTarget.style.background = 'rgba(45, 67, 232, 0.08)';
+            e.currentTarget.style.color = '#2d43e8';
+          }}
         >
           <Download size={11} />
           Download
@@ -290,105 +297,114 @@ function FontsInner() {
       {/* ── Hero ── */}
       <div style={{
         position: 'relative',
-        background: 'linear-gradient(135deg, #2d43e8 0%, #0006a8 60%, #000473 100%)',
-        padding: '2.5rem 1.5rem',
+        background: '#f8f8f8',
+        padding: '5rem 1.5rem',
         textAlign: 'center',
-        overflow: 'hidden',
+        borderBottom: '1px solid #f0f0f0',
       }}>
-        {/* Subtle text-art watermark */}
-        <div style={{
-          position: 'absolute', inset: 0, zIndex: 0,
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontSize: 'clamp(6rem, 18vw, 14rem)',
-          fontWeight: 900,
-          color: 'rgba(255,255,255,0.04)',
-          letterSpacing: '-0.05em',
-          userSelect: 'none',
-          pointerEvents: 'none',
-          fontFamily: 'var(--font-display, inherit)',
-          overflow: 'hidden',
-          whiteSpace: 'nowrap',
-        }}>
-          Aa Bb Cc
-        </div>
-
         <div style={{ position: 'relative', zIndex: 1 }}>
-          <p style={{
-            fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.15em',
-            color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase',
-            marginBottom: '0.75rem', fontFamily: 'var(--font-grotesk, inherit)',
-          }}>
-            Powered by Bunny Fonts · Free to download &amp; use
-          </p>
-          <h1 style={{
-            fontSize: 'clamp(1.75rem, 4vw, 2.75rem)', fontWeight: 900,
-            color: 'white', marginBottom: '0.5rem', lineHeight: 1.15,
-          }}>
+          <h1 style={{ fontSize: 'clamp(2.5rem, 5vw, 3.5rem)', fontWeight: 800, color: '#0d0c22', marginBottom: '1rem', lineHeight: 1.1, letterSpacing: '-0.03em' }}>
             Browse &amp; Download Fonts
           </h1>
-          <p style={{ color: 'rgba(255,255,255,0.75)', fontSize: '1rem', marginBottom: '2rem' }}>
+          <p style={{ color: '#6e6d7a', fontSize: '1.125rem', marginBottom: '2.5rem', fontWeight: 400, maxWidth: 600, margin: '0 auto 2.5rem' }}>
             {total > 0
-              ? <><strong style={{ color: 'white' }}>{total.toLocaleString()}</strong> free fonts · download direct from Google</>
+              ? <><strong style={{ color: '#0d0c22' }}>{total.toLocaleString()}</strong> free fonts · Download direct from Google</>
               : 'Thousands of free fonts · Download from Google Fonts'}
           </p>
         </div>
 
-        {/* Search bar — same shape as stock photos */}
-        <div style={{
-          position: 'relative', zIndex: 1,
-          display: 'flex', maxWidth: 660, margin: '0 auto',
-          background: 'white', borderRadius: 12, overflow: 'hidden',
-          boxShadow: '0 8px 32px rgba(45, 67, 232,0.25)',
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', paddingLeft: '1.1rem' }}>
-            <Search size={18} color="#9b9b9b" />
+        {/* Search bar */}
+        <div 
+          style={{
+            position: 'relative', zIndex: 1,
+            display: 'flex',
+            maxWidth: 660,
+            margin: '0 auto',
+            background: '#ffffff',
+            border: '1px solid #e7e7e9',
+            borderRadius: 100,
+            overflow: 'hidden',
+            boxShadow: '0 8px 30px rgba(0, 0, 0, 0.04)',
+            transition: 'box-shadow 0.2s',
+          }}
+          onMouseOver={e => e.currentTarget.style.boxShadow = '0 8px 30px rgba(0, 0, 0, 0.08)'}
+          onMouseOut={e => e.currentTarget.style.boxShadow = '0 8px 30px rgba(0, 0, 0, 0.04)'}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', paddingLeft: '1.5rem' }}>
+            <Search size={20} color="#9e9ea7" strokeWidth={2.5} />
           </div>
           <input
             ref={inputRef}
             value={query}
             onChange={handleQueryChange}
             onKeyDown={e => e.key === 'Enter' && doFetch(query, category, 1)}
-            placeholder="Search fonts — e.g. Roboto, Playfair, Inter…"
+            placeholder="Search fonts — e.g. Roboto, Playfair..."
             style={{
               flex: 1, border: 'none', outline: 'none',
-              padding: '1rem 0.75rem', fontSize: '1rem',
-              fontFamily: 'inherit', background: 'transparent', color: '#231f20',
+              padding: '1.25rem 1rem',
+              fontSize: '1rem', fontFamily: 'inherit',
+              background: 'transparent', color: '#0d0c22',
+              fontWeight: 500,
             }}
           />
           {query && (
-            <button onClick={handleClear} style={{
-              background: 'none', border: 'none', cursor: 'pointer',
-              padding: '0 0.75rem', color: '#9b9b9b', display: 'flex', alignItems: 'center',
-            }}>
-              <X size={16} />
+            <button onClick={handleClear} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '0 0.75rem', color: '#9e9ea7', display: 'flex', alignItems: 'center' }}>
+              <X size={18} strokeWidth={2.5} />
             </button>
           )}
-          <button onClick={() => doFetch(query, category, 1)} style={{
-            padding: '0 1.5rem', background: '#231f20', color: 'white',
-            border: 'none', fontWeight: 700, fontSize: '0.875rem',
-            cursor: 'pointer', fontFamily: 'inherit', whiteSpace: 'nowrap',
-          }}>
+          <button
+            onClick={() => doFetch(query, category, 1)}
+            style={{
+              padding: '0 2rem',
+              background: '#2d43e8', // Brand blue
+              color: 'white',
+              border: 'none',
+              fontWeight: 700,
+              fontSize: '0.9375rem',
+              cursor: 'pointer',
+              fontFamily: 'inherit',
+              whiteSpace: 'nowrap',
+              transition: 'all 0.2s',
+              margin: '0.35rem 0.35rem 0.35rem 0',
+              borderRadius: 100,
+            }}
+            onMouseOver={e => e.currentTarget.style.background = '#1f32b8'}
+            onMouseOut={e => e.currentTarget.style.background = '#2d43e8'}
+          >
             Search
           </button>
         </div>
 
         {/* Quick search chips */}
-        <div style={{
-          position: 'relative', zIndex: 1,
-          display: 'flex', gap: '0.4rem', flexWrap: 'wrap',
-          justifyContent: 'center', marginTop: '1.25rem',
-        }}>
+        <div style={{ position: 'relative', zIndex: 1, display: 'flex', gap: '0.6rem', flexWrap: 'wrap', justifyContent: 'center', marginTop: '1.75rem' }}>
           {QUICK_SEARCHES.map(tag => (
             <button
               key={tag}
               onClick={() => handleQuickSearch(tag)}
               style={{
-                padding: '0.3rem 0.85rem',
-                background: query === tag ? 'white' : 'rgba(255,255,255,0.1)',
-                color: query === tag ? '#231f20' : 'rgba(255,255,255,0.75)',
-                border: query === tag ? 'none' : '1px solid rgba(255,255,255,0.15)',
-                borderRadius: 20, fontSize: '0.75rem', fontWeight: 600,
-                cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.15s',
+                padding: '0.45rem 1.1rem',
+                background: query === tag ? '#0d0c22' : '#ffffff',
+                color: query === tag ? 'white' : '#6e6d7a',
+                border: query === tag ? '1px solid #0d0c22' : '1px solid #e7e7e9',
+                borderRadius: 100,
+                fontSize: '0.8125rem',
+                fontWeight: 600,
+                cursor: 'pointer',
+                fontFamily: 'inherit',
+                transition: 'all 0.2s',
+                boxShadow: '0 2px 6px rgba(0,0,0,0.02)',
+              }}
+              onMouseOver={e => {
+                if (query !== tag) {
+                  e.currentTarget.style.borderColor = '#d1d1d4';
+                  e.currentTarget.style.color = '#0d0c22';
+                }
+              }}
+              onMouseOut={e => {
+                if (query !== tag) {
+                  e.currentTarget.style.borderColor = '#e7e7e9';
+                  e.currentTarget.style.color = '#6e6d7a';
+                }
               }}
             >
               {tag}
@@ -399,13 +415,13 @@ function FontsInner() {
 
       {/* ── Filter bar ── */}
       <div style={{
-        background: 'white', borderBottom: '1px solid #e8e8e8',
-        padding: '0.75rem 1.5rem',
+        background: '#ffffff', borderBottom: '1px solid #f0f0f0',
+        padding: '1rem 1.5rem',
         display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap',
       }}>
         {/* LEFT: result count + preview input */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flex: 1, minWidth: 0 }}>
-          <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#6b6b6b', whiteSpace: 'nowrap' }}>
+          <span style={{ fontSize: '0.875rem', fontWeight: 600, color: '#0d0c22', whiteSpace: 'nowrap' }}>
             {loading
               ? 'Loading…'
               : total > 0
@@ -416,29 +432,32 @@ function FontsInner() {
           {/* Preview input — left side, always visible */}
           <div style={{
             display: 'flex', alignItems: 'center', gap: '0.5rem',
-            background: '#f5f5f5', border: '1.5px solid #e0e0e0', borderRadius: 8,
-            padding: '0.45rem 0.85rem', flex: 1, maxWidth: 340,
-          }}>
-            <Type size={14} color="#2d43e8" style={{ flexShrink: 0 }} />
+            background: '#f8f8f8', border: '1px solid #e7e7e9', borderRadius: 100,
+            padding: '0.5rem 1rem', flex: 1, maxWidth: 340,
+            transition: 'border-color 0.2s',
+          }}
+          onMouseOver={e => e.currentTarget.style.borderColor = '#d1d1d4'}
+          onMouseOut={e => e.currentTarget.style.borderColor = '#e7e7e9'}>
+            <Type size={16} color="#9e9ea7" style={{ flexShrink: 0 }} />
             <input
               type="text"
               value={preview}
               onChange={e => setPreview(e.target.value)}
-              placeholder="Type to preview any text in all fonts…"
+              placeholder="Type to preview..."
               maxLength={60}
               style={{
                 border: 'none', background: 'transparent', outline: 'none',
-                fontSize: '0.85rem', color: '#231f20', fontFamily: 'inherit',
-                width: '100%',
+                fontSize: '0.85rem', color: '#0d0c22', fontFamily: 'inherit',
+                width: '100%', fontWeight: 500,
               }}
               aria-label="Font preview text"
             />
             {preview !== DEFAULT_PREVIEW && preview.trim() !== '' && (
               <button
                 onClick={() => setPreview(DEFAULT_PREVIEW)}
-                style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#9b9b9b', display: 'flex', padding: 0, flexShrink: 0 }}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#9e9ea7', display: 'flex', padding: 0, flexShrink: 0 }}
               >
-                <X size={13} />
+                <X size={14} strokeWidth={2.5} />
               </button>
             )}
           </div>
@@ -450,19 +469,26 @@ function FontsInner() {
           overflowX: 'auto', scrollbarWidth: 'none', maxWidth: '100%',
           paddingBottom: '0.2rem'
         }}>
-          <span style={{ fontSize: '0.75rem', color: '#9b9b9b', fontWeight: 600, flexShrink: 0 }}>Category:</span>
+          <span style={{ fontSize: '0.75rem', color: '#6e6d7a', fontWeight: 600, flexShrink: 0, marginRight: '0.25rem' }}>Category:</span>
           {CATEGORIES.map(c => (
             <button
               key={c.value}
               onClick={() => handleCategory(c.value)}
               style={{
-                padding: '0.3rem 0.75rem',
-                background: category === c.value ? '#231f20' : '#f5f5f5',
-                color: category === c.value ? 'white' : '#6b6b6b',
-                border: 'none', borderRadius: 6,
-                fontSize: '0.75rem', fontWeight: 600,
+                padding: '0.35rem 0.85rem',
+                background: category === c.value ? '#0d0c22' : 'transparent',
+                color: category === c.value ? 'white' : '#6e6d7a',
+                border: 'none', borderRadius: 100,
+                fontSize: '0.8125rem', fontWeight: 600,
                 cursor: 'pointer', fontFamily: 'inherit',
-                flexShrink: 0, whiteSpace: 'nowrap'
+                flexShrink: 0, whiteSpace: 'nowrap',
+                transition: 'all 0.2s',
+              }}
+              onMouseOver={e => {
+                if (category !== c.value) e.currentTarget.style.color = '#0d0c22';
+              }}
+              onMouseOut={e => {
+                if (category !== c.value) e.currentTarget.style.color = '#6e6d7a';
               }}
             >
               {c.label}
@@ -473,10 +499,10 @@ function FontsInner() {
 
 
       {/* ── Font Grid ── */}
-      <div className="fonts-grid-container" style={{ padding: '1.5rem 1.5rem 3rem' }}>
+      <div className="fonts-grid-container" style={{ padding: '2rem 1.5rem 4rem', maxWidth: 1600, margin: '0 auto' }}>
         <div className="fonts-grid" style={{
           display: 'grid',
-          gap: '1rem',
+          gap: '1.25rem',
         }}>
           {loading ? (
             <FontSkeleton />
@@ -547,8 +573,9 @@ function FontsInner() {
           grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
         }
         .font-card-item:hover {
-          box-shadow: 0 4px 16px rgba(0,0,0,0.08) !important;
-          border-color: #d1d5db !important;
+          box-shadow: 0 12px 32px rgba(0,0,0,0.08) !important;
+          border-color: transparent !important;
+          transform: translateY(-2px);
         }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         
