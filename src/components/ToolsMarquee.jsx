@@ -76,6 +76,7 @@ export default function ToolsMarquee() {
                 alt={img.replace('.png', '')}
                 width={36}
                 height={36}
+                unoptimized
                 className="tool-icon"
               />
             </div>
@@ -89,6 +90,7 @@ export default function ToolsMarquee() {
                 alt={img.replace('.png', '')}
                 width={36}
                 height={36}
+                unoptimized
                 className="tool-icon"
               />
             </div>

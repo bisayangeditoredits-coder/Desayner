@@ -152,6 +152,7 @@ export default function Dashboard() {
               width={1200}
               height={300}
               priority={idx === 0}
+              unoptimized
               style={{
                 position: 'absolute',
                 top: 0,
