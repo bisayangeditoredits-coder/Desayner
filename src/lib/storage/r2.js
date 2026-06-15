@@ -1,5 +1,4 @@
-import { S3Client, PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
-import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import { S3Client } from '@aws-sdk/client-s3';
 
 /**
  * Cloudflare R2 Storage Utility
@@ -32,29 +31,4 @@ export function getAssetUrl(key) {
   return `${PUBLIC_URL}/${key}`;
 }
 
-/**
- * Generate a pre-signed upload URL so the browser can upload directly
- * to R2 without going through your server (saves bandwidth & cost).
- * URL expires in 10 minutes.
- *
- * @param {string} key - The file key (path) to upload to.
- * @param {string} contentType - MIME type of the file (e.g. 'image/png').
- * @returns {Promise<string>} A pre-signed URL for PUT upload.
- */
-export async function getUploadUrl(key, contentType) {
-  const command = new PutObjectCommand({
-    Bucket: BUCKET,
-    Key: key,
-    ContentType: contentType,
-  });
-  return getSignedUrl(R2, command, { expiresIn: 600 });
-}
 
-/**
- * Delete an asset from R2.
- * @param {string} key - The file key (path) in the R2 bucket.
- */
-export async function deleteAsset(key) {
-  const command = new DeleteObjectCommand({ Bucket: BUCKET, Key: key });
-  await R2.send(command);
-}

@@ -15,7 +15,7 @@ const CATEGORIES = ['All', 'Design', 'Illustration', 'Photography', 'Branding', 
 const PAGE_SIZE = 24;
 
 export default function ProjectsPage() {
-  const { category, scrollPosition, setFeedState, setScrollPosition } = useFeedStore();
+  const { category, scrollPosition, interactions, setFeedState, setScrollPosition, setInteractions } = useFeedStore();
   const [currentUserId, setCurrentUserId] = useState(null);
 
   const supabase = useMemo(() => createClient(), []);
@@ -53,6 +53,43 @@ export default function ProjectsPage() {
   const isLoadingMore = isLoadingInitialData || (size > 0 && data && typeof data[size - 1] === "undefined");
   const isEmpty = data?.[0]?.length === 0;
   const hasMore = data ? data[data.length - 1]?.length === PAGE_SIZE : false;
+
+  // Background interaction hydration
+  useEffect(() => {
+    if (!currentUserId || !projects.length) return;
+
+    const allProjects = projects.flat();
+    const missingIds = allProjects
+      .map(p => p.id)
+      .filter(id => interactions && interactions[id] === undefined);
+
+    if (missingIds.length === 0) return;
+
+    const pending = {};
+    missingIds.forEach(id => pending[id] = { liked: false, saved: false });
+    setInteractions(pending);
+
+    async function fetchInteractions() {
+      const [{ data: likedList }, { data: savedList }] = await Promise.all([
+        supabase.from('project_likes').select('project_id').eq('user_id', currentUserId).in('project_id', missingIds),
+        supabase.from('project_saves').select('project_id').eq('user_id', currentUserId).in('project_id', missingIds)
+      ]);
+
+      const likedSet = new Set((likedList || []).map(l => l.project_id));
+      const savedSet = new Set((savedList || []).map(l => l.project_id));
+
+      const newInteractions = {};
+      missingIds.forEach(id => {
+        newInteractions[id] = {
+          liked: likedSet.has(id),
+          saved: savedSet.has(id)
+        };
+      });
+
+      setInteractions(newInteractions);
+    }
+    fetchInteractions();
+  }, [currentUserId, projects, interactions, setInteractions, supabase]);
 
   // Scroll restoration based on previously cached state
   useEffect(() => {
@@ -157,12 +194,18 @@ export default function ProjectsPage() {
           <>
             <div className="projects-masonry">
               {projects.flat().map((project, index, arr) => {
-                const isLast = index === arr.length - 1;
-                return (
-                  <div key={project.id} ref={isLast ? lastElementRef : null} style={{ width: '100%', minWidth: 0, breakInside: 'avoid' }}>
-                    <ProjectCard project={project} currentUserId={currentUserId} />
-                  </div>
-                );
+                  const isLast = index === arr.length - 1;
+                  const interact = interactions?.[project.id] || {};
+                  return (
+                    <div key={project.id} ref={isLast ? lastElementRef : null} style={{ width: '100%', minWidth: 0, breakInside: 'avoid' }}>
+                      <ProjectCard 
+                        project={project} 
+                        currentUserId={currentUserId}
+                        isLiked={interact.liked}
+                        isSaved={interact.saved}
+                      />
+                    </div>
+                  );
               })}
             </div>
 

@@ -299,37 +299,37 @@ export default function ProjectDetailClient({ isModal = false }) {
           </div>
         </div>
 
-        {/* Minimal Header (Dribbble Style) */}
-        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '1rem 1.5rem 1.5rem' }}>
-          <h1 style={{ fontSize: '1.6rem', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.02em', marginBottom: '1.25rem', fontFamily: '"Inter", "Segoe UI", sans-serif' }}>
-            {project.title}
-          </h1>
-          
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
-            {/* Author Info */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
-              <a href={profileHref} onClick={goToAuthorProfile} style={{ textDecoration: 'none' }}>
-                <UserAvatar src={author?.avatar_url} name={author?.full_name || author?.username} size={44} />
-              </a>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.15rem' }}>
-                <a href={profileHref} onClick={goToAuthorProfile} style={{ textDecoration: 'none', color: '#0f172a', fontWeight: 700, fontSize: '0.9rem', fontFamily: '"Inter", "Segoe UI", sans-serif' }}>
-                  {author?.full_name || author?.username || 'Designer'}
-                </a>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.8rem', fontFamily: '"Inter", "Segoe UI", sans-serif' }}>
-                  <span style={{ color: '#10b981', fontWeight: 600 }}>Available for work</span>
-                  <span style={{ color: '#cbd5e1' }}>•</span>
-                  <FollowButton targetUserId={author?.id} initialIsFollowing={isFollowing} variant="text" />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
         {/* Two-column layout */}
         <div className="project-detail__body" style={{ marginTop: '0' }}>
 
           {/* ── LEFT: content ─────────────────────────── */}
           <article className="project-detail__main" style={{ width: '100%', maxWidth: '1000px', margin: '0 auto' }}>
+
+            {/* Minimal Header (Dribbble Style) perfectly aligned with image */}
+            <div style={{ paddingBottom: '1.5rem' }}>
+              <h1 style={{ fontSize: '1.6rem', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.02em', marginBottom: '1.25rem', fontFamily: '"Inter", "Segoe UI", sans-serif' }}>
+                {project.title}
+              </h1>
+              
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
+                {/* Author Info */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+                  <a href={profileHref} onClick={goToAuthorProfile} style={{ textDecoration: 'none' }}>
+                    <UserAvatar src={author?.avatar_url} name={author?.full_name || author?.username} size={44} />
+                  </a>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.15rem' }}>
+                    <a href={profileHref} onClick={goToAuthorProfile} style={{ textDecoration: 'none', color: '#0f172a', fontWeight: 700, fontSize: '0.9rem', fontFamily: '"Inter", "Segoe UI", sans-serif' }}>
+                      {author?.full_name || author?.username || 'Designer'}
+                    </a>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.8rem', fontFamily: '"Inter", "Segoe UI", sans-serif' }}>
+                      <span style={{ color: '#10b981', fontWeight: 600 }}>Available for work</span>
+                      <span style={{ color: '#cbd5e1' }}>•</span>
+                      <FollowButton targetUserId={author?.id} initialIsFollowing={isFollowing} variant="text" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
 
             {/* Full-width image gallery */}
             <ImageGallery images={allImages} title={project.title} />
@@ -402,9 +402,11 @@ export default function ProjectDetailClient({ isModal = false }) {
               <button onClick={handleShare} style={{ width: '40px', height: '40px', borderRadius: '50%', border: '1px solid #e2e8f0', background: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#64748b', transition: 'all 0.2s', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
                 {shareToast ? <Check size={18} color="#1a8a3b" /> : <Share size={18} />}
               </button>
-              <a href={`mailto:${author?.email || 'hello@desayner.com'}`} style={{ padding: '0 1.5rem', height: '40px', borderRadius: '20px', border: 'none', background: '#0f172a', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 600, textDecoration: 'none', marginLeft: '0.25rem', fontFamily: '"Inter", "Segoe UI", sans-serif' }}>
-                Get in touch
-              </a>
+              {author?.website && (
+                <a href={author.website.startsWith('http') ? author.website : `https://${author.website}`} target="_blank" rel="noopener noreferrer" style={{ padding: '0 1.5rem', height: '40px', borderRadius: '20px', border: 'none', background: '#0f172a', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 600, textDecoration: 'none', marginLeft: '0.25rem', fontFamily: '"Inter", "Segoe UI", sans-serif' }}>
+                  Get in touch
+                </a>
+              )}
             </div>
 
             <aside className="project-detail__sidebar" style={{ position: 'static', marginTop: 0 }}>
@@ -525,7 +527,14 @@ export default function ProjectDetailClient({ isModal = false }) {
         />
       )}
 
-      {/* Mobile Fixed Action Bar */}
+      {/* Mobile Fixed Action Bar (CSS handles visibility) */}
+      <style>{`
+        .mobile-actions { display: none !important; }
+        @media (max-width: 768px) {
+          .mobile-actions { display: flex !important; }
+          .desktop-actions-left { display: none !important; }
+        }
+      `}</style>
       <div className="mobile-actions">
         <button onClick={toggleLike} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.2rem', background: 'none', border: 'none', cursor: 'pointer', color: liked ? '#ef4444' : '#64748b', fontWeight: 600, fontSize: '0.7rem' }}>
           <Heart size={22} fill={liked ? 'currentColor' : 'none'} />
@@ -539,9 +548,11 @@ export default function ProjectDetailClient({ isModal = false }) {
           {shareToast ? <Check size={22} color="#1a8a3b" /> : <Share size={22} />}
           <span>Share</span>
         </button>
-        <a href={`mailto:${author?.email || 'hello@desayner.com'}`} style={{ padding: '0 1.2rem', height: '38px', borderRadius: '20px', border: 'none', background: '#0f172a', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 600, textDecoration: 'none', fontFamily: '"Inter", "Segoe UI", sans-serif' }}>
-          Contact
-        </a>
+        {author?.website && (
+          <a href={author.website.startsWith('http') ? author.website : `https://${author.website}`} target="_blank" rel="noopener noreferrer" style={{ padding: '0 1.2rem', height: '38px', borderRadius: '20px', border: 'none', background: '#0f172a', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 600, textDecoration: 'none', fontFamily: '"Inter", "Segoe UI", sans-serif' }}>
+            Contact
+          </a>
+        )}
       </div>
     </>
   );

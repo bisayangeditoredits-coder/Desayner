@@ -66,7 +66,7 @@ export async function GET(request) {
       
       const { data: risingData } = await supabase
         .from('profiles')
-        .select('id, username, full_name, avatar_url, bio, followers_count, projects_count, tools, created_at')
+        .select('id, username, full_name, avatar_url, bio, followers_count, projects_count, tools, created_at, available_for_work')
         .gte('created_at', thirtyDaysAgo.toISOString())
         .order('followers_count', { ascending: false })
         .limit(4);
@@ -101,7 +101,7 @@ export async function GET(request) {
     // 3. Fetch Main Creators Grid
     let query = supabase
       .from('profiles')
-      .select('id, username, full_name, avatar_url, bio, location, followers_count, following_count, projects_count, created_at, tools')
+      .select('id, username, full_name, avatar_url, bio, location, followers_count, following_count, projects_count, created_at, tools, available_for_work')
       .not('username', 'is', null)
       .range((page - 1) * PAGE_SIZE, page * PAGE_SIZE - 1);
 

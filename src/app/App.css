@@ -4024,12 +4024,19 @@
 .mobile-actions { display: none; }
 @media (max-width: 900px) {
   .desktop-actions { display: none !important; }
+}
+@media (max-width: 768px) {
+  .desktop-actions-left { display: none !important; }
   .mobile-actions {
     display: flex; position: fixed; bottom: 0; left: 0; right: 0;
     background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px);
     border-top: 1px solid var(--glass-border); padding: 0.75rem 1.5rem;
     justify-content: space-between; align-items: center; z-index: 1000;
     box-shadow: 0 -4px 12px rgba(0,0,0,0.05);
+    gap: 1rem;
+  }
+  .mobile-actions > a {
+    flex: 1;
   }
   .project-detail__body { padding-bottom: 80px; }
 }

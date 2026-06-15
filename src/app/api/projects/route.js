@@ -1,10 +1,9 @@
 import { NextResponse } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
-import { cookies } from 'next/headers';
 import { redis } from '@/lib/redis';
 
 export const runtime = 'edge';
-const CACHE_HEADERS = { 'Cache-Control': 's-maxage=60, stale-while-revalidate=30' };
+const CACHE_HEADERS = { 'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=120' };
 
 export async function GET(request) {
   try {
@@ -20,38 +19,7 @@ export async function GET(request) {
       try {
         const cached = await redis.get(cacheKey);
         if (cached) {
-          // Resolve current user liked state dynamically
-          const cookieStore = await cookies();
-          const supabase = createServerClient(
-            process.env.NEXT_PUBLIC_SUPABASE_URL,
-            process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-            { cookies: { getAll: () => cookieStore.getAll() } }
-          );
-          const { data: { user } } = await supabase.auth.getUser();
-
           const items = (cached.projects || []).map((project) => ({ ...project }));
-          if (user && items.length > 0) {
-            const projectIds = items.map(p => p.id);
-            const { data: likedList } = await supabase
-              .from('project_likes')
-              .select('project_id')
-              .eq('user_id', user.id)
-              .in('project_id', projectIds);
-
-            const { data: savedList } = await supabase
-              .from('project_saves')
-              .select('project_id')
-              .eq('user_id', user.id)
-              .in('project_id', projectIds);
-
-            const likedSet = new Set((likedList || []).map(l => l.project_id));
-            const savedSet = new Set((savedList || []).map(l => l.project_id));
-            
-            items.forEach(p => { 
-              p.user_liked = likedSet.has(p.id); 
-              p.user_saved = savedSet.has(p.id);
-            });
-          }
           return NextResponse.json({ projects: items, cached: true }, { headers: CACHE_HEADERS });
         }
       } catch (err) {
@@ -60,11 +28,10 @@ export async function GET(request) {
     }
 
     // 2. Fetch from database
-    const cookieStore = await cookies();
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-      { cookies: { getAll: () => cookieStore.getAll() } }
+      { cookies: { getAll: () => [] } } // No cookies required for public data
     );
 
     let query = supabase
@@ -85,30 +52,7 @@ export async function GET(request) {
 
     const items = data || [];
 
-    // 3. Resolve user likes for DB fetch
-    const { data: { user } } = await supabase.auth.getUser();
-    if (user && items.length > 0) {
-      const projectIds = items.map(p => p.id);
-      const { data: likedList } = await supabase
-        .from('project_likes')
-        .select('project_id')
-        .eq('user_id', user.id)
-        .in('project_id', projectIds);
 
-      const { data: savedList } = await supabase
-        .from('project_saves')
-        .select('project_id')
-        .eq('user_id', user.id)
-        .in('project_id', projectIds);
-
-      const likedSet = new Set((likedList || []).map(l => l.project_id));
-      const savedSet = new Set((savedList || []).map(l => l.project_id));
-      
-      items.forEach(p => { 
-        p.user_liked = likedSet.has(p.id); 
-        p.user_saved = savedSet.has(p.id);
-      });
-    }
 
     // 4. Cache first page responses to Redis for 60 seconds
     if (offset === 0) {

@@ -31,7 +31,7 @@ const labelStyle = {
 export default function SettingsPage() {
   const [tab, setTab]         = useState('profile');
   const [profile, setProfile] = useState(null);
-  const [form, setForm]       = useState({ full_name: '', username: '', bio: '', website: '', location: '', tools: [], skills: [] });
+  const [form, setForm]       = useState({ full_name: '', username: '', bio: '', website: '', location: '', tools: [], skills: [], available_for_work: false });
   const [avatarUrl, setAvatarUrl] = useState('');
   const [coverUrl, setCoverUrl]   = useState('');
   const [saving, setSaving]   = useState(false);
@@ -60,6 +60,7 @@ export default function SettingsPage() {
           location:  data.location  || '',
           tools:     data.tools     || [],
           skills:    data.skills    || [],
+          available_for_work: !!data.available_for_work,
         });
         setAvatarUrl(data.avatar_url || '');
         setCoverUrl(data.cover_url || '');
@@ -82,6 +83,7 @@ export default function SettingsPage() {
       avatar_url: avatarUrl           || null,
       cover_url:  coverUrl            || null,
       tools:      form.tools,
+      available_for_work: form.available_for_work,
     };
 
     let { error: err } = await supabase.from('profiles').update(payload).eq('id', profile.id);
@@ -324,6 +326,44 @@ export default function SettingsPage() {
                   onFocus={e => e.target.style.borderColor = '#231f20'}
                   onBlur={e => e.target.style.borderColor = '#e8e8e8'}
                 />
+              </div>
+
+              {/* Available for Work Toggle */}
+              <div>
+                <label style={labelStyle}>Availability</label>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1rem', border: '1px solid', borderColor: form.available_for_work ? '#bbf7d0' : '#e8e8e8', borderRadius: '12px', background: form.available_for_work ? '#f0fdf4' : '#fafafa', transition: 'all 0.3s' }}>
+                  <div style={{ paddingRight: '1rem' }}>
+                    <h3 style={{ margin: '0 0 0.25rem 0', fontSize: '0.9rem', fontWeight: 700, color: form.available_for_work ? '#166534' : '#0f172a' }}>Available for Work</h3>
+                    <p style={{ margin: 0, fontSize: '0.75rem', color: '#64748b' }}>Show a "Hire Me" badge on your profile to let clients know you are taking on new freelance projects.</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setForm(p => ({ ...p, available_for_work: !p.available_for_work }))}
+                    style={{
+                      width: '44px',
+                      height: '24px',
+                      borderRadius: '12px',
+                      background: form.available_for_work ? '#22c55e' : '#cbd5e1',
+                      border: 'none',
+                      position: 'relative',
+                      cursor: 'pointer',
+                      transition: 'background 0.3s ease',
+                      flexShrink: 0
+                    }}
+                  >
+                    <div style={{
+                      width: '20px',
+                      height: '20px',
+                      borderRadius: '50%',
+                      background: 'white',
+                      position: 'absolute',
+                      top: '2px',
+                      left: form.available_for_work ? '22px' : '2px',
+                      transition: 'left 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+                      boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+                    }} />
+                  </button>
+                </div>
               </div>
 
               {/* Skills / specialties */}

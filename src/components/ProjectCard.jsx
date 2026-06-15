@@ -13,15 +13,23 @@ import dynamic from 'next/dynamic';
 import { stripCloudinaryProxy } from '@/lib/utils';
 const SaveToCollectionModal = dynamic(() => import('./SaveToCollectionModal'), { ssr: false });
 
-export default function ProjectCard({ project, currentUserId }) {
-  const [liked, setLiked]         = useState(project.user_liked || false);
-  const [saved, setSaved]         = useState(project.user_saved || false);
+export default function ProjectCard({ project, currentUserId, isLiked, isSaved }) {
+  const [liked, setLiked]         = useState(project.user_liked || isLiked || false);
+  const [saved, setSaved]         = useState(project.user_saved || isSaved || false);
   const [likeCount, setLikeCount] = useState(project.likes_count || 0);
   const [viewCount, setViewCount] = useState(project.views_count || 0);
   const [saveCount, setSaveCount] = useState(project.saves_count || 0);
   const [showColModal, setShowColModal] = useState(false);
   // 'loading' | 'loaded' | 'error'
   const [imgStatus, setImgStatus] = useState('loading');
+
+  useEffect(() => {
+    if (isLiked !== undefined) setLiked(isLiked);
+  }, [isLiked]);
+
+  useEffect(() => {
+    if (isSaved !== undefined) setSaved(isSaved);
+  }, [isSaved]);
 
   // FIX: Memoize supabase client — don't create a new instance on every render
   const supabase = useMemo(() => createClient(), []);

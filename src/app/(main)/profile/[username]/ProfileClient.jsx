@@ -162,6 +162,31 @@ export default function ProfilePage() {
             <div className="profile-v2__name-row">
               <h1 className="profile-v2__name">{profile.full_name || profile.username}</h1>
               <span className="profile-v2__badge">Creator</span>
+              {profile.available_for_work && (
+                <span style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  background: 'rgba(34, 197, 94, 0.1)',
+                  color: '#16a34a',
+                  padding: '4px 10px',
+                  borderRadius: '20px',
+                  fontSize: '0.75rem',
+                  fontWeight: 800,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em',
+                  border: '1px solid rgba(34, 197, 94, 0.2)'
+                }}>
+                  <span style={{
+                    width: '6px',
+                    height: '6px',
+                    borderRadius: '50%',
+                    background: '#22c55e',
+                    boxShadow: '0 0 8px #22c55e'
+                  }} />
+                  Available for Work
+                </span>
+              )}
             </div>
             <p className="profile-v2__username">@{profile.username}</p>
             {profile.bio && (

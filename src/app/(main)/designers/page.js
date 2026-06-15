@@ -837,6 +837,25 @@ function DesignerCard({ designer, currentUserId }) {
                 <span className="designer-card__new-badge">New</span>
               )}
 
+              {designer.available_for_work && (
+                <span style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                  background: '#dcfce7',
+                  color: '#166534',
+                  fontSize: '10px',
+                  fontWeight: 800,
+                  padding: '3px 8px',
+                  borderRadius: '6px',
+                  letterSpacing: '0.04em',
+                  textTransform: 'uppercase'
+                }}>
+                  <span style={{ width: '4px', height: '4px', borderRadius: '50%', background: '#16a34a' }} />
+                  Available
+                </span>
+              )}
+
               {designer.followers_count > 100 ? (
                 <span
                   style={{

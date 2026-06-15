@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createServerClient } from '@supabase/ssr';
+
 import { redis } from '@/lib/redis';
 
 // Keep as edge but use request.cookies — compatible with Edge Runtime
@@ -20,39 +20,12 @@ export async function POST(req) {
     const { projectId } = await req.json();
     if (!projectId) return NextResponse.json({ error: 'Missing projectId' }, { status: 400 });
 
-    // ── Edge-compatible Supabase client using request.cookies ────────────────
-    // cookies() from next/headers has limitations on Edge Runtime.
-    // Using req.cookies directly is the correct approach here.
-    const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-      {
-        cookies: {
-          getAll() {
-            // req.cookies is a RequestCookies object — convert to array
-            return req.cookies.getAll();
-          },
-          setAll() {
-            // View tracking is read-only auth — no need to set cookies
-          },
-        },
-      }
+    const ip = sanitizeIP(
+      req.headers.get('x-forwarded-for') ||
+      req.headers.get('x-real-ip') ||
+      'unknown'
     );
-
-    const { data: { user } } = await supabase.auth.getUser();
-
-    // Prefer authenticated user ID for rate limiting, fall back to IP
-    let rateLimitKey;
-    if (user?.id) {
-      rateLimitKey = `view_${projectId}_user_${user.id}`;
-    } else {
-      const ip = sanitizeIP(
-        req.headers.get('x-forwarded-for') ||
-        req.headers.get('x-real-ip') ||
-        'unknown'
-      );
-      rateLimitKey = `view_${projectId}_ip_${ip}`;
-    }
+    const rateLimitKey = `view_${projectId}_ip_${ip}`;
 
     // 1 view per user/IP per hour per project
     const hasViewed = await redis.get(rateLimitKey);
@@ -62,7 +35,14 @@ export async function POST(req) {
 
     await redis.setex(rateLimitKey, 3600, '1');
 
-    // Increment views atomically
+    // Increment views atomically (using raw fetch to avoid SSR client overhead, or simply create client)
+    // Wait, since we removed createServerClient above, let's create a fast anonymous client here.
+    const { createClient } = await import('@supabase/supabase-js');
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+    );
+
     const { data, error } = await supabase
       .rpc('increment_project_view', { p_id: projectId });
 

@@ -62,7 +62,3 @@ export function getProfileCompleteness(profile) {
   };
 }
 
-export function getNextProfileStep(profile) {
-  const { incomplete } = getProfileCompleteness(profile);
-  return incomplete[0] || null;
-}

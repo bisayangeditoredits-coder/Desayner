@@ -10,18 +10,25 @@ import {
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import UserAvatar from './UserAvatar';
+import FollowButton from './FollowButton';
 import { useMobileNav } from '@/components/MobileNavProvider';
+
+import { useRouter } from 'next/navigation';
+import useFeedStore from '@/store/useFeedStore';
 
 const MAIN_NAV_ITEMS = [
   { href: '/',             icon: Home,          label: 'Home',        public: true },
-  { href: '/projects',     icon: Compass,       label: 'Explore',     public: true },
   { href: '/designers',    icon: Users2,        label: 'Designers',   public: true },
   { href: '/design-hub',   icon: Palette,       label: 'Design Hub',  public: true },
   { href: '/saved',        icon: Bookmark,      label: 'Saved',       reqAuth: true },
 ];
 
+const DISCOVER_CATEGORIES = ['Design', 'Illustration', 'Photography', 'Branding', '3D', 'Motion', 'UI/UX'];
+
 export default function Sidebar({ className = '' }) {
   const pathname = usePathname();
+  const router = useRouter();
+  const setFeedState = useFeedStore(state => state.setFeedState);
   const { isMobileMenuOpen, setIsMobileMenuOpen } = useMobileNav();
   const [user, setUser] = useState(null);
   const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect;
@@ -35,6 +42,7 @@ export default function Sidebar({ className = '' }) {
     }
   }, []);
   const [profile, setProfile] = useState(null);
+  const [suggestedUsers, setSuggestedUsers] = useState([]);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const supabase = useMemo(() => createClient(), []);
 
@@ -50,6 +58,16 @@ export default function Sidebar({ className = '' }) {
       } else {
         setUser(null);
       }
+      
+      // Fetch top designers for the sidebar
+      fetch('/api/designers/top')
+        .then(res => res.json())
+        .then(data => {
+          if (mounted && data.designers) {
+            setSuggestedUsers(data.designers.slice(0, 3)); // Only show top 3
+          }
+        })
+        .catch(err => console.error('Failed to fetch sidebar designers', err));
     }
     load();
 
@@ -75,8 +93,21 @@ export default function Sidebar({ className = '' }) {
   }
 
   function isActive(href) {
-    return pathname.startsWith(href);
+    return pathname.startsWith(href) && (href !== '/' || pathname === '/');
   }
+
+  const handleCategoryClick = (e, cat) => {
+    e.preventDefault();
+    setFeedState({ category: cat });
+    if (pathname !== '/') {
+      router.push('/');
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    if (isMobileMenuOpen) {
+      setIsMobileMenuOpen(false);
+    }
+  };
 
   return (
     <>
@@ -88,14 +119,14 @@ export default function Sidebar({ className = '' }) {
         />
       )}
       <aside className={`sidebar ${className} ${isMobileMenuOpen ? 'mobile-open' : ''}`}>
-      <div style={{ padding: '1.25rem 1.25rem 0', borderBottom: '1px solid #e8e8e8', paddingBottom: '1.25rem', marginBottom: '0.5rem', display: 'flex', justifyContent: 'center' }}>
+      <div style={{ padding: '1rem 1rem 0', borderBottom: '1px solid #e8e8e8', paddingBottom: '1rem', marginBottom: '0.25rem', display: 'flex', justifyContent: 'center' }}>
         <Link href="/">
-          <img src="/desayner-logo.png" alt="Desayner" fetchPriority="high" style={{ width: 'auto', height: '54px', maxWidth: '100%', objectFit: 'contain', display: 'block' }} />
+          <img src="/desayner-logo.png" alt="Desayner" fetchPriority="high" style={{ width: 'auto', height: '48px', maxWidth: '100%', objectFit: 'contain', display: 'block' }} />
         </Link>
       </div>
 
       {/* Create button */}
-      <div style={{ padding: '0.75rem 1rem' }}>
+      <div style={{ padding: '0.5rem 1rem' }}>
         <Link
           href="/projects/new"
           className="btn btn-primary"
@@ -116,11 +147,70 @@ export default function Sidebar({ className = '' }) {
             </Link>
           );
         })}
+
+        {/* Discover Categories to fill the empty space */}
+        <div style={{ padding: '0.5rem 1rem', marginTop: '0.5rem' }}>
+          <div style={{ marginBottom: '0.5rem', paddingBottom: '0.5rem' }}>
+            <span style={{ fontSize: '0.7rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#9b9b9b', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+              <Compass size={12} /> Discover
+            </span>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
+            {DISCOVER_CATEGORIES.map(cat => (
+              <a 
+                key={cat} 
+                href="/" 
+                onClick={(e) => handleCategoryClick(e, cat)}
+                style={{ 
+                  padding: '0.25rem 0.5rem', 
+                  fontSize: '0.85rem', 
+                  color: '#64748b', 
+                  textDecoration: 'none',
+                  borderRadius: '6px',
+                  fontWeight: 600,
+                  display: 'block',
+                  transition: 'background 0.2s, color 0.2s'
+                }}
+                onMouseOver={e => { e.currentTarget.style.background = '#f1f5f9'; e.currentTarget.style.color = '#0f172a'; }}
+                onMouseOut={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#64748b'; }}
+              >
+                {cat}
+              </a>
+            ))}
+          </div>
+        </div>
       </nav>
 
+      {/* Top Designers Sidebar Widget */}
+      {suggestedUsers.length > 0 && (
+        <div style={{ padding: '0.5rem 1rem', marginTop: '0.25rem' }}>
+          <div style={{ marginBottom: '0.75rem', paddingBottom: '0.5rem', borderBottom: '1px solid #e8e8e8' }}>
+            <span style={{ fontSize: '0.7rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#9b9b9b', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+              <Users size={12} /> Who to follow
+            </span>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            {suggestedUsers.map(u => (
+              <div key={u.id} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.15rem 0' }}>
+                <Link href={`/profile/${u.username}`}>
+                  <UserAvatar src={u.avatar_url} name={u.full_name || u.username} size={32} />
+                </Link>
+                <div style={{ flex: 1, overflow: 'hidden' }}>
+                  <Link href={`/profile/${u.username}`} style={{ display: 'block', fontWeight: 700, fontSize: '0.75rem', color: '#231f20', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', textDecoration: 'none' }}>
+                    {u.full_name || u.username}
+                  </Link>
+                  <span style={{ fontSize: '0.65rem', color: '#9b9b9b', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{u.projects_count || 0} projects</span>
+                </div>
+                <FollowButton targetUserId={u.id} currentUserId={user?.id} compact />
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* --- PROMO WIDGET --- */}
-      <div style={{ padding: '0 1rem', marginTop: '1.5rem', marginBottom: '1rem' }}>
-        <div style={{ background: 'linear-gradient(135deg, #5865F2 0%, #4752C4 100%)', borderRadius: '12px', padding: '1rem', color: 'white', position: 'relative', overflow: 'hidden', boxShadow: '0 4px 15px rgba(88, 101, 242, 0.2)' }}>
+      <div style={{ padding: '0 1rem', marginTop: '0.75rem', marginBottom: '0.5rem' }}>
+        <div style={{ background: 'linear-gradient(135deg, #5865F2 0%, #4752C4 100%)', borderRadius: '12px', padding: '0.75rem', color: 'white', position: 'relative', overflow: 'hidden', boxShadow: '0 4px 15px rgba(88, 101, 242, 0.2)' }}>
           <div style={{ position: 'relative', zIndex: 2 }}>
             <h4 style={{ margin: '0 0 0.25rem 0', fontSize: '0.85rem', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
               <svg width="15" height="15" viewBox="0 0 127.14 96.36" fill="currentColor">
@@ -142,7 +232,7 @@ export default function Sidebar({ className = '' }) {
 
       {/* Bottom user section */}
       {user && (
-        <div style={{ borderTop: '1px solid #e8e8e8', padding: '0.75rem 1rem', marginTop: 'auto', position: 'relative' }}>
+        <div style={{ borderTop: '1px solid #e8e8e8', padding: '0.5rem 1rem', marginTop: 'auto', position: 'relative' }}>
           <Link href="/settings" className="nav-item" style={{ marginBottom: '0.25rem' }}>
             <Settings size={16} strokeWidth={1.75} /> Settings
           </Link>
