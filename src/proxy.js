@@ -60,7 +60,7 @@ export async function proxy(request) {
   let supabaseResponse = NextResponse.next({ request });
 
   // ── Maintenance Mode ───────────────────────────────────────
-  const MAINTENANCE_MODE = true;
+  const MAINTENANCE_MODE = false;
   if (MAINTENANCE_MODE) {
     if (
       pathname !== '/maintenance' &&

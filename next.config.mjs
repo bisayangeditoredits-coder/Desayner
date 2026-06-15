@@ -140,7 +140,7 @@ const nextConfig = {
             value: [
               "default-src 'self'",
               // Scripts: self + Sentry CDN (error replay) + Stripe.js + Microsoft Clarity
-              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com https://cdn.jsdelivr.net https://www.clarity.ms",
+              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com https://cdn.jsdelivr.net https://*.clarity.ms https://www.clarity.ms",
               // Styles: self + Google Fonts + inline (Next.js)
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               // Fonts: self + Google Fonts
