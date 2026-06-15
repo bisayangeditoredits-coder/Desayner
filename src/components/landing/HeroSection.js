@@ -45,6 +45,7 @@ export default function HeroSection() {
           height={700} 
           className={styles.previewImage}
           loading="lazy"
+          unoptimized
         />
       </div>
     </section>

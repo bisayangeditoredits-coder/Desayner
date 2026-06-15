@@ -82,6 +82,7 @@ export default function ProjectCard({ project, currentUserId }) {
                 className="project-card__img img-fade-in"
                 width={500}
                 height={380}
+                unoptimized
                 style={{ objectFit: 'cover', width: '100%', height: '100%' }}
                 onLoad={(e) => {
                   e.currentTarget.classList.add('loaded');
