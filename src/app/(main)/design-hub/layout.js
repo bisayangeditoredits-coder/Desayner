@@ -25,28 +25,13 @@ export default function DesignHubLayout({ children }) {
           backdropFilter: 'blur(16px)',
           WebkitBackdropFilter: 'blur(16px)',
           borderBottom: '1px solid rgba(0,0,0,0.06)', 
-          padding: '1.5rem 2rem 1rem', 
+          padding: '0.75rem 2rem', 
           position: 'sticky', 
           top: 0, 
           zIndex: 10 
         }}
       >
-        <div style={{ marginBottom: '1.5rem' }}>
-          <h1 style={{ 
-            fontSize: '2.25rem', 
-            fontWeight: 800, 
-            margin: '0 0 0.5rem', 
-            letterSpacing: '-0.03em',
-            background: 'linear-gradient(135deg, #0f172a 0%, #334155 100%)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent'
-          }}>
-            Design Hub
-          </h1>
-          <p style={{ margin: 0, color: '#64748b', fontSize: '1rem', fontWeight: 400, maxWidth: '700px', lineHeight: 1.5 }}>
-            Discover curated high-quality assets, vibrant colors, premium fonts, and beautiful mockups for your next creative project.
-          </p>
-        </div>
+
         
         <div style={{ 
           display: 'flex', 

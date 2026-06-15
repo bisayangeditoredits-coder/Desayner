@@ -4,6 +4,7 @@ const useFeedStore = create((set) => ({
   projects: [],
   page: 1,
   category: 'All',
+  searchQuery: '',
   hasMore: true,
   scrollPosition: 0,
   interactions: {}, // { [projectId]: { liked: boolean, saved: boolean } }
@@ -20,7 +21,7 @@ const useFeedStore = create((set) => ({
   })),
   
   // Method to clear cache (e.g. on hard refresh or logout)
-  clearCache: () => set({ projects: [], page: 1, category: 'All', hasMore: true, scrollPosition: 0, interactions: {} })
+  clearCache: () => set({ projects: [], page: 1, category: 'All', searchQuery: '', hasMore: true, scrollPosition: 0, interactions: {} })
 }));
 
 export default useFeedStore;

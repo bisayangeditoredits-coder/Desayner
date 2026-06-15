@@ -6,7 +6,7 @@ import TagPill from '@/components/TagPill';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Plus } from 'lucide-react';
+import { Plus, Search } from 'lucide-react';
 import useSWRInfinite from 'swr/infinite';
 import useFeedStore from '@/store/useFeedStore';
 import '../App.css';
@@ -32,8 +32,18 @@ export default function Dashboard() {
     return () => clearInterval(timer);
   }, []);
 
-  const { category, scrollPosition, interactions, setFeedState, setScrollPosition, setInteractions } = useFeedStore();
+  const { category, searchQuery, scrollPosition, interactions, setFeedState, setScrollPosition, setInteractions } = useFeedStore();
   const [currentUserId, setCurrentUserId] = useState(null);
+  const [searchInput, setSearchInput] = useState(searchQuery);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (searchQuery !== searchInput) {
+        setFeedState({ searchQuery: searchInput });
+      }
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [searchInput, searchQuery, setFeedState]);
 
   const supabase = useMemo(() => createClient(), []);
 
@@ -46,9 +56,12 @@ export default function Dashboard() {
   }, [supabase]);
 
   // SWR Fetcher definition
-  const fetcher = async ([key, cat, pageIndex]) => {
+  const fetcher = async ([key, cat, query, pageIndex]) => {
     const offset = pageIndex * PAGE_SIZE;
-    const res = await fetch(`/api/projects?category=${encodeURIComponent(cat)}&limit=${PAGE_SIZE}&offset=${offset}`);
+    let url = `/api/projects?category=${encodeURIComponent(cat)}&limit=${PAGE_SIZE}&offset=${offset}`;
+    if (query) url += `&q=${encodeURIComponent(query)}`;
+    
+    const res = await fetch(url);
     if (!res.ok) throw new Error('Failed to fetch projects');
     const { projects } = await res.json();
     return projects || [];
@@ -56,7 +69,7 @@ export default function Dashboard() {
 
   const getKey = (pageIndex, previousPageData) => {
     if (previousPageData && previousPageData.length < PAGE_SIZE) return null;
-    return ['projects_feed', category, pageIndex];
+    return ['projects_feed', category, searchQuery, pageIndex];
   };
 
   const { data, size, setSize, isValidating, error } = useSWRInfinite(getKey, fetcher, {
@@ -189,38 +202,89 @@ export default function Dashboard() {
           )}
         </div>
 
-        {/* Category Tabs */}
-        <div style={{
-          position: 'sticky',
-          top: '56px',
-          zIndex: 99,
-          display: 'flex',
-          gap: '0.4rem',
-          overflowX: 'auto',
-          paddingBottom: '0.75rem',
-          paddingTop: '0.5rem',
-          marginBottom: '1.25rem',
-          marginLeft: '-1.5rem',
-          marginRight: '-1.5rem',
-          paddingLeft: '1.5rem',
-          paddingRight: '1.5rem',
-          scrollbarWidth: 'none',
-          msOverflowStyle: 'none',
-          background: 'rgba(241, 245, 249, 0.92)',
-          backdropFilter: 'blur(8px)',
-          WebkitBackdropFilter: 'blur(8px)',
-        }} className="category-scroll-container">
-          {CATEGORIES.map(cat => (
-            <TagPill
-              key={cat}
-              label={cat}
-              active={category === cat}
-              onClick={() => {
-                if (category === cat) return;
-                setFeedState({ category: cat });
+        {/* Dribbble-style Search Hero */}
+        <div style={{ padding: '0 1.5rem', marginBottom: '2rem', maxWidth: '1200px', margin: '0 auto 2rem auto' }}>
+          {/* Big Search Bar */}
+          <div style={{ position: 'relative', width: '100%', marginBottom: '1.25rem' }}>
+            <input
+              type="text"
+              placeholder="What type of design are you interested in?"
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              style={{
+                width: '100%',
+                padding: '1.25rem 4rem 1.25rem 2rem',
+                borderRadius: '50px',
+                border: '2px solid #e2e8f0', /* Added visible outline here */
+                background: '#f8fafc',
+                fontSize: '1rem',
+                outline: 'none',
+                transition: 'all 0.2s ease',
+                color: '#0f172a',
+              }}
+              onFocus={(e) => {
+                e.target.style.background = '#ffffff';
+                e.target.style.borderColor = '#2d43e8';
+                e.target.style.boxShadow = '0 0 0 4px rgba(45, 67, 232, 0.15)';
+              }}
+              onBlur={(e) => {
+                e.target.style.background = '#f8fafc';
+                e.target.style.borderColor = '#e2e8f0';
+                e.target.style.boxShadow = 'none';
               }}
             />
-          ))}
+            <button style={{
+              position: 'absolute',
+              right: '0.6rem',
+              top: '50%',
+              transform: 'translateY(-50%)',
+              background: '#2d43e8', // Brand blue
+              color: 'white',
+              border: 'none',
+              borderRadius: '50%',
+              width: '46px',
+              height: '46px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              transition: 'background 0.2s ease'
+            }}
+            onMouseOver={(e) => e.currentTarget.style.background = '#1e33c8'}
+            onMouseOut={(e) => e.currentTarget.style.background = '#2d43e8'}
+            >
+              <Search size={20} />
+            </button>
+          </div>
+
+          {/* Popular Categories Row */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', overflowX: 'auto', scrollbarWidth: 'none', msOverflowStyle: 'none' }} className="category-scroll-container">
+            <span style={{ fontWeight: 600, color: '#374151', fontSize: '0.875rem', flexShrink: 0, marginRight: '0.25rem' }}>Popular:</span>
+            {CATEGORIES.map(cat => (
+              <button
+                key={cat}
+                onClick={() => {
+                  if (category === cat) return;
+                  setFeedState({ category: cat });
+                }}
+                style={{
+                  padding: '0.5rem 1rem',
+                  borderRadius: '30px',
+                  border: '1px solid #e5e7eb',
+                  background: category === cat ? '#2d43e8' : 'white',
+                  color: category === cat ? 'white' : '#4b5563',
+                  fontSize: '0.875rem',
+                  fontWeight: 500,
+                  cursor: 'pointer',
+                  whiteSpace: 'nowrap',
+                  flexShrink: 0,
+                  transition: 'all 0.2s ease'
+                }}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Masonry Project Grid */}

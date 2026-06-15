@@ -78,10 +78,7 @@ export default function ProjectCard({ project, currentUserId, isLiked, isSaved }
 
   return (
     <div className="project-card-wrapper">
-      <motion.div 
-        className="project-card" 
-        whileHover={{ y: -4, transition: { type: 'spring', stiffness: 400, damping: 25 } }}
-      >
+      <div className="project-card">
         {/* Thumbnail */}
         <Link
           href={`/projects/${project.id}`}
@@ -166,7 +163,7 @@ export default function ProjectCard({ project, currentUserId, isLiked, isSaved }
             </motion.button>
           </div>
         </div>
-      </motion.div>
+      </div>
       {showColModal && (
         <SaveToCollectionModal
           itemType="project"

@@ -259,38 +259,35 @@ function DesignersContent() {
                 style={{ paddingBottom: "0.5rem" }}
               >
                 {displayDesigners.map((creator) => (
-                  <Link
+                    <Link
                     key={creator.id}
                     href={`/profile/${creator.username}`}
                     className="featured-card"
                     style={{
                       background: "white",
-                      borderRadius: "20px",
+                      borderRadius: "16px",
                       overflow: "hidden",
                       position: "relative",
                       display: "flex",
                       flexDirection: "column",
-                      transition:
-                        "transform 0.2s ease-out, box-shadow 0.2s ease-out",
-                      boxShadow: "0 4px 15px rgba(0,0,0,0.08)",
+                      transition: "transform 0.2s ease-out, box-shadow 0.2s ease-out",
+                      boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
                       cursor: "pointer",
                       color: "#111827",
                       textDecoration: "none",
-                      aspectRatio: "3 / 4", // Keeps the portrait shape even when it stretches
+                      border: "1px solid #f1f5f9",
                     }}
                   >
-                    {/* Full Background Image */}
+                    {/* Top Banner Image */}
                     <div
                       style={{
-                        position: "absolute",
-                        inset: 0,
+                        position: "relative",
                         width: "100%",
-                        height: "100%",
-                        background: "#e5e7eb",
-                        zIndex: 0,
+                        height: "120px",
+                        background: "#f1f5f9",
                       }}
                     >
-                      {creator.banner_url && (
+                      {creator.banner_url ? (
                         <img
                           src={stripCloudinaryProxy(creator.banner_url)}
                           alt=""
@@ -303,111 +300,89 @@ function DesignersContent() {
                             transition: "transform 0.3s ease-out",
                           }}
                         />
-                      )}
-                    </div>
-
-                    {/* Glassmorphism Top Badge */}
-                    <div
-                      style={{
-                        position: "absolute",
-                        top: "1rem",
-                        left: "50%",
-                        transform: "translateX(-50%)",
-                        background: "rgba(255,255,255,0.7)",
-                        backdropFilter: "blur(4px)",
-                        WebkitBackdropFilter: "blur(4px)",
-                        padding: "0.3rem 0.8rem",
-                        borderRadius: "20px",
-                        color: "#111827",
-                        fontSize: "0.7rem",
-                        fontWeight: 700,
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "0.3rem",
-                        border: "1px solid rgba(255,255,255,0.5)",
-                        zIndex: 2,
-                        whiteSpace: "nowrap",
-                      }}
-                    >
-                      {creator.is_featured ? (
-                        <>
-                          <Star size={12} color="#eab308" fill="#eab308" />{" "}
-                          Featured Designer
-                        </>
                       ) : (
-                        <>
-                          <TrendingUp size={12} color="#8b5cf6" /> Rising
-                          Designer
-                        </>
+                        <div style={{ width: '100%', height: '100%', background: 'linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%)' }} />
                       )}
+                      
+                      {/* Top Badge */}
+                      <div
+                        style={{
+                          position: "absolute",
+                          top: "0.75rem",
+                          right: "0.75rem",
+                          background: "rgba(255,255,255,0.9)",
+                          backdropFilter: "blur(4px)",
+                          WebkitBackdropFilter: "blur(4px)",
+                          padding: "0.2rem 0.6rem",
+                          borderRadius: "20px",
+                          color: "#111827",
+                          fontSize: "0.65rem",
+                          fontWeight: 700,
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "0.3rem",
+                          border: "1px solid rgba(255,255,255,0.5)",
+                          zIndex: 2,
+                        }}
+                      >
+                        {creator.is_featured ? (
+                          <><Star size={10} color="#eab308" fill="#eab308" /> Featured</>
+                        ) : (
+                          <><TrendingUp size={10} color="#8b5cf6" /> Rising</>
+                        )}
+                      </div>
                     </div>
 
-                    {/* Gradient Overlay for Bottom Text */}
-                    <div
-                      style={{
-                        position: "absolute",
-                        inset: 0,
-                        background:
-                          "linear-gradient(to bottom, rgba(0,0,0,0) 30%, rgba(255,255,255,0.9) 70%, rgba(255,255,255,1) 100%)",
-                        zIndex: 1,
-                      }}
-                      className="gradient-overlay"
-                    />
+                    {/* Content Section */}
+                    <div style={{ padding: "0 1.25rem 1.25rem", display: "flex", flexDirection: "column", alignItems: "center", flex: 1 }}>
+                      {/* Overlapping Avatar */}
+                      <div style={{ 
+                        marginTop: "-36px", 
+                        marginBottom: "0.75rem", 
+                        border: "4px solid white", 
+                        borderRadius: "50%", 
+                        background: "white",
+                        zIndex: 2 
+                      }}>
+                        <UserAvatar src={creator.avatar_url} name={creator.full_name || creator.username} size={72} />
+                      </div>
 
-                    {/* Content Container Floating at Bottom */}
-                    <div
-                      style={{
-                        padding: "1.25rem",
-                        display: "flex",
-                        flexDirection: "column",
-                        position: "absolute",
-                        bottom: 0,
-                        left: 0,
-                        right: 0,
-                        zIndex: 2,
-                        color: "#111827",
-                      }}
-                    >
                       <h2
                         style={{
-                          fontSize: "1.15rem",
+                          fontSize: "1.1rem",
                           fontWeight: 800,
                           margin: "0 0 0.25rem 0",
                           display: "flex",
                           alignItems: "center",
+                          justifyContent: "center",
                           gap: "0.3rem",
-                          color: "#000",
+                          color: "#0f172a",
+                          width: "100%",
+                          textAlign: "center"
                         }}
                       >
-                        <span
-                          style={{
-                            whiteSpace: "nowrap",
-                            overflow: "hidden",
-                            textOverflow: "ellipsis",
-                          }}
-                        >
+                        <span style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                           {creator.full_name || creator.username}
                         </span>
-                        <BadgeCheck
-                          size={16}
-                          color="#8b5cf6"
-                          fill="#f3e8ff"
-                          style={{ flexShrink: 0 }}
-                        />
+                        {creator.followers_count > 100 && (
+                           <BadgeCheck size={16} color="#8b5cf6" fill="#f3e8ff" style={{ flexShrink: 0 }} />
+                        )}
                       </h2>
 
                       {/* Bio */}
                       <p
                         style={{
-                          fontSize: "0.75rem",
-                          color: "#4b5563",
+                          fontSize: "0.8rem",
+                          color: "#64748b",
                           lineHeight: 1.4,
-                          margin: "0 0 1rem 0",
+                          margin: "0 0 1.25rem 0",
                           display: "-webkit-box",
                           WebkitLineClamp: 2,
                           WebkitBoxOrient: "vertical",
                           overflow: "hidden",
                           fontWeight: 500,
+                          textAlign: "center",
+                          height: "2.8em"
                         }}
                       >
                         {creator.bio || "New talented creative on Desayner."}
@@ -420,34 +395,20 @@ function DesignersContent() {
                           alignItems: "center",
                           justifyContent: "space-between",
                           gap: "0.5rem",
+                          width: "100%",
+                          borderTop: "1px solid #f1f5f9",
+                          paddingTop: "1rem",
+                          marginTop: "auto"
                         }}
                       >
-                        <div style={{ display: "flex", gap: "0.75rem" }}>
-                          <div
-                            style={{
-                              display: "flex",
-                              alignItems: "center",
-                              gap: "0.2rem",
-                              color: "#8b5cf6",
-                              fontSize: "0.75rem",
-                              fontWeight: 700,
-                            }}
-                          >
-                            <Users2 size={14} />
-                            {creator.followers_count || 0}
+                        <div style={{ display: "flex", gap: "1rem" }}>
+                          <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "2px" }}>
+                            <span style={{ fontSize: "0.65rem", color: "#94a3b8", fontWeight: 700, textTransform: "uppercase" }}>Followers</span>
+                            <span style={{ fontSize: "0.85rem", color: "#0f172a", fontWeight: 800 }}>{creator.followers_count || 0}</span>
                           </div>
-                          <div
-                            style={{
-                              display: "flex",
-                              alignItems: "center",
-                              gap: "0.2rem",
-                              color: "#8b5cf6",
-                              fontSize: "0.75rem",
-                              fontWeight: 700,
-                            }}
-                          >
-                            <Star size={14} />
-                            {creator.projects_count || 0}
+                          <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "2px" }}>
+                            <span style={{ fontSize: "0.65rem", color: "#94a3b8", fontWeight: 700, textTransform: "uppercase" }}>Projects</span>
+                            <span style={{ fontSize: "0.85rem", color: "#0f172a", fontWeight: 800 }}>{creator.projects_count || 0}</span>
                           </div>
                         </div>
 
@@ -466,7 +427,7 @@ function DesignersContent() {
                 .trending-grid {
                   display: grid;
                   grid-template-columns: repeat(4, 1fr);
-                  gap: 1.5rem;
+                  gap: 1.25rem;
                 }
                 @media (max-width: 1024px) {
                   .trending-grid {
@@ -480,7 +441,7 @@ function DesignersContent() {
                 }
                 .featured-card:hover {
                   transform: translateY(-4px);
-                  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
+                  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08) !important;
                 }
                 .featured-card:hover .featured-banner-img {
                   transform: scale(1.05);

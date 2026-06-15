@@ -59,13 +59,12 @@ export default function ProjectModalWrapper({ children }) {
           }
         }
       `}</style>
-      <AnimatePresence>
+      <>
         <motion.div
           className="modal-overlay"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.2 }}
+        transition={{ duration: 0.2, ease: 'easeOut' }}
         style={{
           position: 'fixed',
           inset: 0,
@@ -80,9 +79,9 @@ export default function ProjectModalWrapper({ children }) {
       >
         <motion.div
           className="modal-content"
-          initial={{ y: 20, opacity: 0, scale: 0.95 }}
+          initial={{ y: 40, opacity: 0, scale: 0.98 }}
           animate={{ y: 0, opacity: 1, scale: 1 }}
-          transition={{ duration: 0.3, type: 'spring', bounce: 0.2 }}
+          transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }} // smooth expo-out
           style={{
             maxWidth: '1600px', // Like behance/dribbble wide modal
             background: '#ffffff',
@@ -125,7 +124,7 @@ export default function ProjectModalWrapper({ children }) {
           </button>
         </div>
       </motion.div>
-    </AnimatePresence>
+    </>
   </>
   );
 }

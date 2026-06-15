@@ -11,6 +11,16 @@
   display: flex;
   width: max-content;
   will-change: transform;
+  animation: scrollMarquee 40s linear infinite;
+}
+
+.tools-marquee-track:hover {
+  animation-play-state: paused;
+}
+
+@keyframes scrollMarquee {
+  0% { transform: translate3d(0, 0, 0); }
+  100% { transform: translate3d(-50%, 0, 0); }
 }
 
 .marquee-content-group {
@@ -44,5 +54,3 @@
 .tool-icon {
   object-fit: contain;
 }
-
-

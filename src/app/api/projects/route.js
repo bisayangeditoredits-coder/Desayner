@@ -9,13 +9,14 @@ export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
     const category = searchParams.get('category') || 'All';
+    const q = searchParams.get('q') || '';
     const limit = parseInt(searchParams.get('limit') || '24', 10);
     const offset = parseInt(searchParams.get('offset') || '0', 10);
 
-    const cacheKey = `projects_v2:${category}:${limit}:${offset}`;
+    const cacheKey = `projects_v2:${category}:${q}:${limit}:${offset}`;
 
     // 1. Read first page from cache
-    if (offset === 0) {
+    if (offset === 0 && !q) { // only cache empty searches to avoid filling Redis with arbitrary string keys
       try {
         const cached = await redis.get(cacheKey);
         if (cached) {
@@ -48,6 +49,10 @@ export async function GET(request) {
 
     if (category !== 'All') {
       query = query.eq('category', category);
+    }
+    
+    if (q) {
+      query = query.ilike('title', `%${q}%`);
     }
 
     const { data, error } = await query;

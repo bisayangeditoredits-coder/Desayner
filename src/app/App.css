@@ -1715,6 +1715,7 @@
 .project-card-wrapper:hover {
   box-shadow: 0 8px 24px rgba(0,0,0,0.10);
   border-color: #d0d5dd;
+  transform: translateY(-4px);
 }
 
 .project-card__img {
