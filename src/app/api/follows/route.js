@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { createServerClient } from '@supabase/ssr';
+import { cookies } from 'next/headers';
 import { waitUntil } from '@vercel/functions';
 import { sendNewFollowerEmail } from '@/lib/emails';
 
@@ -21,8 +23,16 @@ export async function POST(req) {
       return NextResponse.json({ error: 'Cannot follow yourself' }, { status: 400 });
     }
 
+    // Use Service Role to bypass RLS
+    const cookieStore = await cookies();
+    const supabaseAdmin = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL,
+      process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+      { cookies: { getAll: () => [] } }
+    );
+
     // Insert follow
-    const { error: insertError } = await supabase
+    const { error: insertError } = await supabaseAdmin
       .from('follows')
       .insert({
         follower_id: user.id,
@@ -39,7 +49,7 @@ export async function POST(req) {
       waitUntil(
         (async () => {
           // Fetch follower details
-          const { data: followerProfile } = await supabase
+          const { data: followerProfile } = await supabaseAdmin
             .from('profiles')
             .select('full_name, username')
             .eq('id', user.id)
@@ -77,7 +87,15 @@ export async function DELETE(req) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { error: deleteError } = await supabase
+    // Use Service Role to bypass RLS
+    const cookieStore = await cookies();
+    const supabaseAdmin = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL,
+      process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+      { cookies: { getAll: () => [] } }
+    );
+
+    const { error: deleteError } = await supabaseAdmin
       .from('follows')
       .delete()
       .eq('follower_id', user.id)
