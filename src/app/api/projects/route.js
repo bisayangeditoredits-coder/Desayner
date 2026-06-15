@@ -13,7 +13,7 @@ export async function GET(request) {
     const limit = parseInt(searchParams.get('limit') || '24', 10);
     const offset = parseInt(searchParams.get('offset') || '0', 10);
 
-    const cacheKey = `projects:${category}:${limit}:${offset}`;
+    const cacheKey = `projects_v2:${category}:${limit}:${offset}`;
 
     // 1. Read first page from cache
     if (offset === 0) {
@@ -69,7 +69,7 @@ export async function GET(request) {
 
     let query = supabase
       .from('projects')
-      .select('*, profiles!projects_user_id_fkey(username, full_name, avatar_url)')
+      .select('id, title, thumbnail_url, cover_url, category, views_count, likes_count, saves_count, created_at, user_id, profiles!projects_user_id_fkey(username, full_name, avatar_url)')
       .eq('published', true)
       .order('created_at', { ascending: false })
       .range(offset, offset + limit - 1);

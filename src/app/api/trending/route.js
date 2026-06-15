@@ -7,7 +7,7 @@ export const runtime = 'edge';
 const CACHE_HEADERS = { 'Cache-Control': 's-maxage=120, stale-while-revalidate=60' };
 
 export async function GET() {
-  const CACHE_KEY = 'trending_projects_top_10';
+  const CACHE_KEY = 'trending_projects_top_10_v2';
   
   // 1. Check Redis cache first
   try {
@@ -29,7 +29,7 @@ export async function GET() {
 
   const { data, error } = await supabase
     .from('projects')
-    .select('*, profiles!projects_user_id_fkey(username, full_name, avatar_url)')
+    .select('id, title, thumbnail_url, cover_url, category, views_count, likes_count, saves_count, created_at, user_id, profiles!projects_user_id_fkey(username, full_name, avatar_url)')
     .eq('published', true)
     .order('likes_count', { ascending: false })
     .limit(10);

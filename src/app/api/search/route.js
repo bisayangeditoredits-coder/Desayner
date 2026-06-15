@@ -27,7 +27,7 @@ export async function GET(request) {
   if (!q) return NextResponse.json({ projects: [], total: 0 });
 
   // ── Redis Cache (first page only) ───────────────────────────────────────
-  const cacheKey = `search:${q.toLowerCase()}:${category}:${sort}:${page}`;
+  const cacheKey = `search_v2:${q.toLowerCase()}:${category}:${sort}:${page}`;
   if (page === 1) {
     try {
       const cached = await redis.get(cacheKey);
@@ -61,7 +61,7 @@ export async function GET(request) {
 
   let query = supabase
     .from('projects')
-    .select('*, profiles!projects_user_id_fkey(username, full_name, avatar_url)', { count: 'exact' })
+    .select('id, title, thumbnail_url, cover_url, category, views_count, likes_count, saves_count, created_at, user_id, profiles!projects_user_id_fkey(username, full_name, avatar_url)', { count: 'exact' })
     .eq('published', true)
     .textSearch('fts', q.split(/\s+/).join(' | '))
     .range(offset, offset + limit - 1);

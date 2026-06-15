@@ -8,7 +8,7 @@ export const runtime = 'edge';
 export async function GET(request, { params }) {
   try {
     const { username } = await params;
-    const cacheKey = `profile_data:${username.toLowerCase()}`;
+    const cacheKey = `profile_data_v2:${username.toLowerCase()}`;
 
     let profile = null;
     let projects = [];
@@ -47,7 +47,7 @@ export async function GET(request, { params }) {
       // Fetch projects and auth in parallel
       const { data: projectsData } = await supabase
         .from('projects')
-        .select('*, profiles!projects_user_id_fkey(username, full_name, avatar_url)')
+        .select('id, title, thumbnail_url, cover_url, category, views_count, likes_count, saves_count, created_at, user_id, profiles!projects_user_id_fkey(username, full_name, avatar_url)')
         .eq('user_id', profileData.id)
         .eq('published', true)
         .order('created_at', { ascending: false })
@@ -79,7 +79,7 @@ export async function GET(request, { params }) {
         // Owner viewing their own profile: fetch saved projects
         const { data: savedData } = await supabase
           .from('project_saves')
-          .select('projects(*, profiles!projects_user_id_fkey(username, full_name, avatar_url))')
+          .select('projects(id, title, thumbnail_url, cover_url, category, views_count, likes_count, saves_count, created_at, user_id, profiles!projects_user_id_fkey(username, full_name, avatar_url))')
           .eq('user_id', profile.id)
           .order('created_at', { ascending: false })
           .limit(50);
@@ -89,7 +89,7 @@ export async function GET(request, { params }) {
         // Fetch collections
         const { data: colsData } = await supabase
           .from('collections')
-          .select('id, name, created_at, collection_items(projects(*, profiles!projects_user_id_fkey(username, full_name, avatar_url)))')
+          .select('id, name, created_at, collection_items(projects(id, title, thumbnail_url, cover_url, category, views_count, likes_count, saves_count, created_at, user_id, profiles!projects_user_id_fkey(username, full_name, avatar_url)))')
           .eq('user_id', profile.id)
           .order('created_at', { ascending: false })
           .limit(50);
