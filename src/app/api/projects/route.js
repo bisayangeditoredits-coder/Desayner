@@ -31,7 +31,12 @@ export async function GET(request) {
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-      { cookies: { getAll: () => [] } } // No cookies required for public data
+      { 
+        cookies: { 
+          getAll: () => [],
+          setAll: () => {}
+        } 
+      } // No cookies required for public data
     );
 
     let query = supabase

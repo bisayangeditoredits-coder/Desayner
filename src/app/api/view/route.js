@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 
+import { createServerClient } from '@supabase/ssr';
 import { redis } from '@/lib/redis';
 
 // Keep as edge but use request.cookies — compatible with Edge Runtime
@@ -35,12 +36,15 @@ export async function POST(req) {
 
     await redis.setex(rateLimitKey, 3600, '1');
 
-    // Increment views atomically (using raw fetch to avoid SSR client overhead, or simply create client)
-    // Wait, since we removed createServerClient above, let's create a fast anonymous client here.
-    const { createClient } = await import('@supabase/supabase-js');
-    const supabase = createClient(
+    const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+      {
+        cookies: {
+          getAll: () => [],
+          setAll: () => {},
+        },
+      }
     );
 
     const { data, error } = await supabase
