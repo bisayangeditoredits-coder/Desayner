@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { 
   Search, Bell, Plus, X, Heart, Bookmark, MessageCircle, UserPlus, 
   MessageSquare, Filter, Layers, UserSquare, CalendarCheck, PenTool, Calendar, Inbox, ChevronDown, Menu
@@ -203,6 +203,8 @@ export default function Header() {
     return () => document.removeEventListener('mousedown', onClickOutside);
   }, []);
 
+  const pathname = usePathname();
+
   async function toggleNotifs() {
     if (!showNotifs) {
       setShowNotifs(true);
@@ -244,10 +246,11 @@ export default function Header() {
           <Menu size={24} color="#231f20" />
         </button>
 
-        <div className="search-bar" ref={searchRef} style={{ maxWidth: '400px', flex: 1 }}>
-          <Search className="search-icon" size={15} />
-          <input
-            id="global-search"
+        {pathname !== '/' && (
+          <div className="search-bar" ref={searchRef} style={{ maxWidth: '400px', flex: 1 }}>
+            <Search className="search-icon" size={15} />
+            <input
+              id="global-search"
             type="text"
             value={searchQuery}
             onChange={handleChange}
@@ -309,6 +312,7 @@ export default function Header() {
             </div>
           )}
         </div>
+        )}
 
         {/* Center Icons */}
 
