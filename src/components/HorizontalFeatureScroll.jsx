@@ -6,37 +6,37 @@ import './HorizontalFeatureScroll.css';
 
 const FEATURES = [
   {
-    src: '/banners/hd-realistic-website-feature-card-for-desayner-com.png',
+    src: '/banners/feature-card-1.png',
     title: 'Build Your Portfolio',
     description: 'Create a stunning, professional portfolio in minutes with our beautifully designed templates.'
   },
   {
-    src: '/banners/hd-modern-website-feature-card-for-desayner-com-po.png',
+    src: '/banners/feature-card-2.png',
     title: 'Build Your Brand',
     description: 'Grow your audience and establish your unique creative identity on the fastest growing design platform.'
   },
   {
-    src: '/banners/hd-modern-website-feature-card-for-desayner-com-po (1).png',
+    src: '/banners/feature-card-3.png',
     title: 'Join The Community',
     description: 'Connect, collaborate, and share feedback with top-tier creative professionals worldwide.'
   },
   {
-    src: '/banners/hd-modern-website-feature-card-for-desayner-com-po (2).png',
+    src: '/banners/feature-card-4.png',
     title: 'Get Discovered',
     description: 'Showcase your best work and attract high-paying clients looking for your specific creative style.'
   },
   {
-    src: '/banners/hd-modern-website-feature-card-for-desayner-com-po (3).png',
+    src: '/banners/feature-card-5.png',
     title: 'Advanced Analytics',
     description: 'Track your profile views, project engagement, and audience demographics in real-time.'
   },
   {
-    src: '/banners/hd-modern-website-feature-card-for-desayner-com-po (4).png',
+    src: '/banners/feature-card-6.png',
     title: 'Creative Challenges',
     description: 'Participate in weekly design challenges to sharpen your skills and win amazing prizes.'
   },
   {
-    src: '/banners/hd-modern-website-feature-card-for-desayner-com-po (5).png',
+    src: '/banners/feature-card-7.png',
     title: 'Monetize Your Skills',
     description: 'Sell digital assets, templates, courses, and premium resources directly to your followers.'
   }
