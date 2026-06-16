@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 
 function getInitialVisibility() {
@@ -9,7 +9,13 @@ function getInitialVisibility() {
 }
 
 export default function CookieBanner() {
-  const [isVisible, setIsVisible] = useState(getInitialVisibility);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    if (!localStorage.getItem('cookie_consent')) {
+      setIsVisible(true);
+    }
+  }, []);
 
   if (!isVisible) return null;
 

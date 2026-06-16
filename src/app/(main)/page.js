@@ -10,6 +10,7 @@ import { useRouter } from 'next/navigation';
 import { Plus, Search } from 'lucide-react';
 import useSWRInfinite from 'swr/infinite';
 import useFeedStore from '@/store/useFeedStore';
+import HorizontalFeatureScroll from '@/components/HorizontalFeatureScroll';
 import '../App.css';
 
 const WelcomeModal = dynamic(() => import('@/components/WelcomeModal'), { ssr: false });
@@ -301,6 +302,8 @@ export default function Dashboard() {
             ))}
           </div>
         </div>
+
+        <HorizontalFeatureScroll />
 
         {/* Masonry Project Grid */}
         {error ? (

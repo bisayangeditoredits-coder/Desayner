@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { Eye, EyeOff, Loader2, Check } from 'lucide-react';
+import FeatureShowcase from '@/components/FeatureShowcase';
 
 export default function LoginForm({ isModal = false }) {
   const router       = useRouter();
@@ -74,39 +75,15 @@ export default function LoginForm({ isModal = false }) {
       background: '#231f20',
     }}>
 
-      {/* ── LEFT: video panel ── */}
+      {/* ── LEFT: showcase panel ── */}
       <div className="login-video-panel" style={{
         flex: '1.1',
         position: 'relative',
         overflow: 'hidden',
         display: 'none', // hidden on mobile, shown via CSS
+        background: '#020617',
       }}>
-        {/* Looping ambient video */}
-        <video
-          autoPlay
-          loop
-          muted
-          playsInline
-          preload="metadata"
-          style={{
-            position: 'absolute',
-            inset: 0,
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
-            opacity: 0.75,
-          }}
-        >
-          <source src="/video-onboarding/welcome-to-desayner.mp4" type="video/mp4" />
-        </video>
-
-        {/* Dark gradient overlay */}
-        <div style={{
-          position: 'absolute',
-          inset: 0,
-          background: 'linear-gradient(135deg, rgba(45, 67, 232,0.35) 0%, rgba(0,0,0,0.55) 100%)',
-          zIndex: 1,
-        }} />
+        <FeatureShowcase />
 
         {/* Content overlay */}
         <div style={{

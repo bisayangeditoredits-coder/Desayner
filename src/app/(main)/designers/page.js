@@ -27,6 +27,7 @@ import {
 } from "lucide-react";
 
 import "../../App.css";
+import HorizontalFeatureScroll from "@/components/HorizontalFeatureScroll";
 export const runtime = 'edge';
 
 const CATEGORIES = [
@@ -452,6 +453,7 @@ function DesignersContent() {
         )}
 
       <div className="page-content">
+        <HorizontalFeatureScroll />
         {/* 3. Main Explore Section */}
         <div
           style={{

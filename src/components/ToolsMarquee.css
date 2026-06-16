@@ -11,7 +11,7 @@
   display: flex;
   width: max-content;
   will-change: transform;
-  animation: scrollMarquee 40s linear infinite;
+  animation: scrollMarquee 120s linear infinite;
 }
 
 .tools-marquee-track:hover {
