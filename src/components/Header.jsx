@@ -4,7 +4,8 @@ import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import { 
   Search, Bell, Plus, X, Heart, Bookmark, MessageCircle, UserPlus, 
-  MessageSquare, Filter, Layers, UserSquare, CalendarCheck, PenTool, Calendar, Inbox, ChevronDown, Menu
+  MessageSquare, Filter, Layers, UserSquare, CalendarCheck, PenTool, Calendar, Inbox, ChevronDown, Menu,
+  Image as ImageIcon
 } from 'lucide-react';
 import { useMobileNav } from '@/components/MobileNavProvider';
 import { createClient } from '@/lib/supabase/client';
@@ -134,7 +135,7 @@ export default function Header() {
       if (sub) supabase.removeChannel(sub);
       if (fallbackInterval) clearInterval(fallbackInterval);
     };
-  }, []);
+  }, [supabase]);
 
   // Listen to profile updates from Settings page
   useEffect(() => {
@@ -289,7 +290,7 @@ export default function Header() {
                       <div className="search-dropdown__thumb">
                         {p.cover_url || p.thumbnail_url
                           ? <img src={stripCloudinaryProxy(p.thumbnail_url || p.cover_url)} alt="" loading="lazy" decoding="async" /> 
-                          : <div className="header__search-placeholder"><Image size={14} /></div>}
+                          : <div className="header__search-placeholder"><ImageIcon size={14} /></div>}
                       </div>
                       <div className="search-dropdown__info">
                         <span className="search-dropdown__title">{p.title}</span>

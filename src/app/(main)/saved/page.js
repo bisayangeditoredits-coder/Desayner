@@ -47,7 +47,7 @@ export default function SavedPage() {
       setLoading(false);
     }
     load();
-  }, []);
+  }, [supabase]);
 
   const empty = (label, href, linkLabel) => (
     <div style={{ textAlign: 'center', padding: '4rem', border: '1px solid #e8e8e8', background: 'white' }}>

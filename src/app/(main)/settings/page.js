@@ -68,7 +68,7 @@ export default function SettingsPage() {
       setNewEmail(user.email || '');
     }
     load();
-  }, []);
+  }, [supabase]);
 
   async function saveProfile(e) {
     e.preventDefault();
@@ -101,9 +101,15 @@ export default function SettingsPage() {
     } else {
       // Clear Redis cache for old and new username
       try {
-        const keysToClear = [`profile_data:${form.username.toLowerCase()}`];
+        const keysToClear = [
+          `profile_data_v2:${form.username.toLowerCase()}:50:0`,
+          `profile_data:${form.username.toLowerCase()}`,
+        ];
         if (profile.username && profile.username !== form.username) {
-          keysToClear.push(`profile_data:${profile.username.toLowerCase()}`);
+          keysToClear.push(
+            `profile_data_v2:${profile.username.toLowerCase()}:50:0`,
+            `profile_data:${profile.username.toLowerCase()}`
+          );
         }
         await fetch('/api/cache/clear', {
           method: 'POST',
@@ -334,7 +340,7 @@ export default function SettingsPage() {
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1rem', border: '1px solid', borderColor: form.available_for_work ? '#bbf7d0' : '#e8e8e8', borderRadius: '12px', background: form.available_for_work ? '#f0fdf4' : '#fafafa', transition: 'all 0.3s' }}>
                   <div style={{ paddingRight: '1rem' }}>
                     <h3 style={{ margin: '0 0 0.25rem 0', fontSize: '0.9rem', fontWeight: 700, color: form.available_for_work ? '#166534' : '#0f172a' }}>Available for Work</h3>
-                    <p style={{ margin: 0, fontSize: '0.75rem', color: '#64748b' }}>Show a "Hire Me" badge on your profile to let clients know you are taking on new freelance projects.</p>
+                    <p style={{ margin: 0, fontSize: '0.75rem', color: '#64748b' }}>Show a &quot;Hire Me&quot; badge on your profile to let clients know you are taking on new freelance projects.</p>
                   </div>
                   <button
                     type="button"

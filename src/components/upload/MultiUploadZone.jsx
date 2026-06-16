@@ -64,20 +64,12 @@ export default function MultiUploadZone({ folder = 'uploads', value = [], onResu
 
   useEffect(() => {
     mountedRef.current = true;
+    const cancelMap = cancelRefs.current;
     return () => {
       mountedRef.current = false;
-      // Cancel any in-flight compressions and revoke all objectURLs
-      Object.values(cancelRefs.current).forEach((fn) => fn?.());
+      Object.values(cancelMap).forEach((fn) => fn?.());
     };
   }, []);
-
-  // Notify parent whenever an item finishes
-  useEffect(() => {
-    const done = items.filter((i) => i.status === 'done' && i.publicUrl);
-    if (done.length > 0 && onResults) {
-      // We call onResults with only newly-done items via a set of already-reported IDs
-    }
-  }, [items]);
 
   const reportedRef = useRef(new Set());
   useEffect(() => {
@@ -161,6 +153,8 @@ export default function MultiUploadZone({ folder = 'uploads', value = [], onResu
     if (queueRef.current.length > 0 && !processingRef.current) {
       processQueue();
     }
+    // processQueue is stable enough here — triggered only when items change
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [items]);
 
   // ── Add files ─────────────────────────────────────────────────────────────

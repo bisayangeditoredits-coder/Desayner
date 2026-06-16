@@ -43,6 +43,7 @@ function isPublicReadApi(request, pathname) {
 function shouldResolveUser(pathname) {
   return pathname.startsWith('/settings')
     || pathname.startsWith('/messages')
+    || pathname.startsWith('/admin')
     || pathname === '/login'
     || pathname === '/signup';
 }
@@ -100,8 +101,9 @@ export async function proxy(request) {
   }
 
   let user = null;
+  let supabase = null;
   if (shouldResolveUser(pathname)) {
-    const supabase = createServerClient(
+    supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
       {
@@ -126,6 +128,31 @@ export async function proxy(request) {
       data: { user: resolvedUser },
     } = await supabase.auth.getUser();
     user = resolvedUser;
+  }
+
+  // ── Admin Routes ──────────────────────────────────────────────
+  const isAdminRoute = pathname.startsWith('/admin');
+  if (isAdminRoute) {
+    if (!user) {
+      const loginUrl = request.nextUrl.clone();
+      loginUrl.pathname = '/login';
+      loginUrl.search = '';
+      loginUrl.searchParams.set('redirectTo', pathname + request.nextUrl.search);
+      return NextResponse.redirect(loginUrl);
+    }
+
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('is_admin')
+      .eq('id', user.id)
+      .single();
+
+    if (!profile?.is_admin) {
+      const homeUrl = request.nextUrl.clone();
+      homeUrl.pathname = '/';
+      homeUrl.search = '';
+      return NextResponse.redirect(homeUrl);
+    }
   }
 
   // ── Protected Routes ─────────────────────────────────────────

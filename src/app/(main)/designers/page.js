@@ -75,7 +75,7 @@ function DesignersContent() {
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (user) setCurrentUserId(user.id);
     });
-  }, []);
+  }, [supabase]);
 
   // Sync search & category to URL
   useEffect(() => {

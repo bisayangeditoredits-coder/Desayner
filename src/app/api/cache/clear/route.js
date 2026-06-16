@@ -1,14 +1,50 @@
 import { NextResponse } from 'next/server';
+import { createServerClient } from '@supabase/ssr';
+import { cookies } from 'next/headers';
 import { redis } from '@/lib/redis';
+
+const ALLOWED_KEY_PREFIXES = [
+  'profile_data_v2:',
+  'profile_data:',
+  'projects_v2:',
+  'trending_',
+  'search_v2:',
+  'designers_feed:',
+];
+
+function isAllowedKey(key) {
+  if (typeof key !== 'string' || !key) return false;
+  return ALLOWED_KEY_PREFIXES.some((prefix) => key.startsWith(prefix));
+}
 
 export async function POST(request) {
   try {
-    const { keys } = await request.json();
-    if (Array.isArray(keys)) {
-      for (const key of keys) {
-        await redis.del(key);
-      }
+    const cookieStore = await cookies();
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+      { cookies: { getAll: () => cookieStore.getAll() } }
+    );
+
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
+
+    const { keys } = await request.json();
+    if (!Array.isArray(keys) || keys.length === 0) {
+      return NextResponse.json({ error: 'Invalid keys' }, { status: 400 });
+    }
+
+    const rejected = keys.filter((key) => !isAllowedKey(key));
+    if (rejected.length > 0) {
+      return NextResponse.json({ error: 'Forbidden key(s)', rejected }, { status: 403 });
+    }
+
+    for (const key of keys) {
+      await redis.del(key);
+    }
+
     return NextResponse.json({ success: true });
   } catch (err) {
     return NextResponse.json({ error: 'Failed to clear cache' }, { status: 500 });

@@ -45,7 +45,7 @@ export default function MaintenancePage() {
         lineHeight: 1.6,
         marginBottom: '2rem'
       }}>
-        Desayner is currently undergoing scheduled upgrades to bring you an even better experience. We'll be back online shortly!
+        Desayner is currently undergoing scheduled upgrades to bring you an even better experience. We&apos;ll be back online shortly!
       </p>
 
       <div style={{

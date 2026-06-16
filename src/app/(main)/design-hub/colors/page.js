@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useLayoutEffect } from 'react';
 import { Copy, Check, RefreshCw, Sparkles, Lock, Unlock, ChevronDown, Heart, Code, X, Layers } from 'lucide-react';
 
 // ─── Pure colour math (no deps) ───────────────────────────────────────────────
@@ -398,9 +398,22 @@ function AIGeneratorPanel({ models, onGenerate, generating, result, onSave, save
   const [model, setModel] = useState('default');
   const [modelOpen, setModelOpen] = useState(false);
   const [activeSlot, setActiveSlot] = useState(null);
+  const [pickerWidth, setPickerWidth] = useState(1000);
   const pickerRef = useRef(null);
 
   const allowAI = count <= 5;
+
+  useLayoutEffect(() => {
+    const el = pickerRef.current;
+    if (!el) return;
+
+    const updateWidth = () => setPickerWidth(el.offsetWidth || 1000);
+    updateWidth();
+
+    const observer = new ResizeObserver(updateWidth);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [count]);
 
   useEffect(() => {
     const handler = (e) => {
@@ -459,7 +472,7 @@ function AIGeneratorPanel({ models, onGenerate, generating, result, onSave, save
           {activeSlot !== null && activeSlot < count && (
             <div style={{
               position:'absolute', top:'100%', zIndex:400, marginTop: '1rem',
-              left: `${Math.min(activeSlot * (100/count), 100 - (260 / (pickerRef.current?.offsetWidth || 1000) * 100))}%`,
+              left: `${Math.min(activeSlot * (100/count), 100 - (260 / pickerWidth * 100))}%`,
               transform: 'translateX(-20px)'
             }}>
               <InlinePicker
@@ -535,7 +548,6 @@ function AIGeneratorPanel({ models, onGenerate, generating, result, onSave, save
 
 export default function ColorsPage() {
   const [palettes, setPalettes] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [generating, setGenerating] = useState(false);
   const [copiedId, setCopiedId] = useState(null);
@@ -547,16 +559,25 @@ export default function ColorsPage() {
   const [colorCount, setColorCount] = useState(5);
   
   // Local storage favorites
-  const [saved, setSaved] = useState([]);
-  const [savedIds, setSavedIds] = useState(new Set());
-
-  useEffect(() => {
+  const [saved, setSaved] = useState(() => {
     try {
-      const s = JSON.parse(localStorage.getItem('desayner_palettes') || '[]');
-      setSaved(s);
-      setSavedIds(new Set(s.map(p=>p.id)));
-    } catch {}
-  }, []);
+      return JSON.parse(localStorage.getItem('desayner_palettes') || '[]');
+    } catch {
+      return [];
+    }
+  });
+  const [savedIds, setSavedIds] = useState(() => {
+    try {
+      const items = JSON.parse(localStorage.getItem('desayner_palettes') || '[]');
+      return new Set(items.map((p) => p.id));
+    } catch {
+      return new Set();
+    }
+  });
+  const [loadedFilterKey, setLoadedFilterKey] = useState(null);
+
+  const filterKey = `${colorCount}:${activeHue}`;
+  const isLoadingPalettes = loadedFilterKey !== filterKey;
 
   const persistSaved = (list) => {
     setSaved(list);
@@ -577,19 +598,33 @@ export default function ColorsPage() {
   }, []);
 
   const loadPalettes = useCallback(async (append=false) => {
-    if (append) setLoadingMore(true); else setLoading(true);
-    try {
-      const res = await fetch(`/api/explore-colors?colors=${colorCount}&hue=${activeHue}`);
-      const data = await res.json();
-      if (data.palettes) {
-        if (append) setPalettes(p=>[...p,...data.palettes]);
-        else setPalettes(data.palettes);
-      }
-    } catch(e){ console.error(e); }
-    finally { setLoading(false); setLoadingMore(false); }
+    if (append) {
+      setLoadingMore(true);
+      try {
+        const res = await fetch(`/api/explore-colors?colors=${colorCount}&hue=${activeHue}`);
+        const data = await res.json();
+        if (data.palettes) setPalettes((p) => [...p, ...data.palettes]);
+      } catch (e) { console.error(e); }
+      finally { setLoadingMore(false); }
+      return;
+    }
   }, [colorCount, activeHue]);
 
-  useEffect(()=>{ loadPalettes(false); }, [loadPalettes]);
+  useEffect(() => {
+    let cancelled = false;
+
+    fetch(`/api/explore-colors?colors=${colorCount}&hue=${activeHue}`)
+      .then((r) => r.json())
+      .then((data) => {
+        if (!cancelled && data.palettes) {
+          setPalettes(data.palettes);
+          setLoadedFilterKey(filterKey);
+        }
+      })
+      .catch(console.error);
+
+    return () => { cancelled = true; };
+  }, [filterKey, colorCount, activeHue]);
 
   const handleCopy = async (palette) => {
     await navigator.clipboard.writeText(palette.colors.map(h=>`#${h}`).join(', '));
@@ -735,7 +770,7 @@ export default function ColorsPage() {
           <div style={{ flex:1, height:1, background:'#e8e8e8' }} />
         </div>
 
-        {loading ? (
+        {isLoadingPalettes ? (
           <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(260px, 1fr))', gap:'1rem' }}>
             {[...Array(12)].map((_,i) => <div key={i} className="shimmer-box" style={{ height:200, borderRadius:16 }} />)}
           </div>

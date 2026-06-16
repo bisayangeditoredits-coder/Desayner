@@ -56,7 +56,7 @@ export default function EditProjectPage() {
       setLoading(false);
     }
     load();
-  }, [id]);
+  }, [id, router, supabase]);
 
   function addTag(e) {
     e.preventDefault();

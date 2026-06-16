@@ -50,7 +50,7 @@ export default function StockAssetsPage() {
     supabase.auth.getUser().then(({ data }) => {
       if (data?.user) setUser(data.user);
     });
-  }, []);
+  }, [supabase]);
 
   const debounceRef = useRef(null);
   const inputRef = useRef(null);

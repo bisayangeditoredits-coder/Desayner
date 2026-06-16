@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -14,22 +14,16 @@ import { stripCloudinaryProxy } from '@/lib/utils';
 const SaveToCollectionModal = dynamic(() => import('./SaveToCollectionModal'), { ssr: false });
 
 export default function ProjectCard({ project, currentUserId, isLiked, isSaved }) {
-  const [liked, setLiked]         = useState(project.user_liked || isLiked || false);
-  const [saved, setSaved]         = useState(project.user_saved || isSaved || false);
+  const [localLiked, setLocalLiked]         = useState(project.user_liked || false);
+  const [localSaved, setLocalSaved]         = useState(project.user_saved || false);
+  const liked = isLiked !== undefined ? isLiked : localLiked;
+  const saved = isSaved !== undefined ? isSaved : localSaved;
   const [likeCount, setLikeCount] = useState(project.likes_count || 0);
   const [viewCount, setViewCount] = useState(project.views_count || 0);
   const [saveCount, setSaveCount] = useState(project.saves_count || 0);
   const [showColModal, setShowColModal] = useState(false);
   // 'loading' | 'loaded' | 'error'
   const [imgStatus, setImgStatus] = useState('loading');
-
-  useEffect(() => {
-    if (isLiked !== undefined) setLiked(isLiked);
-  }, [isLiked]);
-
-  useEffect(() => {
-    if (isSaved !== undefined) setSaved(isSaved);
-  }, [isSaved]);
 
   // FIX: Memoize supabase client — don't create a new instance on every render
   const supabase = useMemo(() => createClient(), []);
@@ -47,7 +41,7 @@ export default function ProjectCard({ project, currentUserId, isLiked, isSaved }
       return;
     }
     const wasLiked = liked;
-    setLiked(!wasLiked);
+    if (isLiked === undefined) setLocalLiked(!wasLiked);
     setLikeCount((c) => (wasLiked ? c - 1 : c + 1));
     
     try {
@@ -59,7 +53,7 @@ export default function ProjectCard({ project, currentUserId, isLiked, isSaved }
     } catch (err) {
       console.error('Like failed', err);
       // Revert optimistic UI on failure
-      setLiked(wasLiked);
+      if (isLiked === undefined) setLocalLiked(wasLiked);
       setLikeCount((c) => (wasLiked ? c + 1 : c - 1));
     }
   }

@@ -175,7 +175,7 @@ export default function ProjectDetailClient({ isModal = false }) {
     }).catch(err => console.error('View track failed', err));
 
     setLoading(false);
-  }, [id]);
+  }, [id, supabase]);
 
   useEffect(() => {
     async function init() { await load(); }

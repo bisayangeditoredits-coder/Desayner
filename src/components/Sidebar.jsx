@@ -157,7 +157,7 @@ export default function Sidebar({ className = '' }) {
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
             {DISCOVER_CATEGORIES.map(cat => (
-              <a 
+              <Link 
                 key={cat} 
                 href="/" 
                 onClick={(e) => handleCategoryClick(e, cat)}
@@ -175,7 +175,7 @@ export default function Sidebar({ className = '' }) {
                 onMouseOut={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#64748b'; }}
               >
                 {cat}
-              </a>
+              </Link>
             ))}
           </div>
         </div>

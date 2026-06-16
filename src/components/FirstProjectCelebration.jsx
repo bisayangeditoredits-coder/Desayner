@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Copy, PartyPopper, Share2, X } from 'lucide-react';
@@ -8,21 +8,17 @@ import { Copy, PartyPopper, Share2, X } from 'lucide-react';
 export default function FirstProjectCelebration({ username }) {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const [open, setOpen] = useState(false);
+  const [dismissed, setDismissed] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  useEffect(() => {
-    if (searchParams.get('firstProject') === '1' && username) {
-      setOpen(true);
-    }
-  }, [searchParams, username]);
+  const open = !dismissed && searchParams.get('firstProject') === '1' && !!username;
 
-  if (!open || !username) return null;
+  if (!open) return null;
 
   const profileUrl = `${window.location.origin}/profile/${username}`;
 
   function close() {
-    setOpen(false);
+    setDismissed(true);
     router.replace(`/profile/${username}`, { scroll: false });
   }
 

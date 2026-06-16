@@ -8,14 +8,15 @@ import { Check, ChevronRight, X } from 'lucide-react';
 
 const DISMISS_KEY = 'onboarding_checklist_dismissed';
 
+function getInitialDismissed() {
+  if (typeof window === 'undefined') return true;
+  return localStorage.getItem(DISMISS_KEY) === 'true';
+}
+
 export default function OnboardingChecklist() {
   const [profile, setProfile] = useState(null);
-  const [dismissed, setDismissed] = useState(true);
+  const [dismissed, setDismissed] = useState(getInitialDismissed);
   const supabase = useMemo(() => createClient(), []);
-
-  useEffect(() => {
-    setDismissed(localStorage.getItem(DISMISS_KEY) === 'true');
-  }, []);
 
   useEffect(() => {
     async function load() {

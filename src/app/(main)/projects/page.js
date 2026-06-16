@@ -48,7 +48,7 @@ export default function ProjectsPage() {
     persistSize: true,
   });
 
-  const projects = data || [];
+  const projects = useMemo(() => data || [], [data]);
   const isLoadingInitialData = !data && !error;
   const isLoadingMore = isLoadingInitialData || (size > 0 && data && typeof data[size - 1] === "undefined");
   const isEmpty = data?.[0]?.length === 0;
@@ -91,15 +91,16 @@ export default function ProjectsPage() {
     fetchInteractions();
   }, [currentUserId, projects, interactions, setInteractions, supabase]);
 
+  const scrollRestoredRef = useRef(false);
+
   // Scroll restoration based on previously cached state
   useEffect(() => {
-    if (projects.length > 0 && scrollPosition > 0) {
-      setTimeout(() => {
-        window.scrollTo({ top: scrollPosition, behavior: 'instant' });
-      }, 10);
+    if (!scrollRestoredRef.current && projects.length > 0 && scrollPosition > 0) {
+      scrollRestoredRef.current = true;
+      window.scrollTo({ top: scrollPosition, behavior: 'instant' });
     }
     return () => setScrollPosition(window.scrollY);
-  }, []);
+  }, [projects.length, scrollPosition, setScrollPosition]);
 
   // Infinite scroll observer
   const observerRef = useRef(null);

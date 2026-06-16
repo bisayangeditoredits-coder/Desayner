@@ -51,7 +51,7 @@ export default function NotificationsPage() {
       }
     }
     load();
-  }, []);
+  }, [supabase]);
 
   function getIcon(type) {
     if (type === 'like') return <Heart size={16} fill="#2d43e8" color="#2d43e8" />;

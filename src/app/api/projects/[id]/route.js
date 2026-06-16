@@ -43,6 +43,7 @@ export async function DELETE(request, { params }) {
     try {
       if (profile?.username) {
         // Clear their profile cache so it updates instantly
+        await redis.del(`profile_data_v2:${profile.username.toLowerCase()}:50:0`);
         await redis.del(`profile_data:${profile.username.toLowerCase()}`);
       }
       // Also clear the trending/feed caches just in case

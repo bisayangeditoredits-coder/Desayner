@@ -44,7 +44,7 @@ export default function SaveToCollectionModal({ itemType = 'project', itemId, on
       setLoading(false);
     }
     load();
-  }, [itemId, itemType]);
+  }, [itemId, itemType, supabase]);
 
   async function createCollection(e) {
     e.preventDefault();

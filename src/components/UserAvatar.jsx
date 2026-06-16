@@ -1,14 +1,10 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 
 import { stripCloudinaryProxy } from '@/lib/utils';
 
 export default function UserAvatar({ src, name = '', size = 32, className = '' }) {
-  const [imgError, setImgError] = useState(false);
-
-  useEffect(() => {
-    setImgError(false);
-  }, [src]);
+  const [failedSrc, setFailedSrc] = useState(null);
   const safeName = typeof name === 'string' ? name : String(name || '');
   const initials = safeName
     .split(' ')
@@ -39,7 +35,7 @@ export default function UserAvatar({ src, name = '', size = 32, className = '' }
     effectiveSrc &&
     effectiveSrc !== 'null' &&
     effectiveSrc !== 'undefined' &&
-    !imgError;
+    failedSrc !== effectiveSrc;
 
   if (showImage) {
     return (
@@ -49,7 +45,7 @@ export default function UserAvatar({ src, name = '', size = 32, className = '' }
           alt={name}
           loading="lazy"
           decoding="async"
-          onError={() => setImgError(true)}
+          onError={() => setFailedSrc(effectiveSrc)}
           onLoad={(e) => e.currentTarget.classList.add('loaded')}
           style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
           className="img-fade-in"

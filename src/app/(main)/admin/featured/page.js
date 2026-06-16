@@ -44,7 +44,7 @@ export default function FeaturedAdminPage() {
       setLoading(false);
     }
     checkAdmin();
-  }, []);
+  }, [supabase]);
 
   useEffect(() => {
     const timer = setTimeout(async () => {
@@ -60,7 +60,7 @@ export default function FeaturedAdminPage() {
       setSearchResults(data || []);
     }, 300);
     return () => clearTimeout(timer);
-  }, [search]);
+  }, [search, supabase]);
 
   async function handleSubmit(e) {
     e.preventDefault();

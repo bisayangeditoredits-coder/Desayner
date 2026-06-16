@@ -32,7 +32,7 @@ export default function ImageUpload({
   const [cropImageSrc, setCropImageSrc] = useState('');
   const inputRef = useRef(null);
 
-  async function uploadFile(file) {
+  const uploadFile = useCallback(async (file) => {
     if (!file) return;
 
     const MAX_MB = 10;
@@ -56,7 +56,6 @@ export default function ImageUpload({
     setError('');
 
     try {
-      // 0. Compress Image
       const options = {
         maxSizeMB: 1, 
         maxWidthOrHeight: 1920, 
@@ -69,10 +68,9 @@ export default function ImageUpload({
         type: 'image/webp',
       });
 
-      // 1. Upload via FormData to /api/upload
       const formData = new FormData();
       formData.append('cover', finalFile, 'cover.webp');
-      formData.append('thumb', finalFile, 'thumb.webp'); // ImageUpload doesn't have a separate thumb logic yet
+      formData.append('thumb', finalFile, 'thumb.webp');
       formData.append('folder', folder);
 
       let res;
@@ -88,14 +86,13 @@ export default function ImageUpload({
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Upload to storage failed');
 
-      // 2. Return the public URL
       onUploaded(data.publicUrl);
     } catch (err) {
       setError(err.message);
     } finally {
       setUploading(false);
     }
-  }
+  }, [cropAspect, folder, onUploaded]);
 
   async function handleCroppedSave(croppedBlob) {
     setCropImageSrc('');
@@ -143,7 +140,7 @@ export default function ImageUpload({
     setDragging(false);
     const file = e.dataTransfer.files?.[0];
     if (file) uploadFile(file);
-  }, [cropAspect]);
+  }, [uploadFile]);
 
   // ── Already has an image ──────────────────────────────────────────
   if (value) {

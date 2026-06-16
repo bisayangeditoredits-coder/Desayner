@@ -6,7 +6,7 @@ import ProjectCard from '@/components/ProjectCard';
 import FollowButton from '@/components/FollowButton';
 import UserAvatar from '@/components/UserAvatar';
 import Link from 'next/link';
-import { Globe, MapPin, Calendar, MessageSquare, ExternalLink, Folder, ArrowLeft } from 'lucide-react';
+import { Globe, MapPin, Calendar, MessageSquare, ExternalLink, Folder, ArrowLeft, RefreshCw } from 'lucide-react';
 import { CREATIVE_TOOLS } from '@/lib/constants';
 import { stripCloudinaryProxy } from '@/lib/utils';
 import ProfileCompletenessCard from '@/components/ProfileCompletenessCard';
@@ -15,6 +15,8 @@ import FirstProjectCelebration from '@/components/FirstProjectCelebration';
 import { Suspense } from 'react';
 import { FolderOpen } from 'lucide-react';
 import '../../../App.css';
+
+const PROFILE_PAGE_SIZE = 50;
 
 /** Prominent Contact button that links externally */
 function HireMeButton({ profile }) {
@@ -58,18 +60,19 @@ export default function ProfilePage() {
   const [isFollowing, setIsFollowing]   = useState(false);
   const [followerCount, setFollowerCount] = useState(0);
   const [loading, setLoading]           = useState(true);
-  const [coverError, setCoverError]     = useState(false);
+  const [loadingMoreProjects, setLoadingMoreProjects] = useState(false);
+  const [hasMoreProjects, setHasMoreProjects] = useState(false);
+  const [failedCoverSrc, setFailedCoverSrc] = useState(null);
   const supabase = useMemo(() => createClient(), []);
-
-  useEffect(() => {
-    setCoverError(false);
-  }, [username]);
 
   useEffect(() => {
     async function load() {
       setLoading(true);
+      setHasMoreProjects(false);
       try {
-        const res = await fetch(`/api/profile/${encodeURIComponent(username)}`);
+        const res = await fetch(
+          `/api/profile/${encodeURIComponent(username)}?limit=${PROFILE_PAGE_SIZE}&offset=0`
+        );
         if (!res.ok) {
           if (res.status === 404) { setProfile(null); return; }
           throw new Error(`Failed to fetch profile: ${res.status}`);
@@ -83,6 +86,7 @@ export default function ProfilePage() {
         setSavedProjects(data.savedProjects || []);
         setCollections(data.collections || []);
         setIsFollowing(data.isFollowing || false);
+        setHasMoreProjects(data.hasMore || false);
         if (data.currentUser) setCurrentUser(data.currentUser);
       } catch (err) {
         console.error('Error loading profile:', err);
@@ -92,6 +96,26 @@ export default function ProfilePage() {
     }
     load();
   }, [username]);
+
+  async function loadMoreProjects() {
+    if (loadingMoreProjects || !hasMoreProjects) return;
+    setLoadingMoreProjects(true);
+    try {
+      const res = await fetch(
+        `/api/profile/${encodeURIComponent(username)}?limit=${PROFILE_PAGE_SIZE}&offset=${projects.length}`
+      );
+      if (!res.ok) throw new Error(`Failed to load more projects: ${res.status}`);
+      const data = await res.json();
+      if (data.projects?.length) {
+        setProjects((prev) => [...prev, ...data.projects]);
+      }
+      setHasMoreProjects(data.hasMore || false);
+    } catch (err) {
+      console.error('Error loading more projects:', err);
+    } finally {
+      setLoadingMoreProjects(false);
+    }
+  }
 
   const isOwn = currentUser && profile && currentUser.id === profile.id;
 
@@ -132,12 +156,12 @@ export default function ProfilePage() {
 
       {/* ── Cover Banner ── */}
       <div className="profile-v2__cover">
-        {coverSrc && !coverError ? (
+        {coverSrc && failedCoverSrc !== coverSrc ? (
           <img
             src={coverSrc}
             alt="Cover"
             className="profile-v2__cover-img"
-            onError={() => setCoverError(true)}
+            onError={() => setFailedCoverSrc(coverSrc)}
           />
         ) : (
           <div className="profile-v2__cover-placeholder" />
@@ -260,7 +284,7 @@ export default function ProfilePage() {
               onClick={() => { setTab('projects'); setSelectedCollection(null); }}
             >
               Work
-              <span className="profile-v2__tab-count">{projects.length}</span>
+              <span className="profile-v2__tab-count">{profile.projects_count ?? projects.length}</span>
             </button>
             {isOwn && (
               <button
@@ -301,11 +325,36 @@ export default function ProfilePage() {
               secondaryHref={isOwn ? '/settings' : undefined}
             />
           ) : (
-            <div className="projects-masonry">
-              {projects.map(project => (
-                <ProjectCard key={project.id} project={project} currentUserId={currentUser?.id} />
-              ))}
-            </div>
+            <>
+              <div className="projects-masonry">
+                {projects.map(project => (
+                  <ProjectCard key={project.id} project={project} currentUserId={currentUser?.id} />
+                ))}
+              </div>
+              {hasMoreProjects && (
+                <div style={{ display: 'flex', justifyContent: 'center', marginTop: '2rem' }}>
+                  <button
+                    type="button"
+                    onClick={loadMoreProjects}
+                    disabled={loadingMoreProjects}
+                    className="btn btn-dark"
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '0.5rem',
+                      opacity: loadingMoreProjects ? 0.7 : 1,
+                      cursor: loadingMoreProjects ? 'not-allowed' : 'pointer',
+                    }}
+                  >
+                    <RefreshCw
+                      size={14}
+                      style={loadingMoreProjects ? { animation: 'spin 0.8s linear infinite' } : undefined}
+                    />
+                    {loadingMoreProjects ? 'Loading…' : 'Load more projects'}
+                  </button>
+                </div>
+              )}
+            </>
           )
         )}
 

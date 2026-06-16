@@ -1,26 +1,38 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useSyncExternalStore } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Home, Compass, Plus, Bookmark, User } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import './MobileBottomNav.css';
 
+function subscribeToMounted() {
+  return () => {};
+}
+
+function getMountedSnapshot() {
+  return true;
+}
+
+function getMountedServerSnapshot() {
+  return false;
+}
+
+function getInitialProfile() {
+  if (typeof window === 'undefined') return null;
+  try {
+    const cached = sessionStorage.getItem('mnav_profile');
+    return cached ? JSON.parse(cached) : null;
+  } catch {
+    return null;
+  }
+}
+
 export default function MobileBottomNav() {
   const pathname = usePathname();
-  const [mounted, setMounted] = useState(false);
-  const [profile, setProfile] = useState(null);
-
-  useEffect(() => {
-    setMounted(true);
-    const cached = sessionStorage.getItem('mnav_profile');
-    if (cached) {
-      try {
-        setProfile(JSON.parse(cached));
-      } catch {}
-    }
-  }, []);
+  const mounted = useSyncExternalStore(subscribeToMounted, getMountedSnapshot, getMountedServerSnapshot);
+  const [profile, setProfile] = useState(getInitialProfile);
   const supabase = useMemo(() => createClient(), []);
 
   useEffect(() => {
@@ -44,7 +56,6 @@ export default function MobileBottomNav() {
     return pathname.startsWith(href) && !pathname.includes('new');
   }
 
-  // Profile link fallback to /login if not logged in
   const profileLink = (mounted && profile) ? `/profile/${profile.username}` : '/login';
 
   return (

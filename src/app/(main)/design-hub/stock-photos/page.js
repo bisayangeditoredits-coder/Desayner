@@ -61,7 +61,7 @@ export default function StockPhotosPage() {
     supabase.auth.getUser().then(({ data }) => {
       if (data?.user) setUser(data.user);
     });
-  }, []);
+  }, [supabase]);
 
   const debounceRef = useRef(null);
   const inputRef = useRef(null);
@@ -96,7 +96,7 @@ export default function StockPhotosPage() {
     if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => doSearch(query, 1, orientation), 400);
     return () => clearTimeout(debounceRef.current);
-  }, [query, orientation]);
+  }, [query, orientation, doSearch]);
 
   const handleDownload = async (photo) => {
     setDlId(photo.id);
