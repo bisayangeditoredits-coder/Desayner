@@ -42,10 +42,14 @@ test.describe('Search', () => {
     const headerSearch = page.locator('#global-search');
     await expect(headerSearch).toBeVisible({ timeout: 10_000 });
 
-    await headerSearch.fill('logo');
-    await headerSearch.press('Enter');
+    await headerSearch.click();
+    await headerSearch.pressSequentially('logo');
+    await expect(headerSearch).toHaveValue('logo');
 
-    await page.waitForURL(/\/search\?q=logo/, { timeout: 10_000 });
+    await Promise.all([
+      page.waitForURL(/\/search\?q=logo/, { timeout: 15_000 }),
+      headerSearch.press('Enter'),
+    ]);
     await expect(page).toHaveURL(/\/search\?q=logo/);
   });
 });

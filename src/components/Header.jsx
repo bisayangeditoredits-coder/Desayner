@@ -176,11 +176,15 @@ export default function Header() {
     debounceRef.current = setTimeout(() => liveSearch(q), 280);
   }
 
+  function handleSearchSubmit(e) {
+    e.preventDefault();
+    const q = (searchRef.current?.querySelector('input')?.value ?? searchQuery).trim();
+    if (!q) return;
+    setDropdownOpen(false);
+    router.push(`/search?q=${encodeURIComponent(q)}`);
+  }
+
   function handleKeyDown(e) {
-    if (e.key === 'Enter' && searchQuery.trim()) {
-      setDropdownOpen(false);
-      router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
-    }
     if (e.key === 'Escape') { setDropdownOpen(false); setSearchQuery(''); }
   }
 
@@ -248,7 +252,7 @@ export default function Header() {
         </button>
 
         {pathname !== '/' && (
-          <div className="search-bar" ref={searchRef} style={{ maxWidth: '400px', flex: 1 }}>
+          <form className="search-bar" ref={searchRef} onSubmit={handleSearchSubmit} style={{ maxWidth: '400px', flex: 1 }}>
             <Search className="search-icon" size={15} />
             <input
               id="global-search"
@@ -264,6 +268,7 @@ export default function Header() {
           <Filter size={15} color="#9b9b9b" style={{ position: 'absolute', right: '0.8rem', top: '50%', transform: 'translateY(-50%)', cursor: 'pointer' }} />
           {searchQuery && (
             <button
+              type="button"
               onClick={clearSearch}
               style={{ position: 'absolute', right: '2.2rem', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: '#9b9b9b', display: 'flex' }}
             >
@@ -312,7 +317,7 @@ export default function Header() {
               )}
             </div>
           )}
-        </div>
+        </form>
         )}
 
         {/* Center Icons */}
