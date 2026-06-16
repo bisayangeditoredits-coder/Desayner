@@ -3,7 +3,6 @@
 import { useState, useMemo} from 'react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
-import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { Bookmark, Eye, Heart, Sparkles } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
@@ -32,6 +31,7 @@ export default function TrendingProjectCard({ project, currentUserId, rank }) {
   const supabase = useMemo(() => createClient(), []);
   const author = project.profiles;
   const authorName = author?.full_name || author?.username || 'Unknown';
+  const coverSrc = stripCloudinaryProxy(project.thumbnail_url || project.cover_url);
 
   async function handleLike(event) {
     event.preventDefault();
@@ -81,15 +81,13 @@ export default function TrendingProjectCard({ project, currentUserId, rank }) {
         aria-label={`Open ${project.title || 'project'}`}
       >
         <div className={`trending-project-card__image-shell trending-project-card__image-shell--${imageStatus}`}>
-          {(project.thumbnail_url || project.cover_url) && imageStatus !== 'error' ? (
-            <Image
-              src={stripCloudinaryProxy(project.thumbnail_url || project.cover_url)}
+          {coverSrc && imageStatus !== 'error' ? (
+            <img
+              src={coverSrc}
               alt={project.title || 'Project cover'}
               className="trending-project-card__image img-fade-in"
-              width={480}
-              height={360}
-              sizes="(max-width: 768px) 100vw, 320px"
-              style={{ objectFit: 'cover', width: '100%', height: '100%' }}
+              loading="lazy"
+              decoding="async"
               onLoad={(e) => {
                 e.currentTarget.classList.add('loaded');
                 setImageStatus('loaded');
