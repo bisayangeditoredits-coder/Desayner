@@ -53,13 +53,13 @@ export default function HorizontalFeatureScroll() {
           className="feature-card-hover"
           onClick={() => setSelectedFeature(feature)}
         >
-          {/* Image Container changed to 16/9 to exactly match the native blue card images without top/bottom borders */}
           <div style={{ position: 'relative', width: '100%', aspectRatio: '16/9', background: '#ffffff', borderBottom: '1px solid #f1f5f9' }}>
             <Image 
               src={feature.src} 
               alt={feature.title} 
               fill 
               sizes="300px"
+              unoptimized
               style={{ objectFit: 'cover' }} 
             />
           </div>
@@ -156,6 +156,7 @@ export default function HorizontalFeatureScroll() {
                 alt={selectedFeature.title} 
                 fill
                 priority
+                unoptimized
                 sizes="(max-width: 768px) 0vw, 450px"
                 style={{ 
                   objectFit: 'cover',
