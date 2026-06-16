@@ -18,6 +18,22 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
 
+## Testing
+
+```bash
+# API smoke tests
+npm run test:smoke
+
+# E2E (local — starts dev server; needs .env.local + project data)
+npx playwright install chromium
+npm run test:e2e
+
+# E2E against production
+npm run test:e2e:prod
+```
+
+Optional: set `E2E_TEST_EMAIL` and `E2E_TEST_PASSWORD` in `.env.local` to run the authenticated login E2E test.
+
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
 ## Learn More
