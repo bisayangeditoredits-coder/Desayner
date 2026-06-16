@@ -81,10 +81,9 @@
 
 .feature-modal-left {
   flex: 1;
-  background: #2d43e8;
-  background-image: linear-gradient(135deg, #2d43e8 0%, #1a22ff 100%);
+  background: #ffffff;
   padding: 3rem 2.5rem;
-  color: white;
+  color: #0f172a;
   display: flex;
   flex-direction: column;
   justify-content: center;

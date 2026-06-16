@@ -111,11 +111,11 @@ export default function HorizontalFeatureScroll() {
             
             {/* Left Side: Text Content */}
             <div className="feature-modal-left">
-              <h2 style={{ fontSize: '2.5rem', fontWeight: 900, margin: '0 0 1rem 0', lineHeight: 1.1 }}>
+              <h2 style={{ fontSize: '2.5rem', fontWeight: 900, margin: '0 0 1rem 0', lineHeight: 1.1, color: '#0f172a' }}>
                 {selectedFeature.title}
               </h2>
               
-              <p style={{ fontSize: '0.95rem', color: 'rgba(255,255,255,0.9)', lineHeight: 1.6, marginBottom: '2rem' }}>
+              <p style={{ fontSize: '0.95rem', color: '#64748b', lineHeight: 1.6, marginBottom: '2rem' }}>
                 {selectedFeature.description}
               </p>
 
@@ -123,15 +123,15 @@ export default function HorizontalFeatureScroll() {
                 <button 
                   onClick={() => setSelectedFeature(null)}
                   style={{
-                    background: '#e6e82d',
-                    color: '#231f20',
+                    background: '#2d43e8',
+                    color: '#ffffff',
                     border: 'none',
                     padding: '0.85rem 2rem',
                     borderRadius: 30,
                     fontWeight: 800,
                     fontSize: '1rem',
                     cursor: 'pointer',
-                    boxShadow: '0 8px 16px rgba(0,0,0,0.15)',
+                    boxShadow: '0 8px 16px rgba(45,67,232,0.25)',
                     transition: 'transform 0.15s, box-shadow 0.15s'
                   }}
                   onMouseOver={e => e.currentTarget.style.transform = 'translateY(-2px)'}
