@@ -3,13 +3,13 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 
 const BANNERS = [
-  '/banners/hd-realistic-website-feature-card-for-desayner-com.png',
-  '/banners/hd-modern-website-feature-card-for-desayner-com-po.png',
-  '/banners/hd-modern-website-feature-card-for-desayner-com-po (1).png',
-  '/banners/hd-modern-website-feature-card-for-desayner-com-po (2).png',
-  '/banners/hd-modern-website-feature-card-for-desayner-com-po (3).png',
-  '/banners/hd-modern-website-feature-card-for-desayner-com-po (4).png',
-  '/banners/hd-modern-website-feature-card-for-desayner-com-po (5).png',
+  '/banners/feature-card-1.png',
+  '/banners/feature-card-2.png',
+  '/banners/feature-card-3.png',
+  '/banners/feature-card-4.png',
+  '/banners/feature-card-5.png',
+  '/banners/feature-card-6.png',
+  '/banners/feature-card-7.png',
 ];
 
 export default function FeatureShowcase() {
@@ -33,6 +33,7 @@ export default function FeatureShowcase() {
           alt={`Feature ${idx + 1}`}
           fill
           priority={idx === 0}
+          unoptimized
           sizes="50vw"
           style={{
             objectFit: 'cover',
