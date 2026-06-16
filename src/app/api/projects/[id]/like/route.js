@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import { redis } from '@/lib/redis';
+import { invalidateFeedCaches } from '@/lib/cacheKeys';
 
 export const runtime = 'edge';
 
@@ -51,16 +52,10 @@ export async function POST(request, { params }) {
       }
     }
 
-    // 3. Clear Redis Caches so the feed updates!
+    // 3. Clear Redis caches so the feed updates
     try {
-      // Clear the main feed cache
-      await redis.del(`projects_v2:All:24:0`);
-      
-      // Clear the specific project cache if we have one
       const { data: projectData } = await supabaseAdmin.from('projects').select('category').eq('id', id).single();
-      if (projectData?.category) {
-        await redis.del(`projects_v2:${projectData.category}:24:0`);
-      }
+      await invalidateFeedCaches(redis, { category: projectData?.category });
     } catch (cacheErr) {
       console.error('[Redis Cache Invalidate Error]:', cacheErr);
     }

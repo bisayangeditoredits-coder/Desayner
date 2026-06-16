@@ -4,6 +4,19 @@ import { createClient } from '@supabase/supabase-js';
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 
+const ALLOWED_PROFILE_FIELDS = [
+  'full_name', 'username', 'avatar_url', 'bio', 'tools',
+  'website', 'location', 'cover_url', 'skills', 'available_for_work',
+];
+
+function pickAllowedProfileFields(profileData) {
+  const safe = {};
+  for (const key of ALLOWED_PROFILE_FIELDS) {
+    if (key in profileData) safe[key] = profileData[key];
+  }
+  return safe;
+}
+
 // SECURITY FIX: Added authentication check to prevent unauthorized profile modifications
 export async function saveProfileAdmin(profileData) {
   try {
@@ -26,7 +39,7 @@ export async function saveProfileAdmin(profileData) {
     }
 
     // 3. Ensure the profile being modified belongs to the authenticated user
-    const profileToUpdate = { ...profileData, id: user.id };
+    const profileToUpdate = { ...pickAllowedProfileFields(profileData), id: user.id };
 
     const supabaseAdmin = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL,

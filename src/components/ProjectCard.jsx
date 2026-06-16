@@ -11,6 +11,7 @@ import { saveProjectModalReturn } from '@/lib/projectModalNav';
 
 import dynamic from 'next/dynamic';
 import { stripCloudinaryProxy } from '@/lib/utils';
+import useToastStore from '@/store/useToastStore';
 const SaveToCollectionModal = dynamic(() => import('./SaveToCollectionModal'), { ssr: false });
 
 export default function ProjectCard({ project, currentUserId, isLiked, isSaved }) {
@@ -28,6 +29,7 @@ export default function ProjectCard({ project, currentUserId, isLiked, isSaved }
   // FIX: Memoize supabase client — don't create a new instance on every render
   const supabase = useMemo(() => createClient(), []);
   const router = useRouter();
+  const addToast = useToastStore((s) => s.addToast);
 
   // FIX: Removed per-card realtime Supabase subscription.
   // Opening 1 WebSocket channel per card (up to 24+) floods the browser connection pool
@@ -45,16 +47,17 @@ export default function ProjectCard({ project, currentUserId, isLiked, isSaved }
     setLikeCount((c) => (wasLiked ? c - 1 : c + 1));
     
     try {
-      await fetch(`/api/projects/${project.id}/like`, {
+      const res = await fetch(`/api/projects/${project.id}/like`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: wasLiked ? 'unlike' : 'like' })
       });
+      if (!res.ok) throw new Error('Like request failed');
     } catch (err) {
       console.error('Like failed', err);
-      // Revert optimistic UI on failure
       if (isLiked === undefined) setLocalLiked(wasLiked);
       setLikeCount((c) => (wasLiked ? c + 1 : c - 1));
+      addToast({ type: 'error', message: 'Could not update like. Please try again.' });
     }
   }
 
@@ -88,7 +91,7 @@ export default function ProjectCard({ project, currentUserId, isLiked, isSaved }
                 className="project-card__img img-fade-in"
                 width={500}
                 height={380}
-                unoptimized
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                 style={{ objectFit: 'cover', width: '100%', height: '100%' }}
                 onLoad={(e) => {
                   e.currentTarget.classList.add('loaded');

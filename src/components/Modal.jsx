@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
+import { lockBodyScroll, unlockBodyScroll } from '@/lib/modalLock';
 import styles from './Modal.module.css';
 
 /**
@@ -19,9 +20,8 @@ export default function Modal({ title, size = 'md', onClose, footer, children })
 
   useEffect(() => {
     setTimeout(() => setMounted(true), 0);
-    // Prevent scrolling on body when modal is open
-    document.body.style.overflow = 'hidden';
-    return () => { document.body.style.overflow = 'unset'; };
+    lockBodyScroll();
+    return () => { unlockBodyScroll(); };
   }, []);
 
   // Close on Escape key

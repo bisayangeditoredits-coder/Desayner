@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 
 import { createServerClient } from '@supabase/ssr';
 import { redis } from '@/lib/redis';
+import { invalidateFeedCaches } from '@/lib/cacheKeys';
 
 // Keep as edge but use request.cookies — compatible with Edge Runtime
 export const runtime = 'edge';
@@ -57,7 +58,7 @@ export async function POST(req) {
 
     // Invalidate related caches
     try {
-      await redis.del('projects:All:24:0', 'trending_projects_top_10');
+      await invalidateFeedCaches(redis);
     } catch (cacheErr) {
       console.warn('Cache invalidation failed:', cacheErr);
     }

@@ -2,6 +2,7 @@
 import { useState, useMemo} from 'react';
 import { createClient } from '@/lib/supabase/client';
 import UserAvatar from './UserAvatar';
+import useToastStore from '@/store/useToastStore';
 
 function timeAgo(dateStr) {
   const diff = Date.now() - new Date(dateStr).getTime();
@@ -18,6 +19,7 @@ export default function CommentThread({ targetId, targetType = 'project', commen
   const [body, setBody] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const supabase = useMemo(() => createClient(), []);
+  const addToast = useToastStore((s) => s.addToast);
 
   const table = targetType === 'project' ? 'project_comments' : 'post_comments';
   const fk = targetType === 'project' ? 'project_id' : 'post_id';
@@ -35,6 +37,8 @@ export default function CommentThread({ targetId, targetType = 'project', commen
     if (!error && data) {
       setComments(prev => [...prev, data]);
       setBody('');
+    } else {
+      addToast({ type: 'error', message: error?.message || 'Could not post comment. Please try again.' });
     }
     setSubmitting(false);
   }

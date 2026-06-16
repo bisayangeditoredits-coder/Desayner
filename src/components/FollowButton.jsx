@@ -2,12 +2,14 @@
 import { useState, useMemo} from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
+import useToastStore from '@/store/useToastStore';
 
 export default function FollowButton({ targetUserId, currentUserId, initialFollowing = false, compact = false, variant = 'solid' }) {
   const [following, setFollowing] = useState(initialFollowing);
   const [loading, setLoading] = useState(false);
   const supabase = useMemo(() => createClient(), []);
   const router = useRouter();
+  const addToast = useToastStore((s) => s.addToast);
 
   if (currentUserId === targetUserId) return null;
 
@@ -25,21 +27,15 @@ export default function FollowButton({ targetUserId, currentUserId, initialFollo
     const prev = following;
     setFollowing(!following); // optimistic
     try {
-      if (prev) {
-        await fetch('/api/follows', {
-          method: 'DELETE',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ following_id: targetUserId }),
-        });
-      } else {
-        await fetch('/api/follows', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ following_id: targetUserId }),
-        });
-      }
+      const res = await fetch('/api/follows', {
+        method: prev ? 'DELETE' : 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ following_id: targetUserId }),
+      });
+      if (!res.ok) throw new Error('Follow request failed');
     } catch {
-      setFollowing(prev); // rollback
+      setFollowing(prev);
+      addToast({ type: 'error', message: 'Could not update follow. Please try again.' });
     } finally {
       setLoading(false);
     }

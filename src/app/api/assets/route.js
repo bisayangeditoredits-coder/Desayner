@@ -193,16 +193,20 @@ export async function POST(request) {
   }
 }
 
-// ── PATCH: Increment downloads count securely ─────────────────────────
+// ── PATCH: Increment downloads count (authenticated) ──────────────────
 export async function PATCH(request) {
   try {
     const cookieStore = await cookies();
-    // Using service role client to bypass RLS and increment count
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL,
-      process.env.SUPABASE_SERVICE_ROLE_KEY,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
       { cookies: { getAll: () => cookieStore.getAll() } }
     );
+
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
 
     const body = await request.json();
     const { assetId } = body;
@@ -211,30 +215,16 @@ export async function PATCH(request) {
       return NextResponse.json({ error: 'Asset ID is required' }, { status: 400 });
     }
 
-    // Read current count
-    const { data: asset, error: fetchErr } = await supabase
-      .from('assets')
-      .select('downloads_count')
-      .eq('id', assetId)
-      .single();
-
-    if (fetchErr || !asset) {
-      return NextResponse.json({ error: fetchErr?.message || 'Asset not found' }, { status: 404 });
-    }
-
-    // Increment count
-    const { data, error } = await supabase
-      .from('assets')
-      .update({ downloads_count: (asset.downloads_count || 0) + 1 })
-      .eq('id', assetId)
-      .select('id, downloads_count')
-      .single();
+    const { data: newCount, error } = await supabase.rpc('increment_asset_downloads', {
+      p_asset_id: assetId,
+    });
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
+      const status = error.message?.includes('not found') ? 404 : 500;
+      return NextResponse.json({ error: error.message }, { status });
     }
 
-    return NextResponse.json({ success: true, downloads_count: data.downloads_count });
+    return NextResponse.json({ success: true, downloads_count: newCount });
 
   } catch (err) {
     console.error('[PATCH /api/assets Error]:', err);

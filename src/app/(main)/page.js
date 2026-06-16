@@ -6,6 +6,7 @@ import TagPill from '@/components/TagPill';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { Plus, Search } from 'lucide-react';
 import useSWRInfinite from 'swr/infinite';
 import useFeedStore from '@/store/useFeedStore';
@@ -21,6 +22,7 @@ const CATEGORIES = ['All', 'Design', 'Illustration', 'Photography', 'Branding', 
 const PAGE_SIZE = 24;
 
 export default function Dashboard() {
+  const router = useRouter();
   const [currentBanner, setCurrentBanner] = useState(0);
 
   // Banner carousel logic
@@ -72,7 +74,7 @@ export default function Dashboard() {
     return ['projects_feed', category, searchQuery, pageIndex];
   };
 
-  const { data, size, setSize, isValidating, error } = useSWRInfinite(getKey, fetcher, {
+  const { data, size, setSize, isValidating, error, mutate } = useSWRInfinite(getKey, fetcher, {
     revalidateFirstPage: false,
     persistSize: true,
   });
@@ -150,6 +152,13 @@ export default function Dashboard() {
     if (node) observerRef.current.observe(node);
   }, [isLoadingInitialData, isLoadingMore, hasMore, isValidating, size, setSize]);
 
+  function goToSearch() {
+    const q = searchInput.trim();
+    if (q) {
+      router.push(`/search?q=${encodeURIComponent(q)}`);
+    }
+  }
+
   return (
     <>
       <WelcomeModal />
@@ -166,7 +175,7 @@ export default function Dashboard() {
               width={1200}
               height={300}
               priority={idx === 0}
-              unoptimized
+              sizes="100vw"
               style={{
                 position: 'absolute',
                 top: 0,
@@ -212,6 +221,7 @@ export default function Dashboard() {
               placeholder="What type of design are you interested in?"
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
+              onKeyDown={(e) => { if (e.key === 'Enter') goToSearch(); }}
               style={{
                 width: '100%',
                 padding: '1.25rem 4rem 1.25rem 2rem',
@@ -234,7 +244,11 @@ export default function Dashboard() {
                 e.target.style.boxShadow = 'none';
               }}
             />
-            <button style={{
+            <button
+              type="button"
+              aria-label="Search projects"
+              onClick={goToSearch}
+              style={{
               position: 'absolute',
               right: '0.6rem',
               top: '50%',
@@ -289,17 +303,43 @@ export default function Dashboard() {
         </div>
 
         {/* Masonry Project Grid */}
-        {isLoadingInitialData ? (
+        {error ? (
+          <div style={{ textAlign: 'center', padding: '4rem 2rem', border: '1px solid #e8e8e8', background: 'white', borderRadius: '12px' }}>
+            <p style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '0.5rem' }}>Could not load projects</p>
+            <p style={{ color: '#9b9b9b', fontSize: '0.875rem', marginBottom: '1.5rem' }}>Check your connection and try again.</p>
+            <button
+              type="button"
+              onClick={() => mutate()}
+              className="btn btn-dark"
+            >
+              Retry
+            </button>
+          </div>
+        ) : isLoadingInitialData ? (
           <div className="projects-masonry">
             {[...Array(24)].map((_, i) => <div key={i} className="masonry-item shimmer-box" style={{ aspectRatio: '4/3', borderRadius: '8px' }} />)}
           </div>
         ) : isEmpty ? (
           <div style={{ textAlign: 'center', padding: '6rem 2rem', border: '1px solid #e8e8e8', background: 'white', borderRadius: '12px' }}>
-            <p style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '0.5rem' }}>No projects in {category}</p>
-            <p style={{ color: '#9b9b9b', fontSize: '0.875rem', marginBottom: '1.5rem' }}>Be the first to share one.</p>
-            <Link href="/projects/new" className="btn btn-dark">
-              <Plus size={14} /> Create Project
-            </Link>
+            <p style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '0.5rem' }}>
+              {searchQuery.trim() ? `No results for "${searchQuery.trim()}"` : `No projects in ${category}`}
+            </p>
+            <p style={{ color: '#9b9b9b', fontSize: '0.875rem', marginBottom: '1.5rem' }}>
+              {searchQuery.trim() ? 'Try different keywords or browse all projects.' : 'Be the first to share one.'}
+            </p>
+            {searchQuery.trim() ? (
+              <button
+                type="button"
+                onClick={() => { setSearchInput(''); setFeedState({ searchQuery: '' }); }}
+                className="btn btn-dark"
+              >
+                Clear search
+              </button>
+            ) : (
+              <Link href="/projects/new" className="btn btn-dark">
+                <Plus size={14} /> Create Project
+              </Link>
+            )}
           </div>
         ) : (
           <>

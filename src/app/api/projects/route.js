@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 import { redis } from '@/lib/redis';
+import { projectsCacheKey } from '@/lib/cacheKeys';
+import { buildPublishedProjectsQuery, parseSearchQuery } from '@/lib/projectSearch';
 
 export const runtime = 'edge';
 const CACHE_HEADERS = { 'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=120' };
@@ -9,14 +11,20 @@ export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
     const category = searchParams.get('category') || 'All';
-    const q = searchParams.get('q') || '';
+    const rawQ = (searchParams.get('q') || '').trim();
+    const ftsQuery = parseSearchQuery(rawQ);
     const limit = parseInt(searchParams.get('limit') || '24', 10);
     const offset = parseInt(searchParams.get('offset') || '0', 10);
 
-    const cacheKey = `projects_v2:${category}:${q}:${limit}:${offset}`;
+    // Reject searches that sanitize to nothing (e.g. only special characters)
+    if (rawQ && !ftsQuery) {
+      return NextResponse.json({ projects: [], cached: false }, { headers: CACHE_HEADERS });
+    }
 
-    // 1. Read first page from cache
-    if (offset === 0 && !q) { // only cache empty searches to avoid filling Redis with arbitrary string keys
+    const cacheKey = projectsCacheKey(category, ftsQuery, limit, offset);
+
+    // Cache first page (category browse + inline search)
+    if (offset === 0) {
       try {
         const cached = await redis.get(cacheKey);
         if (cached) {
@@ -28,32 +36,24 @@ export async function GET(request) {
       }
     }
 
-    // 2. Fetch from database
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-      { 
-        cookies: { 
+      {
+        cookies: {
           getAll: () => [],
-          setAll: () => {}
-        } 
-      } // No cookies required for public data
+          setAll: () => {},
+        },
+      },
     );
 
-    let query = supabase
-      .from('projects')
-      .select('id, title, thumbnail_url, cover_url, category, views_count, likes_count, saves_count, created_at, user_id, profiles!projects_user_id_fkey(username, full_name, avatar_url)')
-      .eq('published', true)
-      .order('created_at', { ascending: false })
-      .range(offset, offset + limit - 1);
-
-    if (category !== 'All') {
-      query = query.eq('category', category);
-    }
-    
-    if (q) {
-      query = query.ilike('title', `%${q}%`);
-    }
+    const query = buildPublishedProjectsQuery(supabase, {
+      ftsQuery,
+      category,
+      sort: 'newest',
+      offset,
+      limit,
+    });
 
     const { data, error } = await query;
     if (error) {
@@ -62,9 +62,6 @@ export async function GET(request) {
 
     const items = data || [];
 
-
-
-    // 4. Cache first page responses to Redis for 60 seconds
     if (offset === 0) {
       try {
         await redis.setex(cacheKey, 60, { projects: items });
@@ -74,7 +71,6 @@ export async function GET(request) {
     }
 
     return NextResponse.json({ projects: items, cached: false }, { headers: CACHE_HEADERS });
-
   } catch (err) {
     console.error('[GET /api/projects Error]:', err);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

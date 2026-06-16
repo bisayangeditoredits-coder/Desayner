@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import { redis } from '@/lib/redis';
+import { invalidateFeedCaches } from '@/lib/cacheKeys';
 
 export const runtime = 'edge';
 
@@ -46,8 +47,7 @@ export async function DELETE(request, { params }) {
         await redis.del(`profile_data_v2:${profile.username.toLowerCase()}:50:0`);
         await redis.del(`profile_data:${profile.username.toLowerCase()}`);
       }
-      // Also clear the trending/feed caches just in case
-      await redis.del('trending_projects_top_10');
+      await invalidateFeedCaches(redis);
     } catch (err) {
       console.error('[Redis Cache Invalidate Error]:', err);
     }

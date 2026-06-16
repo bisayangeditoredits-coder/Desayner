@@ -2,12 +2,13 @@ import { NextResponse } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import { redis } from '@/lib/redis';
+import { TRENDING_CACHE_KEY } from '@/lib/cacheKeys';
 
 export const runtime = 'edge';
 const CACHE_HEADERS = { 'Cache-Control': 's-maxage=120, stale-while-revalidate=60' };
 
 export async function GET() {
-  const CACHE_KEY = 'trending_projects_top_10_v2';
+  const CACHE_KEY = TRENDING_CACHE_KEY;
   
   // 1. Check Redis cache first
   try {

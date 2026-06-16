@@ -18,7 +18,6 @@ if (process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN) 
 
 const PUBLIC_READ_API_PREFIXES = [
   '/api/assets',
-  '/api/community',
   '/api/designers',
   '/api/explore-colors',
   '/api/fonts',
@@ -42,7 +41,6 @@ function isPublicReadApi(request, pathname) {
 
 function shouldResolveUser(pathname) {
   return pathname.startsWith('/settings')
-    || pathname.startsWith('/messages')
     || pathname.startsWith('/admin')
     || pathname === '/login'
     || pathname === '/signup';
@@ -53,7 +51,7 @@ function shouldResolveUser(pathname) {
  *
  * Responsibilities:
  * 1. Refreshes the Supabase session token (keeps users logged in).
- * 2. Protects /settings and /messages — redirects unauthenticated users to /login.
+ * 2. Protects /settings — redirects unauthenticated users to /login.
  * 3. Redirects authenticated users away from /login and /signup.
  */
 export async function proxy(request) {
@@ -158,7 +156,7 @@ export async function proxy(request) {
   // ── Protected Routes ─────────────────────────────────────────
   // If user is NOT logged in and tries to access protected routes,
   // redirect them to /login.
-  const isProtected = pathname.startsWith('/settings') || pathname.startsWith('/messages');
+  const isProtected = pathname.startsWith('/settings');
   if (isProtected && !user) {
     const returnTo = pathname + request.nextUrl.search;
     const loginUrl = request.nextUrl.clone();
