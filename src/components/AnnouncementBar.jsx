@@ -35,7 +35,7 @@ export default function AnnouncementBar() {
         <Sparkles size={14} style={{ color: '#fbbf24' }} />
         <span>Join the upcoming Desayner Community Event! Connect with top creatives worldwide.</span>
         <Link 
-          href="/" 
+          href="/contests" 
           style={{ 
             color: '#fbbf24', 
             textDecoration: 'underline', 
