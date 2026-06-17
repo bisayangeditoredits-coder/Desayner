@@ -1831,6 +1831,10 @@
   transition: color 0.15s, background 0.15s;
 }
 
+.project-card__action-btn span {
+  color: #231f20; /* Keep numbers black */
+}
+
 .project-card__action-btn:hover {
   color: #231f20;
   background: #f5f5f5;
@@ -2040,6 +2044,10 @@
   font-size: 0.7rem;
   font-weight: 750;
   line-height: 1;
+}
+
+.trending-project-card__stat span.font-mono {
+  color: #231f20; /* Keep numbers black */
 }
 
 .trending-project-card__stat-button {
