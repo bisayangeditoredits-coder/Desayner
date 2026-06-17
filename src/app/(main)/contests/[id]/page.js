@@ -234,7 +234,7 @@ export default function ContestDetailPage() {
                       borderRadius: '8px', overflow: 'hidden', cursor: 'zoom-in' 
                     }}
                   >
-                    <Image src={sub.image_url} alt={sub.title} fill style={{ objectFit: 'cover' }} />
+                    <Image src={sub.image_url} alt={sub.title} fill style={{ objectFit: 'cover' }} unoptimized={true} />
                     
                     {/* Rank Badge */}
                     {isTop3 && (
