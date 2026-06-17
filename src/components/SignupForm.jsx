@@ -437,7 +437,6 @@ function FormFields({
           <Turnstile 
             siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY} 
             onSuccess={(token) => setTurnstileToken(token)}
-            options={{ size: 'flexible' }}
           />
         </div>
 
