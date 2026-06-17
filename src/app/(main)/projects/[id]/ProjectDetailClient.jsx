@@ -45,13 +45,6 @@ function NotFoundState() {
   );
 }
 
-function forceProxyForImg(url) {
-  if (typeof url === 'string' && url.includes('base44.app')) {
-    return `/api/proxy-image?url=${encodeURIComponent(url)}`;
-  }
-  return url;
-}
-
 function ImageGallery({ images, title }) {
   const [lightbox, setLightbox] = useState(null);
 
@@ -66,7 +59,7 @@ function ImageGallery({ images, title }) {
             className="project-detail__gallery-item"
             onClick={() => setLightbox(i)}
           >
-            <img src={forceProxyForImg(img)} alt={`${title} — image ${i + 1}`} />
+            <img src={img} alt={`${title} — image ${i + 1}`} />
           </button>
         ))}
       </div>
@@ -85,7 +78,7 @@ function ImageGallery({ images, title }) {
             disabled={lightbox === 0}
           >‹</button>
           <img
-            src={forceProxyForImg(images[lightbox])}
+            src={images[lightbox]}
             alt={`${title} — image ${lightbox + 1}`}
             className="lightbox__img"
             onClick={e => e.stopPropagation()}
