@@ -26,7 +26,7 @@ export default function ContestDetailPage() {
   // Lightweight Realtime using SWR polling
   const fetcher = url => fetch(url).then(res => res.json());
   const { data, error: swrError, mutate } = useSWR(`/api/contests/${id}`, fetcher, {
-    refreshInterval: 5000, // Poll every 5s for realtime ranking without WS overhead
+    refreshInterval: 30000, // Poll every 30s to save Vercel limits (CPU & Edge requests)
     revalidateOnFocus: true
   });
 
