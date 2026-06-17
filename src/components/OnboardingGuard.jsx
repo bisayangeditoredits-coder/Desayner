@@ -29,11 +29,11 @@ export default function OnboardingGuard({ children }) {
       // Check if profile exists and is complete (avatar, username, bio, tools required)
       const { data: profile } = await supabase
         .from('profiles')
-        .select('avatar_url, username, bio, tools')
+        .select('avatar_url, cover_url, username, bio, tools')
         .eq('id', user.id)
         .single();
 
-      if (!profile || !profile.username || !profile.bio || !profile.tools || profile.tools.length === 0) {
+      if (!profile || !profile.avatar_url || !profile.cover_url || !profile.username || !profile.bio || !profile.tools || profile.tools.length === 0) {
         if (mounted) {
           setNeedsOnboarding(true);
         }

@@ -22,6 +22,7 @@ export default function OnboardingModal({ user, onComplete }) {
   const [fullName, setFullName] = useState('');
   const [username, setUsername] = useState('');
   const [avatarUrl, setAvatarUrl] = useState('');
+  const [coverUrl, setCoverUrl] = useState('');
   const [bio, setBio] = useState('');
   const [selectedTools, setSelectedTools] = useState([]);
 
@@ -49,6 +50,7 @@ export default function OnboardingModal({ user, onComplete }) {
         const defaultUname = prof.username || (prof.full_name ? prof.full_name.toLowerCase().replace(/[^a-z0-9]/g, '') : '');
         setUsername(defaultUname);
         setAvatarUrl(prof.avatar_url || '');
+        setCoverUrl(prof.cover_url || '');
         setBio(prof.bio || '');
         setSelectedTools(prof.tools || []);
       }
@@ -106,7 +108,7 @@ export default function OnboardingModal({ user, onComplete }) {
   // Handle step navigations
   function nextStep() {
     if (step === 1) {
-      if (!avatarUrl) return;
+      if (!avatarUrl || !coverUrl) return;
       if (!fullName.trim()) return;
       if (!username.trim() || !usernameAvailable) return;
       setStep(2);
@@ -126,6 +128,7 @@ export default function OnboardingModal({ user, onComplete }) {
       full_name: fullName.trim(),
       username: username.trim().toLowerCase(),
       avatar_url: avatarUrl,
+      cover_url: coverUrl,
       bio: bio.trim(),
       tools: selectedTools
     });
@@ -139,7 +142,7 @@ export default function OnboardingModal({ user, onComplete }) {
     }
   }
 
-  const step1Valid = fullName.trim() && username.trim() && usernameAvailable && !checkingUsername && !usernameError;
+  const step1Valid = avatarUrl && coverUrl && fullName.trim() && username.trim() && usernameAvailable && !checkingUsername && !usernameError;
   const step2Valid = bio.trim().length >= 10 && selectedTools.length > 0;
 
   if (loadingUser) {
@@ -206,6 +209,19 @@ export default function OnboardingModal({ user, onComplete }) {
                   onRemove={() => setAvatarUrl('')}
                   cropAspect={1}
                   cropShape="round"
+                />
+              </div>
+
+              {/* Cover Upload */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                <label style={{ fontSize: '0.8rem', fontWeight: 700, color: '#334155' }}>Cover Photo</label>
+                <ImageUpload 
+                  label="Upload Cover" 
+                  folder="covers"
+                  value={coverUrl}
+                  onUploaded={url => setCoverUrl(url)}
+                  onRemove={() => setCoverUrl('')}
+                  cropAspect={16/5}
                 />
               </div>
 
