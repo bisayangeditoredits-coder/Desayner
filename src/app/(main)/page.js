@@ -17,7 +17,7 @@ import '../App.css';
 const WelcomeModal = dynamic(() => import('@/components/WelcomeModal'), { ssr: false });
 
 const BANNERS = [
-  '/banner-event-homepage-v2.jpeg'
+  '/featured-contest-cover.jpeg'
 ];
 
 const CATEGORIES = ['All', 'Design', 'Illustration', 'Photography', 'Branding', '3D', 'Motion', 'UI/UX', 'Typography', 'Other'];
