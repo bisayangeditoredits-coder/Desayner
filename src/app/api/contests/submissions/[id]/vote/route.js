@@ -50,8 +50,8 @@ export async function POST(request, { params }) {
     const { data: submission } = await supabaseAdmin.from('contest_submissions').select('contest_id').eq('id', submissionId).single();
     if (!submission) return NextResponse.json({ error: 'Submission not found' }, { status: 404 });
 
-    const { data: contest } = await supabaseAdmin.from('contests').select('status, is_voting_closed').eq('id', submission.contest_id).single();
-    if (!contest || contest.status !== 'active' || contest.is_voting_closed) {
+    const { data: contest } = await supabaseAdmin.from('contests').select('status').eq('id', submission.contest_id).single();
+    if (!contest || contest.status !== 'active') {
       return NextResponse.json({ error: 'Voting is currently closed for this contest.' }, { status: 400 });
     }
 
