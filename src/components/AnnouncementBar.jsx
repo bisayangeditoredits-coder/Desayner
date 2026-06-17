@@ -31,7 +31,7 @@ export default function AnnouncementBar() {
       position: 'relative',
       zIndex: 1000,
     }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem', fontWeight: 600 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem', fontWeight: 600, paddingRight: '1.5rem', flexWrap: 'wrap', justifyContent: 'center' }}>
         <Sparkles size={14} style={{ color: '#fbbf24' }} />
         <span>Join the upcoming Desayner Community Event! Connect with top creatives worldwide.</span>
         <Link 

@@ -40,6 +40,8 @@ export default function AnnouncementBanner() {
       color: '#0f172a', // Dark text for contrast
       padding: '0.75rem 1.5rem', 
       display: 'flex', 
+      flexWrap: 'wrap',
+      gap: '1rem',
       alignItems: 'center', 
       justifyContent: 'space-between',
       borderRadius: '12px',

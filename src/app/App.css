@@ -4072,3 +4072,9 @@ h1, h2, h3, h4, .page-title, .section-title {
   letter-spacing: -0.02em;
 }
 
+@media (max-width: 992px) {
+  .main-content {
+    padding-bottom: 70px;
+  }
+}
+
