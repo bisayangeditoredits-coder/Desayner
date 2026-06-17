@@ -54,12 +54,11 @@ export default function HorizontalFeatureScroll() {
           onClick={() => setSelectedFeature(feature)}
         >
           <div style={{ position: 'relative', width: '100%', aspectRatio: '16/9', background: '#ffffff', borderBottom: '1px solid #f1f5f9' }}>
-            <Image 
+            <img 
               src={feature.src} 
               alt={feature.title} 
-              fill 
-              sizes="300px"
-              style={{ objectFit: 'cover' }} 
+              style={{ objectFit: 'cover', width: '100%', height: '100%', position: 'absolute', inset: 0 }} 
+              loading="eager"
             />
           </div>
           
@@ -148,15 +147,16 @@ export default function HorizontalFeatureScroll() {
               >
                 <X size={18} color="#231f20" />
               </button>
-              <Image 
+              <img 
                 src={selectedFeature.src} 
                 alt={selectedFeature.title} 
-                fill
-                priority
-                sizes="(max-width: 768px) 0vw, 450px"
                 style={{ 
                   objectFit: 'cover',
-                  objectPosition: 'center'
+                  objectPosition: 'center',
+                  width: '100%',
+                  height: '100%',
+                  position: 'absolute',
+                  inset: 0
                 }}
               />
             </div>
