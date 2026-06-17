@@ -2,6 +2,7 @@
 import { useState, useRef } from 'react';
 import { X, Upload, Loader2, AlertCircle } from 'lucide-react';
 import Image from 'next/image';
+import imageCompression from 'browser-image-compression';
 
 export default function SubmitContestModal({ contestId, isOpen, onClose, onSubmitted }) {
   const [file, setFile] = useState(null);
@@ -50,22 +51,43 @@ export default function SubmitContestModal({ contestId, isOpen, onClose, onSubmi
     setError('');
 
     try {
-      // 1. Upload Image to R2 via /api/upload
-      // Since our upload route expects 'cover' and 'thumb', we just send the same file for both for simplicity here,
-      // or we can just send it as cover and hope it doesn't break if thumb is missing. 
-      // Actually, our API specifically checks for both. We'll send it for both to satisfy it.
+      // Compress images before sending to prevent 413 Request Entity Too Large
+      const coverOptions = {
+        maxSizeMB: 1,
+        maxWidthOrHeight: 1920,
+        useWebWorker: true,
+        fileType: 'image/webp'
+      };
+      const thumbOptions = {
+        maxSizeMB: 0.1,
+        maxWidthOrHeight: 600,
+        useWebWorker: true,
+        fileType: 'image/webp'
+      };
+
+      const [compressedCover, compressedThumb] = await Promise.all([
+        imageCompression(file, coverOptions),
+        imageCompression(file, thumbOptions)
+      ]);
+
       const formData = new FormData();
-      formData.append('cover', file);
-      formData.append('thumb', file);
+      formData.append('cover', compressedCover, 'cover.webp');
+      formData.append('thumb', compressedThumb, 'thumb.webp');
       formData.append('folder', 'contests');
 
       const uploadRes = await fetch('/api/upload', {
         method: 'POST',
         body: formData
       });
-      const uploadData = await uploadRes.json();
       
-      if (!uploadRes.ok) throw new Error(uploadData.error || 'Upload failed');
+      let uploadData;
+      try {
+        uploadData = await uploadRes.json();
+      } catch (parseErr) {
+        throw new Error('Upload server returned an invalid response (might be too large).');
+      }
+      
+      if (!uploadRes.ok) throw new Error(uploadData?.error || 'Upload failed');
 
       // 2. Submit to database
       const submitRes = await fetch(`/api/contests/${contestId}/submit`, {
