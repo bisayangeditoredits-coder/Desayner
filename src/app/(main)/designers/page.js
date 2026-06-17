@@ -5,6 +5,7 @@ import UserAvatar from "@/components/UserAvatar";
 import FollowButton from "@/components/FollowButton";
 import EmptyState from "@/components/EmptyState";
 import Link from "next/link";
+import Image from "next/image";
 import { stripCloudinaryProxy } from "@/lib/utils";
 import { formatMemberSince, isNewMember } from "@/lib/memberSince";
 import { CREATIVE_TOOLS } from "@/lib/constants";
@@ -289,14 +290,13 @@ function DesignersContent() {
                       }}
                     >
                       {creator.banner_url ? (
-                        <img
+                        <Image
                           src={stripCloudinaryProxy(creator.banner_url)}
                           alt=""
                           className="featured-banner-img"
-                          loading="lazy"
+                          fill
+                          sizes="(max-width: 640px) 100vw, 25vw"
                           style={{
-                            width: "100%",
-                            height: "100%",
                             objectFit: "cover",
                             transition: "transform 0.3s ease-out",
                           }}

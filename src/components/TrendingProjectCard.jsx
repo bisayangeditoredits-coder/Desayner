@@ -3,6 +3,7 @@
 import { useState, useMemo} from 'react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { Bookmark, Eye, Heart, Sparkles } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
@@ -82,12 +83,13 @@ export default function TrendingProjectCard({ project, currentUserId, rank }) {
       >
         <div className={`trending-project-card__image-shell trending-project-card__image-shell--${imageStatus}`}>
           {coverSrc && imageStatus !== 'error' ? (
-            <img
+            <Image
               src={coverSrc}
               alt={project.title || 'Project cover'}
               className="trending-project-card__image img-fade-in"
-              loading="lazy"
-              decoding="async"
+              fill
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+              style={{ objectFit: 'cover' }}
               onLoad={(e) => {
                 e.currentTarget.classList.add('loaded');
                 setImageStatus('loaded');

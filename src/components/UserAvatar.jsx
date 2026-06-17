@@ -1,6 +1,7 @@
 'use client';
 import React, { useState } from 'react';
 
+import Image from 'next/image';
 import { stripCloudinaryProxy } from '@/lib/utils';
 
 export default function UserAvatar({ src, name = '', size = 32, className = '' }) {
@@ -40,15 +41,14 @@ export default function UserAvatar({ src, name = '', size = 32, className = '' }
   if (showImage) {
     return (
       <div style={{ ...style, position: 'relative' }} className={className}>
-        <img
+        <Image
           src={effectiveSrc}
           alt={name}
-          loading="lazy"
-          decoding="async"
-          referrerPolicy="no-referrer"
+          fill
+          sizes={`${size * 2}px`}
           onError={() => setFailedSrc(effectiveSrc)}
           onLoad={(e) => e.currentTarget.classList.add('loaded')}
-          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
+          style={{ objectFit: 'cover' }}
           className="img-fade-in"
         />
       </div>

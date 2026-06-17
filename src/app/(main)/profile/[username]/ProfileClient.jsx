@@ -6,6 +6,7 @@ import ProjectCard from '@/components/ProjectCard';
 import FollowButton from '@/components/FollowButton';
 import UserAvatar from '@/components/UserAvatar';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Globe, MapPin, Calendar, MessageSquare, ExternalLink, Folder, ArrowLeft, RefreshCw } from 'lucide-react';
 import { CREATIVE_TOOLS } from '@/lib/constants';
 import { stripCloudinaryProxy } from '@/lib/utils';
@@ -157,10 +158,13 @@ export default function ProfilePage() {
       {/* ── Cover Banner ── */}
       <div className="profile-v2__cover">
         {coverSrc && failedCoverSrc !== coverSrc ? (
-          <img
+          <Image
             src={coverSrc}
             alt="Cover"
             className="profile-v2__cover-img"
+            fill
+            sizes="100vw"
+            style={{ objectFit: 'cover' }}
             onError={() => setFailedCoverSrc(coverSrc)}
           />
         ) : (

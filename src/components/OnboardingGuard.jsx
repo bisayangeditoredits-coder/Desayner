@@ -33,7 +33,7 @@ export default function OnboardingGuard({ children }) {
         .eq('id', user.id)
         .single();
 
-      if (!profile || !profile.username || !profile.bio || !profile.tools || profile.tools.length === 0) {
+      if (!profile || !profile.avatar_url || !profile.username || !profile.bio || !profile.tools || profile.tools.length === 0) {
         if (mounted) {
           setNeedsOnboarding(true);
         }

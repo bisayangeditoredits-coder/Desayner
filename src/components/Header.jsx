@@ -1,6 +1,7 @@
 'use client';
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter, usePathname } from 'next/navigation';
 import { 
   Search, Bell, Plus, X, Heart, Bookmark, MessageCircle, UserPlus, 
@@ -295,7 +296,15 @@ export default function Header() {
                     >
                       <div className="search-dropdown__thumb">
                         {p.cover_url || p.thumbnail_url
-                          ? <img src={stripCloudinaryProxy(p.thumbnail_url || p.cover_url)} alt="" loading="lazy" decoding="async" /> 
+                          ? (
+                            <Image 
+                              src={stripCloudinaryProxy(p.thumbnail_url || p.cover_url)} 
+                              alt="" 
+                              fill
+                              sizes="40px"
+                              style={{ objectFit: 'cover' }}
+                            />
+                          ) 
                           : <div className="header__search-placeholder"><ImageIcon size={14} /></div>}
                       </div>
                       <div className="search-dropdown__info">

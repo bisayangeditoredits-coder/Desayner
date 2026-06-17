@@ -139,7 +139,7 @@ export default function OnboardingModal({ user, onComplete }) {
     }
   }
 
-  const step1Valid = fullName.trim() && username.trim() && usernameAvailable && !checkingUsername && !usernameError;
+  const step1Valid = avatarUrl && fullName.trim() && username.trim() && usernameAvailable && !checkingUsername && !usernameError;
   const step2Valid = bio.trim().length >= 10 && selectedTools.length > 0;
 
   if (loadingUser) {

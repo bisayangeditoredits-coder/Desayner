@@ -43,7 +43,8 @@ export function stripCloudinaryProxy(url) {
       'cdn.pixabay.com',
       'pixabay.com',
       'unsplash.com',
-      'res.cloudinary.com'
+      'res.cloudinary.com',
+      'base44.app'
     ];
 
     try {
