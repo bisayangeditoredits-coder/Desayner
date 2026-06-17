@@ -59,7 +59,6 @@ export default function HorizontalFeatureScroll() {
               alt={feature.title} 
               fill 
               sizes="300px"
-              unoptimized
               style={{ objectFit: 'cover' }} 
             />
           </div>
@@ -156,7 +155,6 @@ export default function HorizontalFeatureScroll() {
                 alt={selectedFeature.title} 
                 fill
                 priority
-                unoptimized
                 sizes="(max-width: 768px) 0vw, 450px"
                 style={{ 
                   objectFit: 'cover',

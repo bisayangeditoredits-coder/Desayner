@@ -7,11 +7,14 @@
 
 .feature-marquee-track {
   display: flex;
+  width: max-content;
   padding-bottom: 2rem;
   padding-top: 0.5rem;
+  will-change: transform;
+  animation: scrollMarqueeTrack 150s linear infinite;
 }
 
-.feature-marquee-track:hover .marquee-group {
+.feature-marquee-track:hover {
   animation-play-state: paused;
 }
 
@@ -20,13 +23,11 @@
   gap: 1.5rem;
   padding-right: 1.5rem;
   flex-shrink: 0;
-  animation: smoothMarquee 100s linear infinite;
-  will-change: transform;
 }
 
-@keyframes smoothMarquee {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-100%); }
+@keyframes scrollMarqueeTrack {
+  0% { transform: translate3d(0, 0, 0); }
+  100% { transform: translate3d(calc(-100% / 3), 0, 0); }
 }
 
 .feature-card-hover {

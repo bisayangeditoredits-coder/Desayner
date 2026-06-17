@@ -33,7 +33,6 @@ export default function FeatureShowcase() {
           alt={`Feature ${idx + 1}`}
           fill
           priority={idx === 0}
-          unoptimized
           sizes="50vw"
           style={{
             objectFit: 'cover',
