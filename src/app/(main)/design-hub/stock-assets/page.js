@@ -315,6 +315,7 @@ export default function StockAssetsPage() {
                   justifyContent: 'center',
                   padding: '1.5rem',
                   boxShadow: '0 4px 12px rgba(0,0,0,0.03)',
+                  aspectRatio: `${photo.imageWidth} / ${photo.imageHeight}`
                 }}
                 className="stock-photo-card"
               >

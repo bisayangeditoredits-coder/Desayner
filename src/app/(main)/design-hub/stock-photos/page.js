@@ -391,6 +391,7 @@ export default function StockPhotosPage() {
                   background: photo.color || '#f4f5f5',
                   cursor: 'pointer',
                   boxShadow: '0 4px 12px rgba(0,0,0,0.03)',
+                  aspectRatio: `${photo.width} / ${photo.height}`
                 }}
                 className="stock-photo-card"
               >
