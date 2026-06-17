@@ -139,8 +139,8 @@ const nextConfig = {
             key: 'Content-Security-Policy',
             value: [
               "default-src 'self'",
-              // Scripts: self + Sentry CDN (error replay) + Stripe.js + Microsoft Clarity
-              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com https://cdn.jsdelivr.net https://*.clarity.ms https://www.clarity.ms",
+              // Scripts: self + Sentry CDN (error replay) + Stripe.js + Microsoft Clarity + Cloudflare Turnstile
+              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com https://cdn.jsdelivr.net https://*.clarity.ms https://www.clarity.ms https://challenges.cloudflare.com",
               // Styles: self + Google Fonts + inline (Next.js)
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               // Fonts: self + Google Fonts
@@ -151,8 +151,8 @@ const nextConfig = {
               "media-src 'self' blob: https://*.r2.dev",
               // API + WebSocket connections + Microsoft Clarity
               "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.upstash.io https://api.unsplash.com https://api.sentry.io https://js.stripe.com https://*.r2.dev https://*.clarity.ms",
-              // Frames: Stripe embedded UIs only
-              "frame-src https://js.stripe.com https://hooks.stripe.com",
+              // Frames: Stripe embedded UIs + Cloudflare Turnstile
+              "frame-src https://js.stripe.com https://hooks.stripe.com https://challenges.cloudflare.com",
               // Workers: Next.js service worker
               "worker-src 'self' blob:",
               // Form targets: self only

@@ -333,8 +333,11 @@ function FormFields({
         </label>
 
         <div style={{ margin: '0.25rem 0' }}>
+          <div style={{color:'red', fontSize:'12px', fontWeight:'bold', border:'1px solid red', padding:'4px', marginBottom:'4px'}}>
+            Turnstile Key: {process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ? process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY : 'UNDEFINED'}
+          </div>
           <Turnstile 
-            siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY} 
+            siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || '1x00000000000000000000AA'} 
             onSuccess={(token) => setTurnstileToken(token)}
             options={{ size: 'flexible' }}
           />

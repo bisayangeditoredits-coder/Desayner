@@ -15,7 +15,18 @@ export async function POST(request, { params }) {
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-      { cookies: { getAll: () => cookieStore.getAll() } }
+      {
+        cookies: {
+          getAll: () => cookieStore.getAll(),
+          setAll: (cookiesToSet) => {
+            try {
+              cookiesToSet.forEach(({ name, value, options }) => {
+                cookieStore.set(name, value, options);
+              });
+            } catch (error) {}
+          },
+        },
+      }
     );
 
     const { data: { user } } = await supabase.auth.getUser();
@@ -27,7 +38,12 @@ export async function POST(request, { params }) {
     const supabaseAdmin = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL,
       process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-      { cookies: { getAll: () => [] } }
+      {
+        cookies: {
+          getAll: () => [],
+          setAll: () => {},
+        },
+      }
     );
 
     // Fetch the parent contest to check status
@@ -45,6 +61,7 @@ export async function POST(request, { params }) {
         .insert({ user_id: user.id, submission_id: submissionId });
         
       if (insertError && insertError.code !== '23505') { // Ignore unique constraint violation
+        console.error('[POST /api/contests/submissions/[id]/vote InsertError]:', insertError);
         return NextResponse.json({ error: insertError.message }, { status: 500 });
       }
     } else {

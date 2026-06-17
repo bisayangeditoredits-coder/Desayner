@@ -263,11 +263,20 @@ export default function ContestDetailPage() {
                   {/* Footer */}
                   <div style={{ padding: '0.75rem 0 0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', textDecoration: 'none' }}>
-                      {sub.profiles?.avatar_url ? (
-                        <Image src={sub.profiles.avatar_url} alt="User" width={24} height={24} style={{ borderRadius: '50%' }} />
-                      ) : (
-                        <div style={{ width: 24, height: 24, borderRadius: '50%', background: '#cbd5e1' }} />
+                      {sub.profiles?.avatar_url && (
+                        <img 
+                          src={sub.profiles.avatar_url} 
+                          alt="User" 
+                          width={24} 
+                          height={24} 
+                          style={{ borderRadius: '50%', objectFit: 'cover' }}
+                          onError={(e) => { 
+                            e.currentTarget.style.display = 'none'; 
+                            if (e.currentTarget.nextSibling) e.currentTarget.nextSibling.style.display = 'block'; 
+                          }}
+                        />
                       )}
+                      <div style={{ width: 24, height: 24, borderRadius: '50%', background: '#cbd5e1', display: sub.profiles?.avatar_url ? 'none' : 'block' }} />
                       <span style={{ fontSize: '0.875rem', color: '#0f172a', fontWeight: 600 }}>
                         {sub.profiles?.full_name || sub.profiles?.username}
                       </span>
