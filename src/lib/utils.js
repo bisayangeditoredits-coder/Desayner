@@ -109,6 +109,8 @@ export function optimizeImage(url, width = 600, quality = 80) {
     }
   }
 
-  // Use Cloudflare Image Resizing endpoint
-  return `/cdn-cgi/image/width=${width},quality=${quality},format=auto/${normalizedUrl}`;
+  // HOTFIX: Disabled Cloudflare Image Resizing (/cdn-cgi/image/) for now
+  // because it requires a paid tier/activation on Cloudflare and is breaking production.
+  // We will just return the original/normalized URL to fix the live site.
+  return normalizedUrl;
 }
