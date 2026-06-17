@@ -2,7 +2,6 @@
 import { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { Heart, Bookmark, Eye } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
@@ -86,13 +85,12 @@ export default function ProjectCard({ project, currentUserId, isLiked, isSaved }
         >
           <div className={`project-card__thumb project-card__thumb--${imgStatus}`}>
             {coverSrc && imgStatus !== 'error' ? (
-              <Image
+              <img
                 src={coverSrc}
                 alt={project.title || 'Project'}
                 className="project-card__img img-fade-in"
-                fill
-                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                style={{ objectFit: 'cover' }}
+                loading="lazy"
+                decoding="async"
                 onLoad={(e) => {
                   e.currentTarget.classList.add('loaded');
                   setImgStatus('loaded');
