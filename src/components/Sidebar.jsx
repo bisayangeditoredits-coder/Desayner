@@ -6,7 +6,7 @@ import Image from 'next/image';
 import {
   Home, FolderOpen, Users, Users2, Bookmark, Plus, Settings,
   LogOut, ChevronDown, ChevronUp, Library, MessageSquare, Briefcase, ShoppingBag, Box, PlaySquare, Compass, MessageSquareCode, Image as ImageIcon,
-  Palette, Type, LayoutTemplate
+  Palette, Type, LayoutTemplate, Trophy
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import UserAvatar from './UserAvatar';
@@ -20,6 +20,7 @@ const MAIN_NAV_ITEMS = [
   { href: '/',             icon: Home,          label: 'Home',        public: true },
   { href: '/designers',    icon: Users2,        label: 'Designers',   public: true },
   { href: '/design-hub',   icon: Palette,       label: 'Design Hub',  public: true },
+  { href: '/contests',     icon: Trophy,        label: 'Contests',    public: true },
   { href: '/saved',        icon: Bookmark,      label: 'Saved',       reqAuth: true },
 ];
 

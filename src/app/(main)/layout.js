@@ -8,6 +8,7 @@ import dynamic from 'next/dynamic';
 const OnboardingChecklist = dynamic(() => import('@/components/OnboardingChecklist'));
 const RealtimeNotifier = dynamic(() => import('@/components/RealtimeNotifier'));
 const ToastContainer = dynamic(() => import('@/components/ToastContainer'));
+import AnnouncementBar from '@/components/AnnouncementBar';
 
 export default function MainLayout({ children, modal }) {
   return (
@@ -16,6 +17,7 @@ export default function MainLayout({ children, modal }) {
         <div className="app-layout">
           <Sidebar />
           <main className="main-content" style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+            <AnnouncementBar />
             <Header />
             <OnboardingChecklist />
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>

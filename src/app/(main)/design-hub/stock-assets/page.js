@@ -93,6 +93,26 @@ export default function StockAssetsPage() {
     return () => clearTimeout(debounceRef.current);
   }, [query, doSearch]);
 
+  const loadMoreRef = useRef(null);
+
+  // Infinite Scroll Observer
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !loading && !loadingMore && results.length > 0 && page < totalPages) {
+          doSearch(query, page + 1);
+        }
+      },
+      { threshold: 0.1 }
+    );
+    
+    if (loadMoreRef.current) {
+      observer.observe(loadMoreRef.current);
+    }
+    
+    return () => observer.disconnect();
+  }, [loading, loadingMore, results.length, page, totalPages, query, doSearch]);
+
   const handleDownload = async (photo) => {
     setDlId(photo.id);
     setDlDone(null);
@@ -449,31 +469,12 @@ export default function StockAssetsPage() {
 
         {/* Load more */}
         {results.length > 0 && page < totalPages && (
-          <div style={{ textAlign: 'center', marginTop: '2rem' }}>
-            <button
-              onClick={() => doSearch(query, page + 1)}
-              disabled={loadingMore}
-              style={{
-                padding: '0.75rem 2.5rem',
-                background: '#231f20',
-                color: 'white',
-                border: 'none',
-                borderRadius: 10,
-                fontWeight: 700,
-                fontSize: '0.9rem',
-                cursor: loadingMore ? 'not-allowed' : 'pointer',
-                fontFamily: 'inherit',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '0.5rem',
-                opacity: loadingMore ? 0.7 : 1,
-              }}
-            >
-              {loadingMore
-                ? <><Loader2 size={16} style={{ animation: 'spin 1s linear infinite' }} /> Loading…</>
-                : <><ChevronDown size={16} /> Load more vectors</>
-              }
-            </button>
+          <div ref={loadMoreRef} style={{ textAlign: 'center', marginTop: '2rem', paddingBottom: '2rem' }}>
+            {loadingMore && (
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', color: '#6e6d7a', fontWeight: 600 }}>
+                <Loader2 size={16} style={{ animation: 'spin 1s linear infinite' }} /> Loading more vectors...
+              </div>
+            )}
           </div>
         )}
       </div>

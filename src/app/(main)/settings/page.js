@@ -31,7 +31,7 @@ const labelStyle = {
 export default function SettingsPage() {
   const [tab, setTab]         = useState('profile');
   const [profile, setProfile] = useState(null);
-  const [form, setForm]       = useState({ full_name: '', username: '', bio: '', website: '', location: '', tools: [], skills: [], available_for_work: false });
+  const [form, setForm]       = useState({ full_name: '', username: '', bio: '', website: '', location: '', tools: [], skills: [], available_for_work: false, public_email: '' });
   const [avatarUrl, setAvatarUrl] = useState('');
   const [coverUrl, setCoverUrl]   = useState('');
   const [saving, setSaving]   = useState(false);
@@ -61,6 +61,7 @@ export default function SettingsPage() {
           tools:     data.tools     || [],
           skills:    data.skills    || [],
           available_for_work: !!data.available_for_work,
+          public_email: data.public_email || '',
         });
         setAvatarUrl(data.avatar_url || '');
         setCoverUrl(data.cover_url || '');
@@ -84,6 +85,7 @@ export default function SettingsPage() {
       cover_url:  coverUrl            || null,
       tools:      form.tools,
       available_for_work: form.available_for_work,
+      public_email: form.public_email.trim() || null,
     };
 
     let { error: err } = await supabase.from('profiles').update(payload).eq('id', profile.id);
@@ -370,6 +372,23 @@ export default function SettingsPage() {
                     }} />
                   </button>
                 </div>
+              </div>
+
+              {/* Public Email */}
+              <div>
+                <label style={labelStyle}>Public Email (For Clients)</label>
+                <p style={{ fontSize: '0.78rem', color: '#9b9b9b', margin: '0 0 0.65rem' }}>
+                  If you are available for work, clients can use this email to contact you via the "Hire Me" button.
+                </p>
+                <input
+                  style={inputStyle}
+                  value={form.public_email}
+                  onChange={e => setForm(p => ({ ...p, public_email: e.target.value }))}
+                  placeholder="hello@yourdomain.com"
+                  type="email"
+                  onFocus={e => e.target.style.borderColor = '#231f20'}
+                  onBlur={e => e.target.style.borderColor = '#e8e8e8'}
+                />
               </div>
 
               {/* Skills / specialties */}

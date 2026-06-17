@@ -20,15 +20,18 @@ const PROFILE_PAGE_SIZE = 50;
 
 /** Prominent Contact button that links externally */
 function HireMeButton({ profile }) {
-  // If they have no website, we don't show the Hire Me button
-  // In a real app, you might use a mailto: link if they had a public email
-  if (!profile?.website) return null;
+  // Use public_email for a direct mailto link, fallback to website if no email is provided.
+  if (!profile?.public_email && !profile?.website) return null;
+
+  const href = profile.public_email
+    ? `mailto:${profile.public_email}`
+    : (profile.website.startsWith('http') ? profile.website : `https://${profile.website}`);
 
   return (
     <a
-      href={profile.website.startsWith('http') ? profile.website : `https://${profile.website}`}
-      target="_blank"
-      rel="noopener noreferrer"
+      href={href}
+      target={profile.public_email ? undefined : "_blank"}
+      rel={profile.public_email ? undefined : "noopener noreferrer"}
       className="profile-pill-btn"
       style={{ 
         cursor: 'pointer', 
@@ -250,7 +253,7 @@ export default function ProfilePage() {
                       initialFollowing={isFollowing}
                       compact={true}
                     />
-                    {currentUser && <HireMeButton profile={profile} />}
+                    <HireMeButton profile={profile} />
                   </>
                 )}
                 {profile.website && (

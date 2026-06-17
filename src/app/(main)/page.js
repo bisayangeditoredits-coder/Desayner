@@ -11,12 +11,13 @@ import { Plus, Search } from 'lucide-react';
 import useSWRInfinite from 'swr/infinite';
 import useFeedStore from '@/store/useFeedStore';
 import HorizontalFeatureScroll from '@/components/HorizontalFeatureScroll';
+import AnnouncementBanner from '@/components/AnnouncementBanner';
 import '../App.css';
 
 const WelcomeModal = dynamic(() => import('@/components/WelcomeModal'), { ssr: false });
 
 const BANNERS = [
-  '/banner-event-homepage.jpeg'
+  '/banner-event-homepage-v2.jpeg'
 ];
 
 const CATEGORIES = ['All', 'Design', 'Illustration', 'Photography', 'Branding', '3D', 'Motion', 'UI/UX', 'Typography', 'Other'];
@@ -164,6 +165,7 @@ export default function Dashboard() {
     <>
       <WelcomeModal />
       <div className="page-content" style={{ padding: '0 1.5rem 2rem' }}>
+        <AnnouncementBanner />
         
         {/* Banner Section */}
         <div className="event-banner-wrapper" style={{ position: 'relative', overflow: 'hidden', aspectRatio: '4 / 1', borderRadius: '12px', background: '#000', marginBottom: '1.5rem', marginTop: '1.5rem' }}>

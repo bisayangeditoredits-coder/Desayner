@@ -10,7 +10,7 @@ import { S3Client } from '@aws-sdk/client-s3';
  * without incurring bandwidth costs per download.
  */
 
-const R2 = new S3Client({
+export const R2 = new S3Client({
   region: 'auto',
   endpoint: `https://${process.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
   credentials: {
@@ -19,7 +19,7 @@ const R2 = new S3Client({
   },
 });
 
-const BUCKET = process.env.R2_BUCKET_NAME;
+export const BUCKET = process.env.R2_BUCKET_NAME;
 const PUBLIC_URL = process.env.R2_PUBLIC_URL;
 
 /**

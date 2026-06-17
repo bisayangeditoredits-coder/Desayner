@@ -485,7 +485,7 @@ function AIGeneratorPanel({ models, onGenerate, generating, result, onSave, save
         </div>
 
         {/* Toolbar */}
-        <div style={{ padding: '1rem 2.5rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem', background: 'white', borderBottom: '1px solid #e8e8e8', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
+        <div style={{ padding: '1rem 1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem', background: 'white', borderBottom: '1px solid #e8e8e8', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
             <div style={{ display:'flex', alignItems:'center', justifyContent:'center', width: 40, height: 40, borderRadius: 10, background: '#f3f4f6' }}>
                <Sparkles size={20} color="#111827" />
@@ -530,7 +530,7 @@ function AIGeneratorPanel({ models, onGenerate, generating, result, onSave, save
       </div>
 
       {result && allowAI && (
-        <div style={{ padding: '2.5rem 2.5rem 0', maxWidth: 1600, margin: '0 auto' }}>
+        <div style={{ padding: '2.5rem 1.5rem 0', maxWidth: 1600, margin: '0 auto' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem' }}>
             <Sparkles size={14} color="#10b981" />
             <span style={{ fontWeight: 700, fontSize: '0.8rem', color: '#10b981' }}>Generated Palette</span>
@@ -559,21 +559,21 @@ export default function ColorsPage() {
   const [colorCount, setColorCount] = useState(5);
   
   // Local storage favorites
-  const [saved, setSaved] = useState(() => {
-    try {
-      return JSON.parse(localStorage.getItem('desayner_palettes') || '[]');
-    } catch {
-      return [];
-    }
-  });
-  const [savedIds, setSavedIds] = useState(() => {
+  const [saved, setSaved] = useState([]);
+  const [savedIds, setSavedIds] = useState(new Set());
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
     try {
       const items = JSON.parse(localStorage.getItem('desayner_palettes') || '[]');
-      return new Set(items.map((p) => p.id));
+      setSaved(items);
+      setSavedIds(new Set(items.map((p) => p.id)));
     } catch {
-      return new Set();
+      setSaved([]);
+      setSavedIds(new Set());
     }
-  });
+  }, []);
   const [loadedFilterKey, setLoadedFilterKey] = useState(null);
 
   const filterKey = `${colorCount}:${activeHue}`;
@@ -652,7 +652,7 @@ export default function ColorsPage() {
 
       {/* STICKY HEADER (Matches User Request) */}
       <div style={{ 
-        padding: '1.5rem 2rem', 
+        padding: '1.5rem 1.5rem', 
         display: 'flex', 
         justifyContent: 'space-between', 
         alignItems: 'center',
@@ -743,10 +743,10 @@ export default function ColorsPage() {
         copiedId={copiedId}
       />
 
-      <div style={{ padding:'2.5rem 2.5rem', maxWidth:1600, margin:'0 auto' }}>
+      <div style={{ padding:'2.5rem 1.5rem', maxWidth:1600, margin:'0 auto' }}>
 
         {/* Saved Palettes */}
-        {saved.length > 0 && (
+        {isClient && saved.length > 0 && (
           <div style={{ marginBottom:'2rem' }}>
             <div style={{ display:'flex', alignItems:'center', gap:'0.5rem', marginBottom:'0.75rem' }}>
               <Heart size={14} color="#ef4444" fill="#ef4444" />
