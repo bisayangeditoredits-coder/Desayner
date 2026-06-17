@@ -20,7 +20,12 @@ export default function CookieBanner() {
   if (!isVisible) return null;
 
   const acceptCookies = () => {
-    localStorage.setItem('cookie_consent', 'true');
+    localStorage.setItem('cookie_consent', 'accepted');
+    setIsVisible(false);
+  };
+
+  const rejectCookies = () => {
+    localStorage.setItem('cookie_consent', 'rejected');
     setIsVisible(false);
   };
 
@@ -51,13 +56,32 @@ export default function CookieBanner() {
       <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem' }}>
         <div style={{ fontSize: '1.25rem', marginTop: '0.1rem' }}>🍪</div>
         <div>
-          <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 700, color: '#0f172a' }}>We value your privacy</h4>
+          <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 700, color: '#0f172a' }}>Privacy & Terms</h4>
           <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.85rem', color: '#64748b', lineHeight: 1.5 }}>
-            We use essential cookies to keep you logged in and ensure the platform works properly. Learn more in our <Link href="/privacy" style={{ color: '#2d43e8', textDecoration: 'none', fontWeight: 600 }}>Privacy Policy</Link>.
+            By using our platform, you agree to our <Link href="/terms" style={{ color: '#2d43e8', textDecoration: 'none', fontWeight: 600 }}>Terms and Conditions</Link> and <Link href="/privacy" style={{ color: '#2d43e8', textDecoration: 'none', fontWeight: 600 }}>Privacy Policy</Link>. We use essential cookies to keep you logged in.
           </p>
         </div>
       </div>
       <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.25rem' }}>
+        <button 
+          onClick={rejectCookies}
+          style={{ 
+            flex: 1, 
+            background: '#f1f5f9', 
+            color: '#475569', 
+            border: 'none', 
+            padding: '0.6rem', 
+            borderRadius: '8px', 
+            fontSize: '0.85rem', 
+            fontWeight: 700, 
+            cursor: 'pointer',
+            transition: 'background 0.2s',
+          }}
+          onMouseOver={e => e.target.style.background = '#e2e8f0'}
+          onMouseOut={e => e.target.style.background = '#f1f5f9'}
+        >
+          Decline
+        </button>
         <button 
           onClick={acceptCookies}
           style={{ 
@@ -76,7 +100,7 @@ export default function CookieBanner() {
           onMouseOver={e => e.target.style.background = '#1e293b'}
           onMouseOut={e => e.target.style.background = '#0f172a'}
         >
-          Got it!
+          Accept All
         </button>
       </div>
     </div>

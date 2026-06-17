@@ -12,7 +12,7 @@ export default function TermsPage() {
           <section style={{ marginBottom: '2rem' }}>
             <h2 style={{ fontSize: '1.25rem', fontWeight: '600', marginBottom: '1rem', color: 'var(--text-main)' }}>1. Introduction</h2>
             <p style={{ color: 'var(--text-dim)', lineHeight: '1.6' }}>
-              Welcome to Creldesk Studio (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;). By accessing or using our platform, you agree to be bound by these Terms and Conditions. Please read them carefully before using our services.
+              Welcome to Desayner (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;). By accessing or using our platform, you agree to be bound by these Terms and Conditions. Please read them carefully before using our services.
             </p>
           </section>
 
@@ -26,7 +26,7 @@ export default function TermsPage() {
           <section style={{ marginBottom: '2rem' }}>
             <h2 style={{ fontSize: '1.25rem', fontWeight: '600', marginBottom: '1rem', color: 'var(--text-main)' }}>3. Intellectual Property Rights</h2>
             <p style={{ color: 'var(--text-dim)', lineHeight: '1.6' }}>
-              The content you upload remains yours. However, by posting content on Creldesk Studio, you grant us a non-exclusive, worldwide, royalty-free license to use, display, and distribute your content in connection with the service. Our original platform design, logo, and codebase remain our exclusive property.
+              The content you upload remains yours. However, by posting content on Desayner, you grant us a non-exclusive, worldwide, royalty-free license to use, display, and distribute your content in connection with the service. Our original platform design, logo, and codebase remain our exclusive property.
             </p>
           </section>
 
@@ -50,7 +50,7 @@ export default function TermsPage() {
           <section style={{ marginBottom: '2rem' }}>
             <h2 style={{ fontSize: '1.25rem', fontWeight: '600', marginBottom: '1rem', color: 'var(--text-main)' }}>6. Limitation of Liability</h2>
             <p style={{ color: 'var(--text-dim)', lineHeight: '1.6' }}>
-              In no event shall Creldesk Studio, nor its directors, employees, partners, agents, suppliers, or affiliates, be liable for any indirect, incidental, special, consequential or punitive damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses, resulting from your access to or use of or inability to access or use the service.
+              In no event shall Desayner, nor its directors, employees, partners, agents, suppliers, or affiliates, be liable for any indirect, incidental, special, consequential or punitive damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses, resulting from your access to or use of or inability to access or use the service.
             </p>
           </section>
 
@@ -64,7 +64,7 @@ export default function TermsPage() {
           <section style={{ marginBottom: '2rem' }}>
             <h2 style={{ fontSize: '1.25rem', fontWeight: '600', marginBottom: '1rem', color: 'var(--text-main)' }}>8. Contact Us</h2>
             <p style={{ color: 'var(--text-dim)', lineHeight: '1.6' }}>
-              If you have any questions about these Terms, please contact us at support@creldesk.com.
+              If you have any questions about these Terms, please contact us at support@desayner.com.
             </p>
           </section>
 

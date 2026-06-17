@@ -2,7 +2,7 @@ import React from 'react';
 import Footer from '@/components/Footer';
 
 export const metadata = {
-  title: 'Privacy Policy | CreldeskStudio',
+  title: 'Privacy Policy | Desayner',
   description: 'Our commitment to protecting your privacy and personal data.',
 };
 
@@ -21,7 +21,7 @@ export default function PrivacyPage() {
           <section>
             <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#0f172a', marginBottom: '1rem' }}>1. Introduction</h2>
             <p>
-              Welcome to CreldeskStudio. We respect your privacy and are committed to protecting your personal data. This privacy policy will inform you as to how we look after your personal data when you visit our website and tell you about your privacy rights.
+              Welcome to Desayner. We respect your privacy and are committed to protecting your personal data. This privacy policy will inform you as to how we look after your personal data when you visit our website and tell you about your privacy rights.
             </p>
           </section>
 
