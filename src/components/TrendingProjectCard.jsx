@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo} from 'react';
+import { motion } from 'framer-motion';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -8,7 +9,7 @@ import { Bookmark, Eye, Heart, Sparkles } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import UserAvatar from './UserAvatar';
 import { saveProjectModalReturn } from '@/lib/projectModalNav';
-import { stripCloudinaryProxy } from '@/lib/utils';
+import { optimizeImage } from '@/lib/utils';
 
 const SaveToCollectionModal = dynamic(() => import('./SaveToCollectionModal'), { ssr: false });
 
@@ -31,7 +32,7 @@ export default function TrendingProjectCard({ project, currentUserId, rank }) {
   const supabase = useMemo(() => createClient(), []);
   const author = project.profiles;
   const authorName = author?.full_name || author?.username || 'Unknown';
-  const coverSrc = stripCloudinaryProxy(project.thumbnail_url || project.cover_url);
+  const coverSrc = optimizeImage(project.thumbnail_url || project.cover_url, 600);
 
   async function handleLike(event) {
     event.preventDefault();

@@ -77,3 +77,38 @@ export function pixabayImageSrc(url, preview) {
   if (target.startsWith('/api/')) return target;
   return `/api/pixabay/image?url=${encodeURIComponent(target)}`;
 }
+
+/** 
+ * Automatically applies Cloudflare Image Resizing to optimize bandwidth and load times.
+ * Must be enabled in Cloudflare Dashboard: Speed -> Image Resizing
+ */
+export function optimizeImage(url, width = 600, quality = 80) {
+  if (!url) return url;
+  
+  let normalizedUrl = stripCloudinaryProxy(url);
+  
+  // Don't resize SVGs or Data URIs
+  if (normalizedUrl.startsWith('data:') || normalizedUrl.endsWith('.svg')) {
+    return normalizedUrl;
+  }
+
+  // If we are in local development, Cloudflare Image Resizing endpoint doesn't exist.
+  // Return the raw URL so images load correctly on localhost.
+  if (process.env.NODE_ENV === 'development' || (typeof window !== 'undefined' && window.location.hostname === 'localhost')) {
+    return normalizedUrl;
+  }
+
+  // If it's our own proxy, extract the real target to let CF resize the direct image
+  if (normalizedUrl.startsWith('/api/proxy-image')) {
+    try {
+      const params = new URLSearchParams(normalizedUrl.split('?')[1]);
+      const target = params.get('url');
+      if (target) normalizedUrl = target;
+    } catch (e) {
+      // fallback
+    }
+  }
+
+  // Use Cloudflare Image Resizing endpoint
+  return `/cdn-cgi/image/width=${width},quality=${quality},format=auto/${normalizedUrl}`;
+}

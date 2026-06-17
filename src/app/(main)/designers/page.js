@@ -5,7 +5,7 @@ import UserAvatar from "@/components/UserAvatar";
 import FollowButton from "@/components/FollowButton";
 import EmptyState from "@/components/EmptyState";
 import Link from "next/link";
-import { stripCloudinaryProxy } from "@/lib/utils";
+import { optimizeImage } from "@/lib/utils";
 import { formatMemberSince, isNewMember } from "@/lib/memberSince";
 import { CREATIVE_TOOLS } from "@/lib/constants";
 import {
@@ -48,6 +48,50 @@ const SORT_OPTIONS = [
 
 import { Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+
+function VirtualDesignerChunk({ designersChunk, currentUserId }) {
+  const [isVisible, setIsVisible] = useState(true);
+  const [height, setHeight] = useState(0);
+  const containerRef = useRef(null);
+
+  useEffect(() => {
+    if (isVisible && containerRef.current) {
+      const timer = setTimeout(() => {
+        if (containerRef.current) setHeight(containerRef.current.offsetHeight);
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [isVisible, designersChunk.length]);
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        // Keep the last chunk visible if height isn't calculated yet
+        if (height > 0) setIsVisible(entries[0].isIntersecting);
+      },
+      { rootMargin: '3000px 0px' }
+    );
+    observer.observe(containerRef.current);
+    return () => observer.disconnect();
+  }, [height]);
+
+  if (!isVisible && height > 0) {
+    return <div style={{ height: `${height}px`, width: '100%', marginBottom: '2rem' }} />;
+  }
+
+  return (
+    <div ref={containerRef} style={{ display: "flex", flexDirection: "column", gap: "2rem", marginBottom: "2rem" }}>
+      {designersChunk.map((designer) => (
+        <DesignerCard
+          key={designer.id}
+          designer={designer}
+          currentUserId={currentUserId}
+        />
+      ))}
+    </div>
+  );
+}
 
 function DesignersContent() {
   const router = useRouter();
@@ -290,7 +334,7 @@ function DesignersContent() {
                     >
                       {creator.banner_url ? (
                         <img
-                          src={stripCloudinaryProxy(creator.banner_url)}
+                          src={optimizeImage(creator.banner_url, 800)}
                           alt=""
                           className="featured-banner-img"
                           loading="lazy"
@@ -650,13 +694,11 @@ function DesignersContent() {
             }
           />
         ) : (
-          <div
-            style={{ display: "flex", flexDirection: "column", gap: "2rem" }}
-          >
-            {filteredDesigners.map((designer) => (
-              <DesignerCard
-                key={designer.id}
-                designer={designer}
+          <div style={{ display: "flex", flexDirection: "column" }}>
+            {Array.from({ length: Math.ceil(filteredDesigners.length / 12) }).map((_, i) => (
+              <VirtualDesignerChunk
+                key={i}
+                designersChunk={filteredDesigners.slice(i * 12, (i + 1) * 12)}
                 currentUserId={currentUserId}
               />
             ))}
@@ -969,7 +1011,7 @@ function DesignerCard({ designer, currentUserId }) {
                 style={{ display: "block", width: "100%", height: "100%" }}
               >
                 <img
-                  src={stripCloudinaryProxy(proj.thumbnail_url || proj.cover_url)}
+                  src={optimizeImage(proj.thumbnail_url || proj.cover_url, 600)}
                   alt={proj.title || ""}
                   loading="lazy"
                   className="img-fade-in"

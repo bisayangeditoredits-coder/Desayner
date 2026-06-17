@@ -23,17 +23,15 @@ export async function GET(request) {
 
     const cacheKey = projectsCacheKey(category, ftsQuery, limit, offset);
 
-    // Cache first page (category browse + inline search)
-    if (offset === 0) {
-      try {
-        const cached = await redis.get(cacheKey);
-        if (cached) {
-          const items = (cached.projects || []).map((project) => ({ ...project }));
-          return NextResponse.json({ projects: items, cached: true }, { headers: CACHE_HEADERS });
-        }
-      } catch (err) {
-        console.error('[Redis Cache GET Error]', err);
+    // Try to read from cache
+    try {
+      const cached = await redis.get(cacheKey);
+      if (cached) {
+        const items = (cached.projects || []).map((project) => ({ ...project }));
+        return NextResponse.json({ projects: items, cached: true }, { headers: CACHE_HEADERS });
       }
+    } catch (err) {
+      console.error('[Redis Cache GET Error]', err);
     }
 
     const supabase = createServerClient(
@@ -62,12 +60,10 @@ export async function GET(request) {
 
     const items = data || [];
 
-    if (offset === 0) {
-      try {
-        await redis.setex(cacheKey, 60, { projects: items });
-      } catch (err) {
-        console.error('[Redis Cache SET Error]', err);
-      }
+    try {
+      await redis.setex(cacheKey, 60, { projects: items });
+    } catch (err) {
+      console.error('[Redis Cache SET Error]', err);
     }
 
     return NextResponse.json({ projects: items, cached: false }, { headers: CACHE_HEADERS });

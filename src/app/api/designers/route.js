@@ -16,16 +16,14 @@ export async function GET(request) {
 
     const cacheKey = `designers_feed:${category}:${sort}:${page}`;
 
-    // 1. Try to read from cache (Only cache the first page for fast load)
-    if (page === 1) {
-      try {
-        const cached = await redis.get(cacheKey);
-        if (cached) {
-          return NextResponse.json({ ...cached, cached: true }, { headers: CACHE_HEADERS });
-        }
-      } catch (err) {
-        console.error('[Redis Cache GET Error]', err);
+    // 1. Try to read from cache
+    try {
+      const cached = await redis.get(cacheKey);
+      if (cached) {
+        return NextResponse.json({ ...cached, cached: true }, { headers: CACHE_HEADERS });
       }
+    } catch (err) {
+      console.error('[Redis Cache GET Error]', err);
     }
 
     const cookieStore = await cookies();
@@ -99,29 +97,21 @@ export async function GET(request) {
     }
 
     // 3. Fetch Main Creators Grid
+    let selectString = 'id, username, full_name, avatar_url, bio, location, followers_count, following_count, projects_count, created_at, tools, available_for_work';
+    if (category !== 'All') {
+      selectString += ', projects!inner(user_id, category, published)';
+    }
+
     let query = supabase
       .from('profiles')
-      .select('id, username, full_name, avatar_url, bio, location, followers_count, following_count, projects_count, created_at, tools, available_for_work')
+      .select(selectString)
       .not('username', 'is', null)
       .range((page - 1) * PAGE_SIZE, page * PAGE_SIZE - 1);
 
     if (category !== 'All') {
-      // Find users who have published projects in this category (Limit to 5000 recent to prevent OOM on large scale)
-      const { data: catUsers } = await supabase
-        .from('projects')
-        .select('user_id')
-        .eq('category', category)
-        .eq('published', true)
-        .order('created_at', { ascending: false })
-        .limit(5000);
-        
-      const userIds = Array.from(new Set((catUsers || []).map(p => p.user_id)));
-      if (userIds.length > 0) {
-        query = query.in('id', userIds);
-      } else {
-        // If no users have projects in this category, force empty result
-        query = query.eq('id', '00000000-0000-0000-0000-000000000000');
-      }
+      query = query
+        .eq('projects.category', category)
+        .eq('projects.published', true);
     }
 
     if (sort === 'followers') {
@@ -163,13 +153,11 @@ export async function GET(request) {
 
     payload.designers = creatorsWithProjects;
 
-    // 4. Cache response in Redis for 10 seconds (Only Page 1)
-    if (page === 1) {
-      try {
-        await redis.setex(cacheKey, 10, payload);
-      } catch (err) {
-        console.error('[Redis Cache SET Error]', err);
-      }
+    // 4. Cache response in Redis for 10 seconds
+    try {
+      await redis.setex(cacheKey, 10, payload);
+    } catch (err) {
+      console.error('[Redis Cache SET Error]', err);
     }
 
     return NextResponse.json({ ...payload, cached: false }, { headers: CACHE_HEADERS });

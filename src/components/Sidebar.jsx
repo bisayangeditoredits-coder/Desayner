@@ -121,7 +121,7 @@ export default function Sidebar({ className = '' }) {
       <aside className={`sidebar ${className} ${isMobileMenuOpen ? 'mobile-open' : ''}`}>
       <div style={{ padding: '1rem 1rem 0', borderBottom: '1px solid #e8e8e8', paddingBottom: '1rem', marginBottom: '0.25rem', display: 'flex', justifyContent: 'center' }}>
         <Link href="/">
-          <img src="/desayner-logo.png" alt="Desayner" fetchPriority="high" style={{ width: 'auto', height: '48px', maxWidth: '100%', objectFit: 'contain', display: 'block' }} />
+          <img src="/desayner-logo.png" alt="Desayner" fetchPriority="high" style={{ width: 'auto', height: '28px', maxWidth: '100%', objectFit: 'contain', display: 'block' }} />
         </Link>
       </div>
 

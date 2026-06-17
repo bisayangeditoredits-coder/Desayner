@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import ProfileClient from './ProfileClient';
 import { cookies } from 'next/headers';
+import { optimizeImage } from '@/lib/utils';
 
 export async function generateMetadata({ params }) {
   const { username } = await params;
@@ -21,7 +22,10 @@ export async function generateMetadata({ params }) {
   const name = profile.full_name || profile.username;
   const title = `${name} (@${profile.username}) on Desayner`;
   const description = profile.bio || `Check out ${name}'s design portfolio and projects on Desayner.`;
-  const imageUrl = profile.avatar_url || 'https://desayner.com/default-og.png';
+  
+  const rawUrl = profile.avatar_url || 'https://desayner.com/default-og.png';
+  const optimizedPath = optimizeImage(rawUrl, 800, 85);
+  const imageUrl = optimizedPath.startsWith('http') ? optimizedPath : `https://desayner.com${optimizedPath}`;
 
   return {
     title,

@@ -156,14 +156,10 @@ export default function SignupForm({ isModal = false }) {
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'flex-end',
-          padding: '3rem',
+          padding: '4rem',
+          background: 'linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 60%)',
         }}>
-          {/* Logo */}
-          <img
-            src="/desayner-logo-whiteversiom.png"
-            alt="Desayner"
-            style={{ width: 160, height: 'auto', marginBottom: 'auto', paddingTop: '2.5rem' }}
-          />
+          {/* Logo removed to prevent redundancy with the right panel */}
 
           {/* Tagline */}
           <div>
@@ -194,7 +190,6 @@ export default function SignupForm({ isModal = false }) {
         </div>
       </div>
 
-      {/* ── RIGHT: form panel ── */}
       <div style={{
         flex: 1,
         display: 'flex',
@@ -205,7 +200,7 @@ export default function SignupForm({ isModal = false }) {
         padding: '3rem 2rem',
         minWidth: 0,
       }}>
-        <div style={{ width: '100%', maxWidth: 400 }}>
+        <div className="login-form-container" style={{ width: '100%', maxWidth: 420 }}>
 
           {/* Logo — shown only when video panel is hidden (mobile) */}
           <div className="login-mobile-logo" style={{ marginBottom: '2rem', display: 'none' }}>
@@ -246,7 +241,33 @@ export default function SignupForm({ isModal = false }) {
           .login-mobile-logo { display: block !important; }
         }
         @keyframes spin { to { transform: rotate(360deg); } }
-        .login-input:focus { border-color: #2d43e8 !important; }
+        @keyframes fadeUp { 
+          from { opacity: 0; transform: translateY(20px); } 
+          to { opacity: 1; transform: translateY(0); } 
+        }
+        .login-form-container {
+          animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        .login-input {
+          width: 100%;
+          padding: 0.9rem 1rem;
+          border-radius: 12px;
+          border: 2px solid transparent;
+          font-size: 0.95rem;
+          color: #0f172a;
+          background: #f1f5f9;
+          box-sizing: border-box;
+          outline: none;
+          transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .login-input:hover {
+          background: #e2e8f0;
+        }
+        .login-input:focus { 
+          border-color: #2d43e8 !important; 
+          background: #ffffff;
+          box-shadow: 0 0 0 4px rgba(45, 67, 232, 0.1);
+        }
       `}</style>
     </div>
   );
@@ -332,12 +353,6 @@ function FormFields({
             onChange={e => setFullName(e.target.value)}
             placeholder="Juan dela Cruz"
             required
-            style={{
-              width: '100%', padding: '0.85rem 1rem', borderRadius: 8,
-              border: '1px solid #e2e8f0', fontSize: '0.9rem', color: '#231f20',
-              background: '#fafafa', boxSizing: 'border-box', outline: 'none',
-              transition: 'border-color 0.2s',
-            }}
           />
         </div>
 
@@ -352,12 +367,6 @@ function FormFields({
             onChange={e => setEmail(e.target.value)}
             placeholder="you@example.com"
             required
-            style={{
-              width: '100%', padding: '0.85rem 1rem', borderRadius: 8,
-              border: '1px solid #e2e8f0', fontSize: '0.9rem', color: '#231f20',
-              background: '#fafafa', boxSizing: 'border-box', outline: 'none',
-              transition: 'border-color 0.2s',
-            }}
           />
         </div>
 
@@ -369,17 +378,12 @@ function FormFields({
             <input
               type={showPw ? 'text' : 'password'}
               className="login-input"
+              style={{ paddingRight: '3rem' }}
               value={password}
               onChange={e => setPassword(e.target.value)}
               placeholder="Min. 8 characters"
               required
               minLength={8}
-              style={{
-                width: '100%', padding: '0.85rem 3rem 0.85rem 1rem', borderRadius: 8,
-                border: '1px solid #e2e8f0', fontSize: '0.9rem', color: '#231f20',
-                background: '#fafafa', boxSizing: 'border-box', outline: 'none',
-                transition: 'border-color 0.2s',
-              }}
             />
             <button
               type="button"

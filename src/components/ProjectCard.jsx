@@ -9,7 +9,7 @@ import UserAvatar from './UserAvatar';
 import { saveProjectModalReturn } from '@/lib/projectModalNav';
 
 import dynamic from 'next/dynamic';
-import { stripCloudinaryProxy } from '@/lib/utils';
+import { optimizeImage } from '@/lib/utils';
 import useToastStore from '@/store/useToastStore';
 const SaveToCollectionModal = dynamic(() => import('./SaveToCollectionModal'), { ssr: false });
 
@@ -71,7 +71,7 @@ export default function ProjectCard({ project, currentUserId, isLiked, isSaved }
   }
 
   const author = project.profiles;
-  const coverSrc = stripCloudinaryProxy(project.thumbnail_url || project.cover_url);
+  const coverSrc = optimizeImage(project.thumbnail_url || project.cover_url, 600);
 
   return (
     <div className="project-card-wrapper">
