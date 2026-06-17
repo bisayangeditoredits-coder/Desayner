@@ -45,6 +45,7 @@ export default function UserAvatar({ src, name = '', size = 32, className = '' }
           alt={name}
           loading="lazy"
           decoding="async"
+          referrerPolicy="no-referrer"
           onError={() => setFailedSrc(effectiveSrc)}
           onLoad={(e) => e.currentTarget.classList.add('loaded')}
           style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
