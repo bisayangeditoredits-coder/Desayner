@@ -179,6 +179,7 @@ export default function Dashboard() {
               height={300}
               priority={idx === 0}
               sizes="100vw"
+              unoptimized={true}
               style={{
                 position: 'absolute',
                 top: 0,
