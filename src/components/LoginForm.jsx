@@ -334,7 +334,7 @@ function FormFields({
 
         <div style={{ margin: '0.25rem 0' }}>
           <Turnstile 
-            siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY} 
+            siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || '0x4AAAAAADmfKEKIUNe6N_Yn'} 
             onSuccess={(token) => setTurnstileToken(token)}
           />
         </div>
