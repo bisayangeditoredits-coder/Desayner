@@ -34,6 +34,7 @@ export default function FeatureShowcase() {
           fill
           priority={idx === 0}
           sizes="50vw"
+          unoptimized
           style={{
             objectFit: 'cover',
             objectPosition: 'center',
