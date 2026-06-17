@@ -34,7 +34,7 @@ export async function POST(request, { params }) {
       { cookies: { getAll: () => [] } }
     );
 
-    const { data: contest } = await supabaseAdmin.from('contests').select('max_entries, status').eq('id', id).single();
+    const { data: contest } = await supabaseAdmin.from('contests').select('*').eq('id', id).single();
     
     if (!contest || contest.status !== 'active') {
       return NextResponse.json({ error: 'Contest is not active.' }, { status: 400 });

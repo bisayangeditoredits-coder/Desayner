@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { Eye, EyeOff, Loader2, Check } from 'lucide-react';
 import FeatureShowcase from '@/components/FeatureShowcase';
+import { Turnstile } from '@marsidev/react-turnstile';
 
 export default function LoginForm({ isModal = false }) {
   const router       = useRouter();
@@ -18,6 +19,7 @@ export default function LoginForm({ isModal = false }) {
   const [loading,    setLoading]    = useState(false);
   const [error,      setError]      = useState('');
   const [rememberMe, setRememberMe] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState('');
 
   const supabase = useMemo(() => createClient(), []);
 
@@ -25,6 +27,13 @@ export default function LoginForm({ isModal = false }) {
     e.preventDefault();
     setLoading(true);
     setError('');
+
+    if (!turnstileToken) {
+      setError('Please verify that you are human.');
+      setLoading(false);
+      return;
+    }
+
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) { setError(error.message); setLoading(false); return; }
     if (isModal) { window.location.href = redirectTo; }
@@ -59,6 +68,7 @@ export default function LoginForm({ isModal = false }) {
             rememberMe={rememberMe} setRememberMe={setRememberMe}
             loading={loading} error={error}
             handleLogin={handleLogin} handleGoogleLogin={handleGoogleLogin}
+            setTurnstileToken={setTurnstileToken}
             isModal
           />
         </div>
@@ -164,6 +174,7 @@ export default function LoginForm({ isModal = false }) {
             rememberMe={rememberMe} setRememberMe={setRememberMe}
             loading={loading} error={error}
             handleLogin={handleLogin} handleGoogleLogin={handleGoogleLogin}
+            setTurnstileToken={setTurnstileToken}
           />
         </div>
       </div>
@@ -213,7 +224,7 @@ export default function LoginForm({ isModal = false }) {
 function FormFields({
   email, setEmail, password, setPassword,
   showPw, setShowPw, rememberMe, setRememberMe,
-  loading, error, handleLogin, handleGoogleLogin, isModal,
+  loading, error, handleLogin, handleGoogleLogin, isModal, setTurnstileToken
 }) {
   return (
     <>
@@ -320,6 +331,14 @@ function FormFields({
           </div>
           <span style={{ fontSize: '0.82rem', fontWeight: 500, color: '#475569' }}>Remember me</span>
         </label>
+
+        <div style={{ margin: '0.25rem 0' }}>
+          <Turnstile 
+            siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY} 
+            onSuccess={(token) => setTurnstileToken(token)}
+            options={{ size: 'flexible' }}
+          />
+        </div>
 
         {error && (
           <div style={{

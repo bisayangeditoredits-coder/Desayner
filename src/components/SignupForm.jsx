@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { Eye, EyeOff, Loader2, Check } from 'lucide-react';
 import FeatureShowcase from '@/components/FeatureShowcase';
+import { Turnstile } from '@marsidev/react-turnstile';
 
 import { checkAuthRateLimit } from '@/app/actions/authRateLimit';
 
@@ -19,6 +20,7 @@ export default function SignupForm({ isModal = false }) {
   const [error, setError]       = useState('');
   const [success, setSuccess]   = useState(false);
   const [botTrap, setBotTrap]   = useState('');
+  const [turnstileToken, setTurnstileToken] = useState('');
 
   // Stable Supabase client
   const supabase = useMemo(() => createClient(), []);
@@ -30,6 +32,12 @@ export default function SignupForm({ isModal = false }) {
 
     if (botTrap) {
       setSuccess(true);
+      setLoading(false);
+      return;
+    }
+
+    if (!turnstileToken) {
+      setError('Please verify that you are human.');
       setLoading(false);
       return;
     }
@@ -122,6 +130,7 @@ export default function SignupForm({ isModal = false }) {
             loading={loading} error={error} botTrap={botTrap} setBotTrap={setBotTrap}
             handleSignup={handleSignup} handleGoogleLogin={handleGoogleLogin}
             pwStrength={pwStrength} pwColors={pwColors} pwLabels={pwLabels}
+            setTurnstileToken={setTurnstileToken}
             isModal
           />
         </div>
@@ -228,6 +237,7 @@ export default function SignupForm({ isModal = false }) {
             loading={loading} error={error} botTrap={botTrap} setBotTrap={setBotTrap}
             handleSignup={handleSignup} handleGoogleLogin={handleGoogleLogin}
             pwStrength={pwStrength} pwColors={pwColors} pwLabels={pwLabels}
+            setTurnstileToken={setTurnstileToken}
           />
         </div>
       </div>
@@ -279,7 +289,8 @@ import { Lock } from 'lucide-react';
 function FormFields({
   fullName, setFullName, email, setEmail, password, setPassword,
   showPw, setShowPw, loading, error, botTrap, setBotTrap,
-  handleSignup, handleGoogleLogin, pwStrength, pwColors, pwLabels, isModal
+  handleSignup, handleGoogleLogin, pwStrength, pwColors, pwLabels, isModal,
+  setTurnstileToken
 }) {
   const [agreed, setAgreed] = useState(false);
 
@@ -421,6 +432,14 @@ function FormFields({
             I agree to the <Link href="/terms" style={{ color: '#2d43e8', fontWeight: 600, textDecoration: 'none' }}>Terms of Service</Link> and <Link href="/privacy" style={{ color: '#2d43e8', fontWeight: 600, textDecoration: 'none' }}>Privacy Policy</Link>.
           </span>
         </label>
+
+        <div style={{ margin: '0.25rem 0' }}>
+          <Turnstile 
+            siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY} 
+            onSuccess={(token) => setTurnstileToken(token)}
+            options={{ size: 'flexible' }}
+          />
+        </div>
 
         {error && (
           <div style={{
