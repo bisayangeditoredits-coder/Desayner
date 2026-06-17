@@ -10,6 +10,7 @@ import {
 import { useMobileNav } from '@/components/MobileNavProvider';
 import { createClient } from '@/lib/supabase/client';
 import { saveProjectModalReturn } from '@/lib/projectModalNav';
+import { stripCloudinaryProxy } from '@/lib/utils';
 import UserAvatar from './UserAvatar';
 
 function timeAgo(dateStr) {

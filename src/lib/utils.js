@@ -37,7 +37,6 @@ export function stripCloudinaryProxy(url) {
       // and avoids routing every card image through a third-party proxy.
       'r2.dev',
       'supabase.co',
-      'googleusercontent.com',
       'githubusercontent.com',
       'logo.clearbit.com',
       'api.dicebear.com',

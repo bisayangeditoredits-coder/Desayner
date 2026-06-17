@@ -45,8 +45,8 @@ const FEATURES = [
 export default function HorizontalFeatureScroll() {
   const [selectedFeature, setSelectedFeature] = useState(null);
 
-  const renderCards = () => (
-    <div className="marquee-group">
+  const renderCards = (ariaHidden = false) => (
+    <div className="marquee-group" aria-hidden={ariaHidden ? "true" : undefined}>
       {FEATURES.map((feature, i) => (
         <div 
           key={i} 
@@ -96,11 +96,9 @@ export default function HorizontalFeatureScroll() {
       </div>
       
       <div className="feature-marquee-container">
-        <div className="feature-marquee-track">
-          {/* 3 identical sets for seamless infinite scrolling */}
-          {renderCards()}
-          {renderCards()}
-          {renderCards()}
+        <div className="feature-marquee-track-v2">
+          {renderCards(false)}
+          {renderCards(true)}
         </div>
       </div>
 

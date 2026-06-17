@@ -5,17 +5,24 @@
   margin: 0 -1.5rem;
 }
 
-.feature-marquee-track {
+.feature-marquee-track-v2 {
   display: flex;
   width: max-content;
   padding-bottom: 2rem;
   padding-top: 0.5rem;
-  will-change: transform;
-  animation: scrollMarqueeTrack 150s linear infinite;
+  transform: translate3d(0, 0, 0);
+  animation: scrollFeatureMarqueeNew 150s linear infinite;
 }
 
-.feature-marquee-track:hover {
+.feature-marquee-track-v2:hover {
   animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .feature-marquee-track-v2 {
+    animation-duration: 150s !important;
+    animation-iteration-count: infinite !important;
+  }
 }
 
 .marquee-group {
@@ -25,9 +32,9 @@
   flex-shrink: 0;
 }
 
-@keyframes scrollMarqueeTrack {
+@keyframes scrollFeatureMarqueeNew {
   0% { transform: translate3d(0, 0, 0); }
-  100% { transform: translate3d(calc(-100% / 3), 0, 0); }
+  100% { transform: translate3d(-50%, 0, 0); }
 }
 
 .feature-card-hover {

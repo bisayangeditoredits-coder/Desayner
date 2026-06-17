@@ -18,6 +18,13 @@
   animation-play-state: paused;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .tools-marquee-track {
+    animation-duration: 120s !important;
+    animation-iteration-count: infinite !important;
+  }
+}
+
 @keyframes scrollMarquee {
   0% { transform: translate3d(0, 0, 0); }
   100% { transform: translate3d(-50%, 0, 0); }
