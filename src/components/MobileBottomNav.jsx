@@ -1,10 +1,10 @@
 'use client';
 
-import React, { useState, useEffect, useMemo, useSyncExternalStore } from 'react';
+import React, { useState, useEffect, useSyncExternalStore } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Home, Compass, Plus, Bookmark, User } from 'lucide-react';
-import { createClient } from '@/lib/supabase/client';
+import useProfileStore from '@/store/useProfileStore';
 import './MobileBottomNav.css';
 
 function subscribeToMounted() {
@@ -19,44 +19,23 @@ function getMountedServerSnapshot() {
   return false;
 }
 
-function getInitialProfile() {
-  if (typeof window === 'undefined') return null;
-  try {
-    const cached = sessionStorage.getItem('mnav_profile');
-    return cached ? JSON.parse(cached) : null;
-  } catch {
-    return null;
-  }
-}
-
 export default function MobileBottomNav() {
   const pathname = usePathname();
   const mounted = useSyncExternalStore(subscribeToMounted, getMountedSnapshot, getMountedServerSnapshot);
-  const [profile, setProfile] = useState(getInitialProfile);
-  const supabase = useMemo(() => createClient(), []);
+  const profile = useProfileStore((s) => s.profile);
 
   useEffect(() => {
-    if (profile) return;
-
-    async function load() {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        const { data } = await supabase.from('profiles').select('username').eq('id', user.id).single();
-        if (data) {
-          setProfile(data);
-          sessionStorage.setItem('mnav_profile', JSON.stringify(data));
-        }
-      }
-    }
-    load();
-  }, [profile, supabase]);
+    const refresh = () => useProfileStore.getState().invalidate();
+    window.addEventListener('profile_updated', refresh);
+    return () => window.removeEventListener('profile_updated', refresh);
+  }, []);
 
   function isActive(href) {
     if (href === '/') return pathname === '/';
     return pathname.startsWith(href) && !pathname.includes('new');
   }
 
-  const profileLink = (mounted && profile) ? `/profile/${profile.username}` : '/login';
+  const profileLink = (mounted && profile?.username) ? `/profile/${profile.username}` : '/login';
 
   return (
     <nav className="mobile-bottom-nav">
@@ -64,25 +43,25 @@ export default function MobileBottomNav() {
         <Home size={20} strokeWidth={isActive('/') ? 2.5 : 1.75} />
         <span className="mobile-nav-label">Home</span>
       </Link>
-      
+
       <Link href="/projects" className={`mobile-nav-item ${isActive('/projects') ? 'active' : ''}`}>
         <Compass size={20} strokeWidth={isActive('/projects') ? 2.5 : 1.75} />
         <span className="mobile-nav-label">Explore</span>
       </Link>
-      
+
       <Link href="/projects/new" className="mobile-nav-item-create" aria-label="Create New Project">
         <div className="create-icon-wrapper">
           <Plus size={20} strokeWidth={3} />
         </div>
       </Link>
-      
+
       <Link href="/saved" className={`mobile-nav-item ${isActive('/saved') ? 'active' : ''}`}>
         <Bookmark size={20} strokeWidth={isActive('/saved') ? 2.5 : 1.75} />
         <span className="mobile-nav-label">Saved</span>
       </Link>
-      
-      <Link href={profileLink} className={`mobile-nav-item ${pathname.startsWith('/profile') || pathname.startsWith('/login') ? 'active' : ''}`}>
-        <User size={20} strokeWidth={pathname.startsWith('/profile') || pathname.startsWith('/login') ? 2.5 : 1.75} />
+
+      <Link href={profileLink} className={`mobile-nav-item ${pathname.startsWith('/profile') ? 'active' : ''}`}>
+        <User size={20} strokeWidth={pathname.startsWith('/profile') ? 2.5 : 1.75} />
         <span className="mobile-nav-label">Profile</span>
       </Link>
     </nav>

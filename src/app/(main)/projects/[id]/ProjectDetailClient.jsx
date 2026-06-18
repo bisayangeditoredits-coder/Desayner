@@ -10,7 +10,21 @@ import Link from 'next/link';
 import { Heart, Bookmark, ArrowLeft, Globe, Eye, MessageCircle, Calendar, Share, Edit, Check, Trash2, MessageSquare } from 'lucide-react';
 import { CREATIVE_TOOLS } from '@/lib/constants';
 import { stripCloudinaryProxy } from '@/lib/utils';
+import useProfileStore from '@/store/useProfileStore';
+import useToastStore from '@/store/useToastStore';
 import '../../../App.css';
+
+const PROJECT_DETAIL_SELECT = `
+  id, title, cover_url, thumbnail_url, images, description, tools, tags,
+  likes_count, saves_count, views_count, created_at, user_id, published,
+  profiles!projects_user_id_fkey(
+    id, username, full_name, avatar_url,
+    bio, followers_count, projects_count, website
+  )
+`;
+
+const COMMENT_SELECT = 'id, content, created_at, user_id, project_id, profiles(username, full_name, avatar_url)';
+const COMMENTS_PAGE_SIZE = 20;
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
@@ -59,7 +73,7 @@ function ImageGallery({ images, title }) {
             className="project-detail__gallery-item"
             onClick={() => setLightbox(i)}
           >
-            <img src={img} alt={`${title} — image ${i + 1}`} />
+            <img src={img} alt={`${title} — image ${i + 1}`} loading="lazy" decoding="async" />
           </button>
         ))}
       </div>
@@ -104,8 +118,12 @@ export default function ProjectDetailClient({ isModal = false }) {
 
   const [project,        setProject]        = useState(null);
   const [comments,       setComments]       = useState([]);
-  const [currentUser,    setCurrentUser]    = useState(null);
-  const [currentProfile, setCurrentProfile] = useState(null);
+  const [commentCount,   setCommentCount]   = useState(0);
+  const [commentsHasMore,setCommentsHasMore] = useState(false);
+  const [loadingComments,setLoadingComments] = useState(false);
+  const currentUser = useProfileStore((s) => s.user);
+  const currentProfile = useProfileStore((s) => s.profile);
+  const addToast = useToastStore((s) => s.addToast);
   const [liked,          setLiked]          = useState(false);
   const [showColModal,   setShowColModal]   = useState(false);
   const [likeCount,      setLikeCount]      = useState(0);
@@ -116,37 +134,22 @@ export default function ProjectDetailClient({ isModal = false }) {
   const [showDeleteModal,setShowDeleteModal] = useState(false);
 
   const load = useCallback(async () => {
-    // Run user auth + project fetch + comments in parallel
     const [authResult, projResult, commsResult] = await Promise.all([
       supabase.auth.getUser(),
       supabase
         .from('projects')
-        .select(`
-          *,
-          profiles!projects_user_id_fkey(
-            id, username, full_name, avatar_url,
-            bio, followers_count, projects_count, website
-          )
-        `)
+        .select(PROJECT_DETAIL_SELECT)
         .eq('id', id)
         .single(),
       supabase
         .from('project_comments')
-        .select('*, profiles(username, full_name, avatar_url)')
+        .select(COMMENT_SELECT, { count: 'exact' })
         .eq('project_id', id)
-        .order('created_at', { ascending: true }),
+        .order('created_at', { ascending: true })
+        .range(0, COMMENTS_PAGE_SIZE - 1),
     ]);
 
     const user = authResult.data?.user || null;
-
-    // Set user + profile in parallel
-    if (user) {
-      setCurrentUser(user);
-      // Fetch profile without blocking — fire and forget from UI perspective
-      supabase
-        .from('profiles').select('*').eq('id', user.id).single()
-        .then(({ data: profile }) => { if (profile) setCurrentProfile(profile); });
-    }
 
     const proj = projResult.data;
     if (!proj) { setLoading(false); return; }
@@ -154,8 +157,9 @@ export default function ProjectDetailClient({ isModal = false }) {
     setLikeCount(proj.likes_count || 0);
 
     setComments(commsResult.data || []);
+    setCommentCount(commsResult.count || commsResult.data?.length || 0);
+    setCommentsHasMore((commsResult.count || 0) > COMMENTS_PAGE_SIZE);
 
-    // Fetch interaction state only if user is logged in
     if (user) {
       const [likeRes, followRes] = await Promise.all([
         supabase.from('project_likes').select('user_id')
@@ -166,16 +170,35 @@ export default function ProjectDetailClient({ isModal = false }) {
       if (likeRes.data) setLiked(true);
       setIsFollowing(!!followRes.data);
     }
-    
-    // Track view — fire and forget, don't block render
+
     fetch('/api/view', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ projectId: id })
-    }).catch(err => console.error('View track failed', err));
+      body: JSON.stringify({ projectId: id }),
+    }).catch((err) => console.error('View track failed', err));
 
     setLoading(false);
   }, [id, supabase]);
+
+  const loadMoreComments = useCallback(async () => {
+    if (loadingComments || !commentsHasMore) return;
+    setLoadingComments(true);
+    const offset = comments.length;
+    const { data, error } = await supabase
+      .from('project_comments')
+      .select(COMMENT_SELECT)
+      .eq('project_id', id)
+      .order('created_at', { ascending: true })
+      .range(offset, offset + COMMENTS_PAGE_SIZE - 1);
+
+    if (!error && data?.length) {
+      setComments((prev) => [...prev, ...data]);
+      setCommentsHasMore(data.length === COMMENTS_PAGE_SIZE);
+    } else {
+      setCommentsHasMore(false);
+    }
+    setLoadingComments(false);
+  }, [comments.length, commentsHasMore, id, loadingComments, supabase]);
 
   useEffect(() => {
     async function init() { await load(); }
@@ -197,12 +220,21 @@ export default function ProjectDetailClient({ isModal = false }) {
     }
     const wasLiked = liked;
     setLiked(!wasLiked);
-    setLikeCount(c => wasLiked ? c - 1 : c + 1);
-    if (wasLiked) {
-      await supabase.from('project_likes').delete()
-        .eq('user_id', currentUser.id).eq('project_id', id);
-    } else {
-      await supabase.from('project_likes').insert({ user_id: currentUser.id, project_id: id });
+    setLikeCount((c) => (wasLiked ? c - 1 : c + 1));
+    try {
+      if (wasLiked) {
+        const { error } = await supabase.from('project_likes').delete()
+          .eq('user_id', currentUser.id).eq('project_id', id);
+        if (error) throw error;
+      } else {
+        const { error } = await supabase.from('project_likes').insert({ user_id: currentUser.id, project_id: id });
+        if (error) throw error;
+      }
+    } catch (err) {
+      console.error('Like failed', err);
+      setLiked(wasLiked);
+      setLikeCount((c) => (wasLiked ? c + 1 : c - 1));
+      addToast({ type: 'error', message: 'Could not update like. Please try again.' });
     }
   }
 
@@ -377,7 +409,7 @@ export default function ProjectDetailClient({ isModal = false }) {
             {/* Comments */}
             <section className="project-detail__comments">
               <h2 className="project-detail__section-label">
-                Comments <span className="project-detail__section-count">({comments.length})</span>
+                Comments <span className="project-detail__section-count">({commentCount})</span>
               </h2>
               <CommentThread
                 targetId={id}
@@ -385,6 +417,16 @@ export default function ProjectDetailClient({ isModal = false }) {
                 comments={comments}
                 currentUser={currentProfile}
               />
+              {commentsHasMore && (
+                <button
+                  type="button"
+                  onClick={loadMoreComments}
+                  disabled={loadingComments}
+                  style={{ marginTop: '1rem', padding: '0.5rem 1rem', border: '1px solid #e8e8e8', background: 'white', borderRadius: '8px', fontWeight: 600, fontSize: '0.85rem', cursor: loadingComments ? 'wait' : 'pointer' }}
+                >
+                  {loadingComments ? 'Loading…' : 'Load more comments'}
+                </button>
+              )}
             </section>
           </article>
 
@@ -422,7 +464,7 @@ export default function ProjectDetailClient({ isModal = false }) {
               </div>
               <div className="project-detail__stat">
                 <MessageCircle size={13} />
-                <span>{comments.length} comments</span>
+                <span>{commentCount} comments</span>
               </div>
               <div className="project-detail__stat">
                 <Calendar size={13} />

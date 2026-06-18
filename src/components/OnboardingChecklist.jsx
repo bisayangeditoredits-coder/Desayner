@@ -1,8 +1,8 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { createClient } from '@/lib/supabase/client';
+import useProfileStore from '@/store/useProfileStore';
 import { getProfileCompleteness } from '@/lib/profileCompleteness';
 import { Check, X, ArrowRight } from 'lucide-react';
 
@@ -14,29 +14,14 @@ function getInitialDismissed() {
 }
 
 export default function OnboardingChecklist() {
-  const [profile, setProfile] = useState(null);
+  const profile = useProfileStore((s) => s.profile);
   const [dismissed, setDismissed] = useState(getInitialDismissed);
-  const supabase = useMemo(() => createClient(), []);
 
   useEffect(() => {
-    async function load() {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      const { data } = await supabase
-        .from('profiles')
-        .select('avatar_url, bio, cover_url, location, tools, projects_count')
-        .eq('id', user.id)
-        .single();
-
-      if (data) setProfile(data);
-    }
-    load();
-
-    const refresh = () => load();
+    const refresh = () => useProfileStore.getState().invalidate();
     window.addEventListener('profile_updated', refresh);
     return () => window.removeEventListener('profile_updated', refresh);
-  }, [supabase]);
+  }, []);
 
   if (!profile || dismissed) return null;
 

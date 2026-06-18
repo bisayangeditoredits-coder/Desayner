@@ -3,7 +3,8 @@ import { useState, useEffect, useMemo, useRef, useCallback, useId } from 'react'
 import { createClient } from '@/lib/supabase/client';
 import ImageCropperModal from '@/components/ImageCropperModal';
 import UserAvatar from '@/components/UserAvatar';
-import imageCompression from 'browser-image-compression';
+import { processImage } from '@/lib/processImage';
+import { uploadProcessedImages } from '@/lib/uploadToR2';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Loader2, ArrowRight, Camera, X } from 'lucide-react';
 import { CREATIVE_TOOLS } from '@/lib/constants';
@@ -357,13 +358,11 @@ function AvatarUploadBlock({ avatarUrl, name, onUploaded, onRemove }) {
     setUploading(true);
     setError('');
     try {
-      const compressed = await imageCompression(new File([blob], 'avatar.webp', { type: 'image/webp' }), { maxSizeMB: 0.5, maxWidthOrHeight: 400, useWebWorker: true });
-      const file = new File([compressed], 'avatar.webp', { type: 'image/webp' });
-      const res = await fetch('/api/upload', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ folder: 'avatars' }) });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
-      await fetch(data.coverUploadUrl, { method: 'PUT', body: file, headers: { 'Content-Type': 'image/webp' } });
-      onUploaded(data.publicUrl);
+      const file = new File([blob], 'avatar.webp', { type: 'image/webp' });
+      const { promise } = processImage(file);
+      const { optimizedBlob, thumbnailBlob } = await promise;
+      const { publicUrl } = await uploadProcessedImages('avatars', optimizedBlob, thumbnailBlob);
+      onUploaded(publicUrl);
     } catch (e) { setError(e.message); }
     finally { setUploading(false); }
   }
@@ -426,13 +425,11 @@ function CoverUploadBlock({ coverUrl, onUploaded, onRemove }) {
     setUploading(true);
     setError('');
     try {
-      const compressed = await imageCompression(new File([blob], 'cover.webp', { type: 'image/webp' }), { maxSizeMB: 1, maxWidthOrHeight: 1920, useWebWorker: true });
-      const file = new File([compressed], 'cover.webp', { type: 'image/webp' });
-      const res = await fetch('/api/upload', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ folder: 'covers' }) });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
-      await fetch(data.coverUploadUrl, { method: 'PUT', body: file, headers: { 'Content-Type': 'image/webp' } });
-      onUploaded(data.publicUrl);
+      const file = new File([blob], 'cover.webp', { type: 'image/webp' });
+      const { promise } = processImage(file);
+      const { optimizedBlob, thumbnailBlob } = await promise;
+      const { publicUrl } = await uploadProcessedImages('covers', optimizedBlob, thumbnailBlob);
+      onUploaded(publicUrl);
     } catch (e) { setError(e.message); }
     finally { setUploading(false); }
   }

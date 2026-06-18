@@ -2,7 +2,8 @@
 import { useState, useRef } from 'react';
 import { X, Upload, Loader2, AlertCircle } from 'lucide-react';
 import Image from 'next/image';
-import imageCompression from 'browser-image-compression';
+import { processImage } from '@/lib/processImage';
+import { uploadProcessedImages } from '@/lib/uploadToR2';
 
 export default function SubmitContestModal({ contestId, isOpen, onClose, onSubmitted }) {
   const [file, setFile] = useState(null);
@@ -51,43 +52,10 @@ export default function SubmitContestModal({ contestId, isOpen, onClose, onSubmi
     setError('');
 
     try {
-      // Compress images before sending to prevent 413 Request Entity Too Large
-      const coverOptions = {
-        maxSizeMB: 1,
-        maxWidthOrHeight: 1920,
-        useWebWorker: true,
-        fileType: 'image/webp'
-      };
-      const thumbOptions = {
-        maxSizeMB: 0.1,
-        maxWidthOrHeight: 600,
-        useWebWorker: true,
-        fileType: 'image/webp'
-      };
+      const { promise } = processImage(file);
+      const { optimizedBlob, thumbnailBlob } = await promise;
 
-      const [compressedCover, compressedThumb] = await Promise.all([
-        imageCompression(file, coverOptions),
-        imageCompression(file, thumbOptions)
-      ]);
-
-      const formData = new FormData();
-      formData.append('cover', compressedCover, 'cover.webp');
-      formData.append('thumb', compressedThumb, 'thumb.webp');
-      formData.append('folder', 'contests');
-
-      const uploadRes = await fetch('/api/upload', {
-        method: 'POST',
-        body: formData
-      });
-      
-      let uploadData;
-      try {
-        uploadData = await uploadRes.json();
-      } catch (parseErr) {
-        throw new Error('Upload server returned an invalid response (might be too large).');
-      }
-      
-      if (!uploadRes.ok) throw new Error(uploadData?.error || 'Upload failed');
+      const uploadData = await uploadProcessedImages('contests', optimizedBlob, thumbnailBlob);
 
       // 2. Submit to database
       const submitRes = await fetch(`/api/contests/${contestId}/submit`, {

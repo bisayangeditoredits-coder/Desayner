@@ -22,6 +22,7 @@
 import { useCallback, useReducer, useRef, useEffect, useState, useId } from 'react';
 import { X, Upload, AlertCircle, CheckCircle2, Loader2 } from 'lucide-react';
 import { processImage } from '@/lib/processImage';
+import { uploadProcessedImages } from '@/lib/uploadToR2';
 
 const ACCEPTED = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/avif'];
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
@@ -118,22 +119,14 @@ export default function MultiUploadZone({ folder = 'uploads', value = [], onResu
 
       if (!mountedRef.current) return;
 
-      // ── 3. Upload to backend via FormData ─────────────────────────────────────────────────
+      // ── 3. Presigned PUT to R2 ────────────────────────────────────────────
       dispatch({ type: 'UPDATE_ITEM', id, patch: { status: 'uploading', progress: 52 } });
-      const formData = new FormData();
-      formData.append('cover', optimizedBlob, 'gallery.webp');
-      formData.append('thumb', thumbnailBlob, 'thumb.webp');
-      formData.append('folder', folder);
 
-      const res = await fetch('/api/upload', {
-        method:  'POST',
-        body: formData,
-      });
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error(err.error || `Server error ${res.status}`);
-      }
-      const { publicUrl, thumbnailUrl } = await res.json();
+      const { publicUrl, thumbnailUrl } = await uploadProcessedImages(
+        folder,
+        optimizedBlob,
+        thumbnailBlob,
+      );
       if (!mountedRef.current) return;
       dispatch({ type: 'UPDATE_ITEM', id, patch: { progress: 100 } });
 

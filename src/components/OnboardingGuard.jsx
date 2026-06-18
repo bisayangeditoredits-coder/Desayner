@@ -1,98 +1,63 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
-import { createClient } from '@/lib/supabase/client';
-import OnboardingModal from '@/components/OnboardingModal';
-import OnboardingGuideModal from '@/components/OnboardingGuideModal';
+import { useState } from 'react';
+import dynamic from 'next/dynamic';
+import useProfileStore from '@/store/useProfileStore';
+
+const OnboardingModal = dynamic(() => import('@/components/OnboardingModal'), { ssr: false });
+const OnboardingGuideModal = dynamic(() => import('@/components/OnboardingGuideModal'), { ssr: false });
 
 export default function OnboardingGuard({ children }) {
-  const router = useRouter();
-  const pathname = usePathname();
-  const supabase = useMemo(() => createClient(), []);
-  const [checking, setChecking] = useState(true);
-  const [needsOnboarding, setNeedsOnboarding] = useState(false);
+  const user = useProfileStore((s) => s.user);
+  const needsOnboarding = useProfileStore((s) => s.needsOnboarding);
+  const loading = useProfileStore((s) => s.loading);
+  const invalidate = useProfileStore((s) => s.invalidate);
   const [showGuide, setShowGuide] = useState(false);
-  const [user, setUser] = useState(null);
 
-  useEffect(() => {
-    let mounted = true;
-    
-    async function checkSession() {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        if (mounted) setChecking(false);
-        return; 
-      }
-      if (mounted) setUser(user);
-
-      // Check if profile exists and is complete (avatar, username, bio, tools required)
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('avatar_url, cover_url, username, bio, tools')
-        .eq('id', user.id)
-        .single();
-
-      if (!profile || !profile.avatar_url || !profile.cover_url || !profile.username || !profile.bio || !profile.tools || profile.tools.length === 0) {
-        if (mounted) {
-          setNeedsOnboarding(true);
-        }
-      }
-
-      if (mounted) {
-        setChecking(false);
-      }
-    }
-    
-    checkSession();
-    
-    return () => {
-      mounted = false;
-    };
-  }, [pathname, supabase]);
-
-  if (checking) {
-    // Don't block rendering — show children immediately and overlay modal if needed
+  if (loading) {
     return <>{children}</>;
   }
 
   return (
     <>
-      <div style={{ 
-        filter: needsOnboarding ? 'blur(10px) brightness(0.9)' : 'none', 
+      <div style={{
+        filter: needsOnboarding ? 'blur(10px) brightness(0.9)' : 'none',
         transition: 'filter 0.4s ease-out',
         pointerEvents: needsOnboarding ? 'none' : 'auto',
         userSelect: needsOnboarding ? 'none' : 'auto',
         height: needsOnboarding ? '100vh' : 'auto',
-        overflow: needsOnboarding ? 'hidden' : 'auto'
+        overflow: needsOnboarding ? 'hidden' : 'auto',
       }}>
         {children}
       </div>
 
-      {needsOnboarding && (
-        <div style={{ 
-          position: 'fixed', 
-          inset: 0, 
-          zIndex: 99999, 
-          background: 'rgba(15, 23, 42, 0.8)', 
-          backdropFilter: 'blur(8px)', 
-          display: 'flex', 
-          alignItems: 'center', 
+      {needsOnboarding && user && (
+        <div style={{
+          position: 'fixed',
+          inset: 0,
+          zIndex: 99999,
+          background: 'rgba(15, 23, 42, 0.8)',
+          backdropFilter: 'blur(8px)',
+          display: 'flex',
+          alignItems: 'center',
           justifyContent: 'center',
           padding: '1rem',
-          animation: 'fadeIn 0.4s ease-out'
+          animation: 'fadeIn 0.4s ease-out',
         }}>
-          <OnboardingModal user={user} onComplete={() => {
-            setNeedsOnboarding(false);
-            setShowGuide(true);
-          }} />
+          <OnboardingModal
+            user={user}
+            onComplete={() => {
+              useProfileStore.setState({ needsOnboarding: false });
+              invalidate();
+              setShowGuide(true);
+            }}
+          />
         </div>
       )}
 
-      {/* Render the Guide Modal after profile completion */}
-      <OnboardingGuideModal 
-        open={showGuide} 
-        onOpenChange={setShowGuide} 
+      <OnboardingGuideModal
+        open={showGuide}
+        onOpenChange={setShowGuide}
       />
     </>
   );

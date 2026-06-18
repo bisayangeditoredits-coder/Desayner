@@ -1,8 +1,9 @@
 'use client';
 import { useState, useRef, useCallback, useId } from 'react';
 import { Upload, X, Loader2, ImageIcon } from 'lucide-react';
-import imageCompression from 'browser-image-compression';
 import ImageCropperModal from './ImageCropperModal';
+import { processImage } from '@/lib/processImage';
+import { uploadProcessedImages } from '@/lib/uploadToR2';
 
 /**
  * ImageUpload — upgraded with image cropping support
@@ -33,21 +34,29 @@ export default function ImageUpload({
   const inputRef = useRef(null);
   const fileInputId = useId();
 
+  const putToR2 = useCallback(async (file) => {
+    const MAX_MB = 10;
+    if (file.size > MAX_MB * 1024 * 1024) {
+      throw new Error(`Max file size is ${MAX_MB}MB.`);
+    }
+
+    const { promise, cancel } = processImage(file);
+    try {
+      const { optimizedBlob, thumbnailBlob } = await promise;
+      const { publicUrl } = await uploadProcessedImages(folder, optimizedBlob, thumbnailBlob);
+      onUploaded(publicUrl);
+    } catch (err) {
+      cancel();
+      throw err;
+    }
+  }, [folder, onUploaded]);
+
   const uploadFile = useCallback(async (file) => {
     if (!file) return;
 
-    const MAX_MB = 10;
-    if (file.size > MAX_MB * 1024 * 1024) {
-      setError(`Max file size is ${MAX_MB}MB.`);
-      return;
-    }
-
-    // If cropping is enabled, read file locally and open cropper instead of direct upload
     if (cropAspect) {
       const reader = new FileReader();
-      reader.onload = () => {
-        setCropImageSrc(reader.result);
-      };
+      reader.onload = () => setCropImageSrc(reader.result);
       reader.readAsDataURL(file);
       setError('');
       return;
@@ -57,54 +66,13 @@ export default function ImageUpload({
     setError('');
 
     try {
-      const options = {
-        maxSizeMB: 1, 
-        maxWidthOrHeight: 1920, 
-        useWebWorker: true,
-        fileType: 'image/webp' 
-      };
-      
-      const compressedFile = await imageCompression(file, options);
-      const finalFile = new File([compressedFile], file.name.replace(/\.[^/.]+$/, "") + ".webp", {
-        type: 'image/webp',
-      });
-
-      let res;
-      try {
-        res = await fetch('/api/upload', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ folder }),
-        });
-      } catch (err) {
-        throw new Error('API fetch failed: ' + err.message);
-      }
-      
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Upload to storage failed');
-
-      const { coverUploadUrl, thumbUploadUrl, publicUrl } = data;
-
-      await Promise.all([
-        fetch(coverUploadUrl, {
-          method: 'PUT',
-          body: finalFile,
-          headers: { 'Content-Type': 'image/webp' }
-        }).then(r => { if (!r.ok) throw new Error('Cover upload failed'); }),
-        fetch(thumbUploadUrl, {
-          method: 'PUT',
-          body: finalFile,
-          headers: { 'Content-Type': 'image/webp' }
-        }).then(r => { if (!r.ok) throw new Error('Thumb upload failed'); })
-      ]);
-
-      onUploaded(publicUrl);
+      await putToR2(file);
     } catch (err) {
       setError(err.message);
     } finally {
       setUploading(false);
     }
-  }, [cropAspect, folder, onUploaded]);
+  }, [cropAspect, putToR2]);
 
   async function handleCroppedSave(croppedBlob) {
     setCropImageSrc('');
@@ -112,39 +80,8 @@ export default function ImageUpload({
     setError('');
 
     try {
-      const filename = `cropped_${Date.now()}.webp`;
-      const finalFile = new File([croppedBlob], filename, { type: 'image/webp' });
-
-      let res;
-      try {
-        res = await fetch('/api/upload', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ folder }),
-        });
-      } catch (err) {
-        throw new Error('API fetch failed: ' + err.message);
-      }
-      
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Upload to storage failed');
-
-      const { coverUploadUrl, thumbUploadUrl, publicUrl } = data;
-
-      await Promise.all([
-        fetch(coverUploadUrl, {
-          method: 'PUT',
-          body: finalFile,
-          headers: { 'Content-Type': 'image/webp' }
-        }).then(r => { if (!r.ok) throw new Error('Cover upload failed'); }),
-        fetch(thumbUploadUrl, {
-          method: 'PUT',
-          body: finalFile,
-          headers: { 'Content-Type': 'image/webp' }
-        }).then(r => { if (!r.ok) throw new Error('Thumb upload failed'); })
-      ]);
-
-      onUploaded(publicUrl);
+      const file = new File([croppedBlob], `cropped_${Date.now()}.webp`, { type: 'image/webp' });
+      await putToR2(file);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -188,7 +125,7 @@ export default function ImageUpload({
                 position: 'absolute', top: '-4px', right: '-4px',
                 background: 'rgba(0,0,0,0.7)', color: 'white', border: 'none',
                 width: '22px', height: '22px', display: 'flex', alignItems: 'center',
-                justifyContent: 'center', cursor: 'pointer', borderRadius: '50%'
+                justifyContent: 'center', cursor: 'pointer', borderRadius: '50%',
               }}
             >
               <X size={12} />
@@ -232,7 +169,7 @@ export default function ImageUpload({
               position: 'absolute', top: '8px', right: '8px',
               background: 'rgba(0,0,0,0.7)', color: 'white', border: 'none',
               width: '28px', height: '28px', display: 'flex', alignItems: 'center',
-              justifyContent: 'center', cursor: 'pointer', borderRadius: '50%'
+              justifyContent: 'center', cursor: 'pointer', borderRadius: '50%',
             }}
           >
             <X size={14} />

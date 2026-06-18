@@ -12,6 +12,8 @@ import { createClient } from '@/lib/supabase/client';
 import { saveProjectModalReturn } from '@/lib/projectModalNav';
 import { stripCloudinaryProxy } from '@/lib/utils';
 import UserAvatar from './UserAvatar';
+import useProfileStore from '@/store/useProfileStore';
+import { useNotifications } from '@/components/NotificationsProvider';
 
 function timeAgo(dateStr) {
   const diff = Date.now() - new Date(dateStr).getTime();
@@ -49,28 +51,17 @@ function getLink(n) {
 }
 
 export default function Header() {
-  const [profile, setProfile]           = useState(null);
-  const [userId, setUserId]             = useState(null);
-  const [authLoaded, setAuthLoaded]     = useState(false);
+  const profile = useProfileStore((s) => s.profile);
+  const storeUser = useProfileStore((s) => s.user);
+  const profileLoading = useProfileStore((s) => s.loading);
+  const userId = storeUser?.id ?? null;
+  const authLoaded = !profileLoading;
+  const { unreadCount, setUnreadCount } = useNotifications();
   const [searchQuery, setSearchQuery]   = useState('');
   const [results, setResults]           = useState([]);
   const [searching, setSearching]       = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
-
-  const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? React.useLayoutEffect : useEffect;
-  useIsomorphicLayoutEffect(() => {
-    if (typeof document !== 'undefined') {
-      const hasAuth = /sb-[a-z0-9]+-auth-token/.test(document.cookie);
-      if (hasAuth && !userId) setUserId('optimistic');
-      
-      const savedProfile = localStorage.getItem('desayner_profile');
-      if (savedProfile) {
-        try { setProfile(JSON.parse(savedProfile)); } catch (e) {}
-      }
-    }
-  }, []);
   const [createMenuOpen, setCreateMenuOpen] = useState(false);
-  const [unreadCount, setUnreadCount]   = useState(0);
   const [showNotifs, setShowNotifs]     = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [notifsLoading, setNotifsLoading] = useState(false);
@@ -84,96 +75,10 @@ export default function Header() {
   const { isMobileMenuOpen, setIsMobileMenuOpen } = useMobileNav();
 
   useEffect(() => {
-    let mounted = true;
-    let sub = null;
-    let fallbackInterval = null;
-
-    async function load() {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        if (mounted) setAuthLoaded(true);
-        return;
-      }
-      if (mounted) setUserId(user.id);
-
-      async function fetchBadges() {
-        // Parallel fetch — notifications
-        const [notifRes] = await Promise.all([
-          supabase
-            .from('notifications')
-            .select('id', { count: 'exact', head: true })
-            .eq('user_id', user.id)
-            .eq('read', false),
-        ]);
-        if (mounted) {
-          setUnreadCount(notifRes.count || 0);
-        }
-      }
-
-      // Parallel fetch — profile + badges together
-      const [profileRes] = await Promise.all([
-        supabase
-          .from('profiles')
-          .select('username, full_name, avatar_url')
-          .eq('id', user.id)
-          .single(),
-        fetchBadges(),
-      ]);
-
-      if (mounted && profileRes.data) {
-        setProfile(profileRes.data);
-        localStorage.setItem('desayner_profile', JSON.stringify(profileRes.data));
-      }
-      if (mounted) setAuthLoaded(true);
-
-      // Realtime listeners — with error handling + fallback polling
-      const uniqueChannelName = `header_badges_${user.id}_${Date.now()}_${Math.random().toString(36).substring(7)}`;
-      sub = supabase.channel(uniqueChannelName)
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'notifications', filter: `user_id=eq.${user.id}` }, fetchBadges)
-        .subscribe((status, err) => {
-          if (status === 'CHANNEL_ERROR') {
-            // Hard error — start fallback polling
-            console.warn('[Header] Realtime channel error, falling back to polling.', err?.message ?? status);
-            if (!fallbackInterval) {
-              fallbackInterval = setInterval(fetchBadges, 30_000);
-            }
-          } else if (status === 'SUBSCRIBED') {
-            // Realtime is live — clear any existing fallback polling
-            if (fallbackInterval) {
-              clearInterval(fallbackInterval);
-              fallbackInterval = null;
-            }
-          }
-          // 'CLOSED' (clean disconnect) is intentional on unmount — no action needed
-        });
-    }
-    load();
-
-    return () => {
-      mounted = false;
-      if (sub) supabase.removeChannel(sub);
-      if (fallbackInterval) clearInterval(fallbackInterval);
-    };
-  }, [supabase]);
-
-  // Listen to profile updates from Settings page
-  useEffect(() => {
-    async function refreshProfile() {
-      if (!userId) return;
-      const { data } = await supabase
-        .from('profiles')
-        .select('username, full_name, avatar_url')
-        .eq('id', userId)
-        .single();
-      if (data) {
-        setProfile(data);
-        localStorage.setItem('desayner_profile', JSON.stringify(data));
-      }
-    }
-
+    const refreshProfile = () => useProfileStore.getState().invalidate();
     window.addEventListener('profile_updated', refreshProfile);
     return () => window.removeEventListener('profile_updated', refreshProfile);
-  }, [userId, supabase]);
+  }, []);
 
   // Debounced live search — routed through /api/search so it uses the FTS index + Redis cache
   const liveSearch = useCallback(async (q) => {

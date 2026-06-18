@@ -211,7 +211,7 @@ export default function FeaturedAdminPage() {
                 folder="banners" 
                 label="" 
                 value={formData.banner_url}
-                onResult={(url) => setFormData({ ...formData, banner_url: url })}
+                onResult={(result) => setFormData({ ...formData, banner_url: result.publicUrl })}
                 onRemove={() => setFormData({ ...formData, banner_url: '' })}
               />
               <p style={{ fontSize: '0.75rem', color: '#6b7280', marginTop: '0.5rem' }}>Recommended size: 1920x600px. Used as the large background header.</p>

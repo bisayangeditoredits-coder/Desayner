@@ -15,6 +15,7 @@ import { useMobileNav } from '@/components/MobileNavProvider';
 
 import { useRouter } from 'next/navigation';
 import useFeedStore from '@/store/useFeedStore';
+import useProfileStore from '@/store/useProfileStore';
 
 const MAIN_NAV_ITEMS = [
   { href: '/',             icon: Home,          label: 'Home',        public: true },
@@ -32,6 +33,8 @@ export default function Sidebar({ className = '' }) {
   const setFeedState = useFeedStore(state => state.setFeedState);
   const { isMobileMenuOpen, setIsMobileMenuOpen } = useMobileNav();
   const [user, setUser] = useState(null);
+  const profile = useProfileStore((s) => s.profile);
+  const storeUser = useProfileStore((s) => s.user);
   const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect;
 
   useIsomorphicLayoutEffect(() => {
@@ -42,17 +45,17 @@ export default function Sidebar({ className = '' }) {
       }
     }
   }, []);
-  const [profile, setProfile] = useState(null);
   const [suggestedUsers, setSuggestedUsers] = useState([]);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const supabase = useMemo(() => createClient(), []);
 
+  useEffect(() => {
+    if (storeUser) setUser(storeUser);
+    else if (!useProfileStore.getState().loading) setUser(null);
+  }, [storeUser]);
+
   useIsomorphicLayoutEffect(() => {
     if (typeof window !== 'undefined') {
-      const savedProfile = localStorage.getItem('desayner_profile');
-      if (savedProfile) {
-        try { setProfile(JSON.parse(savedProfile)); } catch (e) {}
-      }
       const savedUsers = localStorage.getItem('desayner_sidebar_users');
       if (savedUsers) {
         try { setSuggestedUsers(JSON.parse(savedUsers)); } catch (e) {}
@@ -62,56 +65,31 @@ export default function Sidebar({ className = '' }) {
 
   useEffect(() => {
     let mounted = true;
-    async function load() {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!mounted) return;
-      if (user) {
-        setUser(user);
-        const { data } = await supabase.from('profiles').select('username, full_name, avatar_url').eq('id', user.id).single();
-        if (mounted && data) {
-          setProfile(data);
-          localStorage.setItem('desayner_profile', JSON.stringify(data));
+    fetch('/api/designers/top')
+      .then((res) => res.json())
+      .then((data) => {
+        if (mounted && data.designers) {
+          const top3 = data.designers.slice(0, 3);
+          setSuggestedUsers(top3);
+          localStorage.setItem('desayner_sidebar_users', JSON.stringify(top3));
         }
-      } else {
-        setUser(null);
-        localStorage.removeItem('desayner_profile');
-      }
-      
-      // Fetch top designers for the sidebar
-      fetch('/api/designers/top')
-        .then(res => res.json())
-        .then(data => {
-          if (mounted && data.designers) {
-            const top3 = data.designers.slice(0, 3);
-            setSuggestedUsers(top3);
-            localStorage.setItem('desayner_sidebar_users', JSON.stringify(top3));
-          }
-        })
-        .catch(err => console.error('Failed to fetch sidebar designers', err));
-    }
-    load();
+      })
+      .catch((err) => console.error('Failed to fetch sidebar designers', err));
 
     return () => {
       mounted = false;
     };
-  }, [supabase]);
+  }, []);
 
-  // Listen for profile updates from Settings
   useEffect(() => {
-    async function refreshProfile() {
-      if (!user?.id) return;
-      const { data } = await supabase.from('profiles').select('username, full_name, avatar_url').eq('id', user.id).single();
-      if (data) {
-        setProfile(data);
-        localStorage.setItem('desayner_profile', JSON.stringify(data));
-      }
-    }
+    const refreshProfile = () => useProfileStore.getState().invalidate();
     window.addEventListener('profile_updated', refreshProfile);
     return () => window.removeEventListener('profile_updated', refreshProfile);
-  }, [user?.id, supabase]);
+  }, []);
 
   async function signOut() {
     await supabase.auth.signOut();
+    useProfileStore.getState().clear();
     window.location.href = '/login';
   }
 

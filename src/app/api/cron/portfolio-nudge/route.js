@@ -40,17 +40,17 @@ export async function GET(request) {
     let failed = 0;
     let skipped = 0;
 
-    // Process in parallel for faster execution
-    const promises = (candidates || []).map(async (profile) => {
+    // Process sequentially to avoid Supabase Auth rate limits at scale
+    for (const profile of candidates || []) {
       const alreadySent = await redis.get(`portfolio_nudge:${profile.id}`);
       if (alreadySent) {
         skipped++;
-        return;
+        continue;
       }
 
       const { data: authUser } = await supabase.auth.admin.getUserById(profile.id);
       const email = authUser?.user?.email;
-      if (!email) return;
+      if (!email) continue;
 
       try {
         await sendPortfolioNudgeEmail({
@@ -65,9 +65,7 @@ export async function GET(request) {
         console.error('[portfolio-nudge]', profile.id, err);
         failed++;
       }
-    });
-
-    await Promise.all(promises);
+    }
 
     return NextResponse.json({
       success: true,

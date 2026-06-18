@@ -99,10 +99,15 @@ function SearchResults() {
     };
   }, [query, category, sort, page, tab]);
 
-  // Search designers — fixed N+1: one batch query instead of per-designer queries
+  // ── Debounced designer search ──────────────────────────────────────────
+  const designerTimerRef = useRef(null);
+
   useEffect(() => {
     if (!query.trim() || tab !== 'designers') return;
-    async function searchDesigners() {
+
+    if (designerTimerRef.current) clearTimeout(designerTimerRef.current);
+
+    designerTimerRef.current = setTimeout(async () => {
       setLoadingDesigners(true);
       const safeQuery = query.replace(/"/g, '""');
       const { data, error } = await supabase
@@ -123,25 +128,26 @@ function SearchResults() {
         return;
       }
 
-      // Batch fetch all covers in ONE query — no more N+1
       const { data: allCovers } = await supabase
         .from('projects')
         .select('user_id, cover_url, thumbnail_url')
-        .in('user_id', creatorList.map(c => c.id))
+        .in('user_id', creatorList.map((c) => c.id))
         .eq('published', true)
         .order('created_at', { ascending: false });
 
-      // Group by user_id, max 3 per creator
       const coversByUser = {};
-      (allCovers || []).forEach(p => {
+      (allCovers || []).forEach((p) => {
         if (!coversByUser[p.user_id]) coversByUser[p.user_id] = [];
         if (coversByUser[p.user_id].length < 3) coversByUser[p.user_id].push(p);
       });
 
-      setDesigners(creatorList.map(c => ({ ...c, sampleProjects: coversByUser[c.id] || [] })));
+      setDesigners(creatorList.map((c) => ({ ...c, sampleProjects: coversByUser[c.id] || [] })));
       setLoadingDesigners(false);
-    }
-    searchDesigners();
+    }, 400);
+
+    return () => {
+      if (designerTimerRef.current) clearTimeout(designerTimerRef.current);
+    };
   }, [query, tab, supabase]);
 
   const loading = tab === 'projects' ? loadingProjects : loadingDesigners;
