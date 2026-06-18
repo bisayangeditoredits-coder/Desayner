@@ -129,20 +129,22 @@ export default function Header() {
       // Realtime listeners — with error handling + fallback polling
       const uniqueChannelName = `header_badges_${user.id}_${Date.now()}_${Math.random().toString(36).substring(7)}`;
       sub = supabase.channel(uniqueChannelName)
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'notifications' }, fetchBadges)
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'notifications', filter: `user_id=eq.${user.id}` }, fetchBadges)
         .subscribe((status, err) => {
-          if (status === 'CHANNEL_ERROR' || status === 'CLOSED') {
-            console.warn('Header realtime lost, falling back to polling:', err?.message);
+          if (status === 'CHANNEL_ERROR') {
+            // Hard error — start fallback polling
+            console.warn('[Header] Realtime channel error, falling back to polling.', err?.message ?? status);
             if (!fallbackInterval) {
               fallbackInterval = setInterval(fetchBadges, 30_000);
             }
           } else if (status === 'SUBSCRIBED') {
-            // Clear fallback polling if realtime reconnects
+            // Realtime is live — clear any existing fallback polling
             if (fallbackInterval) {
               clearInterval(fallbackInterval);
               fallbackInterval = null;
             }
           }
+          // 'CLOSED' (clean disconnect) is intentional on unmount — no action needed
         });
     }
     load();

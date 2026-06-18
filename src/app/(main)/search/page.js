@@ -3,6 +3,7 @@ import { useState, useEffect, useRef, useCallback, Suspense, useMemo } from 'rea
 import { useSearchParams, useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import ProjectCard from '@/components/ProjectCard';
+import ProjectCardSkeleton from '@/components/ProjectCardSkeleton';
 import UserAvatar from '@/components/UserAvatar';
 import FollowButton from '@/components/FollowButton';
 import TagPill from '@/components/TagPill';
@@ -228,7 +229,7 @@ function SearchResults() {
           <>
             {loadingProjects && page === 1 ? (
               <div className="projects-masonry">
-                {[...Array(8)].map((_, i) => <div key={i} className="shimmer-box" style={{ aspectRatio: '4/3' }} />)}
+                {[...Array(8)].map((_, i) => <ProjectCardSkeleton key={i} />)}
               </div>
             ) : projects.length === 0 && !loadingProjects ? (
               <div style={{ textAlign: 'center', padding: '4rem 2rem', background: 'white', border: '1px solid #e2e8f0', borderRadius: '16px' }}>
@@ -265,7 +266,7 @@ function SearchResults() {
           <>
             {loadingDesigners ? (
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '4px' }}>
-                {[...Array(6)].map((_, i) => <div key={i} className="shimmer-box" style={{ height: '200px', borderRadius: '12px' }} />)}
+                {[...Array(6)].map((_, i) => <div key={i} className="skeleton-wrapper" style={{ height: '200px', borderRadius: '12px', background: '#e2e8f0', animation: 'lightweight-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite' }} />)}
               </div>
             ) : designers.length === 0 ? (
               <div style={{ textAlign: 'center', padding: '4rem 2rem', background: 'white', border: '1px solid #e2e8f0', borderRadius: '16px' }}>

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
-import { redis } from '@/lib/redis';
+import { swrCache } from '@/lib/cache';
 import { projectsCacheKey } from '@/lib/cacheKeys';
 import { buildPublishedProjectsQuery, parseSearchQuery } from '@/lib/projectSearch';
 
@@ -23,50 +23,37 @@ export async function GET(request) {
 
     const cacheKey = projectsCacheKey(category, ftsQuery, limit, offset);
 
-    // Try to read from cache
-    try {
-      const cached = await redis.get(cacheKey);
-      if (cached) {
-        const items = (cached.projects || []).map((project) => ({ ...project }));
-        return NextResponse.json({ projects: items, cached: true }, { headers: CACHE_HEADERS });
-      }
-    } catch (err) {
-      console.error('[Redis Cache GET Error]', err);
-    }
-
-    const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-      {
-        cookies: {
-          getAll: () => [],
-          setAll: () => {},
+    const fetcher = async () => {
+      const supabase = createServerClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+        {
+          cookies: {
+            getAll: () => [],
+            setAll: () => {},
+          },
         },
-      },
-    );
+      );
 
-    const query = buildPublishedProjectsQuery(supabase, {
-      ftsQuery,
-      category,
-      sort: 'newest',
-      offset,
-      limit,
-    });
+      const query = buildPublishedProjectsQuery(supabase, {
+        ftsQuery,
+        category,
+        sort: 'newest',
+        offset,
+        limit,
+      });
 
-    const { data, error } = await query;
-    if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
-    }
+      const { data, error } = await query;
+      if (error) {
+        throw error;
+      }
 
-    const items = data || [];
+      return data || [];
+    };
 
-    try {
-      await redis.setex(cacheKey, 60, { projects: items });
-    } catch (err) {
-      console.error('[Redis Cache SET Error]', err);
-    }
+    const { data: items, cached } = await swrCache(cacheKey, 60, fetcher);
 
-    return NextResponse.json({ projects: items, cached: false }, { headers: CACHE_HEADERS });
+    return NextResponse.json({ projects: items, cached }, { headers: CACHE_HEADERS });
   } catch (err) {
     console.error('[GET /api/projects Error]:', err);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

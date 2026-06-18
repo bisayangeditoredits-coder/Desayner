@@ -61,6 +61,7 @@ export default function ProfilePage() {
   const [hasMoreProjects, setHasMoreProjects] = useState(false);
   const [failedCoverSrc, setFailedCoverSrc] = useState(null);
   const [isHireModalOpen, setIsHireModalOpen] = useState(false);
+  const [isCoverExpanded, setIsCoverExpanded] = useState(false);
   const supabase = useMemo(() => createClient(), []);
 
   useEffect(() => {
@@ -151,7 +152,15 @@ export default function ProfilePage() {
       )}
 
       {/* ── Cover Banner ── */}
-      <div className="profile-v2__cover">
+      <div 
+        className="profile-v2__cover"
+        onClick={() => {
+          if (coverSrc && failedCoverSrc !== coverSrc) {
+            setIsCoverExpanded(true);
+          }
+        }}
+        style={{ cursor: coverSrc && failedCoverSrc !== coverSrc ? 'zoom-in' : 'default' }}
+      >
         {coverSrc && failedCoverSrc !== coverSrc ? (
           <img
             src={coverSrc}
@@ -434,6 +443,60 @@ export default function ProfilePage() {
         targetUserId={profile.id}
         targetUserName={profile.full_name || profile.username}
       />
+
+      {isCoverExpanded && coverSrc && (
+        <div 
+          style={{
+            position: 'fixed',
+            inset: 0,
+            backgroundColor: 'rgba(0,0,0,0.85)',
+            zIndex: 9999,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '2rem',
+            cursor: 'zoom-out',
+            backdropFilter: 'blur(4px)',
+            WebkitBackdropFilter: 'blur(4px)'
+          }}
+          onClick={() => setIsCoverExpanded(false)}
+        >
+          <button
+            onClick={() => setIsCoverExpanded(false)}
+            style={{
+              position: 'absolute',
+              top: '1.5rem',
+              right: '1.5rem',
+              background: 'rgba(255,255,255,0.1)',
+              border: 'none',
+              color: 'white',
+              width: '40px',
+              height: '40px',
+              borderRadius: '50%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              zIndex: 10000,
+            }}
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </button>
+          <img 
+            src={coverSrc} 
+            alt="Cover Expanded" 
+            style={{
+              maxWidth: '100%',
+              maxHeight: '100%',
+              objectFit: 'contain',
+              borderRadius: '8px',
+              boxShadow: '0 10px 40px rgba(0,0,0,0.4)',
+              cursor: 'default'
+            }}
+            onClick={(e) => e.stopPropagation()}
+          />
+        </div>
+      )}
     </div>
   );
 }

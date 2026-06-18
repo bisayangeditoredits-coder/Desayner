@@ -10,6 +10,7 @@ import { useRouter } from 'next/navigation';
 import { Plus, Search } from 'lucide-react';
 import useSWRInfinite from 'swr/infinite';
 import useFeedStore from '@/store/useFeedStore';
+import ProjectCardSkeleton from '@/components/ProjectCardSkeleton';
 import HorizontalFeatureScroll from '@/components/HorizontalFeatureScroll';
 import AnnouncementBanner from '@/components/AnnouncementBanner';
 import '../App.css';
@@ -325,7 +326,7 @@ export default function Dashboard() {
           </div>
         ) : isLoadingInitialData ? (
           <div className="projects-masonry">
-            {[...Array(24)].map((_, i) => <div key={i} className="masonry-item shimmer-box" style={{ aspectRatio: '4/3', borderRadius: '8px' }} />)}
+            {[...Array(12)].map((_, i) => <ProjectCardSkeleton key={i} />)}
           </div>
         ) : isEmpty ? (
           <div style={{ textAlign: 'center', padding: '6rem 2rem', border: '1px solid #e8e8e8', background: 'white', borderRadius: '12px' }}>
@@ -369,8 +370,8 @@ export default function Dashboard() {
             </div>
 
             {isLoadingMore && (
-              <div style={{ textAlign: 'center', padding: '2rem 0', color: '#9b9b9b', fontSize: '0.875rem' }}>
-                Loading more...
+              <div className="projects-masonry" style={{ marginTop: '0.5rem' }}>
+                {[...Array(4)].map((_, i) => <ProjectCardSkeleton key={i} />)}
               </div>
             )}
           </>

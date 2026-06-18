@@ -9,6 +9,7 @@ import '../../App.css';
 import useSWRInfinite from 'swr/infinite';
 
 import VirtualGridPage from '@/components/VirtualGridPage';
+import ProjectCardSkeleton from '@/components/ProjectCardSkeleton';
 import useFeedStore from '@/store/useFeedStore';
 
 const CATEGORIES = ['All', 'Design', 'Illustration', 'Photography', 'Branding', '3D', 'Motion', 'UI/UX', 'Typography', 'Other'];
@@ -181,7 +182,7 @@ export default function ProjectsPage() {
 
         {isLoadingInitialData ? (
           <div className="projects-masonry">
-            {[...Array(24)].map((_, i) => <div key={i} className="masonry-item shimmer-box" style={{ aspectRatio: '4/3', borderRadius: '8px' }} />)}
+            {[...Array(12)].map((_, i) => <ProjectCardSkeleton key={i} />)}
           </div>
         ) : isEmpty ? (
           <div style={{ textAlign: 'center', padding: '6rem 2rem', border: '1px solid #e8e8e8', background: 'white', borderRadius: '12px' }}>
@@ -211,8 +212,8 @@ export default function ProjectsPage() {
             </div>
 
             {isLoadingMore && (
-              <div style={{ textAlign: 'center', padding: '2rem 0', color: '#9b9b9b', fontSize: '0.875rem' }}>
-                Loading more...
+              <div className="projects-masonry" style={{ marginTop: '0.5rem' }}>
+                {[...Array(4)].map((_, i) => <ProjectCardSkeleton key={i} />)}
               </div>
             )}
           </>

@@ -11,6 +11,7 @@
 
 import { getAssetUrl } from '@/lib/storage/r2';
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
@@ -69,17 +70,8 @@ export async function POST(request) {
     const BUCKET = process.env.R2_BUCKET_NAME;
 
     // ── Parse & validate body ───────────────────────────────────────────────
-    const formData = await request.formData();
-    const coverFile = formData.get('cover');
-    const thumbFile = formData.get('thumb');
-    const folder = formData.get('folder') || 'uploads';
-
-    if (!coverFile || !thumbFile) {
-      return NextResponse.json(
-        { error: 'Missing image files in request.' },
-        { status: 400 }
-      );
-    }
+    const body = await request.json();
+    const folder = body.folder || 'uploads';
 
     // ── Generate unique keys ────────────────────────────────────────────────
     const uid          = uuidv4();
@@ -87,32 +79,26 @@ export async function POST(request) {
     const key          = `${folder}/${user.id}/${uid}.webp`;
     const thumbnailKey = `${folder}/thumbs/${user.id}/${thumbUid}.webp`;
 
-    // ── Get ArrayBuffers ───────────────────────────────────────────────────
-    const [coverBuffer, thumbBuffer] = await Promise.all([
-      coverFile.arrayBuffer(),
-      thumbFile.arrayBuffer(),
-    ]);
-
-    // ── Upload directly to R2 ───────────────────────────────────────────────
-    await Promise.all([
-      R2.send(new PutObjectCommand({
+    // ── Generate Presigned URLs ───────────────────────────────────────────────
+    const [coverUploadUrl, thumbUploadUrl] = await Promise.all([
+      getSignedUrl(R2, new PutObjectCommand({
         Bucket: BUCKET,
         Key: key,
-        Body: new Uint8Array(coverBuffer),
         ContentType: 'image/webp',
-      })),
-      R2.send(new PutObjectCommand({
+      }), { expiresIn: 300 }),
+      getSignedUrl(R2, new PutObjectCommand({
         Bucket: BUCKET,
         Key: thumbnailKey,
-        Body: new Uint8Array(thumbBuffer),
         ContentType: 'image/webp',
-      })),
+      }), { expiresIn: 300 }),
     ]);
 
     const publicUrl    = getAssetUrl(key);
     const thumbnailUrl = getAssetUrl(thumbnailKey);
 
     return NextResponse.json({
+      coverUploadUrl,
+      thumbUploadUrl,
       publicUrl,
       thumbnailUrl,
       key,

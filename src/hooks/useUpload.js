@@ -126,18 +126,14 @@ export function useUpload() {
         setProgress(52);
       });
 
-      // ── Step 2: Upload to backend via FormData ──────────────────────────────
+      // ── Step 2: Get Presigned URLs from backend ──────────────────────────────
       abortRef.current = new AbortController();
-      const { signal } = abortRef.current;
-
-      const formData = new FormData();
-      formData.append('cover', optimizedBlob, 'cover.webp');
-      formData.append('thumb', thumbnailBlob, 'thumb.webp');
-      formData.append('folder', folder);
+      let signal = abortRef.current.signal;
 
       const urlRes = await fetch('/api/upload', {
         method:  'POST',
-        body: formData,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ folder }),
         signal,
       });
 
@@ -146,7 +142,28 @@ export function useUpload() {
         throw new Error(errData.error || `Server error (${urlRes.status})`);
       }
 
-      const { publicUrl, thumbnailUrl, key, thumbnailKey } = await urlRes.json();
+      const { coverUploadUrl, thumbUploadUrl, publicUrl, thumbnailUrl, key, thumbnailKey } = await urlRes.json();
+      if (!mountedRef.current) return;
+
+      safeSet(() => setProgress(60));
+
+      // ── Step 3: PUT directly to Cloudflare R2 ────────────────────────────────
+      // We can upload both concurrently
+      await Promise.all([
+        fetch(coverUploadUrl, {
+          method: 'PUT',
+          body: optimizedBlob,
+          headers: { 'Content-Type': 'image/webp' },
+          signal,
+        }).then(r => { if (!r.ok) throw new Error('Cover upload failed'); }),
+        
+        fetch(thumbUploadUrl, {
+          method: 'PUT',
+          body: thumbnailBlob,
+          headers: { 'Content-Type': 'image/webp' },
+          signal,
+        }).then(r => { if (!r.ok) throw new Error('Thumbnail upload failed'); }),
+      ]);
       if (!mountedRef.current) return;
 
       retryCount.current = 0;

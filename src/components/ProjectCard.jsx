@@ -1,10 +1,8 @@
 'use client';
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import { Heart, Bookmark, Eye } from 'lucide-react';
-import { createClient } from '@/lib/supabase/client';
 import UserAvatar from './UserAvatar';
 import { saveProjectModalReturn } from '@/lib/projectModalNav';
 
@@ -20,13 +18,10 @@ export default function ProjectCard({ project, currentUserId, isLiked, isSaved }
   const saved = isSaved !== undefined ? isSaved : localSaved;
   const [likeCount, setLikeCount] = useState(project.likes_count || 0);
   const [viewCount, setViewCount] = useState(project.views_count || 0);
-  const [saveCount, setSaveCount] = useState(project.saves_count || 0);
   const [showColModal, setShowColModal] = useState(false);
   // 'loading' | 'loaded' | 'error'
   const [imgStatus, setImgStatus] = useState('loading');
 
-  // FIX: Memoize supabase client — don't create a new instance on every render
-  const supabase = useMemo(() => createClient(), []);
   const router = useRouter();
   const addToast = useToastStore((s) => s.addToast);
 
@@ -101,12 +96,32 @@ export default function ProjectCard({ project, currentUserId, isLiked, isSaved }
               <div className="project-card__no-cover">No cover</div>
             )}
 
-            {/* Hover overlay — positioned absolute inside the relative thumb */}
             <div className="project-card__overlay" style={{ position: 'absolute', inset: 0 }}>
-              <p className="project-card__overlay-title">{project.title}</p>
-              {project.category && (
-                <span className="project-card__overlay-cat">{project.category}</span>
-              )}
+              <div className="project-card__overlay-content">
+                <p className="project-card__overlay-title">{project.title}</p>
+              </div>
+
+              {/* Quick Actions (Floating Glassmorphism) */}
+              <div className="project-card__overlay-actions" onClick={(e) => e.preventDefault()}>
+                <button
+                  type="button"
+                  onClick={handleSave}
+                  className={`project-card__quick-btn ${saved ? 'project-card__quick-btn--active' : ''}`}
+                  title={saved ? 'Unsave' : 'Save'}
+                  aria-label="Save project"
+                >
+                  <Bookmark size={16} fill={saved ? 'currentColor' : 'none'} />
+                </button>
+                <button
+                  type="button"
+                  onClick={handleLike}
+                  className={`project-card__quick-btn ${liked ? 'project-card__quick-btn--active' : ''}`}
+                  title={liked ? 'Unlike' : 'Like'}
+                  aria-label="Like project"
+                >
+                  <Heart size={16} fill={liked ? 'currentColor' : 'none'} />
+                </button>
+              </div>
             </div>
           </div>
         </Link>
@@ -130,32 +145,19 @@ export default function ProjectCard({ project, currentUserId, isLiked, isSaved }
           <div className="project-card__actions">
             <div
               className="project-card__action-btn project-card__action-btn--view"
+              title="Likes"
+            >
+              <Heart size={14} fill={liked ? 'currentColor' : 'none'} stroke={liked ? '#e63946' : 'currentColor'} color={liked ? '#e63946' : 'inherit'} />
+              <span className="font-mono">{likeCount}</span>
+            </div>
+            
+            <div
+              className="project-card__action-btn project-card__action-btn--view"
               title="Views"
-              style={{ cursor: 'default' }}
             >
               <Eye size={14} />
               <span className="font-mono">{viewCount}</span>
             </div>
-
-            <motion.button
-              whileTap={{ scale: 0.8 }}
-              onClick={handleLike}
-              className={`project-card__action-btn ${liked ? 'project-card__action-btn--liked' : ''}`}
-              title={liked ? 'Unlike' : 'Like'}
-            >
-              <Heart size={14} fill={liked ? 'currentColor' : 'none'} />
-              <span className="font-mono">{likeCount}</span>
-            </motion.button>
-
-            <motion.button
-              whileTap={{ scale: 0.8 }}
-              onClick={handleSave}
-              className={`project-card__action-btn ${saved ? 'project-card__action-btn--saved' : ''}`}
-              title={saved ? 'Unsave' : 'Save'}
-            >
-              <Bookmark size={14} fill={saved ? 'currentColor' : 'none'} />
-              <span className="font-mono">{saveCount}</span>
-            </motion.button>
           </div>
         </div>
       </div>
