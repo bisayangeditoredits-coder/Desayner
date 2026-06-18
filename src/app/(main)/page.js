@@ -36,7 +36,7 @@ export default function Dashboard() {
     return () => clearInterval(timer);
   }, []);
 
-  const { category, searchQuery, scrollPosition, interactions, setFeedState, setScrollPosition, setInteractions } = useFeedStore();
+  const { category, searchQuery, sort, scrollPosition, interactions, setFeedState, setScrollPosition, setInteractions } = useFeedStore();
   const [currentUserId, setCurrentUserId] = useState(null);
   const [searchInput, setSearchInput] = useState(searchQuery);
 
@@ -60,9 +60,9 @@ export default function Dashboard() {
   }, [supabase]);
 
   // SWR Fetcher definition
-  const fetcher = async ([key, cat, query, pageIndex]) => {
+  const fetcher = async ([key, cat, query, sortOpt, pageIndex]) => {
     const offset = pageIndex * PAGE_SIZE;
-    let url = `/api/projects?category=${encodeURIComponent(cat)}&limit=${PAGE_SIZE}&offset=${offset}`;
+    let url = `/api/projects?category=${encodeURIComponent(cat)}&limit=${PAGE_SIZE}&offset=${offset}&sort=${encodeURIComponent(sortOpt)}`;
     if (query) url += `&q=${encodeURIComponent(query)}`;
     
     const res = await fetch(url);
@@ -73,7 +73,7 @@ export default function Dashboard() {
 
   const getKey = (pageIndex, previousPageData) => {
     if (previousPageData && previousPageData.length < PAGE_SIZE) return null;
-    return ['projects_feed', category, searchQuery, pageIndex];
+    return ['projects_feed', category, searchQuery, sort, pageIndex];
   };
 
   const { data, size, setSize, isValidating, error, mutate } = useSWRInfinite(getKey, fetcher, {
@@ -276,9 +276,10 @@ export default function Dashboard() {
             </button>
           </div>
 
-          {/* Popular Categories Row */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', overflowX: 'auto', scrollbarWidth: 'none', msOverflowStyle: 'none' }} className="category-scroll-container">
-            <span style={{ fontWeight: 600, color: '#374151', fontSize: '0.875rem', flexShrink: 0, marginRight: '0.25rem' }}>Popular:</span>
+          {/* Popular Categories Row & Sort */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', overflowX: 'auto', scrollbarWidth: 'none', msOverflowStyle: 'none' }} className="category-scroll-container">
+              <span style={{ fontWeight: 600, color: '#374151', fontSize: '0.875rem', flexShrink: 0, marginRight: '0.25rem' }}>Popular:</span>
             {CATEGORIES.map(cat => (
               <button
                 key={cat}
@@ -303,6 +304,7 @@ export default function Dashboard() {
                 {cat}
               </button>
             ))}
+            </div>
           </div>
         </div>
 

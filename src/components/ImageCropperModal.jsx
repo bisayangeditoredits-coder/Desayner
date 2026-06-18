@@ -73,7 +73,7 @@ export default function ImageCropperModal({
             onCropComplete={onCropComplete}
             onZoomChange={setZoom}
             classes={{
-              cropAreaClassName: aspect === 3 ? 'banner-crop-area' : 'avatar-crop-area'
+              cropAreaClassName: aspect > 1.5 ? 'banner-crop-area' : 'avatar-crop-area'
             }}
           />
         </div>

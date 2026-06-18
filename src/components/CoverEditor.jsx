@@ -1,5 +1,5 @@
 'use client';
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useCallback, useRef, useEffect, useId } from 'react';
 import Cropper from 'react-easy-crop';
 import { Image as ImageIcon, Upload, Loader2, Check, RefreshCw, Crop } from 'lucide-react';
 import getCroppedImg from '@/lib/cropImage';
@@ -39,6 +39,7 @@ export default function CoverEditor({ value, thumbnailUrl, onUploaded }) {
 
 
   const inputRef = useRef(null);
+  const fileInputId = useId();
   const reportedRef = useRef(null);
   const { status, progress, result, uploadFile, cancel } = useUpload();
 
@@ -61,7 +62,11 @@ export default function CoverEditor({ value, thumbnailUrl, onUploaded }) {
     if (!e.target.files?.length) return;
     const file = e.target.files[0];
     if (inputRef.current) inputRef.current.value = '';
-    await uploadFile(file, 'projects/covers');
+    const src = await readFile(file);
+    setImageSrc(src);
+    setCropMode(true);
+    setCrop({ x: 0, y: 0 });
+    setZoom(1);
   };
 
   const handleUploadAsIs = async () => {
@@ -84,6 +89,9 @@ export default function CoverEditor({ value, thumbnailUrl, onUploaded }) {
       const croppedBlob = await getCroppedImg(imageSrc, croppedAreaPixels);
       const file = new File([croppedBlob], 'cover.png', { type: 'image/png' });
       await uploadFile(file, 'projects/covers');
+    } catch (err) {
+      console.error('Crop/Upload Error:', err);
+      alert('Failed to process image. Please try again.');
     } finally {
       setIsCropping(false);
     }
@@ -105,15 +113,14 @@ export default function CoverEditor({ value, thumbnailUrl, onUploaded }) {
       <div style={previewPanelStyle}>
         <img src={thumbnailUrl || value} alt="Cover" style={previewImgStyle} />
         <div style={{ position: 'absolute', bottom: '1.5rem', right: '1.5rem' }}>
-          <button
-            type="button"
-            onClick={() => inputRef.current?.click()}
+          <label
+            htmlFor={fileInputId}
             style={{ padding: '0.75rem 1.5rem', background: 'white', color: '#111827', fontWeight: 600, border: '1px solid #e8e8e8', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem', boxShadow: '0 4px 12px rgba(0,0,0,0.08)' }}
           >
             <RefreshCw size={16} /> Replace Cover
-          </button>
+          </label>
         </div>
-        <input ref={inputRef} type="file" accept="image/*" onChange={handleFileChange} style={{ display: 'none' }} />
+        <input id={fileInputId} ref={inputRef} type="file" accept="image/*" onChange={handleFileChange} style={{ display: 'none' }} />
       </div>
     );
   }
@@ -140,13 +147,12 @@ export default function CoverEditor({ value, thumbnailUrl, onUploaded }) {
               {status === 'compressing' ? `Optimizing… ${progress}%` : `Uploading… ${progress}%`}
             </button>
           ) : (
-            <button
-              type="button"
-              onClick={() => inputRef.current?.click()}
+            <label
+              htmlFor={fileInputId}
               style={{ padding: '0.7rem 1.35rem', background: '#2d43e8', color: 'white', fontWeight: 600, border: 'none', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
             >
               <Upload size={16} /> Upload Image
-            </button>
+            </label>
           )}
 
           <p style={{ marginTop: '1.5rem', fontSize: '0.72rem', opacity: 0.55, letterSpacing: '0.02em' }}>
@@ -160,6 +166,7 @@ export default function CoverEditor({ value, thumbnailUrl, onUploaded }) {
               image={imageSrc}
               crop={crop}
               zoom={zoom}
+              aspect={4/3}
               onCropChange={setCrop}
               onCropComplete={onCropComplete}
               onZoomChange={setZoom}
@@ -168,13 +175,13 @@ export default function CoverEditor({ value, thumbnailUrl, onUploaded }) {
           </div>
 
           {isUploading && (
-            <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '3px', background: '#e8e8e8' }}>
+            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '4px', background: '#e8e8e8', zIndex: 11 }}>
               <div style={{ height: '100%', background: '#2d43e8', width: `${progress}%`, transition: 'width 0.25s ease' }} />
             </div>
           )}
 
-          <div style={{ padding: '0.9rem 1.25rem', background: 'white', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid #e8e8e8', flexShrink: 0 }}>
-            <p style={{ color: '#6b6b6b', fontSize: '0.78rem' }}>
+          <div style={{ position: 'absolute', bottom: '1.5rem', left: '1.5rem', right: '1.5rem', padding: '0.9rem 1.25rem', background: 'white', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderRadius: '12px', boxShadow: '0 8px 30px rgba(0,0,0,0.15)', zIndex: 10 }}>
+            <p style={{ color: '#6b6b6b', fontSize: '0.78rem', fontWeight: 600 }}>
               {isUploading
                 ? (status === 'compressing' ? `Optimizing… ${progress}%` : `Uploading… ${progress}%`)
                 : 'Drag to position · Scroll to zoom'}
@@ -204,7 +211,7 @@ export default function CoverEditor({ value, thumbnailUrl, onUploaded }) {
         </>
       )}
 
-      <input ref={inputRef} type="file" accept="image/jpeg,image/png,image/webp,image/gif" onChange={handleFileChange} style={{ display: 'none' }} />
+      <input id={fileInputId} ref={inputRef} type="file" accept="image/jpeg,image/png,image/webp,image/gif" onChange={handleFileChange} style={{ display: 'none' }} />
       <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
       
 

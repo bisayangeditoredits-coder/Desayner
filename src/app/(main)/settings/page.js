@@ -197,6 +197,8 @@ export default function SettingsPage() {
                     label=""
                     folder="avatars"
                     value={avatarUrl}
+                    cropAspect={1}
+                    cropShape="round"
                     onUploaded={url => setAvatarUrl(url)}
                     onRemove={() => setAvatarUrl('')}
                   />
@@ -254,6 +256,8 @@ export default function SettingsPage() {
                       label={coverUrl ? 'Change Cover' : 'Upload Cover'}
                       folder="covers"
                       value={coverUrl}
+                      cropAspect={16/9}
+                      cropShape="rect"
                       onUploaded={url => setCoverUrl(url)}
                       onRemove={() => setCoverUrl('')}
                     />
@@ -378,7 +382,7 @@ export default function SettingsPage() {
               <div>
                 <label style={labelStyle}>Public Email (For Clients)</label>
                 <p style={{ fontSize: '0.78rem', color: '#9b9b9b', margin: '0 0 0.65rem' }}>
-                  If you are available for work, clients can use this email to contact you via the "Hire Me" button.
+                  If you are available for work, clients can use this email to contact you via the &quot;Hire Me&quot; button.
                 </p>
                 <input
                   style={inputStyle}

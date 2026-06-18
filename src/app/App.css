@@ -16,7 +16,7 @@
   display: flex;
   flex-direction: column;
   background: var(--card-bg);
-  z-index: 1000;
+  z-index: 1050;
   overflow: hidden;
 }
 
@@ -2750,7 +2750,7 @@
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.5);
-  z-index: 999;
+  z-index: 1040;
   backdrop-filter: blur(2px);
 }
 
@@ -4085,4 +4085,3 @@ h1, h2, h3, h4, .page-title, .section-title {
     padding-bottom: 70px;
   }
 }
-

@@ -21,26 +21,64 @@ export default function AnnouncementBar() {
   };
 
   return (
-    <div style={{
-      background: 'linear-gradient(90deg, #1e1b4b 0%, #2d43e8 50%, #1e1b4b 100%)',
-      color: 'white',
-      padding: '0.6rem 1rem',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      position: 'relative',
-      zIndex: 1000,
-    }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem', fontWeight: 600, paddingRight: '1.5rem', flexWrap: 'wrap', justifyContent: 'center' }}>
-        <Sparkles size={14} style={{ color: '#fbbf24' }} />
-        <span>Join the upcoming Desayner Community Event! Connect with top creatives worldwide.</span>
+    <>
+      <style>{`
+        .announcement-bar {
+          background: linear-gradient(90deg, #1e1b4b 0%, #2d43e8 50%, #1e1b4b 100%);
+          color: white;
+          padding: 0.6rem 1rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          position: relative;
+          z-index: 1000;
+        }
+        .announcement-content {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          font-size: 0.85rem;
+          font-weight: 600;
+          padding-right: 1.5rem;
+          justify-content: center;
+        }
+        .announcement-text {
+          display: inline;
+        }
+        .announcement-short-text {
+          display: none;
+        }
+        
+        @media (max-width: 600px) {
+          .announcement-bar {
+            padding: 0.35rem 0.5rem;
+          }
+          .announcement-content {
+            font-size: 0.7rem;
+            gap: 0.3rem;
+            padding-right: 1.5rem;
+          }
+          .announcement-text {
+            display: none;
+          }
+          .announcement-short-text {
+            display: inline;
+          }
+        }
+      `}</style>
+      <div className="announcement-bar">
+        <div className="announcement-content">
+        <Sparkles size={14} style={{ color: '#fbbf24', flexShrink: 0 }} />
+        <span className="announcement-text">Join the upcoming Desayner Community Event! Connect with top creatives worldwide.</span>
+        <span className="announcement-short-text">Join the upcoming Desayner Community Event!</span>
         <Link 
           href="/contests" 
           style={{ 
             color: '#fbbf24', 
             textDecoration: 'underline', 
-            marginLeft: '0.5rem',
-            fontWeight: 700 
+            marginLeft: '0.2rem',
+            fontWeight: 700,
+            whiteSpace: 'nowrap'
           }}
         >
           Learn more
@@ -75,6 +113,7 @@ export default function AnnouncementBar() {
       >
         <X size={14} />
       </button>
-    </div>
+      </div>
+    </>
   );
 }

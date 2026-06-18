@@ -98,6 +98,7 @@ function DesignersContent() {
   const searchParams = useSearchParams();
   const initialSearch = searchParams.get("q") || "";
   const initialCategory = searchParams.get("category") || "All";
+  const initialSort = searchParams.get("sort") || "projects";
   const [data, setData] = useState({
     heroDesigner: null,
     featuredDesigners: [],
@@ -108,7 +109,7 @@ function DesignersContent() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState(initialSearch);
   const [category, setCategory] = useState(initialCategory);
-  const [sort, setSort] = useState("projects");
+  const [sort, setSort] = useState(initialSort);
   const [currentUserId, setCurrentUserId] = useState(null);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(false);
@@ -122,16 +123,17 @@ function DesignersContent() {
     });
   }, [supabase]);
 
-  // Sync search & category to URL
+  // Sync search, category & sort to URL
   useEffect(() => {
     const timer = setTimeout(() => {
       const params = new URLSearchParams();
       if (search) params.set("q", search);
       if (category !== "All") params.set("category", category);
+      if (sort !== "projects") params.set("sort", sort);
       router.replace(`/designers?${params.toString()}`, { scroll: false });
     }, 300);
     return () => clearTimeout(timer);
-  }, [search, category, router]);
+  }, [search, category, sort, router]);
 
   const loadDesigners = useCallback(
     async (

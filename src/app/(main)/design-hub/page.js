@@ -1,5 +1,11 @@
-import { redirect } from 'next/navigation';
+'use client';
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function DesignHubRedirect() {
-  redirect('/design-hub/stock-photos');
+  const router = useRouter();
+  useEffect(() => {
+    router.replace('/design-hub/stock-photos');
+  }, [router]);
+  return null;
 }

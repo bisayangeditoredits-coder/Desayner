@@ -47,6 +47,19 @@ export default function Sidebar({ className = '' }) {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const supabase = useMemo(() => createClient(), []);
 
+  useIsomorphicLayoutEffect(() => {
+    if (typeof window !== 'undefined') {
+      const savedProfile = localStorage.getItem('desayner_profile');
+      if (savedProfile) {
+        try { setProfile(JSON.parse(savedProfile)); } catch (e) {}
+      }
+      const savedUsers = localStorage.getItem('desayner_sidebar_users');
+      if (savedUsers) {
+        try { setSuggestedUsers(JSON.parse(savedUsers)); } catch (e) {}
+      }
+    }
+  }, []);
+
   useEffect(() => {
     let mounted = true;
     async function load() {
@@ -55,9 +68,13 @@ export default function Sidebar({ className = '' }) {
       if (user) {
         setUser(user);
         const { data } = await supabase.from('profiles').select('username, full_name, avatar_url').eq('id', user.id).single();
-        if (mounted && data) setProfile(data);
+        if (mounted && data) {
+          setProfile(data);
+          localStorage.setItem('desayner_profile', JSON.stringify(data));
+        }
       } else {
         setUser(null);
+        localStorage.removeItem('desayner_profile');
       }
       
       // Fetch top designers for the sidebar
@@ -65,7 +82,9 @@ export default function Sidebar({ className = '' }) {
         .then(res => res.json())
         .then(data => {
           if (mounted && data.designers) {
-            setSuggestedUsers(data.designers.slice(0, 3)); // Only show top 3
+            const top3 = data.designers.slice(0, 3);
+            setSuggestedUsers(top3);
+            localStorage.setItem('desayner_sidebar_users', JSON.stringify(top3));
           }
         })
         .catch(err => console.error('Failed to fetch sidebar designers', err));
@@ -82,7 +101,10 @@ export default function Sidebar({ className = '' }) {
     async function refreshProfile() {
       if (!user?.id) return;
       const { data } = await supabase.from('profiles').select('username, full_name, avatar_url').eq('id', user.id).single();
-      if (data) setProfile(data);
+      if (data) {
+        setProfile(data);
+        localStorage.setItem('desayner_profile', JSON.stringify(data));
+      }
     }
     window.addEventListener('profile_updated', refreshProfile);
     return () => window.removeEventListener('profile_updated', refreshProfile);
@@ -238,7 +260,7 @@ export default function Sidebar({ className = '' }) {
             <Settings size={16} strokeWidth={1.75} /> Settings
           </Link>
 
-          {profile && (
+          {profile ? (
           <div>
             <button
               onClick={() => setUserMenuOpen(p => !p)}
@@ -283,6 +305,14 @@ export default function Sidebar({ className = '' }) {
               </div>
             )}
           </div>
+          ) : (
+            <div style={{ padding: '0.6rem 0.5rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+              <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#e2e8f0' }} className="shimmer-box" />
+              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
+                <div style={{ width: '80%', height: '10px', background: '#e2e8f0', borderRadius: '4px' }} className="shimmer-box" />
+                <div style={{ width: '50%', height: '8px', background: '#e2e8f0', borderRadius: '4px' }} className="shimmer-box" />
+              </div>
+            </div>
           )}
         </div>
       )}

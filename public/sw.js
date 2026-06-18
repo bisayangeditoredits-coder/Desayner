@@ -9,7 +9,18 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  // Pass-through fetch for basic PWA validation
-  // This is required for Chrome to trigger the "Add to Homescreen" banner
-  event.respondWith(fetch(event.request).catch(() => new Response('Offline')));
+  // Only return offline response for document requests (HTML pages)
+  if (event.request.mode === 'navigate') {
+    event.respondWith(
+      fetch(event.request).catch(() => {
+        return new Response(
+          '<html><body><h1>You are offline</h1><p>Please check your internet connection.</p></body></html>',
+          { headers: { 'Content-Type': 'text/html' } }
+        );
+      })
+    );
+  } else {
+    // Pass-through for all other requests (scripts, images, API calls)
+    event.respondWith(fetch(event.request));
+  }
 });

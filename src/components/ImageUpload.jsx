@@ -1,5 +1,5 @@
 'use client';
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useId } from 'react';
 import { Upload, X, Loader2, ImageIcon } from 'lucide-react';
 import imageCompression from 'browser-image-compression';
 import ImageCropperModal from './ImageCropperModal';
@@ -31,6 +31,7 @@ export default function ImageUpload({
   const [error, setError] = useState('');
   const [cropImageSrc, setCropImageSrc] = useState('');
   const inputRef = useRef(null);
+  const fileInputId = useId();
 
   const uploadFile = useCallback(async (file) => {
     if (!file) return;
@@ -175,12 +176,13 @@ export default function ImageUpload({
     <div>
       {label && <p style={{ fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#6b6b6b', marginBottom: '0.5rem' }}>{label}</p>}
 
-      <div
-        onClick={() => !uploading && inputRef.current?.click()}
+      <label
+        htmlFor={fileInputId}
         onDragOver={onDragOver}
         onDragLeave={onDragLeave}
         onDrop={onDrop}
         style={{
+          display: 'block',
           border: `1px dashed ${dragging ? '#231f20' : error ? '#ff3b3b' : '#d0d0d0'}`,
           background: dragging ? '#f5f5f5' : '#fafafa',
           padding: '2.5rem 1rem',
@@ -209,18 +211,20 @@ export default function ImageUpload({
             </div>
           </div>
         )}
-      </div>
+      </label>
 
       {error && (
         <p style={{ fontSize: '0.78rem', color: '#ff3b3b', marginTop: '0.4rem' }}>{error}</p>
       )}
 
       <input
+        id={fileInputId}
         ref={inputRef}
         type="file"
         accept={accept}
         onChange={handleFileChange}
         style={{ display: 'none' }}
+        disabled={uploading}
       />
 
       {cropImageSrc && (

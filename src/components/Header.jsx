@@ -56,6 +56,19 @@ export default function Header() {
   const [results, setResults]           = useState([]);
   const [searching, setSearching]       = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+
+  const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? React.useLayoutEffect : useEffect;
+  useIsomorphicLayoutEffect(() => {
+    if (typeof document !== 'undefined') {
+      const hasAuth = /sb-[a-z0-9]+-auth-token/.test(document.cookie);
+      if (hasAuth && !userId) setUserId('optimistic');
+      
+      const savedProfile = localStorage.getItem('desayner_profile');
+      if (savedProfile) {
+        try { setProfile(JSON.parse(savedProfile)); } catch (e) {}
+      }
+    }
+  }, []);
   const [createMenuOpen, setCreateMenuOpen] = useState(false);
   const [unreadCount, setUnreadCount]   = useState(0);
   const [showNotifs, setShowNotifs]     = useState(false);
@@ -107,7 +120,10 @@ export default function Header() {
         fetchBadges(),
       ]);
 
-      if (mounted && profileRes.data) setProfile(profileRes.data);
+      if (mounted && profileRes.data) {
+        setProfile(profileRes.data);
+        localStorage.setItem('desayner_profile', JSON.stringify(profileRes.data));
+      }
       if (mounted) setAuthLoaded(true);
 
       // Realtime listeners — with error handling + fallback polling
@@ -147,7 +163,10 @@ export default function Header() {
         .select('username, full_name, avatar_url')
         .eq('id', userId)
         .single();
-      if (data) setProfile(data);
+      if (data) {
+        setProfile(data);
+        localStorage.setItem('desayner_profile', JSON.stringify(data));
+      }
     }
 
     window.addEventListener('profile_updated', refreshProfile);
@@ -401,10 +420,12 @@ export default function Header() {
               )}
             </div>
 
-            {profile && (
+            {profile ? (
               <Link href={`/profile/${profile.username}`} className="header-profile-link" style={{ marginLeft: '0.25rem' }}>
                 <UserAvatar src={profile.avatar_url} name={profile.full_name || profile.username} size={32} />
               </Link>
+            ) : (
+              <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#e2e8f0', marginLeft: '0.25rem' }} className="shimmer-box" />
             )}
           </>
         ) : authLoaded ? (
@@ -417,7 +438,10 @@ export default function Header() {
             </Link>
           </div>
         ) : (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}></div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <div style={{ width: '50px', height: '20px', background: '#e2e8f0', borderRadius: '4px' }} className="shimmer-box" />
+            <div style={{ width: '80px', height: '36px', background: '#e2e8f0', borderRadius: '8px' }} className="shimmer-box" />
+          </div>
         )}
       </div>
     </header>

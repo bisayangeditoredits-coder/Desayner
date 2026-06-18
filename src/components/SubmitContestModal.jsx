@@ -161,7 +161,7 @@ export default function SubmitContestModal({ contestId, isOpen, onClose, onSubmi
             }}
             style={{ width: '100%', padding: '0.875rem', background: '#0f172a', color: 'white', border: 'none', borderRadius: '8px', fontWeight: 700, cursor: 'pointer', fontSize: '1rem' }}
           >
-            Awesome, let's go!
+            Awesome, let&apos;s go!
           </button>
         </div>
       </div>

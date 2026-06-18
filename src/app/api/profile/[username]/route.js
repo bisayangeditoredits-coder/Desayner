@@ -130,8 +130,6 @@ export async function GET(request, { params }) {
       }
     }
 
-    let savedProjects = [];
-    let collections = [];
     let isFollowing = false;
     let currentUser = null;
 
@@ -140,32 +138,7 @@ export async function GET(request, { params }) {
     if (user) {
       currentUser = user;
 
-      if (user.id === profile.id) {
-        const { data: savedData } = await supabase
-          .from('project_saves')
-          .select(`projects(${PROJECT_SELECT})`)
-          .eq('user_id', profile.id)
-          .order('created_at', { ascending: false })
-          .limit(50);
-
-        savedProjects = (savedData || []).map((r) => r.projects).filter(Boolean);
-
-        const { data: colsData } = await supabase
-          .from('collections')
-          .select(`id, name, created_at, collection_items(projects(${PROJECT_SELECT}))`)
-          .eq('user_id', profile.id)
-          .order('created_at', { ascending: false })
-          .limit(50);
-
-        if (colsData) {
-          collections = colsData.map((c) => ({
-            id: c.id,
-            name: c.name,
-            created_at: c.created_at,
-            items: (c.collection_items || []).map((ci) => ci.projects).filter(Boolean),
-          }));
-        }
-      } else {
+      if (user.id !== profile.id) {
         const { data: followData } = await supabase
           .from('follows')
           .select('follower_id')
@@ -177,31 +150,22 @@ export async function GET(request, { params }) {
       }
 
       const projectIds = projects.map((p) => p.id);
-      const savedIds = savedProjects.map((p) => p.id);
-      const allIds = [...new Set([...projectIds, ...savedIds])];
 
-      if (allIds.length > 0) {
+      if (projectIds.length > 0) {
         const { data: likedList } = await supabase
           .from('project_likes')
           .select('project_id')
           .eq('user_id', user.id)
-          .in('project_id', allIds);
+          .in('project_id', projectIds);
 
         const likedSet = new Set((likedList || []).map((l) => l.project_id));
         projects = projects.map((p) => ({ ...p, user_liked: likedSet.has(p.id) }));
-        savedProjects = savedProjects.map((p) => ({ ...p, user_liked: likedSet.has(p.id) }));
-        collections = collections.map((c) => ({
-          ...c,
-          items: c.items.map((p) => ({ ...p, user_liked: likedSet.has(p.id) })),
-        }));
       }
     }
 
     return NextResponse.json({
       profile,
       projects,
-      savedProjects,
-      collections,
       isFollowing,
       currentUser,
       hasMore,

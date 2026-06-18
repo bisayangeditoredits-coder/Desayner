@@ -17,8 +17,8 @@ export default async function getCroppedImg(imageSrc, pixelCrop) {
   }
 
   // set canvas size to match the bounding box
-  canvas.width = image.width;
-  canvas.height = image.height;
+  canvas.width = image.naturalWidth;
+  canvas.height = image.naturalHeight;
 
   // draw image
   ctx.drawImage(image, 0, 0);

@@ -35,9 +35,11 @@ export function buildPublishedProjectsQuery(supabase, {
   }
 
   if (sort === 'liked') {
-    query = query.order('likes_count', { ascending: false });
+    query = query.order('likes_count', { ascending: false }).order('created_at', { ascending: false });
   } else if (sort === 'viewed') {
-    query = query.order('views_count', { ascending: false });
+    query = query.order('views_count', { ascending: false }).order('created_at', { ascending: false });
+  } else if (sort === 'trending') {
+    query = query.order('trending_score', { ascending: false }).order('created_at', { ascending: false });
   } else {
     query = query.order('created_at', { ascending: false });
   }

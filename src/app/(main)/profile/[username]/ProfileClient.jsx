@@ -12,26 +12,19 @@ import { stripCloudinaryProxy } from '@/lib/utils';
 import ProfileCompletenessCard from '@/components/ProfileCompletenessCard';
 import EmptyState from '@/components/EmptyState';
 import FirstProjectCelebration from '@/components/FirstProjectCelebration';
+import HireMeModal from '@/components/HireMeModal';
 import { Suspense } from 'react';
-import { FolderOpen } from 'lucide-react';
 import '../../../App.css';
 
 const PROFILE_PAGE_SIZE = 50;
 
-/** Prominent Contact button that links externally */
-function HireMeButton({ profile }) {
-  // Use public_email for a direct mailto link, fallback to website if no email is provided.
-  if (!profile?.public_email && !profile?.website) return null;
-
-  const href = profile.public_email
-    ? `mailto:${profile.public_email}`
-    : (profile.website.startsWith('http') ? profile.website : `https://${profile.website}`);
+/** Prominent Contact button that triggers modal */
+function HireMeButton({ profile, onClick }) {
+  if (!profile?.available_for_work && !profile?.public_email && !profile?.website) return null;
 
   return (
-    <a
-      href={href}
-      target={profile.public_email ? undefined : "_blank"}
-      rel={profile.public_email ? undefined : "noopener noreferrer"}
+    <button
+      onClick={onClick}
       className="profile-pill-btn"
       style={{ 
         cursor: 'pointer', 
@@ -39,15 +32,19 @@ function HireMeButton({ profile }) {
         color: 'white', 
         borderColor: '#2d43e8',
         boxShadow: '0 4px 14px rgba(45, 67, 232, 0.3)',
-        textDecoration: 'none',
         display: 'flex',
         alignItems: 'center',
-        gap: '0.4rem'
+        gap: '0.4rem',
+        border: 'none',
+        outline: 'none',
+        fontFamily: 'inherit',
+        fontWeight: 700,
+        fontSize: '0.85rem'
       }}
     >
       <MessageSquare size={13} />
       Hire Me
-    </a>
+    </button>
   );
 }
 
@@ -55,9 +52,6 @@ export default function ProfilePage() {
   const { username } = useParams();
   const [profile, setProfile]           = useState(null);
   const [projects, setProjects]         = useState([]);
-  const [savedProjects, setSavedProjects] = useState([]);
-  const [collections, setCollections]   = useState([]);
-  const [selectedCollection, setSelectedCollection] = useState(null);
   const [tab, setTab]                   = useState('projects');
   const [currentUser, setCurrentUser]   = useState(null);
   const [isFollowing, setIsFollowing]   = useState(false);
@@ -66,6 +60,7 @@ export default function ProfilePage() {
   const [loadingMoreProjects, setLoadingMoreProjects] = useState(false);
   const [hasMoreProjects, setHasMoreProjects] = useState(false);
   const [failedCoverSrc, setFailedCoverSrc] = useState(null);
+  const [isHireModalOpen, setIsHireModalOpen] = useState(false);
   const supabase = useMemo(() => createClient(), []);
 
   useEffect(() => {
@@ -86,8 +81,6 @@ export default function ProfilePage() {
           setFollowerCount(data.profile.followers_count || 0);
         }
         setProjects(data.projects || []);
-        setSavedProjects(data.savedProjects || []);
-        setCollections(data.collections || []);
         setIsFollowing(data.isFollowing || false);
         setHasMoreProjects(data.hasMore || false);
         if (data.currentUser) setCurrentUser(data.currentUser);
@@ -253,7 +246,7 @@ export default function ProfilePage() {
                       initialFollowing={isFollowing}
                       compact={true}
                     />
-                    <HireMeButton profile={profile} />
+                    <HireMeButton profile={profile} onClick={() => setIsHireModalOpen(true)} />
                   </>
                 )}
                 {profile.website && (
@@ -284,23 +277,14 @@ export default function ProfilePage() {
           <div className="profile-v2__tabs-list">
             <button
               className={`profile-v2__tab-btn${tab === 'projects' ? ' active' : ''}`}
-              onClick={() => { setTab('projects'); setSelectedCollection(null); }}
+              onClick={() => { setTab('projects'); }}
             >
               Work
               <span className="profile-v2__tab-count">{profile.projects_count ?? projects.length}</span>
             </button>
-            {isOwn && (
-              <button
-                className={`profile-v2__tab-btn${tab === 'saved' ? ' active' : ''}`}
-                onClick={() => { setTab('saved'); setSelectedCollection(null); }}
-              >
-                Saved
-                <span className="profile-v2__tab-count">{savedProjects.length}</span>
-              </button>
-            )}
             <button
               className={`profile-v2__tab-btn${tab === 'about' ? ' active' : ''}`}
-              onClick={() => { setTab('about'); setSelectedCollection(null); }}
+              onClick={() => { setTab('about'); }}
             >
               About
             </button>
@@ -311,11 +295,10 @@ export default function ProfilePage() {
       {/* ── Tab Contents ── */}
       <div className="profile-v2__content">
 
-        {/* Work tab */}
         {tab === 'projects' && (
           projects.length === 0 ? (
             <EmptyState
-              icon={FolderOpen}
+              icon={Folder}
               title={isOwn ? "You haven't published any projects yet" : `${profile.full_name || profile.username} hasn't shared work yet`}
               description={
                 isOwn
@@ -360,73 +343,6 @@ export default function ProfilePage() {
             </>
           )
         )}
-
-        {/* Saved tab */}
-        {tab === 'saved' && (
-          selectedCollection ? (
-            <div>
-              <button 
-                onClick={() => setSelectedCollection(null)} 
-                style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 600, fontSize: '0.9rem', marginBottom: '1.5rem', color: '#231f20' }}
-              >
-                <ArrowLeft size={16} /> Back to Collections
-              </button>
-              <h2 style={{ marginBottom: '1.5rem', fontSize: '1.5rem', fontWeight: 700 }}>
-                {selectedCollection === 'ALL' ? 'All Saved Items' : selectedCollection.name}
-              </h2>
-              
-              {(() => {
-                const items = selectedCollection === 'ALL' ? savedProjects : selectedCollection.items;
-                if (items.length === 0) {
-                  return (
-                    <div className="profile-v2__empty">
-                      <p style={{ fontWeight: 600, fontSize: '0.95rem' }}>No projects in this collection.</p>
-                    </div>
-                  );
-                }
-                return (
-                  <div className="projects-masonry">
-                    {items.map(project => (
-                      <ProjectCard key={project.id} project={project} currentUserId={currentUser?.id} />
-                    ))}
-                  </div>
-                );
-              })()}
-            </div>
-          ) : (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '1.25rem' }}>
-              <div 
-                onClick={() => setSelectedCollection('ALL')}
-                style={{ padding: '1.5rem', background: '#fafafa', border: '1px solid #e8e8e8', borderRadius: '12px', cursor: 'pointer', transition: 'border-color 0.2s', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}
-                onMouseOver={(e) => e.currentTarget.style.borderColor = '#d1d1d1'}
-                onMouseOut={(e) => e.currentTarget.style.borderColor = '#e8e8e8'}
-              >
-                <Folder size={24} color="#231f20" />
-                <div>
-                  <h3 style={{ fontWeight: 600, fontSize: '1rem', marginBottom: '0.2rem' }}>All Saved Items</h3>
-                  <p style={{ color: '#9b9b9b', fontSize: '0.85rem' }}>{savedProjects.length} items</p>
-                </div>
-              </div>
-              
-              {collections.map(col => (
-                <div 
-                  key={col.id} 
-                  onClick={() => setSelectedCollection(col)}
-                  style={{ padding: '1.5rem', background: '#fafafa', border: '1px solid #e8e8e8', borderRadius: '12px', cursor: 'pointer', transition: 'border-color 0.2s', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}
-                  onMouseOver={(e) => e.currentTarget.style.borderColor = '#d1d1d1'}
-                  onMouseOut={(e) => e.currentTarget.style.borderColor = '#e8e8e8'}
-                >
-                  <Folder size={24} color="#231f20" />
-                  <div>
-                    <h3 style={{ fontWeight: 600, fontSize: '1rem', marginBottom: '0.2rem' }}>{col.name}</h3>
-                    <p style={{ color: '#9b9b9b', fontSize: '0.85rem' }}>{col.items.length} items</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )
-        )}
-
         {/* About tab */}
         {tab === 'about' && (
           <div className="profile-v2__about">
@@ -511,6 +427,13 @@ export default function ProfilePage() {
           </div>
         )}
       </div>
+
+      <HireMeModal 
+        isOpen={isHireModalOpen}
+        onClose={() => setIsHireModalOpen(false)}
+        targetUserId={profile.id}
+        targetUserName={profile.full_name || profile.username}
+      />
     </div>
   );
 }

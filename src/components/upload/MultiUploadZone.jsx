@@ -19,7 +19,7 @@
  *   maxFiles     — max total files (default 20)
  */
 
-import { useCallback, useReducer, useRef, useEffect, useState } from 'react';
+import { useCallback, useReducer, useRef, useEffect, useState, useId } from 'react';
 import { X, Upload, AlertCircle, CheckCircle2, Loader2 } from 'lucide-react';
 import { processImage } from '@/lib/processImage';
 
@@ -57,6 +57,7 @@ export default function MultiUploadZone({ folder = 'uploads', value = [], onResu
   const [items, dispatch] = useReducer(reducer, []);
   const [dragging, setDragging] = useToggle(false);
   const inputRef   = useRef(null);
+  const fileInputId = useId();
   const queueRef   = useRef([]);       // pending item IDs
   const processingRef = useRef(false);
   const cancelRefs = useRef({});       // id → cancel() for active compressions
@@ -286,12 +287,13 @@ export default function MultiUploadZone({ folder = 'uploads', value = [], onResu
       )}
 
       {/* Drop zone */}
-      <div
-        onClick={() => inputRef.current?.click()}
+      <label
+        htmlFor={fileInputId}
         onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
         onDragLeave={() => setDragging(false)}
         onDrop={handleDrop}
         style={{
+          display: 'block',
           border: `1.5px dashed ${dragging ? '#2d43e8' : '#d0d0d0'}`,
           background: dragging ? '#f0f2ff' : '#fafafa',
           padding: '1.75rem 1rem',
@@ -311,9 +313,9 @@ export default function MultiUploadZone({ folder = 'uploads', value = [], onResu
             Select multiple — auto-compressed &amp; converted to WebP
           </p>
         </div>
-      </div>
+      </label>
 
-      <input ref={inputRef} type="file" accept="image/*" multiple onChange={handleInput} style={{ display: 'none' }} />
+      <input id={fileInputId} ref={inputRef} type="file" accept="image/*" multiple onChange={handleInput} style={{ display: 'none' }} />
       <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
     </div>
   );

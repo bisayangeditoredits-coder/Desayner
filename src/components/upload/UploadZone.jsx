@@ -16,7 +16,7 @@
  *   accept       — MIME types (default covers common image types)
  */
 
-import { useCallback, useRef, useState, useEffect } from 'react';
+import { useCallback, useRef, useState, useEffect, useId } from 'react';
 import { Upload, X, ImageIcon, RefreshCw, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { useUpload } from '@/hooks/useUpload';
 import './UploadZone.css';
@@ -33,6 +33,7 @@ export default function UploadZone({ label, folder = 'uploads', value = '', thum
   const [dragging, setDragging]     = useState(false);
   const [localPreview, setLocalPreview] = useState(''); // objectURL for instant preview
   const inputRef = useRef(null);
+  const fileInputId = useId();
 
   const { status, progress, result, error, compressionStats, uploadFile, cancel, retry } = useUpload();
 
@@ -107,14 +108,13 @@ export default function UploadZone({ label, folder = 'uploads', value = '', thum
             >
               <X size={12} /> Remove
             </button>
-            <button
-              type="button"
+            <label
+              htmlFor={fileInputId}
               className="upload-zone__preview-btn"
-              style={{ background: 'rgba(255,255,255,0.9)', color: '#231f20' }}
-              onClick={() => inputRef.current?.click()}
+              style={{ background: 'rgba(255,255,255,0.9)', color: '#231f20', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
             >
               <RefreshCw size={12} /> Replace
-            </button>
+            </label>
           </div>
           {compressionStats && (
             <div className="upload-zone__stats">
@@ -122,7 +122,7 @@ export default function UploadZone({ label, folder = 'uploads', value = '', thum
             </div>
           )}
         </div>
-        <input ref={inputRef} type="file" accept={ACCEPTED} onChange={onInputChange} style={{ display: 'none' }} />
+        <input id={fileInputId} ref={inputRef} type="file" accept={ACCEPTED} onChange={onInputChange} style={{ display: 'none' }} />
       </div>
     );
   }
@@ -162,27 +162,28 @@ export default function UploadZone({ label, folder = 'uploads', value = '', thum
     return (
       <div className="upload-zone">
         {label && <p className="upload-zone__label">{label}</p>}
-        <div
+        <label
+          htmlFor={fileInputId}
           className="upload-zone__drop upload-zone__drop--error"
-          onClick={() => inputRef.current?.click()}
           onDragOver={onDragOver}
           onDragLeave={onDragLeave}
           onDrop={onDrop}
           tabIndex={0}
           role="button"
+          style={{ display: 'flex', flexDirection: 'column', cursor: 'pointer' }}
         >
           <div className="upload-zone__icon" style={{ borderColor: '#ff3b30' }}>
             <AlertCircle size={20} color="#ff3b30" />
           </div>
           <p className="upload-zone__title" style={{ color: '#ff3b30' }}>Upload failed</p>
           <p className="upload-zone__hint">Click or drop a new file to try again</p>
-        </div>
+        </label>
         <div className="upload-zone__error">
           <AlertCircle size={14} color="#cc0000" style={{ flexShrink: 0, marginTop: '1px' }} />
           <p>{error}</p>
           <button type="button" className="upload-zone__retry-btn" onClick={retry}>Retry</button>
         </div>
-        <input ref={inputRef} type="file" accept={ACCEPTED} onChange={onInputChange} style={{ display: 'none' }} />
+        <input id={fileInputId} ref={inputRef} type="file" accept={ACCEPTED} onChange={onInputChange} style={{ display: 'none' }} />
       </div>
     );
   }
@@ -191,9 +192,9 @@ export default function UploadZone({ label, folder = 'uploads', value = '', thum
   return (
     <div className="upload-zone">
       {label && <p className="upload-zone__label">{label}</p>}
-      <div
+      <label
+        htmlFor={fileInputId}
         className={`upload-zone__drop ${dragging ? 'upload-zone__drop--dragging' : ''}`}
-        onClick={() => inputRef.current?.click()}
         onDragOver={onDragOver}
         onDragLeave={onDragLeave}
         onDrop={onDrop}
@@ -201,6 +202,7 @@ export default function UploadZone({ label, folder = 'uploads', value = '', thum
         role="button"
         aria-label="Upload image"
         onKeyDown={(e) => e.key === 'Enter' && inputRef.current?.click()}
+        style={{ display: 'flex', flexDirection: 'column', cursor: 'pointer' }}
       >
         <div className="upload-zone__icon">
           {dragging ? <Upload size={20} color="#2d43e8" /> : <ImageIcon size={20} color="#9b9b9b" />}
@@ -212,8 +214,8 @@ export default function UploadZone({ label, folder = 'uploads', value = '', thum
           JPG, PNG, WebP, GIF — max 10 MB<br />
           <strong>Auto-converted to WebP &amp; compressed before upload</strong>
         </p>
-      </div>
-      <input ref={inputRef} type="file" accept={ACCEPTED} onChange={onInputChange} style={{ display: 'none' }} />
+      </label>
+      <input id={fileInputId} ref={inputRef} type="file" accept={ACCEPTED} onChange={onInputChange} style={{ display: 'none' }} />
     </div>
   );
 }

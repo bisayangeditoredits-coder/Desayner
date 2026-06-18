@@ -23,10 +23,14 @@ function SearchResults() {
   const searchParams   = useSearchParams();
   const router         = useRouter();
   const q              = searchParams.get('q') || '';
+  const initialTab      = searchParams.get('tab') || 'projects';
+  const initialCategory = searchParams.get('category') || 'All';
+  const initialSort     = searchParams.get('sort') || 'newest';
+
   const [query, setQuery]           = useState(q);
-  const [tab, setTab]               = useState('projects'); // 'projects' | 'creators'
-  const [category, setCategory]     = useState('All');
-  const [sort, setSort]             = useState('newest');
+  const [tab, setTab]               = useState(initialTab); // 'projects' | 'creators'
+  const [category, setCategory]     = useState(initialCategory);
+  const [sort, setSort]             = useState(initialSort);
   // --- projects ---
   const [projects, setProjects]     = useState([]);
   const [total, setTotal]           = useState(0);
@@ -51,6 +55,19 @@ function SearchResults() {
     }
     init();
   }, [q]);
+
+  // Sync state to URL
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const params = new URLSearchParams();
+      if (query) params.set('q', query);
+      if (tab !== 'projects') params.set('tab', tab);
+      if (category !== 'All') params.set('category', category);
+      if (sort !== 'newest') params.set('sort', sort);
+      router.replace(`/search?${params.toString()}`, { scroll: false });
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [query, tab, category, sort, router]);
 
   // ── Debounced project search ──────────────────────────────────────────
   const searchTimerRef = useRef(null);
