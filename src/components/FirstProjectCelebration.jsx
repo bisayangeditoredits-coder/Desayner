@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Copy, PartyPopper, Share2, X } from 'lucide-react';
@@ -13,9 +13,12 @@ export default function FirstProjectCelebration({ username }) {
 
   const open = !dismissed && searchParams.get('firstProject') === '1' && !!username;
 
-  if (!open) return null;
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
 
-  const profileUrl = `${window.location.origin}/profile/${username}`;
+  if (!open || !mounted) return null;
+
+  const profileUrl = typeof window !== 'undefined' ? `${window.location.origin}/profile/${username}` : '';
 
   function close() {
     setDismissed(true);

@@ -9,18 +9,23 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  // Only return offline response for document requests (HTML pages)
-  if (event.request.mode === 'navigate') {
+  const { request } = event;
+
+  // Only intercept same-origin HTML navigation requests for offline fallback.
+  // Skip all non-GET requests (PUT uploads to R2, POST API calls, etc.)
+  // so the service worker never interferes with network-only operations.
+  if (request.method !== 'GET') return;
+
+  if (request.mode === 'navigate') {
     event.respondWith(
-      fetch(event.request).catch(() => {
+      fetch(request).catch(() => {
         return new Response(
           '<html><body><h1>You are offline</h1><p>Please check your internet connection.</p></body></html>',
           { headers: { 'Content-Type': 'text/html' } }
         );
       })
     );
-  } else {
-    // Pass-through for all other requests (scripts, images, API calls)
-    event.respondWith(fetch(event.request));
   }
+  // All other GET requests (scripts, images, API calls) pass through normally
+  // without service worker interception.
 });

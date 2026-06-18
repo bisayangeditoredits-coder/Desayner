@@ -13,6 +13,11 @@ import { S3Client } from '@aws-sdk/client-s3';
 export const R2 = new S3Client({
   region: 'auto',
   endpoint: `https://${process.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
+  // forcePathStyle keeps the bucket name in the URL path, not the hostname.
+  // This means presigned PUT URLs are accountid.r2.cloudflarestorage.com/bucket/key
+  // instead of bucket.accountid.r2.cloudflarestorage.com/key — a single subdomain
+  // level that our CSP wildcard *.r2.cloudflarestorage.com can match.
+  forcePathStyle: true,
   credentials: {
     accessKeyId: process.env.R2_ACCESS_KEY_ID,
     secretAccessKey: process.env.R2_SECRET_ACCESS_KEY,

@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 import { getProfileCompleteness } from '@/lib/profileCompleteness';
-import { Check, ChevronRight, X } from 'lucide-react';
+import { Check, X, ArrowRight } from 'lucide-react';
 
 const DISMISS_KEY = 'onboarding_checklist_dismissed';
 
@@ -43,150 +43,230 @@ export default function OnboardingChecklist() {
   const { percent, items, isComplete } = getProfileCompleteness(profile);
   if (isComplete) return null;
 
+  const doneCount = items.filter(i => i.done).length;
+  const totalCount = items.length;
+
   function dismiss() {
     localStorage.setItem(DISMISS_KEY, 'true');
     setDismissed(true);
   }
 
   return (
-    <div className="onboarding-checklist">
-      <div className="onboarding-checklist__header">
-        <div>
-          <p className="onboarding-checklist__eyebrow">Get started</p>
-          <h3 className="onboarding-checklist__title">Complete your profile</h3>
-          <p className="onboarding-checklist__subtitle">
-            {percent}% done — finish these steps to stand out on Desayner.
-          </p>
+    <div className="ocl">
+      {/* Header row */}
+      <div className="ocl__header">
+        <div className="ocl__header-left">
+          <span className="ocl__badge">{doneCount}/{totalCount}</span>
+          <div>
+            <p className="ocl__eyebrow">Getting started</p>
+            <h3 className="ocl__title">Complete your profile</h3>
+          </div>
         </div>
-        <button type="button" className="onboarding-checklist__close" onClick={dismiss} aria-label="Dismiss">
-          <X size={16} />
+        <button type="button" className="ocl__close" onClick={dismiss} aria-label="Dismiss">
+          <X size={14} />
         </button>
       </div>
 
-      <div className="onboarding-checklist__bar">
-        <div className="onboarding-checklist__bar-fill" style={{ width: `${percent}%` }} />
+      {/* Progress bar */}
+      <div className="ocl__bar-wrap">
+        <div className="ocl__bar-fill" style={{ width: `${percent}%` }} />
       </div>
+      <p className="ocl__percent">{percent}% complete</p>
 
-      <ul className="onboarding-checklist__list">
+      {/* Steps */}
+      <ul className="ocl__list">
         {items.map((item) => (
-          <li key={item.id} className={item.done ? 'done' : ''}>
-            <span className="onboarding-checklist__check">
-              {item.done ? <Check size={12} strokeWidth={3} /> : null}
+          <li key={item.id} className={item.done ? 'ocl__item ocl__item--done' : 'ocl__item'}>
+            <span className={item.done ? 'ocl__circle ocl__circle--done' : 'ocl__circle'}>
+              {item.done ? <Check size={11} strokeWidth={3} /> : null}
             </span>
-            {item.done ? (
-              <span>{item.label}</span>
-            ) : (
-              <Link href={item.href}>
-                {item.label}
-                <ChevronRight size={14} />
-              </Link>
-            )}
+            <div className="ocl__item-body">
+              {item.done ? (
+                <span className="ocl__item-label">{item.label}</span>
+              ) : (
+                <Link href={item.href} className="ocl__item-link">
+                  <span className="ocl__item-label">{item.label}</span>
+                  <ArrowRight size={13} />
+                </Link>
+              )}
+            </div>
           </li>
         ))}
       </ul>
-      <style jsx>{`
-        .onboarding-checklist {
+
+      <style>{`
+        .ocl {
           margin: 0 1.5rem 1rem;
-          padding: 1.25rem 1.5rem;
-          background: linear-gradient(135deg, #eef0ff 0%, #f8fafc 100%);
-          border: 1px solid #dbeafe;
+          background: #ffffff;
+          border: 1px solid #e8ecf0;
           border-radius: 16px;
+          overflow: hidden;
         }
-        .onboarding-checklist__header {
+
+        /* ── Header ─────────────────────────────────── */
+        .ocl__header {
           display: flex;
+          align-items: center;
           justify-content: space-between;
+          padding: 1.1rem 1.25rem 0.75rem;
           gap: 1rem;
-          align-items: flex-start;
         }
-        .onboarding-checklist__eyebrow {
-          font-size: 0.7rem;
+        .ocl__header-left {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+        }
+        .ocl__badge {
+          width: 40px;
+          height: 40px;
+          border-radius: 12px;
+          background: rgba(45,67,232,0.08);
+          border: 1px solid rgba(45,67,232,0.14);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 0.72rem;
           font-weight: 800;
+          color: #2d43e8;
+          flex-shrink: 0;
+        }
+        .ocl__eyebrow {
+          font-size: 0.68rem;
+          font-weight: 700;
           text-transform: uppercase;
           letter-spacing: 0.08em;
           color: #2d43e8;
-          margin: 0 0 0.25rem;
+          margin: 0 0 0.1rem;
         }
-        .onboarding-checklist__title {
+        .ocl__title {
           margin: 0;
-          font-size: 1.05rem;
+          font-size: 0.9rem;
           font-weight: 800;
           color: #0f172a;
+          letter-spacing: -0.01em;
         }
-        .onboarding-checklist__subtitle {
-          margin: 0.35rem 0 0;
-          font-size: 0.82rem;
-          color: #64748b;
-        }
-        .onboarding-checklist__close {
-          border: none;
-          background: white;
-          border-radius: 8px;
+        .ocl__close {
           width: 28px;
           height: 28px;
+          border-radius: 8px;
+          border: 1px solid #e8ecf0;
+          background: #f8fafc;
           display: flex;
           align-items: center;
           justify-content: center;
           cursor: pointer;
-          color: #64748b;
+          color: #94a3b8;
+          flex-shrink: 0;
+          transition: all 0.15s;
         }
-        .onboarding-checklist__bar {
-          height: 6px;
-          background: rgba(255,255,255,0.8);
-          border-radius: 999px;
-          overflow: hidden;
-          margin: 1rem 0;
+        .ocl__close:hover {
+          background: #f1f5f9;
+          color: #475569;
         }
-        .onboarding-checklist__bar-fill {
+
+        /* ── Progress ────────────────────────────────── */
+        .ocl__bar-wrap {
+          height: 3px;
+          background: #f1f5f9;
+          margin: 0 1.25rem;
+        }
+        .ocl__bar-fill {
           height: 100%;
-          background: linear-gradient(90deg, #2d43e8, #6366f1);
+          background: #2d43e8;
           border-radius: 999px;
-          transition: width 0.4s ease;
+          transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
         }
-        .onboarding-checklist__list {
+        .ocl__percent {
+          font-size: 0.7rem;
+          color: #94a3b8;
+          font-weight: 600;
+          margin: 0.4rem 1.25rem 0;
+        }
+
+        /* ── List ────────────────────────────────────── */
+        .ocl__list {
           list-style: none;
-          margin: 0;
+          margin: 0.75rem 0 0;
           padding: 0;
-          display: grid;
-          gap: 0.5rem;
         }
-        .onboarding-checklist__list li {
+        .ocl__item {
           display: flex;
           align-items: center;
-          gap: 0.65rem;
-          font-size: 0.85rem;
+          gap: 0.75rem;
+          padding: 0.6rem 1.25rem;
+          border-top: 1px solid #f8fafc;
+          transition: background 0.12s;
         }
-        .onboarding-checklist__list li.done {
-          color: #64748b;
-          text-decoration: line-through;
+        .ocl__item:hover {
+          background: #fafbff;
         }
-        .onboarding-checklist__list a {
-          display: inline-flex;
-          align-items: center;
-          gap: 0.25rem;
-          color: #0f172a;
-          font-weight: 600;
-          text-decoration: none;
+        .ocl__item--done {
+          opacity: 0.5;
         }
-        .onboarding-checklist__check {
-          width: 18px;
-          height: 18px;
+        .ocl__item--done:hover {
+          background: transparent;
+        }
+
+        /* Circle check */
+        .ocl__circle {
+          width: 20px;
+          height: 20px;
           border-radius: 50%;
-          border: 2px solid #cbd5e1;
-          display: inline-flex;
+          border: 1.5px solid #cbd5e1;
+          display: flex;
           align-items: center;
           justify-content: center;
           flex-shrink: 0;
           background: white;
+          transition: all 0.2s;
         }
-        .onboarding-checklist__list li.done .onboarding-checklist__check {
+        .ocl__circle--done {
           background: #2d43e8;
           border-color: #2d43e8;
           color: white;
         }
+
+        /* Item content */
+        .ocl__item-body {
+          flex: 1;
+          min-width: 0;
+        }
+        .ocl__item-label {
+          font-size: 0.83rem;
+          font-weight: 500;
+          color: #1e293b;
+        }
+        .ocl__item--done .ocl__item-label {
+          text-decoration: line-through;
+          color: #94a3b8;
+        }
+        .ocl__item-link {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 0.5rem;
+          text-decoration: none;
+          width: 100%;
+          color: inherit;
+        }
+        .ocl__item-link .ocl__item-label {
+          font-weight: 600;
+          color: #0f172a;
+        }
+        .ocl__item-link svg {
+          color: #2d43e8;
+          opacity: 0.6;
+          flex-shrink: 0;
+          transition: transform 0.15s;
+        }
+        .ocl__item-link:hover svg {
+          opacity: 1;
+          transform: translateX(2px);
+        }
+
         @media (max-width: 640px) {
-          .onboarding-checklist {
+          .ocl {
             margin: 0 1rem 1rem;
-            padding: 1rem;
           }
         }
       `}</style>

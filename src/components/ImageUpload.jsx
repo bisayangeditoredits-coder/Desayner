@@ -69,16 +69,12 @@ export default function ImageUpload({
         type: 'image/webp',
       });
 
-      const formData = new FormData();
-      formData.append('cover', finalFile, 'cover.webp');
-      formData.append('thumb', finalFile, 'thumb.webp');
-      formData.append('folder', folder);
-
       let res;
       try {
         res = await fetch('/api/upload', {
           method: 'POST',
-          body: formData,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ folder }),
         });
       } catch (err) {
         throw new Error('API fetch failed: ' + err.message);
@@ -87,7 +83,22 @@ export default function ImageUpload({
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Upload to storage failed');
 
-      onUploaded(data.publicUrl);
+      const { coverUploadUrl, thumbUploadUrl, publicUrl } = data;
+
+      await Promise.all([
+        fetch(coverUploadUrl, {
+          method: 'PUT',
+          body: finalFile,
+          headers: { 'Content-Type': 'image/webp' }
+        }).then(r => { if (!r.ok) throw new Error('Cover upload failed'); }),
+        fetch(thumbUploadUrl, {
+          method: 'PUT',
+          body: finalFile,
+          headers: { 'Content-Type': 'image/webp' }
+        }).then(r => { if (!r.ok) throw new Error('Thumb upload failed'); })
+      ]);
+
+      onUploaded(publicUrl);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -102,16 +113,14 @@ export default function ImageUpload({
 
     try {
       const filename = `cropped_${Date.now()}.webp`;
-      const formData = new FormData();
-      formData.append('cover', croppedBlob, 'cropped.webp');
-      formData.append('thumb', croppedBlob, 'cropped_thumb.webp');
-      formData.append('folder', folder);
+      const finalFile = new File([croppedBlob], filename, { type: 'image/webp' });
 
       let res;
       try {
         res = await fetch('/api/upload', {
           method: 'POST',
-          body: formData,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ folder }),
         });
       } catch (err) {
         throw new Error('API fetch failed: ' + err.message);
@@ -120,7 +129,22 @@ export default function ImageUpload({
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Upload to storage failed');
 
-      onUploaded(data.publicUrl);
+      const { coverUploadUrl, thumbUploadUrl, publicUrl } = data;
+
+      await Promise.all([
+        fetch(coverUploadUrl, {
+          method: 'PUT',
+          body: finalFile,
+          headers: { 'Content-Type': 'image/webp' }
+        }).then(r => { if (!r.ok) throw new Error('Cover upload failed'); }),
+        fetch(thumbUploadUrl, {
+          method: 'PUT',
+          body: finalFile,
+          headers: { 'Content-Type': 'image/webp' }
+        }).then(r => { if (!r.ok) throw new Error('Thumb upload failed'); })
+      ]);
+
+      onUploaded(publicUrl);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -145,6 +169,52 @@ export default function ImageUpload({
 
   // ── Already has an image ──────────────────────────────────────────
   if (value) {
+    // Round (avatar) preview
+    if (cropShape === 'round') {
+      return (
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
+          {label && <p style={{ fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#6b6b6b' }}>{label}</p>}
+          <div style={{ position: 'relative', display: 'inline-block' }}>
+            <img
+              src={value}
+              alt="Avatar"
+              onError={(e) => { e.target.style.display = 'none'; }}
+              style={{ width: '80px', height: '80px', borderRadius: '50%', objectFit: 'cover', border: '2px solid #e8e8e8', display: 'block' }}
+            />
+            <button
+              type="button"
+              onClick={onRemove}
+              style={{
+                position: 'absolute', top: '-4px', right: '-4px',
+                background: 'rgba(0,0,0,0.7)', color: 'white', border: 'none',
+                width: '22px', height: '22px', display: 'flex', alignItems: 'center',
+                justifyContent: 'center', cursor: 'pointer', borderRadius: '50%'
+              }}
+            >
+              <X size={12} />
+            </button>
+          </div>
+          <button
+            type="button"
+            onClick={() => inputRef.current?.click()}
+            disabled={uploading}
+            style={{ fontSize: '0.72rem', fontWeight: 600, color: '#2d43e8', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+          >
+            Change photo
+          </button>
+          <input
+            ref={inputRef}
+            type="file"
+            accept={accept}
+            onChange={handleFileChange}
+            style={{ display: 'none' }}
+            disabled={uploading}
+          />
+        </div>
+      );
+    }
+
+    // Rect (banner/cover) preview
     return (
       <div>
         {label && <p style={{ fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#6b6b6b', marginBottom: '0.5rem' }}>{label}</p>}
@@ -152,7 +222,8 @@ export default function ImageUpload({
           <img
             src={value}
             alt="Uploaded"
-            style={{ width: '100%', maxHeight: '320px', objectFit: 'cover', border: '1px solid #e8e8e8', display: 'block', borderRadius: '8px' }}
+            onError={(e) => { e.target.style.opacity = '0.3'; }}
+            style={{ width: '100%', maxHeight: '200px', objectFit: 'cover', border: '1px solid #e8e8e8', display: 'block', borderRadius: '8px' }}
           />
           <button
             type="button"

@@ -249,253 +249,252 @@ function DesignersContent() {
         page === 1 &&
         category === "All" &&
         search === "" && (
-          <section style={{ marginBottom: "1.5rem", paddingTop: "1rem" }}>
+          <div style={{ marginBottom: '1.25rem', overflow: 'hidden' }}>
             <div className="page-content">
-              <div
-                style={{
-                  textAlign: "center",
-                  maxWidth: "700px",
-                  margin: "0 auto 1.5rem",
-                }}
-              >
-                <div
-                  style={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    gap: "0.4rem",
-                    background: "rgba(0,0,0,0.04)",
-                    padding: "0.25rem 0.75rem",
-                    borderRadius: "30px",
-                    fontSize: "0.7rem",
-                    fontWeight: 700,
-                    letterSpacing: "0.5px",
-                    textTransform: "uppercase",
-                    marginBottom: "0.5rem",
-                    color: "#374151",
-                  }}
-                >
-                  <Sparkles size={12} /> Rising Stars
-                </div>
-                <h1
-                  style={{
-                    fontSize: "2rem",
-                    fontWeight: 900,
-                    marginBottom: "0.35rem",
-                    lineHeight: 1.1,
-                    letterSpacing: "-0.02em",
-                    color: "#111827",
-                  }}
-                >
-                  Trending Designers
-                </h1>
-                <p
-                  style={{
-                    fontSize: "0.95rem",
-                    color: "#4b5563",
-                    lineHeight: 1.4,
-                    margin: 0,
-                  }}
-                >
-                  Discover the fastest-growing creative professionals this week.
+
+              {/* ── Section header ── */}
+              <div style={{ marginBottom: '0.75rem' }}>
+                <p style={{ fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#2d43e8', margin: '0 0 0.3rem' }}>
+                  Trending this week
                 </p>
+                <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: '1rem', flexWrap: 'wrap' }}>
+                  <h1 style={{ fontSize: '1.6rem', fontWeight: 900, color: '#0f172a', margin: 0, letterSpacing: '-0.02em', lineHeight: 1.1 }}>
+                    Rising Designers
+                  </h1>
+                  <p style={{ fontSize: '0.85rem', color: '#64748b', margin: 0, lineHeight: 1.4 }}>
+                    The fastest-growing creatives on Desayner right now.
+                  </p>
+                </div>
               </div>
 
-              {/* 4-Column Responsive Grid (Fills container completely) */}
-              <div
-                className="trending-grid"
-                style={{ paddingBottom: "0.5rem" }}
-              >
+              {/* ── 4-column grid ── */}
+              <div className="trending-grid" style={{ paddingBottom: '0.5rem' }}>
                 {displayDesigners.map((creator) => (
-                    <Link
-                    key={creator.id}
-                    href={`/profile/${creator.username}`}
-                    className="featured-card"
-                    style={{
-                      background: "white",
-                      borderRadius: "16px",
-                      overflow: "hidden",
-                      position: "relative",
-                      display: "flex",
-                      flexDirection: "column",
-                      transition: "transform 0.2s ease-out, box-shadow 0.2s ease-out",
-                      boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
-                      cursor: "pointer",
-                      color: "#111827",
-                      textDecoration: "none",
-                      border: "1px solid #f1f5f9",
-                    }}
-                  >
-                    {/* Top Banner Image */}
-                    <div
-                      style={{
-                        position: "relative",
-                        width: "100%",
-                        height: "120px",
-                        background: "#f1f5f9",
-                      }}
-                    >
+                  <div key={creator.id} className="td-card">
+
+                    {/* Cover image */}
+                    <Link href={`/profile/${creator.username}`} className="td-card__cover-link">
                       {creator.banner_url ? (
                         <img
                           src={optimizeImage(creator.banner_url, 800)}
                           alt=""
-                          className="featured-banner-img"
+                          className="td-card__cover-img"
                           loading="lazy"
-                          style={{
-                            width: "100%",
-                            height: "100%",
-                            objectFit: "cover",
-                            transition: "transform 0.3s ease-out",
-                          }}
                         />
                       ) : (
-                        <div style={{ width: '100%', height: '100%', background: 'linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%)' }} />
+                        <div className="td-card__cover-placeholder" />
                       )}
-                      
-                      {/* Top Badge */}
-                      <div
-                        style={{
-                          position: "absolute",
-                          top: "0.75rem",
-                          right: "0.75rem",
-                          background: "rgba(255,255,255,0.9)",
-                          backdropFilter: "blur(4px)",
-                          WebkitBackdropFilter: "blur(4px)",
-                          padding: "0.2rem 0.6rem",
-                          borderRadius: "20px",
-                          color: "#111827",
-                          fontSize: "0.65rem",
-                          fontWeight: 700,
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "0.3rem",
-                          border: "1px solid rgba(255,255,255,0.5)",
-                          zIndex: 2,
-                        }}
-                      >
-                        {creator.is_featured ? (
-                          <><Star size={10} color="#eab308" fill="#eab308" /> Featured</>
-                        ) : (
-                          <><TrendingUp size={10} color="#8b5cf6" /> Rising</>
-                        )}
-                      </div>
-                    </div>
 
-                    {/* Content Section */}
-                    <div style={{ padding: "0 1.25rem 1.25rem", display: "flex", flexDirection: "column", alignItems: "center", flex: 1 }}>
-                      {/* Overlapping Avatar */}
-                      <div style={{ 
-                        marginTop: "-36px", 
-                        marginBottom: "0.75rem", 
-                        border: "4px solid white", 
-                        borderRadius: "50%", 
-                        background: "white",
-                        zIndex: 2 
-                      }}>
-                        <UserAvatar src={creator.avatar_url} name={creator.full_name || creator.username} size={72} />
-                      </div>
+                      {/* Label badge */}
+                      <span className={creator.is_featured ? 'td-card__badge td-card__badge--featured' : 'td-card__badge td-card__badge--rising'}>
+                        {creator.is_featured ? 'Featured' : 'Rising'}
+                      </span>
+                    </Link>
 
-                      <h2
-                        style={{
-                          fontSize: "1.1rem",
-                          fontWeight: 800,
-                          margin: "0 0 0.25rem 0",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          gap: "0.3rem",
-                          color: "#0f172a",
-                          width: "100%",
-                          textAlign: "center"
-                        }}
-                      >
-                        <span style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                          {creator.full_name || creator.username}
-                        </span>
-                        {creator.followers_count > 100 && (
-                           <BadgeCheck size={16} color="#8b5cf6" fill="#f3e8ff" style={{ flexShrink: 0 }} />
-                        )}
-                      </h2>
+                    {/* Body */}
+                    <div className="td-card__body">
+
+                      {/* Avatar row */}
+                      <Link href={`/profile/${creator.username}`} className="td-card__avatar-wrap">
+                        <UserAvatar src={creator.avatar_url} name={creator.full_name || creator.username} size={48} />
+                      </Link>
+
+                      {/* Name */}
+                      <Link href={`/profile/${creator.username}`} className="td-card__name-link">
+                        <span className="td-card__name">{creator.full_name || creator.username}</span>
+                      </Link>
 
                       {/* Bio */}
-                      <p
-                        style={{
-                          fontSize: "0.8rem",
-                          color: "#64748b",
-                          lineHeight: 1.4,
-                          margin: "0 0 1.25rem 0",
-                          display: "-webkit-box",
-                          WebkitLineClamp: 2,
-                          WebkitBoxOrient: "vertical",
-                          overflow: "hidden",
-                          fontWeight: 500,
-                          textAlign: "center",
-                          height: "2.8em"
-                        }}
-                      >
-                        {creator.bio || "New talented creative on Desayner."}
+                      <p className="td-card__bio">
+                        {creator.bio || 'Creative professional on Desayner.'}
                       </p>
 
-                      {/* Footer Stats & Actions */}
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "space-between",
-                          gap: "0.5rem",
-                          width: "100%",
-                          borderTop: "1px solid #f1f5f9",
-                          paddingTop: "1rem",
-                          marginTop: "auto"
-                        }}
-                      >
-                        <div style={{ display: "flex", gap: "1rem" }}>
-                          <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "2px" }}>
-                            <span style={{ fontSize: "0.65rem", color: "#94a3b8", fontWeight: 700, textTransform: "uppercase" }}>Followers</span>
-                            <span style={{ fontSize: "0.85rem", color: "#0f172a", fontWeight: 800 }}>{creator.followers_count || 0}</span>
-                          </div>
-                          <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "2px" }}>
-                            <span style={{ fontSize: "0.65rem", color: "#94a3b8", fontWeight: 700, textTransform: "uppercase" }}>Projects</span>
-                            <span style={{ fontSize: "0.85rem", color: "#0f172a", fontWeight: 800 }}>{creator.projects_count || 0}</span>
-                          </div>
+                      {/* Footer */}
+                      <div className="td-card__footer">
+                        <div className="td-card__stats">
+                          <span className="td-card__stat">
+                            <strong>{creator.followers_count || 0}</strong>
+                            <span>Followers</span>
+                          </span>
+                          <span className="td-card__sep" />
+                          <span className="td-card__stat">
+                            <strong>{creator.projects_count || 0}</strong>
+                            <span>Works</span>
+                          </span>
                         </div>
-
-                        <FollowButton
-                          targetUserId={creator.id}
-                          currentUserId={currentUserId}
-                          compact={true}
-                        />
+                        <FollowButton targetUserId={creator.id} currentUserId={currentUserId} compact={true} />
                       </div>
                     </div>
-                  </Link>
+                  </div>
                 ))}
               </div>
 
-              <style jsx>{`
+              <style>{`
+                /* ── Grid ── */
                 .trending-grid {
                   display: grid;
                   grid-template-columns: repeat(4, 1fr);
-                  gap: 1.25rem;
+                  gap: 1rem;
                 }
-                @media (max-width: 1024px) {
-                  .trending-grid {
-                    grid-template-columns: repeat(2, 1fr);
-                  }
+                @media (max-width: 1024px) { .trending-grid { grid-template-columns: repeat(2, 1fr); } }
+                @media (max-width: 600px)  { .trending-grid { grid-template-columns: 1fr; } }
+
+                /* ── Card ── */
+                .td-card {
+                  background: #fff;
+                  border: 1px solid #e8ecf0;
+                  border-radius: 16px;
+                  overflow: hidden;
+                  display: flex;
+                  flex-direction: column;
+                  transition: box-shadow 0.2s ease, transform 0.2s ease;
                 }
-                @media (max-width: 640px) {
-                  .trending-grid {
-                    grid-template-columns: 1fr;
-                  }
+                .td-card:hover {
+                  box-shadow: 0 12px 32px rgba(45,67,232,0.08);
+                  transform: translateY(-3px);
                 }
-                .featured-card:hover {
-                  transform: translateY(-4px);
-                  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08) !important;
+
+                /* ── Cover ── */
+                .td-card__cover-link {
+                  display: block;
+                  position: relative;
+                  width: 100%;
+                  height: 130px;
+                  overflow: hidden;
+                  flex-shrink: 0;
                 }
-                .featured-card:hover .featured-banner-img {
-                  transform: scale(1.05);
+                .td-card__cover-img {
+                  width: 100%;
+                  height: 100%;
+                  object-fit: cover;
+                  display: block;
+                  transition: transform 0.35s ease;
+                }
+                .td-card:hover .td-card__cover-img { transform: scale(1.04); }
+                .td-card__cover-placeholder {
+                  width: 100%;
+                  height: 100%;
+                  background: linear-gradient(135deg, #e8ecf0 0%, #d1d9e0 100%);
+                }
+
+                /* ── Badge ── */
+                .td-card__badge {
+                  position: absolute;
+                  top: 0.6rem;
+                  right: 0.6rem;
+                  font-size: 0.62rem;
+                  font-weight: 800;
+                  letter-spacing: 0.06em;
+                  text-transform: uppercase;
+                  padding: 0.2rem 0.55rem;
+                  border-radius: 20px;
+                  backdrop-filter: blur(6px);
+                  -webkit-backdrop-filter: blur(6px);
+                  z-index: 2;
+                }
+                .td-card__badge--featured {
+                  background: rgba(255,255,255,0.9);
+                  color: #0f172a;
+                  border: 1px solid rgba(255,255,255,0.6);
+                }
+                .td-card__badge--rising {
+                  background: rgba(45,67,232,0.12);
+                  color: #2d43e8;
+                  border: 1px solid rgba(45,67,232,0.2);
+                }
+
+                /* ── Body ── */
+                .td-card__body {
+                  padding: 0 1rem 1rem;
+                  display: flex;
+                  flex-direction: column;
+                  flex: 1;
+                }
+
+                /* Avatar floats over cover */
+                .td-card__avatar-wrap {
+                  display: inline-block;
+                  margin-top: -24px;
+                  margin-bottom: 0.6rem;
+                  border-radius: 50%;
+                  border: 3px solid #fff;
+                  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                  line-height: 0;
+                  position: relative;
+                  z-index: 3;
+                }
+
+                /* Name */
+                .td-card__name-link { text-decoration: none; }
+                .td-card__name {
+                  display: block;
+                  font-size: 0.9rem;
+                  font-weight: 800;
+                  color: #0f172a;
+                  letter-spacing: -0.01em;
+                  white-space: nowrap;
+                  overflow: hidden;
+                  text-overflow: ellipsis;
+                }
+                .td-card__name-link:hover .td-card__name { color: #2d43e8; }
+
+                /* Bio */
+                .td-card__bio {
+                  font-size: 0.78rem;
+                  color: #64748b;
+                  line-height: 1.45;
+                  margin: 0.3rem 0 0.9rem;
+                  display: -webkit-box;
+                  -webkit-line-clamp: 2;
+                  -webkit-box-orient: vertical;
+                  overflow: hidden;
+                  flex: 1;
+                }
+
+                /* Footer */
+                .td-card__footer {
+                  display: flex;
+                  align-items: center;
+                  justify-content: space-between;
+                  gap: 0.5rem;
+                  padding-top: 0.75rem;
+                  border-top: 1px solid #f1f5f9;
+                  margin-top: auto;
+                }
+                .td-card__stats {
+                  display: flex;
+                  align-items: center;
+                  gap: 0.5rem;
+                }
+                .td-card__stat {
+                  display: flex;
+                  flex-direction: column;
+                  align-items: flex-start;
+                  gap: 1px;
+                }
+                .td-card__stat strong {
+                  font-size: 0.85rem;
+                  font-weight: 800;
+                  color: #0f172a;
+                  line-height: 1;
+                }
+                .td-card__stat span {
+                  font-size: 0.62rem;
+                  font-weight: 600;
+                  color: #94a3b8;
+                  text-transform: uppercase;
+                  letter-spacing: 0.04em;
+                }
+                .td-card__sep {
+                  width: 1px;
+                  height: 24px;
+                  background: #e8ecf0;
+                  flex-shrink: 0;
                 }
               `}</style>
             </div>
-          </section>
+          </div>
+
         )}
 
       <div className="page-content">

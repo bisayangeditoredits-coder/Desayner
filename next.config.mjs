@@ -149,8 +149,9 @@ const nextConfig = {
               "img-src 'self' data: blob: https://*.r2.dev https://images.unsplash.com https://*.unsplash.com https://*.googleusercontent.com https://avatars.githubusercontent.com https://*.supabase.co https://res.cloudinary.com https://base44.app https://jobicy.com https://www.google.com https://logo.clearbit.com https://api.dicebear.com https://cdn.pixabay.com https://pixabay.com https://*.clarity.ms https://c.bing.com https://wsrv.nl",
               // Media: self + R2 CDN (project videos)
               "media-src 'self' blob: https://*.r2.dev",
-              // API + WebSocket connections + Microsoft Clarity
-              "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.upstash.io https://api.unsplash.com https://api.sentry.io https://js.stripe.com https://*.r2.dev https://*.clarity.ms",
+              // API + WebSocket connections + Microsoft Clarity + Image CDNs (for PWA Service Worker caching)
+              // R2 presigned PUT URLs use <accountid>.r2.cloudflarestorage.com — *.r2.cloudflarestorage.com matches that pattern
+              "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.upstash.io https://api.unsplash.com https://api.sentry.io https://js.stripe.com https://*.r2.dev https://*.r2.cloudflarestorage.com https://*.clarity.ms https://*.googleusercontent.com https://avatars.githubusercontent.com https://res.cloudinary.com https://base44.app https://jobicy.com https://www.google.com https://logo.clearbit.com https://api.dicebear.com https://cdn.pixabay.com https://pixabay.com https://c.bing.com https://wsrv.nl https://images.unsplash.com https://*.unsplash.com",
               // Frames: Stripe embedded UIs + Cloudflare Turnstile
               "frame-src https://js.stripe.com https://hooks.stripe.com https://challenges.cloudflare.com",
               // Workers: Next.js service worker

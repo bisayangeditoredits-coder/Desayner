@@ -15,7 +15,6 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
-import { v4 as uuidv4 } from 'uuid';
 import { redis } from '@/lib/redis';
 import { Ratelimit } from '@upstash/ratelimit';
 import * as Sentry from '@sentry/nextjs';
@@ -70,12 +69,17 @@ export async function POST(request) {
     const BUCKET = process.env.R2_BUCKET_NAME;
 
     // ── Parse & validate body ───────────────────────────────────────────────
-    const body = await request.json();
+    let body;
+    try {
+      body = await request.json();
+    } catch (parseError) {
+      return NextResponse.json({ error: 'Invalid JSON payload' }, { status: 400 });
+    }
     const folder = body.folder || 'uploads';
 
     // ── Generate unique keys ────────────────────────────────────────────────
-    const uid          = uuidv4();
-    const thumbUid     = uuidv4();
+    const uid          = crypto.randomUUID();
+    const thumbUid     = crypto.randomUUID();
     const key          = `${folder}/${user.id}/${uid}.webp`;
     const thumbnailKey = `${folder}/thumbs/${user.id}/${thumbUid}.webp`;
 

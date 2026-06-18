@@ -1,11 +1,11 @@
 'use client';
-
-import { useState, useEffect, useMemo} from 'react';
+import { useState, useEffect, useMemo, useRef, useCallback, useId } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import ImageUpload from '@/components/ImageUpload';
+import ImageCropperModal from '@/components/ImageCropperModal';
 import UserAvatar from '@/components/UserAvatar';
+import imageCompression from 'browser-image-compression';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Loader2, ArrowRight, User } from 'lucide-react';
+import { Loader2, ArrowRight, Camera, X } from 'lucide-react';
 import { CREATIVE_TOOLS } from '@/lib/constants';
 import { saveProfileAdmin } from '@/app/actions/onboardingActions';
 
@@ -196,34 +196,20 @@ export default function OnboardingModal({ user, onComplete }) {
               transition={{ duration: 0.2 }}
               style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}
             >
-              {/* Avatar Upload */}
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
-                <div style={{ width: '80px', height: '80px', borderRadius: '50%', overflow: 'hidden', border: '2px solid #f1f5f9' }}>
-                  <UserAvatar src={avatarUrl} name={fullName || username} size={80} />
-                </div>
-                <ImageUpload 
-                  label="Upload Avatar" 
-                  folder="avatars"
-                  value={avatarUrl}
-                  onUploaded={url => setAvatarUrl(url)}
-                  onRemove={() => setAvatarUrl('')}
-                  cropAspect={1}
-                  cropShape="round"
-                />
-              </div>
+              {/* ── Avatar Upload ────────────────────────────────── */}
+              <AvatarUploadBlock
+                avatarUrl={avatarUrl}
+                name={fullName || username}
+                onUploaded={setAvatarUrl}
+                onRemove={() => setAvatarUrl('')}
+              />
 
-              {/* Cover Upload */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                <label style={{ fontSize: '0.8rem', fontWeight: 700, color: '#334155' }}>Cover Photo</label>
-                <ImageUpload 
-                  label="Upload Cover" 
-                  folder="covers"
-                  value={coverUrl}
-                  onUploaded={url => setCoverUrl(url)}
-                  onRemove={() => setCoverUrl('')}
-                  cropAspect={16/5}
-                />
-              </div>
+              {/* ── Cover Upload ─────────────────────────────────── */}
+              <CoverUploadBlock
+                coverUrl={coverUrl}
+                onUploaded={setCoverUrl}
+                onRemove={() => setCoverUrl('')}
+              />
 
               <div>
                 <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, color: '#334155', marginBottom: '0.4rem' }}>Full Name</label>
@@ -349,5 +335,146 @@ export default function OnboardingModal({ user, onComplete }) {
       </div>
       <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </motion.div>
+  );
+}
+
+// ─── AvatarUploadBlock ──────────────────────────────────────────────────────
+function AvatarUploadBlock({ avatarUrl, name, onUploaded, onRemove }) {
+  const [cropSrc, setCropSrc] = useState('');
+  const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState('');
+  const [hover, setHover] = useState(false);
+  const inputRef = useRef(null);
+
+  async function handleFile(file) {
+    const reader = new FileReader();
+    reader.onload = () => setCropSrc(reader.result);
+    reader.readAsDataURL(file);
+  }
+
+  async function handleCropSave(blob) {
+    setCropSrc('');
+    setUploading(true);
+    setError('');
+    try {
+      const compressed = await imageCompression(new File([blob], 'avatar.webp', { type: 'image/webp' }), { maxSizeMB: 0.5, maxWidthOrHeight: 400, useWebWorker: true });
+      const file = new File([compressed], 'avatar.webp', { type: 'image/webp' });
+      const res = await fetch('/api/upload', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ folder: 'avatars' }) });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      await fetch(data.coverUploadUrl, { method: 'PUT', body: file, headers: { 'Content-Type': 'image/webp' } });
+      onUploaded(data.publicUrl);
+    } catch (e) { setError(e.message); }
+    finally { setUploading(false); }
+  }
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
+      <p style={{ fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#94a3b8', margin: 0 }}>Profile Photo</p>
+      <div
+        style={{ position: 'relative', display: 'inline-block', cursor: 'pointer' }}
+        onMouseEnter={() => setHover(true)}
+        onMouseLeave={() => setHover(false)}
+        onClick={() => inputRef.current?.click()}
+      >
+        <div style={{ width: '88px', height: '88px', borderRadius: '50%', overflow: 'hidden', border: '3px solid #e8ecf0', background: '#f1f5f9' }}>
+          <UserAvatar src={avatarUrl || null} name={name} size={88} />
+        </div>
+        <div style={{
+          position: 'absolute', inset: 0, borderRadius: '50%',
+          background: 'rgba(15,23,42,0.55)',
+          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '3px',
+          opacity: (hover || uploading || !avatarUrl) ? 1 : 0,
+          transition: 'opacity 0.18s', pointerEvents: 'none',
+        }}>
+          {uploading ? <Loader2 size={20} color="white" style={{ animation: 'spin 1s linear infinite' }} /> : <Camera size={18} color="white" />}
+          <span style={{ fontSize: '0.55rem', fontWeight: 700, color: 'white', letterSpacing: '0.04em', textTransform: 'uppercase' }}>
+            {avatarUrl ? 'Change' : 'Upload'}
+          </span>
+        </div>
+        {avatarUrl && (
+          <button type="button" onClick={e => { e.stopPropagation(); onRemove(); }}
+            style={{ position: 'absolute', top: 0, right: 0, width: '22px', height: '22px', borderRadius: '50%', background: 'rgba(0,0,0,0.7)', color: 'white', border: '2px solid white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+            <X size={10} />
+          </button>
+        )}
+      </div>
+      {error && <p style={{ fontSize: '0.7rem', color: '#ef4444', margin: 0 }}>{error}</p>}
+      <input ref={inputRef} type="file" accept="image/*" style={{ display: 'none' }}
+        onChange={e => { const f = e.target.files?.[0]; if (f) handleFile(f); e.target.value = ''; }} />
+      {cropSrc && <ImageCropperModal imageSrc={cropSrc} aspect={1} cropShape="round" onClose={() => setCropSrc('')} onCropSave={handleCropSave} />}
+    </div>
+  );
+}
+
+// ─── CoverUploadBlock ───────────────────────────────────────────────────────
+function CoverUploadBlock({ coverUrl, onUploaded, onRemove }) {
+  const [cropSrc, setCropSrc] = useState('');
+  const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState('');
+  const [hover, setHover] = useState(false);
+  const inputRef = useRef(null);
+
+  async function handleFile(file) {
+    const reader = new FileReader();
+    reader.onload = () => setCropSrc(reader.result);
+    reader.readAsDataURL(file);
+  }
+
+  async function handleCropSave(blob) {
+    setCropSrc('');
+    setUploading(true);
+    setError('');
+    try {
+      const compressed = await imageCompression(new File([blob], 'cover.webp', { type: 'image/webp' }), { maxSizeMB: 1, maxWidthOrHeight: 1920, useWebWorker: true });
+      const file = new File([compressed], 'cover.webp', { type: 'image/webp' });
+      const res = await fetch('/api/upload', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ folder: 'covers' }) });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      await fetch(data.coverUploadUrl, { method: 'PUT', body: file, headers: { 'Content-Type': 'image/webp' } });
+      onUploaded(data.publicUrl);
+    } catch (e) { setError(e.message); }
+    finally { setUploading(false); }
+  }
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+      <p style={{ fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#94a3b8', margin: 0 }}>Cover Photo</p>
+      <div
+        style={{ position: 'relative', width: '100%', borderRadius: '12px', overflow: 'hidden', cursor: 'pointer', aspectRatio: '16/5', border: coverUrl ? 'none' : '1.5px dashed #cbd5e1', background: coverUrl ? 'transparent' : '#f8fafc' }}
+        onMouseEnter={() => setHover(true)}
+        onMouseLeave={() => setHover(false)}
+        onClick={() => inputRef.current?.click()}
+      >
+        {coverUrl ? (
+          <img src={coverUrl} alt="Cover" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+        ) : (
+          <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+            <Camera size={22} color="#94a3b8" />
+            <span style={{ fontSize: '0.78rem', fontWeight: 600, color: '#64748b' }}>Click to upload cover</span>
+            <span style={{ fontSize: '0.68rem', color: '#94a3b8' }}>Recommended: 1920 × 1080 (16:9)</span>
+          </div>
+        )}
+        <div style={{
+          position: 'absolute', inset: 0, background: 'rgba(15,23,42,0.5)',
+          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '6px',
+          opacity: coverUrl && (hover || uploading) ? 1 : 0,
+          transition: 'opacity 0.18s', pointerEvents: 'none',
+        }}>
+          {uploading ? <Loader2 size={24} color="white" style={{ animation: 'spin 1s linear infinite' }} /> : <Camera size={22} color="white" />}
+          <span style={{ fontSize: '0.72rem', fontWeight: 700, color: 'white', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Change Cover</span>
+        </div>
+        {coverUrl && (
+          <button type="button" onClick={e => { e.stopPropagation(); onRemove(); }}
+            style={{ position: 'absolute', top: '8px', right: '8px', width: '26px', height: '26px', borderRadius: '50%', background: 'rgba(0,0,0,0.65)', color: 'white', border: '2px solid white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+            <X size={11} />
+          </button>
+        )}
+      </div>
+      {error && <p style={{ fontSize: '0.7rem', color: '#ef4444', margin: 0 }}>{error}</p>}
+      <input ref={inputRef} type="file" accept="image/*" style={{ display: 'none' }}
+        onChange={e => { const f = e.target.files?.[0]; if (f) handleFile(f); e.target.value = ''; }} />
+      {cropSrc && <ImageCropperModal imageSrc={cropSrc} aspect={16/5} cropShape="rect" onClose={() => setCropSrc('')} onCropSave={handleCropSave} />}
+    </div>
   );
 }

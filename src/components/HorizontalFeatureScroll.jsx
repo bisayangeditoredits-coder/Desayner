@@ -87,7 +87,7 @@ export default function HorizontalFeatureScroll() {
   );
 
   return (
-    <div style={{ marginBottom: '3rem', overflow: 'hidden' }}>
+    <div style={{ marginBottom: '1.25rem', overflow: 'hidden' }}>
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 1.5rem', marginBottom: '1.25rem', textAlign: 'center' }}>
         <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.02em' }}>
           Everything You Need to Succeed
