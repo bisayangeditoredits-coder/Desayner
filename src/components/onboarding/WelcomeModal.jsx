@@ -1,7 +1,8 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
-import Image from 'next/image';
+// next/image removed — WelcomeModal uses a local static JPEG that doesn't need
+// Vercel's server-side image optimization (was consuming the 5K/month limit).
 
 export default function WelcomeModal() {
   const [isOpen, setIsOpen] = useState(false);
@@ -122,7 +123,7 @@ export default function WelcomeModal() {
         {/* Left Side: Text Content */}
         <div className="welcome-modal-left">
           <div style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'center' }}>
-            <img src="/desayner-logo-whiteversiom.png" alt="Desayner" style={{ width: '180px', height: 'auto' }} />
+            <img src="/desayner-logo-white.png" alt="Desayner" style={{ width: '180px', height: 'auto' }} />
           </div>
 
           <h2 style={{ fontSize: '2.5rem', fontWeight: 900, margin: '0 0 1rem 0', lineHeight: 1.1 }}>
@@ -161,15 +162,19 @@ export default function WelcomeModal() {
           <button className="welcome-modal-close" onClick={closeModal} aria-label="Close modal">
             <X size={18} color="#231f20" />
           </button>
-          <Image 
-            src="/welcome-image.jpeg" 
-            alt="Designers collaborating" 
-            fill
-            priority
-            sizes="(max-width: 768px) 0vw, 450px"
-            style={{ 
+          {/* Plain <img> — eliminates Vercel Image Optimization transformation cost.
+               This is a local static JPEG served from /public; no server-side
+               resizing needed since the container is already sized correctly. */}
+          <img
+            src="/welcome-image.jpeg"
+            alt="Designers collaborating"
+            style={{
+              position: 'absolute',
+              inset: 0,
+              width: '100%',
+              height: '100%',
               objectFit: 'cover',
-              objectPosition: 'right center'
+              objectPosition: 'right center',
             }}
           />
         </div>

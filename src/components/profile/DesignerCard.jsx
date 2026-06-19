@@ -282,6 +282,7 @@ export default function DesignerCard({ designer, currentUserId }) {
                   src={optimizeImage(proj.thumbnail_url || proj.cover_url, 600)}
                   alt={proj.title || ""}
                   loading="lazy"
+                  decoding="async"
                   className="img-fade-in"
                   onLoad={(e) => e.currentTarget.classList.add("loaded")}
                   onMouseOver={(e) => {

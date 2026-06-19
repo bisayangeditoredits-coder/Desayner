@@ -70,7 +70,18 @@ export default function Dashboard() {
     persistSize: true,
   });
 
-  const projects = useMemo(() => data || [], [data]);
+  // Flatten pages and deduplicate by ID.
+  // When a new project is published between page fetches the SQL OFFSET shifts,
+  // causing the same row to appear on two consecutive pages → duplicate React keys.
+  const projects = useMemo(() => {
+    if (!data) return [];
+    const seen = new Set();
+    return data.flat().filter((p) => {
+      if (seen.has(p.id)) return false;
+      seen.add(p.id);
+      return true;
+    });
+  }, [data]);
   const isLoadingInitialData = !data && !error;
   const isLoadingMore = isLoadingInitialData || (size > 0 && data && typeof data[size - 1] === "undefined");
   const isEmpty = data?.[0]?.length === 0;
@@ -80,8 +91,7 @@ export default function Dashboard() {
   useEffect(() => {
     if (!currentUserId || !projects.length) return;
 
-    const allProjects = projects.flat();
-    const missingIds = allProjects
+    const missingIds = projects
       .map(p => p.id)
       .filter(id => interactions[id] === undefined);
 
@@ -314,7 +324,7 @@ export default function Dashboard() {
         ) : (
           <>
             <div className="projects-masonry">
-              {projects.flat().map((project, index, arr) => {
+              {projects.map((project, index, arr) => {
                 const isLast = index === arr.length - 1;
                 const interact = interactions[project.id] || {};
                 return (

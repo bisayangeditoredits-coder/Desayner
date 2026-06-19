@@ -16,23 +16,35 @@ const ratelimit = new Ratelimit({
   prefix: 'rl:proxy-image',
 });
 
-// Hostname allowlist — mirrors next.config.mjs remotePatterns
-const ALLOWED_HOST_PATTERNS = [
-  /^.+\.r2\.dev$/i,
-  /^.+\.unsplash\.com$/i,
+// ── REDIRECT-SAFE origins ─────────────────────────────────────────────────────
+// These CDNs serve images publicly without hotlink blocking.
+// We issue a 302 redirect so the browser fetches directly → zero Vercel CPU/memory.
+// This is the primary fix for Vercel Fluid Active CPU exhaustion.
+const REDIRECT_SAFE_PATTERNS = [
+  /^.+\.r2\.dev$/i,                       // Cloudflare R2 (our main CDN)
+  /^.+\.supabase\.co$/i,                   // Supabase Storage
+  /^.+\.googleusercontent\.com$/i,          // Google avatars
+  /^avatars\.githubusercontent\.com$/i,     // GitHub avatars
+  /^res\.cloudinary\.com$/i,               // Cloudinary
+  /^.+\.unsplash\.com$/i,                  // Unsplash Imgix
   /^images\.unsplash\.com$/i,
-  /^.+\.supabase\.co$/i,
-  /^.+\.googleusercontent\.com$/i,
-  /^avatars\.githubusercontent\.com$/i,
-  /^base44\.app$/i,
-  /^res\.cloudinary\.com$/i,
-  /^cdn\.pixabay\.com$/i,
+  /^wsrv\.nl$/i,                           // wsrv.nl image CDN
+  /^cdn\.pixabay\.com$/i,                  // Pixabay
   /^pixabay\.com$/i,
-  /^wsrv\.nl$/i,
 ];
 
-function isAllowedHost(hostname) {
-  return ALLOWED_HOST_PATTERNS.some((pattern) => pattern.test(hostname));
+// ── PROXY-REQUIRED origins ────────────────────────────────────────────────────
+// These origins BLOCK direct browser hotlinks and MUST be buffered through Vercel.
+const PROXY_REQUIRED_PATTERNS = [
+  /^base44\.app$/i,  // Legacy image host — blocks hotlinks, requires server-side fetch
+];
+
+function isRedirectSafe(hostname) {
+  return REDIRECT_SAFE_PATTERNS.some((p) => p.test(hostname));
+}
+
+function isProxyRequired(hostname) {
+  return PROXY_REQUIRED_PATTERNS.some((p) => p.test(hostname));
 }
 
 // A simple placeholder SVG shown only when an image truly cannot be fetched.
@@ -88,7 +100,19 @@ export async function GET(request) {
       return getFallbackResponse();
     }
 
-    if (!isAllowedHost(parsedUrl.hostname)) {
+    const { hostname } = parsedUrl;
+
+    // ── Fast path: redirect-safe CDN origins ──────────────────────────────────
+    // Cost: ~0 Vercel CPU. The browser fetches directly from the CDN.
+    // This eliminates the vast majority of serverless function invocations and
+    // is the primary fix for the "Fluid Active CPU exceeded" Vercel resource alert.
+    if (isRedirectSafe(hostname)) {
+      return Response.redirect(url, 302);
+    }
+
+    // ── Slow path: origins that block hotlinks must be buffered ───────────────
+    if (!isProxyRequired(hostname)) {
+      // Unknown origin — refuse rather than proxy arbitrary URLs
       return getFallbackResponse();
     }
 
@@ -110,7 +134,7 @@ export async function GET(request) {
 
     const contentType = response.headers.get('content-type') || 'image/jpeg';
 
-    // Buffer the response instead of streaming. Vercel Node.js Serverless 
+    // Buffer the response instead of streaming. Vercel Node.js Serverless
     // functions notoriously drop ReadableStreams from fetch() prematurely,
     // causing 500/504 errors on production. Buffering guarantees delivery.
     const buffer = await response.arrayBuffer();

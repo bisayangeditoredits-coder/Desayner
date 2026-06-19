@@ -1,7 +1,10 @@
 'use client';
 
-import React, { useRef, useEffect, useState } from 'react';
-import Image from 'next/image';
+import React, { useRef } from 'react';
+// next/image removed — ToolsMarquee displays 12 tool icons duplicated for seamless
+// scrolling (24 <Image> nodes total). Each visit triggered 24 Vercel Image Optimization
+// transformation slots. These are small local PNGs (36×36px) that need zero server-side
+// resizing — a plain <img> is faster and costs nothing.
 import './ToolsMarquee.css';
 
 const tools = [
@@ -38,11 +41,13 @@ export default function ToolsMarquee() {
         <div className="marquee-content-group">
           {duplicatedTools.map((img, i) => (
             <div key={`g1-${i}`} className="tool-icon-wrapper" title={img.replace('.png', '')}>
-              <Image
+              <img
                 src={`/PNGs/${img}`}
                 alt={img.replace('.png', '')}
                 width={36}
                 height={36}
+                loading="lazy"
+                decoding="async"
                 className="tool-icon"
               />
             </div>
@@ -51,11 +56,13 @@ export default function ToolsMarquee() {
         <div className="marquee-content-group" aria-hidden="true">
           {duplicatedTools.map((img, i) => (
             <div key={`g2-${i}`} className="tool-icon-wrapper" title={img.replace('.png', '')}>
-              <Image
+              <img
                 src={`/PNGs/${img}`}
                 alt={img.replace('.png', '')}
                 width={36}
                 height={36}
+                loading="lazy"
+                decoding="async"
                 className="tool-icon"
               />
             </div>

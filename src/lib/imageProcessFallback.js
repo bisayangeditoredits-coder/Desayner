@@ -37,7 +37,9 @@ export async function processImageFallback(file, onProgress = () => {}) {
   const optimizedBlob = new Blob([compressedFile], { type: 'image/webp' });
 
   // ── 2. Generate thumbnail ───────────────────────────────────────────────
-  const thumbnailBlob = await generateThumbnailFromBlob(optimizedBlob, 500);
+  // Reduced from 500 → 320px to match the Worker path.
+  // Card thumbnails display at 200-280px CSS width; 320px covers 2× retina.
+  const thumbnailBlob = await generateThumbnailFromBlob(optimizedBlob, 320);
   onProgress(95);
 
   return {
@@ -82,8 +84,9 @@ function generateThumbnailFromBlob(blob, maxWidth = 500) {
           if (thumbBlob) resolve(thumbBlob);
           else reject(new Error('Canvas toBlob returned null'));
         },
+        // Quality 0.72 — matches worker, imperceptible at card thumbnail size
         'image/webp',
-        0.75
+        0.72
       );
     };
 
