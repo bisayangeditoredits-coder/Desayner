@@ -3,7 +3,6 @@ import { X, Send, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
 import { Turnstile } from '@marsidev/react-turnstile';
-import '../app/App.css'; // Adjust based on your setup
 
 export default function HireMeModal({ isOpen, onClose, targetUserId, targetUserName }) {
   const [loading, setLoading] = useState(false);
