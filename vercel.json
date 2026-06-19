@@ -3,10 +3,6 @@
     {
       "path": "/api/cron/portfolio-nudge",
       "schedule": "0 10 * * *"
-    },
-    {
-      "path": "/api/cron/update-trending",
-      "schedule": "*/30 * * * *"
     }
   ]
 }

@@ -140,6 +140,12 @@ export default function Header() {
   async function toggleNotifs() {
     if (!showNotifs) {
       setShowNotifs(true);
+      
+      // Cache check: skip DB fetch if we already loaded them and have no new unread alerts
+      if (notifications.length > 0 && unreadCount === 0) {
+        return;
+      }
+      
       setNotifsLoading(true);
       const { data } = await supabase
         .from('notifications')

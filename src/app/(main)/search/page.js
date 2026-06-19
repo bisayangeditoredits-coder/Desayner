@@ -150,6 +150,28 @@ function SearchResults() {
     };
   }, [query, tab, supabase]);
 
+  // ── Infinite Scroll Observer ─────────────────────────────────────────────
+  const loadMoreRef = useRef(null);
+  
+  useEffect(() => {
+    if (tab !== 'projects' || !hasMore || loadingProjects) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          setPage(p => p + 1);
+        }
+      },
+      { threshold: 0.1, rootMargin: '400px' }
+    );
+
+    if (loadMoreRef.current) {
+      observer.observe(loadMoreRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, [tab, hasMore, loadingProjects]);
+
   const loading = tab === 'projects' ? loadingProjects : loadingDesigners;
 
   return (
@@ -256,10 +278,12 @@ function SearchResults() {
                   {projects.map(p => <ProjectCard key={p.id} project={p} currentUserId={currentUserId} />)}
                 </div>
                 {hasMore && (
-                  <div style={{ textAlign: 'center', marginTop: '1.5rem' }}>
-                    <button onClick={() => setPage(p => p + 1)} disabled={loadingProjects} className="btn btn-outline" style={{ padding: '0.65rem 2rem', fontSize: '0.875rem' }}>
-                      {loadingProjects ? 'Loading...' : 'Load more'}
-                    </button>
+                  <div ref={loadMoreRef} style={{ textAlign: 'center', marginTop: '1.5rem', paddingBottom: '2rem' }}>
+                    {loadingProjects && (
+                      <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', color: '#6e6d7a', fontWeight: 600 }}>
+                        Loading more projects...
+                      </div>
+                    )}
                   </div>
                 )}
               </>

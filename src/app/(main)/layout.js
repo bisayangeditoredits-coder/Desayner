@@ -11,6 +11,8 @@ const OnboardingChecklist = dynamic(() => import('@/components/onboarding/Onboar
 const ToastContainer = dynamic(() => import('@/components/ui/ToastContainer'));
 import AnnouncementBar from '@/components/layout/AnnouncementBar';
 
+import ErrorBoundary from '@/components/ui/ErrorBoundary';
+
 export default function MainLayout({ children, modal }) {
   return (
     <NotificationsProvider>
@@ -18,13 +20,19 @@ export default function MainLayout({ children, modal }) {
         <ProfileHydrator />
         <OnboardingGuard>
           <div className="app-layout">
-            <Sidebar />
+            <ErrorBoundary fallback={<div className="sidebar" style={{ padding: '2rem' }}>Sidebar failed to load.</div>}>
+              <Sidebar />
+            </ErrorBoundary>
             <main className="main-content" style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
               <AnnouncementBar />
-              <Header />
+              <ErrorBoundary fallback={<div style={{ padding: '1rem', borderBottom: '1px solid #e8e8e8' }}>Header failed to load.</div>}>
+                <Header />
+              </ErrorBoundary>
               <OnboardingChecklist />
               <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                {children}
+                <ErrorBoundary>
+                  {children}
+                </ErrorBoundary>
               </div>
             </main>
             <MobileBottomNav />
