@@ -6,9 +6,12 @@ import { redis } from '@/lib/redis';
 
 export const dynamic = 'force-dynamic';
 
+// Raised from 60 → 300 req/min: a single /designers page can trigger 80+ proxy
+// requests in one load. At 60 req/min the limiter was silently replacing real
+// images with a blank SVG placeholder, making user profiles appear "invisible".
 const ratelimit = new Ratelimit({
   redis,
-  limiter: Ratelimit.slidingWindow(60, '60 s'),
+  limiter: Ratelimit.slidingWindow(300, '60 s'),
   analytics: false,
   prefix: 'rl:proxy-image',
 });
@@ -32,7 +35,7 @@ function isAllowedHost(hostname) {
   return ALLOWED_HOST_PATTERNS.some((pattern) => pattern.test(hostname));
 }
 
-// A simple placeholder SVG that looks like a blank document/logo to avoid red 404 console errors
+// A simple placeholder SVG shown only when an image truly cannot be fetched.
 const FALLBACK_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128"><rect width="128" height="128" fill="#f8fafc"/><path d="M44 38h40v10H44zm0 20h40v10H44zm0 20h24v10H44z" fill="#cbd5e1"/></svg>`;
 
 function getFallbackResponse() {
@@ -53,9 +56,21 @@ export async function GET(request) {
       || request.headers.get('x-real-ip')
       || 'unknown';
 
-    const { success } = await ratelimit.limit(`ip:${ip}`);
+    const { success, reset } = await ratelimit.limit(`ip:${ip}`);
     if (!success) {
-      return getFallbackResponse();
+      // Log so this is visible in Vercel function logs — previously this was silent,
+      // making it look like images were missing/broken instead of rate-limited.
+      const retryAfterSeconds = Math.ceil((reset - Date.now()) / 1000);
+      console.warn(`[proxy-image] Rate limit exceeded for IP ${ip}. Retry after ${retryAfterSeconds}s.`);
+      return new Response(FALLBACK_SVG, {
+        status: 429,
+        headers: {
+          'Content-Type': 'image/svg+xml',
+          'Retry-After': String(retryAfterSeconds),
+          'Cache-Control': 'no-store',
+          'X-Rate-Limited': 'true',
+        },
+      });
     }
 
     const { searchParams } = new URL(request.url);

@@ -69,14 +69,14 @@ export async function GET(request) {
 
           const risingProjectsByUser = {};
           (risingProjects || []).forEach(p => {
-            if (!risingProjectsByUser[p.user_id]) {
-              risingProjectsByUser[p.user_id] = p;
-            }
+            if (!risingProjectsByUser[p.user_id]) risingProjectsByUser[p.user_id] = [];
+            // Collect up to 4 projects per rising designer (DesignerCard grid shows max 4)
+            if (risingProjectsByUser[p.user_id].length < 4) risingProjectsByUser[p.user_id].push(p);
           });
 
           payload.risingDesigners = risingData.map(creator => ({
             ...creator,
-            sampleProjects: risingProjectsByUser[creator.id] ? [risingProjectsByUser[creator.id]] : [],
+            sampleProjects: risingProjectsByUser[creator.id] || [],
           }));
         } else {
           payload.risingDesigners = [];

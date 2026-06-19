@@ -124,7 +124,11 @@ export async function GET(request, { params }) {
       if (hasMore) projects = projects.slice(0, limit);
 
       try {
-        await redis.setex(cacheKey, 300, { profile, projects, hasMore });
+        // TTL reduced from 300s → 60s: the settings page already calls /api/cache/clear
+        // on every profile save, but if that request fails (network error, etc.) the
+        // stale avatar_url / cover_url would serve for up to 5 minutes, making users
+        // think their profile was "broken". 60s is a safe fallback TTL.
+        await redis.setex(cacheKey, 60, { profile, projects, hasMore });
       } catch (err) {
         console.error('[Redis Cache SET Error]', err);
       }
