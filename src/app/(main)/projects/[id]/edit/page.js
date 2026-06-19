@@ -2,8 +2,8 @@
 import { useState, useEffect, useMemo} from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
-import ImageUpload from '@/components/ImageUpload';
-import TagPill from '@/components/TagPill';
+import ImageUpload from '@/components/misc/ImageUpload';
+import TagPill from '@/components/ui/TagPill';
 import Link from 'next/link';
 import { X, Plus, ArrowLeft } from 'lucide-react';
 import { CREATIVE_TOOLS } from '@/lib/constants';

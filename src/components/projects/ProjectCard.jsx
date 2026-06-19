@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Heart, Bookmark, Eye } from 'lucide-react';
-import UserAvatar from './UserAvatar';
+import UserAvatar from '@/components/ui/UserAvatar';
 import { saveProjectModalReturn } from '@/lib/projectModalNav';
 
 import dynamic from 'next/dynamic';

@@ -1,4 +1,4 @@
-import ProjectCardSkeleton from '@/components/ProjectCardSkeleton';
+import ProjectCardSkeleton from '@/components/projects/ProjectCardSkeleton';
 
 export default function SearchLoading() {
   return (

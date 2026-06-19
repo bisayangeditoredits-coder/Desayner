@@ -8,7 +8,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import "./messaging.css";
 import "./App.css";
-import PWAInstaller from "@/components/PWAInstaller";
+import PWAInstaller from "@/components/layout/PWAInstaller";
 import Script from "next/script";
 
 // ── Existing fonts ────────────────────────────────────────────────────────────
@@ -98,7 +98,7 @@ export const viewport = {
   themeColor: "#2d43e8",
 };
 
-import CookieBanner from "@/components/CookieBanner";
+import CookieBanner from "@/components/layout/CookieBanner";
 
 export default function RootLayout({ children }) {
   return (

@@ -3,7 +3,7 @@ import { useState, useRef, useMemo} from 'react';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import { createClient } from '@/lib/supabase/client';
-import TagPill from '@/components/TagPill';
+import TagPill from '@/components/ui/TagPill';
 import Link from 'next/link';
 import { X, Plus, ArrowLeft } from 'lucide-react';
 import { CREATIVE_TOOLS } from '@/lib/constants';
@@ -13,7 +13,7 @@ import '../../../App.css';
 // ── Lazy load heavy components so the page shell renders instantly ───────────
 // CoverEditor pulls in react-easy-crop (large)
 // MultiUploadZone pulls in processImage + Worker pipeline (large)
-const CoverEditor = dynamic(() => import('@/components/CoverEditor'), {
+const CoverEditor = dynamic(() => import('@/components/profile/CoverEditor'), {
   ssr: false,
   loading: () => (
     <div style={{

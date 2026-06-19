@@ -1,15 +1,15 @@
-import Sidebar from '@/components/Sidebar';
-import Header from '@/components/Header';
-import MobileBottomNav from '@/components/MobileBottomNav';
-import { MobileNavProvider } from '@/components/MobileNavProvider';
-import OnboardingGuard from '@/components/OnboardingGuard';
-import ProfileHydrator from '@/components/ProfileHydrator';
-import { NotificationsProvider } from '@/components/NotificationsProvider';
+import Sidebar from '@/components/layout/Sidebar';
+import Header from '@/components/layout/Header';
+import MobileBottomNav from '@/components/layout/MobileBottomNav';
+import { MobileNavProvider } from '@/components/layout/MobileNavProvider';
+import OnboardingGuard from '@/components/auth/OnboardingGuard';
+import ProfileHydrator from '@/components/auth/ProfileHydrator';
+import { NotificationsProvider } from '@/components/misc/NotificationsProvider';
 import dynamic from 'next/dynamic';
 
-const OnboardingChecklist = dynamic(() => import('@/components/OnboardingChecklist'));
-const ToastContainer = dynamic(() => import('@/components/ToastContainer'));
-import AnnouncementBar from '@/components/AnnouncementBar';
+const OnboardingChecklist = dynamic(() => import('@/components/onboarding/OnboardingChecklist'));
+const ToastContainer = dynamic(() => import('@/components/ui/ToastContainer'));
+import AnnouncementBar from '@/components/layout/AnnouncementBar';
 
 export default function MainLayout({ children, modal }) {
   return (

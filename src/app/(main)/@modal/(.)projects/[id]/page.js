@@ -1,4 +1,4 @@
-import ProjectModalWrapper from '@/components/ProjectModalWrapper';
+import ProjectModalWrapper from '@/components/projects/ProjectModalWrapper';
 import ProjectDetailClient from '@/app/(main)/projects/[id]/ProjectDetailClient';
 
 export default async function InterceptedProjectPage({ params }) {

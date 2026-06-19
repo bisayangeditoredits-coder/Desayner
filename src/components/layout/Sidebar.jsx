@@ -9,9 +9,9 @@ import {
   Palette, Type, LayoutTemplate, Trophy
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
-import UserAvatar from './UserAvatar';
-import FollowButton from './FollowButton';
-import { useMobileNav } from '@/components/MobileNavProvider';
+import UserAvatar from '@/components/ui/UserAvatar';
+import FollowButton from '@/components/ui/FollowButton';
+import { useMobileNav } from '@/components/layout/MobileNavProvider';
 
 import { useRouter } from 'next/navigation';
 import useFeedStore from '@/store/useFeedStore';

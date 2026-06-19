@@ -1,15 +1,15 @@
 'use client';
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import ProjectCard from '@/components/ProjectCard';
-import TagPill from '@/components/TagPill';
+import ProjectCard from '@/components/projects/ProjectCard';
+import TagPill from '@/components/ui/TagPill';
 import Link from 'next/link';
 import { Plus } from 'lucide-react';
 import '../../App.css';
 import useSWRInfinite from 'swr/infinite';
 
-import VirtualGridPage from '@/components/VirtualGridPage';
-import ProjectCardSkeleton from '@/components/ProjectCardSkeleton';
+import VirtualGridPage from '@/components/misc/VirtualGridPage';
+import ProjectCardSkeleton from '@/components/projects/ProjectCardSkeleton';
 import useFeedStore from '@/store/useFeedStore';
 
 const CATEGORIES = ['All', 'Design', 'Illustration', 'Photography', 'Branding', '3D', 'Motion', 'UI/UX', 'Typography', 'Other'];

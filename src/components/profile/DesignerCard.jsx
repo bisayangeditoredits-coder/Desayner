@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import UserAvatar from "@/components/UserAvatar";
-import FollowButton from "@/components/FollowButton";
+import UserAvatar from "@/components/ui/UserAvatar";
+import FollowButton from "@/components/ui/FollowButton";
 import { optimizeImage } from "@/lib/utils";
 import { formatMemberSince, isNewMember } from "@/lib/memberSince";
 import { CREATIVE_TOOLS } from "@/lib/constants";

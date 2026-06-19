@@ -2,8 +2,8 @@
 
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import ProjectCard from '@/components/ProjectCard';
-import ProjectCardSkeleton from '@/components/ProjectCardSkeleton';
+import ProjectCard from '@/components/projects/ProjectCard';
+import ProjectCardSkeleton from '@/components/projects/ProjectCardSkeleton';
 import Link from 'next/link';
 import { Bookmark, Folder, ArrowLeft } from 'lucide-react';
 import useSWR from 'swr';

@@ -4,7 +4,7 @@ import { Search, X, Loader2, ImageIcon, ChevronDown } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import useToastStore from '@/store/useToastStore';
 import Link from 'next/link';
-import StockPhotoCard from '@/components/StockPhotoCard';
+import StockPhotoCard from '@/components/design-hub/StockPhotoCard';
 import '../../../App.css';
 import './stock-photos.css';
 

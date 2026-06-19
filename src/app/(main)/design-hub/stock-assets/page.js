@@ -4,7 +4,7 @@ import { Search, X, Loader2, PenTool } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import useToastStore from '@/store/useToastStore';
 import Link from 'next/link';
-import StockAssetCard from '@/components/StockAssetCard';
+import StockAssetCard from '@/components/design-hub/StockAssetCard';
 import '../../../App.css';
 import './stock-assets.css';
 

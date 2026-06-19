@@ -1,6 +1,6 @@
 'use client';
 import { useState, useRef, useEffect } from 'react';
-import ProjectCard from './ProjectCard';
+import ProjectCard from '@/components/projects/ProjectCard';
 
 /**
  * VirtualGridPage renders a chunk of projects (e.g., 24 items).

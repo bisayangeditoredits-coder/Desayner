@@ -1,6 +1,6 @@
 'use client';
 import Link from 'next/link';
-import NewsletterSubscribe from './NewsletterSubscribe';
+import NewsletterSubscribe from '@/components/marketing/NewsletterSubscribe';
 
 export default function Footer() {
   return (

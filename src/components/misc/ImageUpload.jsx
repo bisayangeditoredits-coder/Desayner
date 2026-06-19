@@ -1,7 +1,7 @@
 'use client';
 import { useState, useRef, useCallback, useId } from 'react';
 import { Upload, X, Loader2, ImageIcon } from 'lucide-react';
-import ImageCropperModal from './ImageCropperModal';
+import ImageCropperModal from '@/components/misc/ImageCropperModal';
 import { processImage } from '@/lib/processImage';
 import { uploadProcessedImages } from '@/lib/uploadToR2';
 

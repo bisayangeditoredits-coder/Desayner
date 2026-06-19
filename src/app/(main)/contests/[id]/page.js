@@ -6,7 +6,7 @@ import useSWR from 'swr';
 import { ArrowUp, Plus, Trophy, Calendar, Users, ChevronLeft, CheckCircle2 } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
-import SubmitContestModal from '@/components/SubmitContestModal';
+import SubmitContestModal from '@/components/misc/SubmitContestModal';
 
 export default function ContestDetailPage() {
   const params = useParams();

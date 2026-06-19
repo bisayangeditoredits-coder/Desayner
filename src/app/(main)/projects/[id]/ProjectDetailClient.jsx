@@ -2,10 +2,10 @@
 import { useState, useEffect, useCallback, useMemo} from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
-import CommentThread from '@/components/CommentThread';
-import FollowButton from '@/components/FollowButton';
-import UserAvatar from '@/components/UserAvatar';
-import SaveToCollectionModal from '@/components/SaveToCollectionModal';
+import CommentThread from '@/components/projects/CommentThread';
+import FollowButton from '@/components/ui/FollowButton';
+import UserAvatar from '@/components/ui/UserAvatar';
+import SaveToCollectionModal from '@/components/projects/SaveToCollectionModal';
 import Link from 'next/link';
 import { Heart, Bookmark, ArrowLeft, Globe, Eye, MessageCircle, Calendar, Share, Edit, Check, Trash2, MessageSquare } from 'lucide-react';
 import { CREATIVE_TOOLS } from '@/lib/constants';

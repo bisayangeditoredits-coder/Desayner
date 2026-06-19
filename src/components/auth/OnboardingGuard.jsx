@@ -4,8 +4,8 @@ import { useState } from 'react';
 import dynamic from 'next/dynamic';
 import useProfileStore from '@/store/useProfileStore';
 
-const OnboardingModal = dynamic(() => import('@/components/OnboardingModal'), { ssr: false });
-const OnboardingGuideModal = dynamic(() => import('@/components/OnboardingGuideModal'), { ssr: false });
+const OnboardingModal = dynamic(() => import('@/components/onboarding/OnboardingModal'), { ssr: false });
+const OnboardingGuideModal = dynamic(() => import('@/components/onboarding/OnboardingGuideModal'), { ssr: false });
 
 export default function OnboardingGuard({ children }) {
   const user = useProfileStore((s) => s.user);

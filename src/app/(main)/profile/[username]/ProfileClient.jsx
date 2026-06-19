@@ -2,17 +2,17 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
-import ProjectCard from '@/components/ProjectCard';
-import FollowButton from '@/components/FollowButton';
-import UserAvatar from '@/components/UserAvatar';
+import ProjectCard from '@/components/projects/ProjectCard';
+import FollowButton from '@/components/ui/FollowButton';
+import UserAvatar from '@/components/ui/UserAvatar';
 import Link from 'next/link';
 import { Globe, MapPin, Calendar, MessageSquare, ExternalLink, Folder, ArrowLeft, RefreshCw } from 'lucide-react';
 import { CREATIVE_TOOLS } from '@/lib/constants';
 import { stripCloudinaryProxy } from '@/lib/utils';
-import ProfileCompletenessCard from '@/components/ProfileCompletenessCard';
-import EmptyState from '@/components/EmptyState';
-import FirstProjectCelebration from '@/components/FirstProjectCelebration';
-import HireMeModal from '@/components/HireMeModal';
+import ProfileCompletenessCard from '@/components/profile/ProfileCompletenessCard';
+import EmptyState from '@/components/ui/EmptyState';
+import FirstProjectCelebration from '@/components/onboarding/FirstProjectCelebration';
+import HireMeModal from '@/components/profile/HireMeModal';
 import { Suspense } from 'react';
 import '../../../App.css';
 

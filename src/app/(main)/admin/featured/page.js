@@ -2,7 +2,7 @@
 import { useState, useEffect, useMemo} from 'react';
 import { createClient } from '@/lib/supabase/client';
 import UploadZone from '@/components/upload/UploadZone';
-import UserAvatar from '@/components/UserAvatar';
+import UserAvatar from '@/components/ui/UserAvatar';
 import { Search, ShieldAlert, Plus, Check } from 'lucide-react';
 
 export default function FeaturedAdminPage() {

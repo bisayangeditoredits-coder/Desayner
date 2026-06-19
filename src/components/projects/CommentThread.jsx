@@ -1,7 +1,7 @@
 'use client';
 import { useState, useMemo} from 'react';
 import { createClient } from '@/lib/supabase/client';
-import UserAvatar from './UserAvatar';
+import UserAvatar from '@/components/ui/UserAvatar';
 import useToastStore from '@/store/useToastStore';
 
 function timeAgo(dateStr) {

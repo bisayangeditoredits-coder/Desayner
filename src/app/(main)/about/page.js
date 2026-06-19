@@ -1,6 +1,6 @@
 import React from 'react';
 import { Mail, MapPin, Building } from 'lucide-react';
-import Footer from '@/components/Footer';
+import Footer from '@/components/layout/Footer';
 
 export const metadata = {
   title: 'About Us | CreldeskStudio',

@@ -1,8 +1,8 @@
 'use client';
 import { useState, useEffect, useMemo, useRef, useCallback, useId } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import ImageCropperModal from '@/components/ImageCropperModal';
-import UserAvatar from '@/components/UserAvatar';
+import ImageCropperModal from '@/components/misc/ImageCropperModal';
+import UserAvatar from '@/components/ui/UserAvatar';
 import { processImage } from '@/lib/processImage';
 import { uploadProcessedImages } from '@/lib/uploadToR2';
 import { motion, AnimatePresence } from 'framer-motion';

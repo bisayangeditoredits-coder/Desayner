@@ -2,7 +2,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { Plus, Folder, Check } from 'lucide-react';
-import Modal from './Modal';
+import Modal from '@/components/ui/Modal';
 
 export default function SaveToCollectionModal({ itemType = 'project', itemId, onClose }) {
   const [collections, setCollections] = useState([]);

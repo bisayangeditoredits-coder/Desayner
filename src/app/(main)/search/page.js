@@ -2,11 +2,11 @@
 import { useState, useEffect, useRef, useCallback, Suspense, useMemo } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
-import ProjectCard from '@/components/ProjectCard';
-import ProjectCardSkeleton from '@/components/ProjectCardSkeleton';
-import UserAvatar from '@/components/UserAvatar';
-import FollowButton from '@/components/FollowButton';
-import TagPill from '@/components/TagPill';
+import ProjectCard from '@/components/projects/ProjectCard';
+import ProjectCardSkeleton from '@/components/projects/ProjectCardSkeleton';
+import UserAvatar from '@/components/ui/UserAvatar';
+import FollowButton from '@/components/ui/FollowButton';
+import TagPill from '@/components/ui/TagPill';
 import Link from 'next/link';
 import { Search, FolderOpen, Users2, TrendingUp, Clock, Heart, Eye, MapPin } from 'lucide-react';
 import { stripCloudinaryProxy } from '@/lib/utils';

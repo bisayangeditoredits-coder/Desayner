@@ -1,8 +1,8 @@
 'use client';
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import ProjectCard from '@/components/ProjectCard';
-import TagPill from '@/components/TagPill';
+import ProjectCard from '@/components/projects/ProjectCard';
+import TagPill from '@/components/ui/TagPill';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -10,12 +10,12 @@ import { useRouter } from 'next/navigation';
 import { Plus, Search } from 'lucide-react';
 import useSWRInfinite from 'swr/infinite';
 import useFeedStore from '@/store/useFeedStore';
-import ProjectCardSkeleton from '@/components/ProjectCardSkeleton';
-import HorizontalFeatureScroll from '@/components/HorizontalFeatureScroll';
-import AnnouncementBanner from '@/components/AnnouncementBanner';
+import ProjectCardSkeleton from '@/components/projects/ProjectCardSkeleton';
+import HorizontalFeatureScroll from '@/components/marketing/HorizontalFeatureScroll';
+import AnnouncementBanner from '@/components/layout/AnnouncementBanner';
 import '../App.css';
 
-const WelcomeModal = dynamic(() => import('@/components/WelcomeModal'), { ssr: false });
+const WelcomeModal = dynamic(() => import('@/components/onboarding/WelcomeModal'), { ssr: false });
 
 const BANNERS = [
   '/featured-contest-cover.jpeg'

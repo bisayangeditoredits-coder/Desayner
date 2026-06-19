@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Bookmark, Eye, Heart, Sparkles } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
-import UserAvatar from './UserAvatar';
+import UserAvatar from '@/components/ui/UserAvatar';
 import { saveProjectModalReturn } from '@/lib/projectModalNav';
 import { optimizeImage } from '@/lib/utils';
 

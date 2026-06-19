@@ -1,9 +1,9 @@
 "use client";
 import { useState, useEffect, useCallback, useRef, useMemo} from "react";
 import { createClient } from "@/lib/supabase/client";
-import UserAvatar from "@/components/UserAvatar";
-import FollowButton from "@/components/FollowButton";
-import EmptyState from "@/components/EmptyState";
+import UserAvatar from "@/components/ui/UserAvatar";
+import FollowButton from "@/components/ui/FollowButton";
+import EmptyState from "@/components/ui/EmptyState";
 import Link from "next/link";
 import { optimizeImage } from "@/lib/utils";
 import { formatMemberSince, isNewMember } from "@/lib/memberSince";
@@ -28,8 +28,8 @@ import {
 
 import "../../App.css";
 import "./designers.css";
-import HorizontalFeatureScroll from "@/components/HorizontalFeatureScroll";
-import DesignerCard from "@/components/DesignerCard";
+import HorizontalFeatureScroll from "@/components/marketing/HorizontalFeatureScroll";
+import DesignerCard from "@/components/profile/DesignerCard";
 export const runtime = 'edge';
 
 const CATEGORIES = [

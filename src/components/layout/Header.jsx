@@ -7,13 +7,13 @@ import {
   MessageSquare, Filter, Layers, UserSquare, CalendarCheck, PenTool, Calendar, Inbox, ChevronDown, Menu,
   Image as ImageIcon
 } from 'lucide-react';
-import { useMobileNav } from '@/components/MobileNavProvider';
+import { useMobileNav } from '@/components/layout/MobileNavProvider';
 import { createClient } from '@/lib/supabase/client';
 import { saveProjectModalReturn } from '@/lib/projectModalNav';
 import { stripCloudinaryProxy } from '@/lib/utils';
-import UserAvatar from './UserAvatar';
+import UserAvatar from '@/components/ui/UserAvatar';
 import useProfileStore from '@/store/useProfileStore';
-import { useNotifications } from '@/components/NotificationsProvider';
+import { useNotifications } from '@/components/misc/NotificationsProvider';
 
 function timeAgo(dateStr) {
   const diff = Date.now() - new Date(dateStr).getTime();

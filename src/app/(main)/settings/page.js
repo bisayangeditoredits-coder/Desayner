@@ -1,12 +1,12 @@
 'use client';
 import { useState, useEffect, useMemo} from 'react';
 import { createClient } from '@/lib/supabase/client';
-import UserAvatar from '@/components/UserAvatar';
-import ImageUpload from '@/components/ImageUpload';
+import UserAvatar from '@/components/ui/UserAvatar';
+import ImageUpload from '@/components/misc/ImageUpload';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Save, User, Lock, Trash2, ArrowLeft, X } from 'lucide-react';
-import ProfileCompletenessCard from '@/components/ProfileCompletenessCard';
+import ProfileCompletenessCard from '@/components/profile/ProfileCompletenessCard';
 import { CREATIVE_TOOLS } from '@/lib/constants';
 import '../../App.css';
 

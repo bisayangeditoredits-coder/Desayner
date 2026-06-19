@@ -1,4 +1,4 @@
-import ProjectCardSkeleton from '@/components/ProjectCardSkeleton';
+import ProjectCardSkeleton from '@/components/projects/ProjectCardSkeleton';
 
 const pulse = { animation: 'lightweight-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite', background: '#e2e8f0' };
 

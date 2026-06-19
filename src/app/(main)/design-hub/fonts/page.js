@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useCallback, useMemo, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Search, X, Loader2, Type, ChevronDown } from 'lucide-react';
-import FontCard from '@/components/FontCard';
+import FontCard from '@/components/design-hub/FontCard';
 import '../../../App.css';
 import './fonts.css';
 

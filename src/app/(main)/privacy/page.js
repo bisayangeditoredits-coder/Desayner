@@ -1,5 +1,5 @@
 import React from 'react';
-import Footer from '@/components/Footer';
+import Footer from '@/components/layout/Footer';
 
 export const metadata = {
   title: 'Privacy Policy | Desayner',

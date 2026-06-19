@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect, useMemo} from 'react';
 import { createClient } from '@/lib/supabase/client';
-import UserAvatar from '@/components/UserAvatar';
+import UserAvatar from '@/components/ui/UserAvatar';
 import Link from 'next/link';
 import { saveProjectModalReturn } from '@/lib/projectModalNav';
 import { Heart, Bookmark, MessageCircle, UserPlus, Check, Bell } from 'lucide-react';
