@@ -1,20 +1,18 @@
-/**
- * GET /api/cron/update-trending
- *
- * Recalculates trending_score for all published projects created in the last 30 days.
- * Should be called by Vercel Cron every 30 minutes.
- *
- * Vercel Cron config (add to vercel.json):
- * {
- *   "crons": [{ "path": "/api/cron/update-trending", "schedule": "*/30 * * * *" }]
- * }
- *
- * Score formula: engagement weighted by recency (time-decay approximation)
- *   score = (likes * 1.0 + saves * 2.0 + views * 0.1) / hours_since_created
- *
- * Saves count twice because saving signals stronger intent than a like.
- * Views are weighted at 0.1 because they're much cheaper to accumulate.
- */
+// GET /api/cron/update-trending
+//
+// Recalculates trending_score for all published projects created in the last 30 days.
+// Should be called by Vercel Cron every 30 minutes.
+//
+// Vercel Cron config (add to vercel.json):
+// {
+//   "crons": [{ "path": "/api/cron/update-trending", "schedule": "*/30 * * * *" }]
+// }
+// 
+// Score formula: engagement weighted by recency (time-decay approximation)
+//   score = (likes * 1.0 + saves * 2.0 + views * 0.1) / hours_since_created
+//
+// Saves count twice because saving signals stronger intent than a like.
+// Views are weighted at 0.1 because they're much cheaper to accumulate.
 
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
