@@ -1,0 +1,10 @@
+.palette-card:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(0,0,0,0.1) !important; }
+.color-swatch:hover { flex: 1.6 !important; }
+.color-swatch:hover .hex-label { opacity: 1 !important; }
+
+/* Hero Slot Hover Enhancements */
+.hero-color-slot:hover .slot-pin-btn { opacity: 1 !important; transform: scale(1) !important; }
+.hero-color-slot:hover .slot-hex-text { opacity: 1 !important; font-size: 1.75rem !important; }
+.hero-color-slot:hover { z-index: 10; box-shadow: 0 0 40px rgba(0,0,0,0.15); }
+
+@keyframes spin { to { transform: rotate(360deg); } }

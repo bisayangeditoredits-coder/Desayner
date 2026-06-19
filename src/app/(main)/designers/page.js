@@ -27,7 +27,9 @@ import {
 } from "lucide-react";
 
 import "../../App.css";
+import "./designers.css";
 import HorizontalFeatureScroll from "@/components/HorizontalFeatureScroll";
+import DesignerCard from "@/components/DesignerCard";
 export const runtime = 'edge';
 
 const CATEGORIES = [
@@ -247,8 +249,7 @@ function DesignersContent() {
       {!loading &&
         displayDesigners.length > 0 &&
         page === 1 &&
-        category === "All" &&
-        search === "" && (
+        category === "All" && (
           <div style={{ marginBottom: '1.25rem', overflow: 'hidden' }}>
             <div className="page-content">
 
@@ -329,169 +330,7 @@ function DesignersContent() {
                 ))}
               </div>
 
-              <style>{`
-                /* ── Grid ── */
-                .trending-grid {
-                  display: grid;
-                  grid-template-columns: repeat(4, 1fr);
-                  gap: 1rem;
-                }
-                @media (max-width: 1024px) { .trending-grid { grid-template-columns: repeat(2, 1fr); } }
-                @media (max-width: 600px)  { .trending-grid { grid-template-columns: 1fr; } }
 
-                /* ── Card ── */
-                .td-card {
-                  background: #fff;
-                  border: 1px solid #e8ecf0;
-                  border-radius: 16px;
-                  overflow: hidden;
-                  display: flex;
-                  flex-direction: column;
-                  transition: box-shadow 0.2s ease, transform 0.2s ease;
-                }
-                .td-card:hover {
-                  box-shadow: 0 12px 32px rgba(45,67,232,0.08);
-                  transform: translateY(-3px);
-                }
-
-                /* ── Cover ── */
-                .td-card__cover-link {
-                  display: block;
-                  position: relative;
-                  width: 100%;
-                  height: 130px;
-                  overflow: hidden;
-                  flex-shrink: 0;
-                }
-                .td-card__cover-img {
-                  width: 100%;
-                  height: 100%;
-                  object-fit: cover;
-                  display: block;
-                  transition: transform 0.35s ease;
-                }
-                .td-card:hover .td-card__cover-img { transform: scale(1.04); }
-                .td-card__cover-placeholder {
-                  width: 100%;
-                  height: 100%;
-                  background: linear-gradient(135deg, #e8ecf0 0%, #d1d9e0 100%);
-                }
-
-                /* ── Badge ── */
-                .td-card__badge {
-                  position: absolute;
-                  top: 0.6rem;
-                  right: 0.6rem;
-                  font-size: 0.62rem;
-                  font-weight: 800;
-                  letter-spacing: 0.06em;
-                  text-transform: uppercase;
-                  padding: 0.2rem 0.55rem;
-                  border-radius: 20px;
-                  backdrop-filter: blur(6px);
-                  -webkit-backdrop-filter: blur(6px);
-                  z-index: 2;
-                }
-                .td-card__badge--featured {
-                  background: rgba(255,255,255,0.9);
-                  color: #0f172a;
-                  border: 1px solid rgba(255,255,255,0.6);
-                }
-                .td-card__badge--rising {
-                  background: rgba(45,67,232,0.12);
-                  color: #2d43e8;
-                  border: 1px solid rgba(45,67,232,0.2);
-                }
-
-                /* ── Body ── */
-                .td-card__body {
-                  padding: 0 1rem 1rem;
-                  display: flex;
-                  flex-direction: column;
-                  flex: 1;
-                }
-
-                /* Avatar floats over cover */
-                .td-card__avatar-wrap {
-                  display: inline-block;
-                  margin-top: -24px;
-                  margin-bottom: 0.6rem;
-                  border-radius: 50%;
-                  border: 3px solid #fff;
-                  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-                  line-height: 0;
-                  position: relative;
-                  z-index: 3;
-                }
-
-                /* Name */
-                .td-card__name-link { text-decoration: none; }
-                .td-card__name {
-                  display: block;
-                  font-size: 0.9rem;
-                  font-weight: 800;
-                  color: #0f172a;
-                  letter-spacing: -0.01em;
-                  white-space: nowrap;
-                  overflow: hidden;
-                  text-overflow: ellipsis;
-                }
-                .td-card__name-link:hover .td-card__name { color: #2d43e8; }
-
-                /* Bio */
-                .td-card__bio {
-                  font-size: 0.78rem;
-                  color: #64748b;
-                  line-height: 1.45;
-                  margin: 0.3rem 0 0.9rem;
-                  display: -webkit-box;
-                  -webkit-line-clamp: 2;
-                  -webkit-box-orient: vertical;
-                  overflow: hidden;
-                  flex: 1;
-                }
-
-                /* Footer */
-                .td-card__footer {
-                  display: flex;
-                  align-items: center;
-                  justify-content: space-between;
-                  gap: 0.5rem;
-                  padding-top: 0.75rem;
-                  border-top: 1px solid #f1f5f9;
-                  margin-top: auto;
-                }
-                .td-card__stats {
-                  display: flex;
-                  align-items: center;
-                  gap: 0.5rem;
-                }
-                .td-card__stat {
-                  display: flex;
-                  flex-direction: column;
-                  align-items: flex-start;
-                  gap: 1px;
-                }
-                .td-card__stat strong {
-                  font-size: 0.85rem;
-                  font-weight: 800;
-                  color: #0f172a;
-                  line-height: 1;
-                }
-                .td-card__stat span {
-                  font-size: 0.62rem;
-                  font-weight: 600;
-                  color: #94a3b8;
-                  text-transform: uppercase;
-                  letter-spacing: 0.04em;
-                }
-                .td-card__sep {
-                  width: 1px;
-                  height: 24px;
-                  background: #e8ecf0;
-                  flex-shrink: 0;
-                }
-              `}</style>
             </div>
           </div>
 
@@ -500,29 +339,75 @@ function DesignersContent() {
       <div className="page-content">
         <HorizontalFeatureScroll />
         {/* 3. Main Explore Section */}
+        <div style={{ marginBottom: "1.25rem" }}>
+          <h2 style={{ fontSize: "1.75rem", fontWeight: 800 }}>
+            Explore Designers
+          </h2>
+        </div>
+
+        {/* Filters and Search Bar Container */}
         <div
           style={{
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
-            marginBottom: "1.25rem",
             flexWrap: "wrap",
             gap: "1rem",
+            marginBottom: "1rem",
           }}
         >
-          <h2 style={{ fontSize: "1.75rem", fontWeight: 800 }}>
-            Explore Designers
-          </h2>
+          {/* Category Filters */}
+          <div
+            className="category-scroll-container"
+            style={{
+              display: "flex",
+              gap: "0.5rem",
+              overflowX: "auto",
+              paddingBottom: "0.5rem",
+              scrollbarWidth: "none",
+              flex: 1,
+            }}
+          >
+            {CATEGORIES.map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setCategory(cat)}
+                style={{
+                  padding: "0.5rem 1rem",
+                  fontSize: "0.85rem",
+                  fontWeight: 600,
+                  borderRadius: "30px",
+                  border: "1px solid",
+                  cursor: "pointer",
+                  whiteSpace: "nowrap",
+                  background: category === cat ? "#231f20" : "white",
+                  color: category === cat ? "white" : "#4b5563",
+                  borderColor: category === cat ? "#231f20" : "#e2e8f0",
+                  transition: "all 0.2s ease",
+                }}
+                onMouseOver={(e) => {
+                  if (category !== cat)
+                    e.currentTarget.style.borderColor = "#9b9b9b";
+                }}
+                onMouseOut={(e) => {
+                  if (category !== cat)
+                    e.currentTarget.style.borderColor = "#e2e8f0";
+                }}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
 
-          <div style={{ position: "relative", width: "300px" }}>
+          <div style={{ position: "relative", width: "300px", flexShrink: 0 }}>
             <Search
-              size={16}
+              size={18}
               style={{
                 position: "absolute",
-                left: "1rem",
+                left: "1.2rem",
                 top: "50%",
                 transform: "translateY(-50%)",
-                color: "#9b9b9b",
+                color: "#64748b",
               }}
             />
             <input
@@ -532,60 +417,26 @@ function DesignersContent() {
               placeholder="Search designers..."
               style={{
                 width: "100%",
-                padding: "0.75rem 1rem 0.75rem 2.5rem",
+                padding: "0.85rem 1rem 0.85rem 3rem",
                 borderRadius: "30px",
-                border: "1px solid #e2e8f0",
+                border: "1px solid #cbd5e1",
                 background: "white",
-                fontSize: "0.9rem",
+                fontSize: "0.95rem",
+                color: "#0f172a",
                 outline: "none",
-              }}
-              onFocus={(e) => (e.target.style.borderColor = "#231f20")}
-              onBlur={(e) => (e.target.style.borderColor = "#e2e8f0")}
-            />
-          </div>
-        </div>
-
-        {/* Category Filters */}
-        <div
-          className="category-scroll-container"
-          style={{
-            display: "flex",
-            gap: "0.5rem",
-            overflowX: "auto",
-            paddingBottom: "0.5rem",
-            marginBottom: "1rem",
-            scrollbarWidth: "none",
-          }}
-        >
-          {CATEGORIES.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setCategory(cat)}
-              style={{
-                padding: "0.5rem 1rem",
-                fontSize: "0.85rem",
-                fontWeight: 600,
-                borderRadius: "30px",
-                border: "1px solid",
-                cursor: "pointer",
-                whiteSpace: "nowrap",
-                background: category === cat ? "#231f20" : "white",
-                color: category === cat ? "white" : "#4b5563",
-                borderColor: category === cat ? "#231f20" : "#e2e8f0",
+                boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
                 transition: "all 0.2s ease",
               }}
-              onMouseOver={(e) => {
-                if (category !== cat)
-                  e.currentTarget.style.borderColor = "#9b9b9b";
+              onFocus={(e) => {
+                e.target.style.borderColor = "#231f20";
+                e.target.style.boxShadow = "0 4px 12px rgba(0,0,0,0.08)";
               }}
-              onMouseOut={(e) => {
-                if (category !== cat)
-                  e.currentTarget.style.borderColor = "#e2e8f0";
+              onBlur={(e) => {
+                e.target.style.borderColor = "#cbd5e1";
+                e.target.style.boxShadow = "0 2px 8px rgba(0,0,0,0.04)";
               }}
-            >
-              {cat}
-            </button>
-          ))}
+            />
+          </div>
         </div>
 
         {/* Sort Controls */}
@@ -745,396 +596,7 @@ function DesignersContent() {
 // Components
 // ---------------------------------------------------------------------------
 
-function getDesignerSkills(designer) {
-  const fromProjects = (designer.sampleProjects || [])
-    .map((p) => p.category)
-    .filter(Boolean);
-  const fromSkills = designer.skills || [];
-  const fromTools = (designer.tools || [])
-    .map((id) => CREATIVE_TOOLS.find((t) => t.id === id)?.name)
-    .filter(Boolean);
 
-  return Array.from(new Set([...fromProjects, ...fromSkills, ...fromTools])).slice(0, 6);
-}
-
-function DesignerCard({ designer, currentUserId }) {
-  const skills = getDesignerSkills(designer);
-  const projects = designer.sampleProjects || [];
-  const isNew = isNewMember(designer.created_at);
-
-
-
-  const memberLabel = formatMemberSince(designer.created_at);
-
-  return (
-    <div
-      className="designer-card"
-      style={{
-        background: "white",
-        borderRadius: "24px",
-        border: "1px solid rgba(0,0,0,0.05)",
-        padding: "24px",
-        display: "flex",
-        flexDirection: "column",
-        gap: "24px",
-        boxShadow: "0 4px 24px rgba(0,0,0,0.02)",
-        transition: "all 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
-      }}
-      onMouseOver={(e) => {
-        e.currentTarget.style.transform = "translateY(-4px)";
-        e.currentTarget.style.boxShadow = "0 12px 32px rgba(0,0,0,0.06)";
-      }}
-      onMouseOut={(e) => {
-        e.currentTarget.style.transform = "translateY(0)";
-        e.currentTarget.style.boxShadow = "0 4px 24px rgba(0,0,0,0.02)";
-      }}
-    >
-      {/* Top Header */}
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "flex-start",
-          flexWrap: "wrap",
-          gap: "1rem",
-        }}
-      >
-        {/* Left: Avatar and Info */}
-        <div style={{ display: "flex", gap: "16px", alignItems: "center" }}>
-          <Link href={`/profile/${designer.username}`}>
-            <UserAvatar
-              src={designer.avatar_url}
-              name={designer.full_name || designer.username}
-              size={56}
-            />
-          </Link>
-
-          <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-            {/* Line 1: Name & Highlights */}
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "10px",
-                flexWrap: "wrap",
-              }}
-            >
-              <Link
-                href={`/profile/${designer.username}`}
-                style={{ textDecoration: "none", color: "inherit" }}
-              >
-                <div
-                  style={{
-                    fontWeight: 900,
-                    fontSize: "1.25rem",
-                    color: "#0f172a",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "4px",
-                    fontFamily: "var(--font-jakarta)",
-                    letterSpacing: "-0.02em"
-                  }}
-                >
-                  {designer.username || designer.full_name}
-                </div>
-              </Link>
-
-              {isNew && (
-                <span className="designer-card__new-badge">New</span>
-              )}
-
-              {designer.available_for_work && (
-                <span style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '4px',
-                  background: '#dcfce7',
-                  color: '#166534',
-                  fontSize: '10px',
-                  fontWeight: 800,
-                  padding: '3px 8px',
-                  borderRadius: '6px',
-                  letterSpacing: '0.04em',
-                  textTransform: 'uppercase'
-                }}>
-                  <span style={{ width: '4px', height: '4px', borderRadius: '50%', background: '#16a34a' }} />
-                  Available
-                </span>
-              )}
-
-              {designer.followers_count > 100 ? (
-                <span
-                  style={{
-                    background: "#231f20",
-                    color: "white",
-                    fontSize: "10px",
-                    fontWeight: 800,
-                    padding: "3px 8px",
-                    borderRadius: "6px",
-                    letterSpacing: "0.5px",
-                  }}
-                >
-                  PRO+
-                </span>
-              ) : (
-                <span
-                  style={{
-                    background: "rgba(0,0,0,0.04)",
-                    color: "#475569",
-                    fontSize: "10px",
-                    fontWeight: 800,
-                    padding: "3px 8px",
-                    borderRadius: "6px",
-                    letterSpacing: "0.5px",
-                  }}
-                >
-                  PRO
-                </span>
-              )}
-
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "4px",
-                  fontSize: "13px",
-                  color: "#0f172a",
-                  fontWeight: 600,
-                  marginLeft: "4px",
-                }}
-              >
-                <BadgeCheck size={14} color="#10b981" />
-                {designer.projects_count || 0} projects published
-              </div>
-            </div>
-
-            {/* Line 2: Stats */}
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "16px",
-                fontSize: "13px",
-                color: "#64748b",
-                fontWeight: 500,
-                flexWrap: "wrap",
-              }}
-            >
-              <span
-                style={{ display: "flex", alignItems: "center", gap: "6px" }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '22px', height: '22px', borderRadius: '50%', background: '#f1f5f9' }}>
-                  <Users2 size={12} color="#64748b" /> 
-                </div>
-                {designer.followers_count || 0} Followers
-              </span>
-              <span
-                style={{ display: "flex", alignItems: "center", gap: "6px" }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '22px', height: '22px', borderRadius: '50%', background: '#f1f5f9' }}>
-                  <MapPin size={12} color="#64748b" /> 
-                </div>
-                {designer.location || "Remote"}
-              </span>
-              <span
-                style={{ display: "flex", alignItems: "center", gap: "6px" }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '22px', height: '22px', borderRadius: '50%', background: '#f1f5f9' }}>
-                  <Clock size={12} color="#64748b" /> 
-                </div>
-                {memberLabel}
-              </span>
-              {designer.following_count > 0 && (
-                <span
-                  style={{ display: "flex", alignItems: "center", gap: "6px" }}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '22px', height: '22px', borderRadius: '50%', background: '#f1f5f9' }}>
-                    <Star size={12} color="#64748b" /> 
-                  </div>
-                  Following {designer.following_count}
-                </span>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Right: Actions */}
-        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-          <FollowButton
-            targetUserId={designer.id}
-            currentUserId={currentUserId}
-            compact
-          />
-          {designer.website && (
-            <a
-              href={designer.website.startsWith('http') ? designer.website : `https://${designer.website}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                padding: "0 24px",
-                height: "44px",
-                fontSize: "14px",
-                borderRadius: "12px",
-                fontWeight: 800,
-                background: "#231f20",
-                color: "white",
-                textDecoration: "none",
-                transition: "all 0.2s",
-                boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-              }}
-              onMouseOver={(e) => {
-                e.currentTarget.style.background = "#27272a";
-                e.currentTarget.style.transform = "translateY(-1px)";
-              }}
-              onMouseOut={(e) => {
-                e.currentTarget.style.background = "#231f20";
-                e.currentTarget.style.transform = "translateY(0)";
-              }}
-            >
-              Get in touch
-            </a>
-          )}
-        </div>
-      </div>
-
-      {/* Middle Projects */}
-      {projects.length === 0 ? (
-        <div className="designer-card__no-work">No work published yet</div>
-      ) : (
-        <div className="designer-card__projects-grid">
-          {projects.slice(0, 4).map((proj) => (
-            <div key={proj.id} className="designer-card__project-tile">
-              <Link
-                href={`/projects/${proj.id}`}
-                style={{ display: "block", width: "100%", height: "100%" }}
-              >
-                <img
-                  src={optimizeImage(proj.thumbnail_url || proj.cover_url, 600)}
-                  alt={proj.title || ""}
-                  loading="lazy"
-                  className="img-fade-in"
-                  onLoad={(e) => e.currentTarget.classList.add("loaded")}
-                  onMouseOver={(e) => {
-                    e.currentTarget.style.transform = "scale(1.05)";
-                  }}
-                  onMouseOut={(e) => {
-                    e.currentTarget.style.transform = "scale(1)";
-                  }}
-                />
-              </Link>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Bottom Skills */}
-      <div
-        style={{
-          display: "flex",
-          gap: "8px",
-          flexWrap: "wrap",
-          alignItems: "center",
-        }}
-      >
-        {skills.length === 0 ? (
-          <span className="designer-card__skills-empty">Skills not listed yet</span>
-        ) : (
-          skills.map((skill) => (
-            <span
-              key={skill}
-              style={{
-                padding: "6px 16px",
-                background: "rgba(0,0,0,0.03)",
-                color: "#334155",
-                borderRadius: "8px",
-                fontSize: "12px",
-                fontWeight: 700,
-                textTransform: "capitalize",
-              }}
-            >
-              {skill}
-            </span>
-          ))
-        )}
-        {skills.length > 6 && (
-          <span
-            style={{
-              fontSize: "12px",
-              color: "#94a3b8",
-              fontWeight: 500,
-              marginLeft: "4px",
-            }}
-          >
-            +{skills.length - 6} skills
-          </span>
-        )}
-      </div>
-      <style jsx>{`
-        .designer-card__projects-grid {
-          display: grid;
-          grid-template-columns: repeat(4, 1fr);
-          gap: 16px;
-          min-height: 180px;
-          width: 100%;
-        }
-        .designer-card__project-tile {
-          border-radius: 16px;
-          overflow: hidden;
-          background: #f1f5f9;
-          position: relative;
-          border: 1px solid rgba(0,0,0,0.04);
-          aspect-ratio: 4/3;
-          width: 100%;
-        }
-        .designer-card__project-tile img {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-          display: block;
-          transition: transform 0.4s ease, opacity 0.35s ease;
-        }
-        .designer-card__no-work {
-          min-height: 120px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          border-radius: 16px;
-          background: #f8fafc;
-          border: 1px dashed #e2e8f0;
-          color: #94a3b8;
-          font-size: 0.875rem;
-          font-weight: 600;
-          width: 100%;
-        }
-        .designer-card__new-badge {
-          background: #dcfce7;
-          color: #166534;
-          font-size: 10px;
-          font-weight: 800;
-          padding: 3px 8px;
-          border-radius: 6px;
-          letter-spacing: 0.04em;
-          text-transform: uppercase;
-        }
-        .designer-card__skills-empty {
-          font-size: 12px;
-          color: #94a3b8;
-          font-weight: 500;
-          font-style: italic;
-        }
-        @media (max-width: 900px) {
-          .designer-card__projects-grid {
-            grid-template-columns: repeat(2, 1fr);
-            min-height: auto;
-          }
-        }
-      `}</style>
-    </div>
-  );
-}
 
 function RisingCreatorRow({ creator, rank }) {
   return (
