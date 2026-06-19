@@ -12,7 +12,6 @@ import useSWRInfinite from 'swr/infinite';
 import useFeedStore from '@/store/useFeedStore';
 import ProjectCardSkeleton from '@/components/projects/ProjectCardSkeleton';
 import HorizontalFeatureScroll from '@/components/marketing/HorizontalFeatureScroll';
-import AnnouncementBanner from '@/components/layout/AnnouncementBanner';
 import '../App.css';
 
 const WelcomeModal = dynamic(() => import('@/components/onboarding/WelcomeModal'), { ssr: false });
@@ -166,56 +165,57 @@ export default function Dashboard() {
     <>
       <WelcomeModal />
       <div className="page-content" style={{ padding: '0 1.5rem 2rem' }}>
-        <AnnouncementBanner />
         
-        {/* Banner Section */}
-        <div className="event-banner-wrapper" style={{ position: 'relative', overflow: 'hidden', aspectRatio: '4 / 1', borderRadius: '12px', background: '#000', marginBottom: '1.5rem', marginTop: '1.5rem' }}>
-          {BANNERS.map((src, idx) => (
-            <Image
-              key={src}
-              src={src}
-              alt={`Desayner featured event ${idx + 1}`}
-              className="event-banner-img"
-              width={1200}
-              height={300}
-              priority={idx === 0}
-              sizes="100vw"
-              unoptimized={true}
-              style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                width: '100%',
-                height: '100%',
-                opacity: currentBanner === idx ? 1 : 0,
-                transition: 'opacity 0.8s ease-in-out',
-                objectFit: 'cover',
-                zIndex: currentBanner === idx ? 1 : 0,
-                borderRadius: '12px'
-              }}
-            />
-          ))}
-          {BANNERS.length > 1 && (
-            <div style={{ position: 'absolute', bottom: '1rem', left: 0, right: 0, display: 'flex', justifyContent: 'center', gap: '0.6rem', zIndex: 10 }}>
-              {BANNERS.map((_, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => setCurrentBanner(idx)}
-                  style={{
-                    width: '8px',
-                    height: '8px',
-                    borderRadius: '50%',
-                    background: currentBanner === idx ? '#ffffff' : 'rgba(255, 255, 255, 0.4)',
-                    transition: 'background 0.3s',
-                    border: 'none',
-                    cursor: 'pointer'
-                  }}
-                  aria-label={`Go to slide ${idx + 1}`}
-                />
-              ))}
-            </div>
-          )}
-        </div>
+        {/* Banner Section — only render when there are banners */}
+        {BANNERS.length > 0 && (
+          <div className="event-banner-wrapper" style={{ position: 'relative', overflow: 'hidden', aspectRatio: '4 / 1', borderRadius: '12px', background: '#000', marginBottom: '1.5rem', marginTop: '1.5rem' }}>
+            {BANNERS.map((src, idx) => (
+              <Image
+                key={src}
+                src={src}
+                alt={`Desayner featured event ${idx + 1}`}
+                className="event-banner-img"
+                width={1200}
+                height={300}
+                priority={idx === 0}
+                sizes="100vw"
+                unoptimized={true}
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '100%',
+                  height: '100%',
+                  opacity: currentBanner === idx ? 1 : 0,
+                  transition: 'opacity 0.8s ease-in-out',
+                  objectFit: 'cover',
+                  zIndex: currentBanner === idx ? 1 : 0,
+                  borderRadius: '12px'
+                }}
+              />
+            ))}
+            {BANNERS.length > 1 && (
+              <div style={{ position: 'absolute', bottom: '1rem', left: 0, right: 0, display: 'flex', justifyContent: 'center', gap: '0.6rem', zIndex: 10 }}>
+                {BANNERS.map((_, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setCurrentBanner(idx)}
+                    style={{
+                      width: '8px',
+                      height: '8px',
+                      borderRadius: '50%',
+                      background: currentBanner === idx ? '#ffffff' : 'rgba(255, 255, 255, 0.4)',
+                      transition: 'background 0.3s',
+                      border: 'none',
+                      cursor: 'pointer'
+                    }}
+                    aria-label={`Go to slide ${idx + 1}`}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Dribbble-style Search Hero */}
         <div style={{ padding: '0 1.5rem', marginBottom: '2rem', maxWidth: '1200px', margin: '0 auto 2rem auto' }}>

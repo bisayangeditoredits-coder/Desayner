@@ -1,7 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { X, Sparkles } from 'lucide-react';
-import Link from 'next/link';
 
 export default function AnnouncementBar() {
   const [isVisible, setIsVisible] = useState(false);
@@ -68,51 +67,53 @@ export default function AnnouncementBar() {
       `}</style>
       <div className="announcement-bar">
         <div className="announcement-content">
-        <Sparkles size={14} style={{ color: '#fbbf24', flexShrink: 0 }} />
-        <span className="announcement-text">Join the upcoming Desayner Community Event! Connect with top creatives worldwide.</span>
-        <span className="announcement-short-text">Join the upcoming Desayner Community Event!</span>
-        <Link 
-          href="/contests" 
-          style={{ 
-            color: '#fbbf24', 
-            textDecoration: 'underline', 
-            marginLeft: '0.2rem',
-            fontWeight: 700,
-            whiteSpace: 'nowrap'
+          <Sparkles size={14} style={{ color: '#fbbf24', flexShrink: 0 }} />
+          <span className="announcement-text">Join the Desayner Community! Connect with top creatives worldwide.</span>
+          <span className="announcement-short-text">Join the Desayner Community!</span>
+          <a
+            href="https://discord.gg/3DmJrVcDG8"
+            target="_blank"
+            rel="noreferrer"
+            style={{
+              color: '#fbbf24',
+              textDecoration: 'underline',
+              marginLeft: '0.2rem',
+              fontWeight: 700,
+              whiteSpace: 'nowrap'
+            }}
+          >
+            Learn more
+          </a>
+        </div>
+
+        <button
+          onClick={handleDismiss}
+          style={{
+            position: 'absolute',
+            right: '1rem',
+            background: 'transparent',
+            border: 'none',
+            color: 'rgba(255, 255, 255, 0.8)',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '4px',
+            borderRadius: '50%',
+            transition: 'background 0.2s, color 0.2s',
           }}
+          onMouseOver={(e) => {
+            e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)';
+            e.currentTarget.style.color = 'white';
+          }}
+          onMouseOut={(e) => {
+            e.currentTarget.style.background = 'transparent';
+            e.currentTarget.style.color = 'rgba(255, 255, 255, 0.8)';
+          }}
+          aria-label="Dismiss announcement"
         >
-          Learn more
-        </Link>
-      </div>
-      
-      <button 
-        onClick={handleDismiss}
-        style={{
-          position: 'absolute',
-          right: '1rem',
-          background: 'transparent',
-          border: 'none',
-          color: 'rgba(255, 255, 255, 0.8)',
-          cursor: 'pointer',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          padding: '4px',
-          borderRadius: '50%',
-          transition: 'background 0.2s, color 0.2s',
-        }}
-        onMouseOver={(e) => {
-          e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)';
-          e.currentTarget.style.color = 'white';
-        }}
-        onMouseOut={(e) => {
-          e.currentTarget.style.background = 'transparent';
-          e.currentTarget.style.color = 'rgba(255, 255, 255, 0.8)';
-        }}
-        aria-label="Dismiss announcement"
-      >
-        <X size={14} />
-      </button>
+          <X size={14} />
+        </button>
       </div>
     </>
   );
