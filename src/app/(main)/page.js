@@ -2,7 +2,6 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import ProjectCard from '@/components/projects/ProjectCard';
-import TagPill from '@/components/ui/TagPill';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -25,16 +24,6 @@ const PAGE_SIZE = 24;
 
 export default function Dashboard() {
   const router = useRouter();
-  const [currentBanner, setCurrentBanner] = useState(0);
-
-  // Banner carousel logic
-  useEffect(() => {
-    if (BANNERS.length <= 1) return;
-    const timer = setInterval(() => {
-      setCurrentBanner(prev => (prev + 1) % BANNERS.length);
-    }, 5000);
-    return () => clearInterval(timer);
-  }, []);
 
   const { category, searchQuery, sort, scrollPosition, interactions, setFeedState, setScrollPosition, setInteractions } = useFeedStore();
   const [currentUserId, setCurrentUserId] = useState(null);
@@ -168,52 +157,24 @@ export default function Dashboard() {
         
         {/* Banner Section — only render when there are banners */}
         {BANNERS.length > 0 && (
-          <div className="event-banner-wrapper" style={{ position: 'relative', overflow: 'hidden', aspectRatio: '4 / 1', borderRadius: '12px', background: '#000', marginBottom: '1.5rem', marginTop: '1.5rem' }}>
-            {BANNERS.map((src, idx) => (
-              <Image
-                key={src}
-                src={src}
-                alt={`Desayner featured event ${idx + 1}`}
-                className="event-banner-img"
-                width={1200}
-                height={300}
-                priority={idx === 0}
-                sizes="100vw"
-                unoptimized={true}
-                style={{
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  width: '100%',
-                  height: '100%',
-                  opacity: currentBanner === idx ? 1 : 0,
-                  transition: 'opacity 0.8s ease-in-out',
-                  objectFit: 'cover',
-                  zIndex: currentBanner === idx ? 1 : 0,
-                  borderRadius: '12px'
-                }}
-              />
-            ))}
-            {BANNERS.length > 1 && (
-              <div style={{ position: 'absolute', bottom: '1rem', left: 0, right: 0, display: 'flex', justifyContent: 'center', gap: '0.6rem', zIndex: 10 }}>
-                {BANNERS.map((_, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => setCurrentBanner(idx)}
-                    style={{
-                      width: '8px',
-                      height: '8px',
-                      borderRadius: '50%',
-                      background: currentBanner === idx ? '#ffffff' : 'rgba(255, 255, 255, 0.4)',
-                      transition: 'background 0.3s',
-                      border: 'none',
-                      cursor: 'pointer'
-                    }}
-                    aria-label={`Go to slide ${idx + 1}`}
-                  />
-                ))}
-              </div>
-            )}
+          <div className="event-banner-wrapper" style={{ position: 'relative', overflow: 'hidden', aspectRatio: '4 / 1', borderRadius: '12px', marginBottom: '1.5rem', marginTop: '1.5rem' }}>
+            <Image
+              src={BANNERS[0]}
+              alt="Desayner featured banner"
+              className="event-banner-img"
+              width={1200}
+              height={300}
+              priority
+              sizes="100vw"
+              unoptimized={true}
+              style={{
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
+                borderRadius: '12px',
+                display: 'block',
+              }}
+            />
           </div>
         )}
 

@@ -22,6 +22,7 @@ export async function GET() {
       .from('projects')
       .select('id, title, thumbnail_url, cover_url, category, views_count, likes_count, saves_count, created_at, user_id, profiles!projects_user_id_fkey(username, full_name, avatar_url)')
       .eq('published', true)
+      .gte('created_at', new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()) // last 30 days only
       .order('likes_count', { ascending: false })
       .limit(10);
 

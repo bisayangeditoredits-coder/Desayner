@@ -15,13 +15,16 @@ export async function GET(request) {
     const ftsQuery = parseSearchQuery(rawQ);
     const limit = parseInt(searchParams.get('limit') || '24', 10);
     const offset = parseInt(searchParams.get('offset') || '0', 10);
+    const sort = searchParams.get('sort') || 'newest';
+    const ALLOWED_SORTS = ['newest', 'popular', 'trending'];
+    const safeSort = ALLOWED_SORTS.includes(sort) ? sort : 'newest';
 
     // Reject searches that sanitize to nothing (e.g. only special characters)
     if (rawQ && !ftsQuery) {
       return NextResponse.json({ projects: [], cached: false }, { headers: CACHE_HEADERS });
     }
 
-    const cacheKey = projectsCacheKey(category, ftsQuery, limit, offset);
+    const cacheKey = projectsCacheKey(category, ftsQuery, limit, offset, safeSort);
 
     const fetcher = async () => {
       const supabase = createServerClient(
@@ -38,7 +41,7 @@ export async function GET(request) {
       const query = buildPublishedProjectsQuery(supabase, {
         ftsQuery,
         category,
-        sort: 'newest',
+        sort: safeSort,
         offset,
         limit,
       });

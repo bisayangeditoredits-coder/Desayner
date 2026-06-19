@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import { 
   Search, Bell, Plus, X, Heart, Bookmark, MessageCircle, UserPlus, 
-  MessageSquare, Filter, Layers, UserSquare, CalendarCheck, PenTool, Calendar, Inbox, ChevronDown, Menu,
+  MessageSquare, Layers, UserSquare, CalendarCheck, PenTool, Calendar, Inbox, ChevronDown, Menu,
   Image as ImageIcon
 } from 'lucide-react';
 import { useMobileNav } from '@/components/layout/MobileNavProvider';
@@ -192,7 +192,6 @@ export default function Header() {
             autoComplete="off"
             style={{ paddingRight: '2.5rem' }}
           />
-          <Filter size={15} color="#9b9b9b" style={{ position: 'absolute', right: '0.8rem', top: '50%', transform: 'translateY(-50%)', cursor: 'pointer' }} />
           {searchQuery && (
             <button
               type="button"

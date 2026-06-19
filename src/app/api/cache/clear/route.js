@@ -31,6 +31,16 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    // Only admins can flush cache keys
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('is_admin')
+      .eq('id', user.id)
+      .single();
+    if (!profile?.is_admin) {
+      return NextResponse.json({ error: 'Admin access required' }, { status: 403 });
+    }
+
     const { keys } = await request.json();
     if (!Array.isArray(keys) || keys.length === 0) {
       return NextResponse.json({ error: 'Invalid keys' }, { status: 400 });
