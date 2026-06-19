@@ -1,19 +1,27 @@
 'use client';
 
-import { Loader2, Heart, ExternalLink, Link as LinkIcon, Download, Check } from 'lucide-react';
+import { useState } from 'react';
+import { Loader2, Heart, ExternalLink, Link as LinkIcon, Download, Check, ImageOff } from 'lucide-react';
 import { unsplashImageSrc } from '@/lib/utils';
 import useToastStore from '@/store/useToastStore';
 
-export default function StockPhotoCard({ 
-  photo, 
-  onSave, 
-  savingId, 
-  savedPhotoIds, 
-  onDownload, 
-  dlId, 
-  dlDone 
+export default function StockPhotoCard({
+  photo,
+  onSave,
+  savingId,
+  savedPhotoIds,
+  onDownload,
+  dlId,
+  dlDone,
+  priority = false,
 }) {
   const addToast = useToastStore((state) => state.addToast);
+  const [loaded, setLoaded] = useState(false);
+  const [errored, setErrored] = useState(false);
+
+  // Use thumbnail-optimised size for card display (saves bandwidth vs full `regular`)
+  // Unsplash Imgix: w=600 serves sharp images up to 300px @2x retina screens
+  const thumbSrc = unsplashImageSrc(photo.urls.small, 600, 75);
 
   return (
     <div
@@ -23,22 +31,54 @@ export default function StockPhotoCard({
         borderRadius: 12,
         overflow: 'hidden',
         position: 'relative',
+        // Use the Unsplash dominant colour as background so users see something
+        // immediately while the image loads — prevents the jarring white flash
         background: photo.color || '#f4f5f5',
         cursor: 'pointer',
         boxShadow: '0 4px 12px rgba(0,0,0,0.03)',
-        aspectRatio: `${photo.width} / ${photo.height}`
+        aspectRatio: `${photo.width} / ${photo.height}`,
       }}
       className="stock-photo-card"
     >
-      <img
-        src={unsplashImageSrc(photo.urls.small)}
-        alt={photo.description || `Photo by ${photo.user.name}`}
-        loading="lazy"
-        decoding="async"
-        style={{ width: '100%', display: 'block', transition: 'transform 0.3s ease' }}
-        onMouseOver={e => e.currentTarget.style.transform = 'scale(1.02)'}
-        onMouseOut={e => e.currentTarget.style.transform = 'scale(1)'}
-      />
+      {/* Broken image fallback */}
+      {errored ? (
+        <div style={{
+          width: '100%',
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: '0.5rem',
+          color: '#9ca3af',
+          background: '#f9fafb',
+          minHeight: 120,
+        }}>
+          <ImageOff size={24} />
+          <span style={{ fontSize: '0.7rem', fontWeight: 500 }}>Image unavailable</span>
+        </div>
+      ) : (
+        <img
+          src={thumbSrc}
+          alt={photo.description || `Photo by ${photo.user.name}`}
+          // lazy for off-screen, eager+high priority for above-the-fold cards
+          loading={priority ? 'eager' : 'lazy'}
+          fetchPriority={priority ? 'high' : 'low'}
+          decoding={priority ? 'sync' : 'async'}
+          style={{
+            width: '100%',
+            display: 'block',
+            // Fade in from transparent once loaded — eliminates the "glitch" pop
+            transition: 'opacity 0.3s ease, transform 0.3s ease',
+            opacity: loaded ? 1 : 0,
+            transform: 'scale(1)',
+          }}
+          onLoad={() => setLoaded(true)}
+          onError={() => setErrored(true)}
+          onMouseOver={e => { e.currentTarget.style.transform = 'scale(1.02)'; }}
+          onMouseOut={e => { e.currentTarget.style.transform = 'scale(1)'; }}
+        />
+      )}
 
       {/* Hover overlay */}
       <div className="stock-photo-overlay" style={{
@@ -72,16 +112,16 @@ export default function StockPhotoCard({
             justifyContent: 'center',
             cursor: savingId === photo.id ? 'wait' : 'pointer',
             transition: 'all 0.2s ease',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+            boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
           }}
-          title={savedPhotoIds.has(photo.id) ? "Remove from Moodboard" : "Save to Moodboard"}
+          title={savedPhotoIds.has(photo.id) ? 'Remove from Moodboard' : 'Save to Moodboard'}
         >
           {savingId === photo.id ? (
             <Loader2 size={16} style={{ animation: 'spin 1s linear infinite' }} />
           ) : (
-            <Heart 
-              size={16} 
-              fill={savedPhotoIds.has(photo.id) ? 'currentColor' : 'transparent'} 
+            <Heart
+              size={16}
+              fill={savedPhotoIds.has(photo.id) ? 'currentColor' : 'transparent'}
               strokeWidth={savedPhotoIds.has(photo.id) ? 0 : 2.5}
             />
           )}

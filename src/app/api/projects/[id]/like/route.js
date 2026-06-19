@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import { redis } from '@/lib/redis';
-import { invalidateFeedCaches } from '@/lib/cacheKeys';
+import { invalidateOnPublish } from '@/lib/cacheKeys';
 
 export const runtime = 'edge';
 
@@ -52,10 +52,10 @@ export async function POST(request, { params }) {
       }
     }
 
-    // 3. Clear Redis caches so the feed updates
+    // 3. Targeted cache invalidation — only bust affected category first page
     try {
       const { data: projectData } = await supabaseAdmin.from('projects').select('category').eq('id', id).single();
-      await invalidateFeedCaches(redis, { category: projectData?.category });
+      await invalidateOnPublish(redis, { category: projectData?.category });
     } catch (cacheErr) {
       console.error('[Redis Cache Invalidate Error]:', cacheErr);
     }

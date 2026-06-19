@@ -299,13 +299,14 @@ export default function StockAssetsPage() {
               <VectorSkeleton />
             </div>
           ) : (
-            results.map(photo => (
+            results.map((photo, index) => (
               <StockAssetCard
                 key={photo.id}
                 photo={photo}
                 onDownload={handleDownload}
                 dlId={dlId}
                 dlDone={dlDone}
+                priority={index < 4}
               />
             ))
           )}

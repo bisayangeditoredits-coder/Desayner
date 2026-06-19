@@ -1,11 +1,16 @@
 'use client';
 
-import { Loader2, ExternalLink, Link as LinkIcon, Download, Check } from 'lucide-react';
+import { useState } from 'react';
+import { Loader2, ExternalLink, Link as LinkIcon, Download, Check, ImageOff } from 'lucide-react';
 import { pixabayImageSrc } from '@/lib/utils';
 import useToastStore from '@/store/useToastStore';
 
-export default function StockAssetCard({ photo, onDownload, dlId, dlDone }) {
+export default function StockAssetCard({ photo, onDownload, dlId, dlDone, priority = false }) {
   const addToast = useToastStore((state) => state.addToast);
+  const [loaded, setLoaded] = useState(false);
+  const [errored, setErrored] = useState(false);
+
+  const thumbSrc = pixabayImageSrc(photo.urls.webformat, photo.urls.preview);
 
   return (
     <div
@@ -23,7 +28,7 @@ export default function StockAssetCard({ photo, onDownload, dlId, dlDone }) {
         justifyContent: 'center',
         padding: '1.5rem',
         boxShadow: '0 4px 12px rgba(0,0,0,0.03)',
-        aspectRatio: `${photo.imageWidth} / ${photo.imageHeight}`
+        aspectRatio: `${photo.imageWidth} / ${photo.imageHeight}`,
       }}
       className="stock-photo-card"
     >
@@ -35,15 +40,48 @@ export default function StockAssetCard({ photo, onDownload, dlId, dlDone }) {
         backgroundSize: '20px 20px',
       }} />
 
-      <img
-        src={pixabayImageSrc(photo.urls.webformat, photo.urls.preview)}
-        alt={photo.user?.name ? `Vector by ${photo.user.name}` : 'Stock vector'}
-        loading="lazy"
-        decoding="async"
-        style={{ width: '100%', display: 'block', position: 'relative', zIndex: 1, objectFit: 'contain', transition: 'transform 0.3s ease' }}
-        onMouseOver={e => e.currentTarget.style.transform = 'scale(1.02)'}
-        onMouseOut={e => e.currentTarget.style.transform = 'scale(1)'}
-      />
+      {/* Broken image fallback */}
+      {errored ? (
+        <div style={{
+          width: '100%',
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: '0.5rem',
+          color: '#9ca3af',
+          position: 'relative',
+          zIndex: 1,
+          minHeight: 100,
+        }}>
+          <ImageOff size={24} />
+          <span style={{ fontSize: '0.7rem', fontWeight: 500 }}>Asset unavailable</span>
+        </div>
+      ) : (
+        <img
+          src={thumbSrc}
+          alt={photo.user?.name ? `Asset by ${photo.user.name}` : 'Stock asset'}
+          loading={priority ? 'eager' : 'lazy'}
+          fetchPriority={priority ? 'high' : 'low'}
+          decoding={priority ? 'sync' : 'async'}
+          style={{
+            width: '100%',
+            display: 'block',
+            position: 'relative',
+            zIndex: 1,
+            objectFit: 'contain',
+            // Fade-in transition eliminates the jarring pop when the image arrives
+            transition: 'opacity 0.3s ease, transform 0.3s ease',
+            opacity: loaded ? 1 : 0,
+            transform: 'scale(1)',
+          }}
+          onLoad={() => setLoaded(true)}
+          onError={() => setErrored(true)}
+          onMouseOver={e => { e.currentTarget.style.transform = 'scale(1.02)'; }}
+          onMouseOut={e => { e.currentTarget.style.transform = 'scale(1)'; }}
+        />
+      )}
 
       {/* Hover overlay */}
       <div className="stock-photo-overlay" style={{

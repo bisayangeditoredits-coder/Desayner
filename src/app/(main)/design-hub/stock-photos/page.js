@@ -380,7 +380,7 @@ export default function StockPhotosPage() {
               <PhotoSkeleton />
             </div>
           ) : (
-            results.map(photo => (
+            results.map((photo, index) => (
               <StockPhotoCard
                 key={photo.id}
                 photo={photo}
@@ -390,6 +390,7 @@ export default function StockPhotosPage() {
                 onDownload={handleDownload}
                 dlId={dlId}
                 dlDone={dlDone}
+                priority={index < 4}
               />
             ))
           )}

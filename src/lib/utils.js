@@ -63,14 +63,58 @@ export function stripCloudinaryProxy(url) {
   return url;
 }
 
-/** Same-origin proxy for Unsplash hotlinked thumbnails (avoids CSP / loader issues). */
-export function unsplashImageSrc(url) {
+/**
+ * Returns an Unsplash image URL that loads DIRECTLY from Unsplash's Imgix CDN —
+ * no server proxy needed. Unsplash URLs are already served by Imgix which supports
+ * `w`, `q`, `auto=format` query params for on-the-fly resizing and WebP conversion.
+ *
+ * At 50k-100k users/day, routing every thumbnail through /api/unsplash/image was
+ * causing millions of unnecessary Vercel function invocations. Direct CDN delivery
+ * eliminates that entirely and removes the server round-trip from the critical path.
+ *
+ * CSP img-src already allows *.unsplash.com — no config changes needed.
+ *
+ * @param {string} url - Raw Unsplash URL (urls.small, urls.regular, etc.)
+ * @param {number} [width=800] - Target display width in px (Imgix resizes on-the-fly)
+ * @param {number} [quality=75] - JPEG/WebP quality (1-100)
+ */
+export function unsplashImageSrc(url, width = 800, quality = 75) {
   if (!url) return url;
-  if (url.startsWith('/api/')) return url;
-  return `/api/unsplash/image?url=${encodeURIComponent(url)}`;
+  // Already a local/proxied path — return as-is
+  if (url.startsWith('/')) return url;
+
+  try {
+    const u = new URL(url);
+    // Only transform Unsplash/Imgix URLs
+    if (!u.hostname.includes('unsplash.com') && !u.hostname.includes('images.unsplash.com')) {
+      return url;
+    }
+    // Strip any existing resize params Unsplash may have set so we control them
+    u.searchParams.delete('w');
+    u.searchParams.delete('h');
+    u.searchParams.delete('q');
+    u.searchParams.delete('auto');
+    u.searchParams.delete('fit');
+    u.searchParams.delete('crop');
+    // Apply our own params: auto=format lets Imgix serve WebP to supporting browsers
+    u.searchParams.set('w', String(width));
+    u.searchParams.set('q', String(quality));
+    u.searchParams.set('auto', 'format');
+    u.searchParams.set('fit', 'max');
+    return u.toString();
+  } catch {
+    return url;
+  }
 }
 
-/** Proxy Pixabay thumbnails through our API (CDN blocks third-party browser referrers). */
+/**
+ * Proxies Pixabay thumbnails through /api/pixabay/image.
+ * Pixabay CDN blocks third-party browser referrers, so a server-side proxy is still
+ * required. The proxy now passes a `w` param for server-side response sizing.
+ *
+ * @param {string} url - Pixabay webformat URL
+ * @param {string} [preview] - Smaller preview URL (preferred for thumbnails)
+ */
 export function pixabayImageSrc(url, preview) {
   const target = preview || url;
   if (!target) return target;

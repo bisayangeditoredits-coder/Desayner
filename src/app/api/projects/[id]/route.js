@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import { redis } from '@/lib/redis';
-import { invalidateFeedCaches } from '@/lib/cacheKeys';
+import { invalidateOnPublish } from '@/lib/cacheKeys';
 
 export const runtime = 'edge';
 
@@ -22,14 +22,14 @@ export async function DELETE(request, { params }) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // 2. Fetch user's profile to get the username (for cache key)
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('username')
-      .eq('id', user.id)
-      .single();
+    // 2. Fetch the author's username + the project's category in parallel
+    //    so we can do targeted cache invalidation without two sequential round-trips.
+    const [{ data: profile }, { data: project }] = await Promise.all([
+      supabase.from('profiles').select('username').eq('id', user.id).single(),
+      supabase.from('projects').select('category').eq('id', id).eq('user_id', user.id).single(),
+    ]);
 
-    // 3. Delete the project (RLS ensures they only delete their own)
+    // 3. Delete the project (RLS ensures users can only delete their own)
     const { error } = await supabase
       .from('projects')
       .delete()
@@ -40,14 +40,13 @@ export async function DELETE(request, { params }) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    // 4. Invalidate Redis Caches
+    // 4. Targeted cache invalidation — only bust the affected category + profile cache.
+    //    Does not wipe unrelated sort views or paginated pages beyond page 1.
     try {
-      if (profile?.username) {
-        // Clear their profile cache so it updates instantly
-        await redis.del(`profile_data_v2:${profile.username.toLowerCase()}:50:0`);
-        await redis.del(`profile_data:${profile.username.toLowerCase()}`);
-      }
-      await invalidateFeedCaches(redis);
+      await invalidateOnPublish(redis, {
+        category: project?.category,
+        username: profile?.username,
+      });
     } catch (err) {
       console.error('[Redis Cache Invalidate Error]:', err);
     }

@@ -11,8 +11,10 @@ export async function GET(request) {
     const { searchParams } = new URL(request.url);
     const category = searchParams.get('category') || 'All';
     const sort = searchParams.get('sort') || 'followers';
-    const page = parseInt(searchParams.get('page') || '1', 10);
+    // Clamp page to prevent malicious large-offset DB scans
+    const page = Math.min(Math.max(parseInt(searchParams.get('page') || '1', 10), 1), 500);
     const PAGE_SIZE = 24;
+
 
     const cacheKey = `designers_feed:${category}:${sort}:${page}`;
 

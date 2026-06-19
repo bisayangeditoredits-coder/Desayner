@@ -1,13 +1,11 @@
 import { NextResponse } from 'next/server';
-
 import { createServerClient } from '@supabase/ssr';
 import { redis } from '@/lib/redis';
-import { invalidateFeedCaches } from '@/lib/cacheKeys';
 
 // Keep as edge but use request.cookies — compatible with Edge Runtime
 export const runtime = 'edge';
 
-// Validate IP format
+// Validate IP format to prevent header-spoofed rate-limit bypass
 function sanitizeIP(ip) {
   const ipv4Regex = /^(\d{1,3}\.){3}\d{1,3}$/;
   const ipv6Regex = /^[\da-f:]+$/i;
@@ -29,7 +27,7 @@ export async function POST(req) {
     );
     const rateLimitKey = `view_${projectId}_ip_${ip}`;
 
-    // 1 view per user/IP per hour per project
+    // 1 view per IP per hour per project
     const hasViewed = await redis.get(rateLimitKey);
     if (hasViewed) {
       return NextResponse.json({ success: true, cached: true });
@@ -56,12 +54,11 @@ export async function POST(req) {
       return NextResponse.json({ success: false, error: error.message }, { status: 500 });
     }
 
-    // Invalidate related caches
-    try {
-      await invalidateFeedCaches(redis);
-    } catch (cacheErr) {
-      console.warn('Cache invalidation failed:', cacheErr);
-    }
+    // NOTE: We intentionally do NOT invalidate feed caches here.
+    // View counts are atomically incremented via RPC — the 60s SWR lag is acceptable.
+    // Busting the entire feed cache on every view causes a perpetual cache stampede on
+    // popular projects, effectively disabling caching entirely for hot content.
+    // Feed cache is only invalidated by real mutations: publish, like, save, delete.
 
     return NextResponse.json({ success: true, views: typeof data === 'number' ? data : 0 });
   } catch (error) {
