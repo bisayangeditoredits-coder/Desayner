@@ -58,15 +58,15 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 
 export const metadata = {
   metadataBase: new URL("https://desayner.com"),
-  title: "Desayner | Content Creation & Branding Agency",
-  description: "Desayner is a premium platform for modern creators. Elevate your brand with professional visual storytelling.",
+  title: "Desayner | The Premier Community for Creative Professionals",
+  description: "Desayner is the ultimate platform to showcase your portfolio, discover world-class design inspiration, and connect with top creative talent worldwide.",
   alternates: {
     canonical: "/",
   },
   manifest: "/site.webmanifest",
   openGraph: {
-    title: "Desayner | Content Creation & Branding Agency",
-    description: "Desayner is a premium platform for modern creators. Elevate your brand with professional visual storytelling.",
+    title: "Desayner | The Premier Community for Creative Professionals",
+    description: "Desayner is the ultimate platform to showcase your portfolio, discover world-class design inspiration, and connect with top creative talent worldwide.",
     url: "https://desayner.com",
     siteName: "Desayner",
     images: [
@@ -82,8 +82,8 @@ export const metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Desayner | Content Creation & Branding Agency",
-    description: "Desayner is a premium platform for modern creators. Elevate your brand with professional visual storytelling.",
+    title: "Desayner | The Premier Community for Creative Professionals",
+    description: "Desayner is the ultimate platform to showcase your portfolio, discover world-class design inspiration, and connect with top creative talent worldwide.",
     images: ["https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=1200&q=80"],
   },
   appleWebApp: {
