@@ -165,6 +165,53 @@ export default function Dashboard() {
       <WelcomeModal />
       <div className="page-content" style={{ padding: '0 1.5rem 2rem' }}>
         
+        {/* Community Announcement Banner */}
+        <div style={{
+          background: '#121212', // A professional sleek dark color
+          borderRadius: '8px',
+          padding: '0.75rem 1.5rem',
+          marginTop: '1.5rem',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          flexWrap: 'wrap',
+          gap: '1rem',
+          color: 'white',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+            <span style={{ fontSize: '0.9rem', fontWeight: 700, letterSpacing: '0.01em' }}>
+              Introducing Community!
+            </span>
+            <span style={{ fontSize: '0.85rem', color: '#a1a1aa' }}>
+              Ask questions, share your work, and get feedback from other designers.
+            </span>
+          </div>
+          <Link 
+            href="/community"
+            style={{
+              background: '#e6e82d',
+              color: '#121212',
+              padding: '0.4rem 1.25rem',
+              borderRadius: '6px',
+              fontSize: '0.8rem',
+              fontWeight: 800,
+              textDecoration: 'none',
+              transition: 'all 0.15s',
+              whiteSpace: 'nowrap',
+            }}
+            onMouseOver={(e) => {
+              e.currentTarget.style.background = '#d9db20';
+              e.currentTarget.style.transform = 'translateY(-1px)';
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.background = '#e6e82d';
+              e.currentTarget.style.transform = 'translateY(0)';
+            }}
+          >
+            Explore
+          </Link>
+        </div>
+        
         {/* Banner Section — only render when there are banners */}
         {BANNERS.length > 0 && (
           <div className="event-banner-wrapper" style={{ position: 'relative', overflow: 'hidden', aspectRatio: '4 / 1', borderRadius: '12px', marginBottom: '1.5rem', marginTop: '1.5rem' }}>

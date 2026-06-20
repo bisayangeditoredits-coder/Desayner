@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 import { createClient } from '@supabase/supabase-js';
-import { cookies } from 'next/headers';
+import { getServerAuth } from '@/lib/supabase/server';
 import { Resend } from 'resend';
 import { Ratelimit } from '@upstash/ratelimit';
 import { Redis } from '@upstash/redis';
@@ -47,14 +47,7 @@ export async function POST(request) {
     }
 
     // --- 3. SUPABASE AUTH & VERIFICATION ---
-    const cookieStore = await cookies();
-    const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-      { cookies: { getAll: () => cookieStore.getAll() } }
-    );
-
-    const { data: { user } } = await supabase.auth.getUser();
+    const { user, admin } = await getServerAuth(request);
 
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized. You must be logged in to send an inquiry.' }, { status: 401 });
@@ -77,15 +70,15 @@ export async function POST(request) {
 
     // --- 5. DATABASE INSERT ---
     const fullMessage = `Engagement: ${engagementType || 'Project-based'}\n\n${message}`;
-    const { error: insertError } = await supabase
+    const { error: insertError } = await admin
       .from('inquiries')
       .insert({
-        sender_id: user.id,
-        receiver_id: receiver_id,
+        sender_id:    user.id,
+        receiver_id:  receiver_id,
         project_type: projectType,
-        budget: budget,
-        message: fullMessage,
-        status: 'unread'
+        budget:       budget,
+        message:      fullMessage,
+        status:       'unread'
       });
 
     if (insertError) {
@@ -95,7 +88,6 @@ export async function POST(request) {
 
     // --- 6. EMAIL NOTIFICATION WITH SCAM WARNING ---
     if (process.env.RESEND_API_KEY && process.env.SUPABASE_SERVICE_ROLE_KEY) {
-      // Use Admin Client to securely fetch the real registered email of the receiver
       const supabaseAdmin = createClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL,
         process.env.SUPABASE_SERVICE_ROLE_KEY
@@ -104,7 +96,7 @@ export async function POST(request) {
       const { data: receiverAuth } = await supabaseAdmin.auth.admin.getUserById(receiver_id);
       const receiverEmail = receiverAuth?.user?.email;
 
-      const { data: senderProfile } = await supabase.from('profiles').select('full_name, username').eq('id', user.id).single();
+      const { data: senderProfile } = await admin.from('profiles').select('full_name, username').eq('id', user.id).maybeSingle();
 
       if (receiverEmail) {
         const resend = new Resend(process.env.RESEND_API_KEY);

@@ -21,6 +21,7 @@ const MAIN_NAV_ITEMS = [
   { href: '/',             icon: Home,          label: 'Home',        public: true },
   { href: '/designers',    icon: Users2,        label: 'Designers',   public: true },
   { href: '/design-hub',   icon: Palette,       label: 'Design Hub',  public: true },
+  { href: '/community',    icon: MessageSquare, label: 'Community',   public: true },
   { href: '/saved',        icon: Bookmark,      label: 'Saved',       reqAuth: true },
 ];
 

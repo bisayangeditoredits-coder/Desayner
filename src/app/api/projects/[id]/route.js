@@ -1,47 +1,35 @@
 import { NextResponse } from 'next/server';
-import { createServerClient } from '@supabase/ssr';
-import { cookies } from 'next/headers';
+import { getServerAuth } from '@/lib/supabase/server';
 import { redis } from '@/lib/redis';
 import { invalidateOnPublish } from '@/lib/cacheKeys';
-
-export const runtime = 'edge';
 
 export async function DELETE(request, { params }) {
   try {
     const { id } = await params;
-    const cookieStore = await cookies();
-    const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-      { cookies: { getAll: () => cookieStore.getAll() } }
-    );
+    const { user, admin } = await getServerAuth(request);
+    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-    // 1. Get current user
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    // 2. Fetch the author's username + the project's category in parallel
-    //    so we can do targeted cache invalidation without two sequential round-trips.
+    // Fetch profile + project data for cache invalidation (verify ownership too)
     const [{ data: profile }, { data: project }] = await Promise.all([
-      supabase.from('profiles').select('username').eq('id', user.id).single(),
-      supabase.from('projects').select('category').eq('id', id).eq('user_id', user.id).single(),
+      admin.from('profiles').select('username').eq('id', user.id).maybeSingle(),
+      admin.from('projects').select('category, user_id').eq('id', id).maybeSingle(),
     ]);
 
-    // 3. Delete the project (RLS ensures users can only delete their own)
-    const { error } = await supabase
-      .from('projects')
-      .delete()
-      .eq('id', id)
-      .eq('user_id', user.id);
-
-    if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
+    // Ownership check — enforce in JS since service role bypasses RLS
+    if (!project) {
+      return NextResponse.json({ error: 'Project not found.' }, { status: 404 });
+    }
+    if (project.user_id !== user.id) {
+      return NextResponse.json({ error: 'Forbidden.' }, { status: 403 });
     }
 
-    // 4. Targeted cache invalidation — only bust the affected category + profile cache.
-    //    Does not wipe unrelated sort views or paginated pages beyond page 1.
+    const { error } = await admin
+      .from('projects')
+      .delete()
+      .eq('id', id);
+
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
     try {
       await invalidateOnPublish(redis, {
         category: project?.category,
@@ -53,7 +41,7 @@ export async function DELETE(request, { params }) {
 
     return NextResponse.json({ success: true });
   } catch (err) {
-    console.error('[DELETE /api/projects/[id] Error]:', err);
+    console.error('[DELETE /api/projects/[id]]', err);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

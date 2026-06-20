@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
-import { createServerClient } from '@supabase/ssr';
-import { cookies } from 'next/headers';
+import { createAdminClient } from '@/lib/supabase/server';
+import { redis } from '@/lib/redis';
 import { swrCache } from '@/lib/cache';
 
 export const runtime = 'edge';
@@ -19,12 +19,7 @@ export async function GET(request) {
     const cacheKey = `designers_feed:${category}:${sort}:${page}`;
 
     const fetcher = async () => {
-      const cookieStore = await cookies();
-      const supabase = createServerClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-        { cookies: { getAll: () => cookieStore.getAll() } }
-      );
+      const supabase = createAdminClient();
 
       let payload = {
         heroDesigner: null,

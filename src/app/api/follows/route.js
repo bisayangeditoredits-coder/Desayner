@@ -1,7 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
-import { createServerClient } from '@supabase/ssr';
-import { cookies } from 'next/headers';
+import { getServerAuth } from '@/lib/supabase/server';
 import { waitUntil } from '@vercel/functions';
 import { sendNewFollowerEmail } from '@/lib/emails';
 
@@ -12,24 +10,12 @@ export async function POST(req) {
       return NextResponse.json({ error: 'Missing following_id' }, { status: 400 });
     }
 
-    const supabase = await createClient();
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-
-    if (authError || !user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    const { user, admin: supabaseAdmin } = await getServerAuth(req);
+    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
     if (user.id === following_id) {
       return NextResponse.json({ error: 'Cannot follow yourself' }, { status: 400 });
     }
-
-    // Use Service Role to bypass RLS
-    const cookieStore = await cookies();
-    const supabaseAdmin = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL,
-      process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-      { cookies: { getAll: () => [] } }
-    );
 
     // Insert follow
     const { error: insertError } = await supabaseAdmin
@@ -80,20 +66,8 @@ export async function DELETE(req) {
       return NextResponse.json({ error: 'Missing following_id' }, { status: 400 });
     }
 
-    const supabase = await createClient();
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-
-    if (authError || !user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    // Use Service Role to bypass RLS
-    const cookieStore = await cookies();
-    const supabaseAdmin = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL,
-      process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-      { cookies: { getAll: () => [] } }
-    );
+    const { user, admin: supabaseAdmin } = await getServerAuth(req);
+    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
     const { error: deleteError } = await supabaseAdmin
       .from('follows')

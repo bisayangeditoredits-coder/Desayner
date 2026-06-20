@@ -12,14 +12,12 @@
 import { getAssetUrl } from '@/lib/storage/r2';
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-import { createServerClient } from '@supabase/ssr';
-import { cookies } from 'next/headers';
+import { getServerAuth } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
 import { redis } from '@/lib/redis';
 import { Ratelimit } from '@upstash/ratelimit';
 import * as Sentry from '@sentry/nextjs';
 
-export const runtime = 'edge';
 
 // 20 uploads per user per 60 seconds
 const ratelimit = new Ratelimit({
@@ -34,13 +32,7 @@ const ALLOWED_TYPES = ['image/webp'];
 export async function POST(request) {
   try {
     // ── Auth ────────────────────────────────────────────────────────────────
-    const cookieStore = await cookies();
-    const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-      { cookies: { getAll: () => cookieStore.getAll() } }
-    );
-    const { data: { user } } = await supabase.auth.getUser();
+    const { user } = await getServerAuth(request);
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }

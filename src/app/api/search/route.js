@@ -1,11 +1,9 @@
 import { NextResponse } from 'next/server';
-import { createServerClient } from '@supabase/ssr';
-import { cookies } from 'next/headers';
+import { createAdminClient } from '@/lib/supabase/server';
 import { redis } from '@/lib/redis';
 import { buildPublishedProjectsQuery, parseSearchQuery } from '@/lib/projectSearch';
 import { Ratelimit } from '@upstash/ratelimit';
 
-export const runtime = 'edge';
 const CACHE_HEADERS = { 'Cache-Control': 's-maxage=60, stale-while-revalidate=30' };
 
 // 30 search requests per user/IP per 60 seconds
@@ -51,12 +49,7 @@ export async function GET(request) {
     );
   }
 
-  const cookieStore = await cookies();
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-    { cookies: { getAll: () => cookieStore.getAll() } },
-  );
+  const supabase = createAdminClient();
 
   const query = buildPublishedProjectsQuery(supabase, {
     ftsQuery,
