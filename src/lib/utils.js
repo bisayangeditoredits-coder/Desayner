@@ -153,9 +153,12 @@ export function optimizeImage(url, width = 600, quality = 80) {
     }
   }
 
-  // NOTE: Cloudflare Image Transformations (/cdn-cgi/image/) was tested but returns
-  // 404 for Supabase/R2-hosted images even with "Any origin" enabled. Not worth it —
-  // images are already converted to WebP via processImage() on upload.
-  // Serve raw CDN URLs directly — already optimized, no extra hop needed.
+  // We use wsrv.nl (a free Cloudflare-backed image resizing CDN) to optimize
+  // images on the fly. This avoids Vercel 402 limits and CF r2.dev restrictions,
+  // guaranteeing that projects load small 600px thumbnails instead of 2000px raw images.
+  if (normalizedUrl.startsWith('http')) {
+    return `https://wsrv.nl/?url=${encodeURIComponent(normalizedUrl)}&w=${width}&q=${quality}&output=webp`;
+  }
+
   return normalizedUrl;
 }
