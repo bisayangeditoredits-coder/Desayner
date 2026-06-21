@@ -41,7 +41,7 @@ export default function MobileBottomNav() {
     <nav className="mobile-bottom-nav">
       <Link href="/" className={`mobile-nav-item ${isActive('/') ? 'active' : ''}`}>
         <Home size={20} strokeWidth={isActive('/') ? 2.5 : 1.75} />
-        <span className="mobile-nav-label">Home</span>
+        <span className="mobile-nav-label">Inspiration</span>
       </Link>
 
       <Link href="/projects" className={`mobile-nav-item ${isActive('/projects') ? 'active' : ''}`}>

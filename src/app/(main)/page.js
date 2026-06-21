@@ -197,6 +197,9 @@ export default function Dashboard() {
           </div>
         )}
 
+        {/* Horizontal Features Carousel (Moved above Search) */}
+        <HorizontalFeatureScroll />
+
         {/* Dribbble-style Search Hero */}
         <div style={{ padding: '0 1.5rem', marginBottom: '2rem', maxWidth: '1200px', margin: '0 auto 2rem auto' }}>
           {/* Big Search Bar */}
@@ -289,7 +292,7 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <HorizontalFeatureScroll />
+        {/* HorizontalFeatureScroll was moved up */}
 
         {/* Masonry Project Grid */}
         {error ? (

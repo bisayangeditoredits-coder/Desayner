@@ -18,7 +18,7 @@ import useFeedStore from '@/store/useFeedStore';
 import useProfileStore from '@/store/useProfileStore';
 
 const MAIN_NAV_ITEMS = [
-  { href: '/',             icon: Home,          label: 'Home',        public: true },
+  { href: '/',             icon: Home,          label: 'Inspiration', public: true },
   { href: '/designers',    icon: Users2,        label: 'Designers',   public: true },
   { href: '/design-hub',   icon: Palette,       label: 'Design Hub',  public: true },
   { href: '/saved',        icon: Bookmark,      label: 'Saved',       reqAuth: true },

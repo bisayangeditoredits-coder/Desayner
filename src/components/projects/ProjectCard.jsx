@@ -76,6 +76,7 @@ const ProjectCard = React.memo(function ProjectCard({ project, currentUserId, is
           href={`/projects/${project.id}`}
           className="project-card__thumb-link"
           prefetch={false}
+          scroll={false}
           onClick={saveProjectModalReturn}
         >
           <div className={`project-card__thumb project-card__thumb--${imgStatus}`}>
@@ -129,15 +130,34 @@ const ProjectCard = React.memo(function ProjectCard({ project, currentUserId, is
           <Link
             href={author?.username ? `/profile/${author.username}` : '#'}
             className="project-card__author"
+            style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}
           >
             <UserAvatar
               src={author?.avatar_url}
               name={author?.full_name || author?.username || 'Unknown'}
-              size={24}
+              size={32}
             />
-            <span className="project-card__author-name">
-              {author?.full_name || author?.username || 'Unknown'}
-            </span>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <span className="project-card__author-name" style={{ fontSize: '0.85rem', fontWeight: 700, maxWidth: '110px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  {author?.full_name || author?.username || 'Unknown'}
+                </span>
+                {author?.available_for_work && (
+                  <span style={{
+                    display: "inline-flex", alignItems: "center", gap: "3px",
+                    padding: "2px 5px", background: "#dcfce7", color: "#166534",
+                    borderRadius: "4px", fontSize: "9px", fontWeight: 800,
+                    textTransform: "uppercase"
+                  }}>
+                    <div style={{ width: "4px", height: "4px", borderRadius: "50%", background: "#166534" }} />
+                    HIRE
+                  </span>
+                )}
+              </div>
+              <span style={{ fontSize: '0.65rem', color: '#64748b', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                {project.category || 'Design'}
+              </span>
+            </div>
           </Link>
 
           <div className="project-card__actions">
