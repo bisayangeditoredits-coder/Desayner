@@ -1,5 +1,5 @@
 'use client';
-import { useState, useMemo} from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
 import useToastStore from '@/store/useToastStore';
@@ -10,6 +10,10 @@ export default function FollowButton({ targetUserId, currentUserId, initialFollo
   const supabase = useMemo(() => createClient(), []);
   const router = useRouter();
   const addToast = useToastStore((s) => s.addToast);
+
+  useEffect(() => {
+    setFollowing(initialFollowing);
+  }, [initialFollowing]);
 
   if (currentUserId === targetUserId) return null;
 

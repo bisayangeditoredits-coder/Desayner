@@ -179,7 +179,7 @@ export default function OnboardingModal({ user, onComplete }) {
       <div style={{ padding: '2.5rem' }}>
         {/* Header */}
         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-          <img src="/desayner-logo.png" alt="Desayner" style={{ width: '48px', height: 'auto', margin: '0 auto 1rem', display: 'block' }} />
+          <img src="/desayner-logo.png" alt="Desayner" style={{ width: '140px', height: 'auto', margin: '0 auto 1.5rem', display: 'block' }} />
           <h1 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>Welcome to Desayner</h1>
           <p style={{ fontSize: '0.9rem', color: '#64748b', marginTop: '0.5rem' }}>
             {step === 1 ? 'Let’s set up your creator identity.' : 'Tell us about your creative focus.'}
@@ -438,7 +438,7 @@ function CoverUploadBlock({ coverUrl, onUploaded, onRemove }) {
     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
       <p style={{ fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#94a3b8', margin: 0 }}>Cover Photo</p>
       <div
-        style={{ position: 'relative', width: '100%', borderRadius: '12px', overflow: 'hidden', cursor: 'pointer', aspectRatio: '16/5', border: coverUrl ? 'none' : '1.5px dashed #cbd5e1', background: coverUrl ? 'transparent' : '#f8fafc' }}
+        style={{ position: 'relative', width: '100%', borderRadius: '12px', overflow: 'hidden', cursor: 'pointer', aspectRatio: '16/9', border: coverUrl ? 'none' : '1.5px dashed #cbd5e1', background: coverUrl ? 'transparent' : '#f8fafc' }}
         onMouseEnter={() => setHover(true)}
         onMouseLeave={() => setHover(false)}
         onClick={() => inputRef.current?.click()}
@@ -471,7 +471,7 @@ function CoverUploadBlock({ coverUrl, onUploaded, onRemove }) {
       {error && <p style={{ fontSize: '0.7rem', color: '#ef4444', margin: 0 }}>{error}</p>}
       <input ref={inputRef} type="file" accept="image/*" style={{ display: 'none' }}
         onChange={e => { const f = e.target.files?.[0]; if (f) handleFile(f); e.target.value = ''; }} />
-      {cropSrc && <ImageCropperModal imageSrc={cropSrc} aspect={16/5} cropShape="rect" onClose={() => setCropSrc('')} onCropSave={handleCropSave} />}
+      {cropSrc && <ImageCropperModal imageSrc={cropSrc} aspect={16/9} cropShape="rect" onClose={() => setCropSrc('')} onCropSave={handleCropSave} />}
     </div>
   );
 }

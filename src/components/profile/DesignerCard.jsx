@@ -27,7 +27,7 @@ export function getDesignerSkills(designer) {
   return Array.from(new Set([...fromProjects, ...fromSkills, ...fromTools])).slice(0, 6);
 }
 
-const DesignerCard = React.memo(function DesignerCard({ designer, currentUserId }) {
+const DesignerCard = React.memo(function DesignerCard({ designer, currentUserId, isFollowing = false }) {
   const skills = getDesignerSkills(designer);
   const projects = designer.sampleProjects || [];
   const isNew = isNewMember(designer.created_at);
@@ -49,11 +49,9 @@ const DesignerCard = React.memo(function DesignerCard({ designer, currentUserId 
         transition: "all 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
       }}
       onMouseOver={(e) => {
-        e.currentTarget.style.transform = "translateY(-4px)";
-        e.currentTarget.style.boxShadow = "0 12px 32px rgba(0,0,0,0.06)";
+        e.currentTarget.style.boxShadow = "0 12px 40px rgba(0,0,0,0.08)";
       }}
       onMouseOut={(e) => {
-        e.currentTarget.style.transform = "translateY(0)";
         e.currentTarget.style.boxShadow = "0 4px 24px rgba(0,0,0,0.02)";
       }}
     >
@@ -130,33 +128,21 @@ const DesignerCard = React.memo(function DesignerCard({ designer, currentUserId 
                 </span>
               )}
 
-              {designer.followers_count > 100 ? (
+              {skills.length > 0 && (
                 <span
                   style={{
-                    background: "#231f20",
-                    color: "white",
+                    background: "#f8fafc",
+                    color: "#334155",
+                    border: "1px solid #e2e8f0",
                     fontSize: "10px",
                     fontWeight: 800,
                     padding: "3px 8px",
                     borderRadius: "6px",
                     letterSpacing: "0.5px",
+                    textTransform: "uppercase",
                   }}
                 >
-                  PRO+
-                </span>
-              ) : (
-                <span
-                  style={{
-                    background: "rgba(0,0,0,0.04)",
-                    color: "#475569",
-                    fontSize: "10px",
-                    fontWeight: 800,
-                    padding: "3px 8px",
-                    borderRadius: "6px",
-                    letterSpacing: "0.5px",
-                  }}
-                >
-                  PRO
+                  {skills[0]}
                 </span>
               )}
 
@@ -231,7 +217,7 @@ const DesignerCard = React.memo(function DesignerCard({ designer, currentUserId 
           <FollowButton
             targetUserId={designer.id}
             currentUserId={currentUserId}
-            compact
+            initialFollowing={isFollowing}
           />
           {designer.website && (
             <a
@@ -344,9 +330,9 @@ const DesignerCard = React.memo(function DesignerCard({ designer, currentUserId 
       <style jsx>{`
         .designer-card__projects-grid {
           display: grid;
-          grid-template-columns: repeat(4, 1fr);
+          grid-template-columns: repeat(2, 1fr);
           gap: 16px;
-          min-height: 180px;
+          min-height: auto;
           width: 100%;
         }
         .designer-card__project-tile {

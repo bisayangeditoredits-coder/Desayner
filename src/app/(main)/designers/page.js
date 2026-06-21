@@ -28,7 +28,6 @@ import {
 
 import "../../App.css";
 import "./designers.css";
-import HorizontalFeatureScroll from "@/components/marketing/HorizontalFeatureScroll";
 import DesignerCard from "@/components/profile/DesignerCard";
 export const runtime = 'edge';
 
@@ -51,7 +50,7 @@ const SORT_OPTIONS = [
 import { Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
-function VirtualDesignerChunk({ designersChunk, currentUserId }) {
+function VirtualDesignerChunk({ designersChunk, currentUserId, followingIds }) {
   const [isVisible, setIsVisible] = useState(true);
   const [height, setHeight] = useState(0);
   const containerRef = useRef(null);
@@ -69,7 +68,6 @@ function VirtualDesignerChunk({ designersChunk, currentUserId }) {
     if (!containerRef.current) return;
     const observer = new IntersectionObserver(
       (entries) => {
-        // Keep the last chunk visible if height isn't calculated yet
         if (height > 0) setIsVisible(entries[0].isIntersecting);
       },
       { rootMargin: '3000px 0px' }
@@ -83,12 +81,13 @@ function VirtualDesignerChunk({ designersChunk, currentUserId }) {
   }
 
   return (
-    <div ref={containerRef} style={{ display: "flex", flexDirection: "column", gap: "2rem", marginBottom: "2rem" }}>
+    <div ref={containerRef} className="designers-chunk-grid" style={{ marginBottom: "2rem" }}>
       {designersChunk.map((designer) => (
         <DesignerCard
           key={designer.id}
           designer={designer}
           currentUserId={currentUserId}
+          isFollowing={followingIds?.has(designer.id)}
         />
       ))}
     </div>
@@ -113,6 +112,7 @@ function DesignersContent() {
   const [category, setCategory] = useState(initialCategory);
   const [sort, setSort] = useState(initialSort);
   const [currentUserId, setCurrentUserId] = useState(null);
+  const [followingIds, setFollowingIds] = useState(new Set());
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(false);
 
@@ -121,7 +121,18 @@ function DesignersContent() {
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
-      if (user) setCurrentUserId(user.id);
+      if (user) {
+        setCurrentUserId(user.id);
+        supabase
+          .from("follows")
+          .select("following_id")
+          .eq("follower_id", user.id)
+          .then(({ data }) => {
+            if (data) {
+              setFollowingIds(new Set(data.map((f) => f.following_id)));
+            }
+          });
+      }
     });
   }, [supabase]);
 
@@ -150,7 +161,10 @@ function DesignersContent() {
         const res = await fetch(
           `/api/designers?category=${encodeURIComponent(currentCat)}&sort=${currentSort}&page=${pageNum}`,
         );
-        if (!res.ok) throw new Error("Failed to fetch designers");
+        if (!res.ok) {
+          const errText = await res.text().catch(() => '');
+          throw new Error(`Failed to fetch designers: ${res.status} ${res.statusText} - ${errText}`);
+        }
         const payload = await res.json();
 
         const newDesigners = (payload.designers || []).filter(
@@ -254,18 +268,21 @@ function DesignersContent() {
             <div className="page-content">
 
               {/* ── Section header ── */}
-              <div style={{ marginBottom: '0.75rem' }}>
-                <p style={{ fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#2d43e8', margin: '0 0 0.3rem' }}>
-                  Trending this week
-                </p>
-                <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: '1rem', flexWrap: 'wrap' }}>
-                  <h1 style={{ fontSize: '1.6rem', fontWeight: 900, color: '#0f172a', margin: 0, letterSpacing: '-0.02em', lineHeight: 1.1 }}>
-                    Rising Designers
-                  </h1>
-                  <p style={{ fontSize: '0.85rem', color: '#64748b', margin: 0, lineHeight: 1.4 }}>
-                    The fastest-growing creatives on Desayner right now.
-                  </p>
+              <div style={{ marginBottom: '1.5rem', paddingBottom: '1.25rem', borderBottom: '1px solid #f1f5f9' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.4rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '26px', height: '26px', borderRadius: '6px', background: '#eff6ff', color: '#3b82f6' }}>
+                    <TrendingUp size={14} />
+                  </div>
+                  <span style={{ fontSize: '0.75rem', fontWeight: 800, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#3b82f6' }}>
+                    Trending this week
+                  </span>
                 </div>
+                <h1 style={{ fontSize: '2rem', fontWeight: 900, color: '#0f172a', margin: 0, letterSpacing: '-0.03em' }}>
+                  Rising Designers
+                </h1>
+                <p style={{ fontSize: '0.95rem', color: '#64748b', margin: '0.4rem 0 0', fontWeight: 500 }}>
+                  The fastest-growing creatives on Desayner right now.
+                </p>
               </div>
 
               {/* ── 4-column grid ── */}
@@ -301,14 +318,24 @@ function DesignersContent() {
                       </Link>
 
                       {/* Name */}
-                      <Link href={`/profile/${creator.username}`} className="td-card__name-link">
+                      <Link href={`/profile/${creator.username}`} className="td-card__name-link" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                         <span className="td-card__name">{creator.full_name || creator.username}</span>
+                        {creator.available_for_work && (
+                          <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#10b981', display: 'inline-block', flexShrink: 0 }} title="Available for work" />
+                        )}
                       </Link>
 
                       {/* Bio */}
-                      <p className="td-card__bio">
+                      <p className="td-card__bio" style={{ marginBottom: creator.location ? '0.2rem' : '1rem' }}>
                         {creator.bio || 'Creative professional on Desayner.'}
                       </p>
+
+                      {/* Location */}
+                      {creator.location && (
+                        <p style={{ fontSize: '0.75rem', color: '#94a3b8', margin: '0 0 1rem 0', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                          <MapPin size={10} /> {creator.location}
+                        </p>
+                      )}
 
                       {/* Footer */}
                       <div className="td-card__footer">
@@ -321,6 +348,11 @@ function DesignersContent() {
                           <span className="td-card__stat">
                             <strong>{creator.projects_count || 0}</strong>
                             <span>Works</span>
+                          </span>
+                          <span className="td-card__sep" />
+                          <span className="td-card__stat">
+                            <strong>{creator.total_project_likes || 0}</strong>
+                            <span>Likes</span>
                           </span>
                         </div>
                         <FollowButton targetUserId={creator.id} currentUserId={currentUserId} compact={true} />
@@ -337,7 +369,6 @@ function DesignersContent() {
         )}
 
       <div className="page-content">
-        <HorizontalFeatureScroll />
         {/* 3. Main Explore Section */}
         <div style={{ marginBottom: "1.25rem" }}>
           <h2 style={{ fontSize: "1.75rem", fontWeight: 800 }}>
@@ -399,12 +430,12 @@ function DesignersContent() {
             ))}
           </div>
 
-          <div style={{ position: "relative", width: "300px", flexShrink: 0 }}>
+          <div style={{ position: "relative", width: "100%", maxWidth: "450px", flexShrink: 0 }}>
             <Search
-              size={18}
+              size={22}
               style={{
                 position: "absolute",
-                left: "1.2rem",
+                left: "1.25rem",
                 top: "50%",
                 transform: "translateY(-50%)",
                 color: "#64748b",
@@ -417,11 +448,11 @@ function DesignersContent() {
               placeholder="Search designers..."
               style={{
                 width: "100%",
-                padding: "0.85rem 1rem 0.85rem 3rem",
+                padding: "1rem 1.5rem 1rem 3.5rem",
                 borderRadius: "30px",
                 border: "1px solid #cbd5e1",
                 background: "white",
-                fontSize: "0.95rem",
+                fontSize: "1.05rem",
                 color: "#0f172a",
                 outline: "none",
                 boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
@@ -552,6 +583,7 @@ function DesignersContent() {
                 key={i}
                 designersChunk={filteredDesigners.slice(i * 12, (i + 1) * 12)}
                 currentUserId={currentUserId}
+                followingIds={followingIds}
               />
             ))}
           </div>

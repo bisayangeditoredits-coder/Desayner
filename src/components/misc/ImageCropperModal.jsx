@@ -50,56 +50,42 @@ export default function ImageCropperModal({
     }}>
       <div style={{
         background: '#ffffff',
-        borderRadius: '20px',
+        borderRadius: '24px',
         width: '100%',
-        maxWidth: '580px',
+        maxWidth: '600px',
         overflow: 'hidden',
         display: 'flex',
         flexDirection: 'column',
-        boxShadow: '0 20px 40px -15px rgba(45, 67, 232, 0.15), 0 10px 20px -10px rgba(0, 0, 0, 0.08)',
-        animation: 'cropperSlideUp 0.22s cubic-bezier(0.34,1.56,0.64,1)'
+        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(0,0,0,0.05)',
+        animation: 'cropperSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
       }}>
-
-        {/* ── Brand accent bar ─────────────────────────────────────── */}
-        <div style={{ height: '5px', background: 'linear-gradient(90deg, #2d43e8 0%, #3b82f6 100%)' }} />
 
         {/* ── Header ─────────────────────────────────────────────────── */}
         <div style={{
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          padding: '1rem 1.4rem',
+          padding: '1.25rem 1.5rem',
           borderBottom: '1px solid #f1f5f9'
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-            <div style={{
-              width: '34px', height: '34px', borderRadius: '10px',
-              background: 'rgba(45,67,232,0.08)',
-              border: '1px solid rgba(45,67,232,0.15)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center'
-            }}>
-              <Crop size={16} color="#2d43e8" />
-            </div>
-            <div>
-              <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>
-                Adjust Image
-              </h3>
-              <p style={{ fontSize: '0.72rem', color: '#94a3b8', margin: 0, marginTop: '1px' }}>
-                Drag to reposition · scroll to zoom
-              </p>
-            </div>
+          <div>
+            <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>
+              Adjust Image
+            </h3>
+            <p style={{ fontSize: '0.8rem', color: '#64748b', margin: 0, marginTop: '2px' }}>
+              Drag to reposition · Scroll to zoom
+            </p>
           </div>
           <button
             onClick={onClose}
             style={{
-              width: '32px', height: '32px', borderRadius: '9px',
-              background: '#f8fafc',
-              border: '1px solid #e2e8f0',
+              width: '36px', height: '36px', borderRadius: '50%',
+              background: 'transparent', border: 'none',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              cursor: 'pointer', color: '#94a3b8', transition: 'all 0.15s'
+              cursor: 'pointer', color: '#64748b', transition: 'all 0.2s ease'
             }}
-            onMouseEnter={e => { e.currentTarget.style.background = '#f1f5f9'; e.currentTarget.style.color = '#475569'; }}
-            onMouseLeave={e => { e.currentTarget.style.background = '#f8fafc'; e.currentTarget.style.color = '#94a3b8'; }}
+            onMouseEnter={e => { e.currentTarget.style.background = '#f1f5f9'; e.currentTarget.style.color = '#0f172a'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#64748b'; }}
           >
-            <X size={15} />
+            <X size={18} />
           </button>
         </div>
 
@@ -125,29 +111,28 @@ export default function ImageCropperModal({
 
         {/* ── Controls ───────────────────────────────────────────────── */}
         <div style={{
-          padding: '1rem 1.4rem',
-          background: '#f8fafc',
-          borderTop: '1px solid #f1f5f9',
-          display: 'flex', flexDirection: 'column', gap: '0.9rem'
+          padding: '1.25rem 1.5rem',
+          background: '#ffffff',
+          display: 'flex', flexDirection: 'column', gap: '1.25rem'
         }}>
 
           {/* Zoom row */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
             <button
               onClick={() => setZoom(z => Math.max(1, +(z - 0.1).toFixed(1)))}
               style={{
-                width: '30px', height: '30px', borderRadius: '8px',
-                background: 'white', border: '1px solid #e4e4e7',
+                width: '36px', height: '36px', borderRadius: '50%',
+                background: '#f8fafc', border: '1px solid #e2e8f0',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                cursor: 'pointer', color: '#71717a', flexShrink: 0, transition: 'all 0.15s'
+                cursor: 'pointer', color: '#64748b', flexShrink: 0, transition: 'all 0.2s ease'
               }}
-              onMouseEnter={e => e.currentTarget.style.borderColor = '#2d43e8'}
-              onMouseLeave={e => e.currentTarget.style.borderColor = '#e4e4e7'}
+              onMouseEnter={e => { e.currentTarget.style.background = '#f1f5f9'; e.currentTarget.style.color = '#0f172a'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = '#f8fafc'; e.currentTarget.style.color = '#64748b'; }}
             >
-              <ZoomOut size={14} />
+              <ZoomOut size={16} />
             </button>
 
-            <div style={{ flex: 1, position: 'relative' }}>
+            <div style={{ flex: 1, position: 'relative', display: 'flex', alignItems: 'center' }}>
               <input
                 type="range"
                 value={zoom}
@@ -156,63 +141,55 @@ export default function ImageCropperModal({
                 step={0.05}
                 aria-label="Zoom"
                 onChange={(e) => setZoom(Number(e.target.value))}
-                style={{ width: '100%', accentColor: '#2d43e8', cursor: 'pointer' }}
+                style={{ width: '100%', height: '4px', background: '#e2e8f0', borderRadius: '4px', appearance: 'none', outline: 'none', cursor: 'pointer' }}
               />
+              {/* Custom thumb style below in style block */}
             </div>
 
             <button
               onClick={() => setZoom(z => Math.min(3, +(z + 0.1).toFixed(1)))}
               style={{
-                width: '30px', height: '30px', borderRadius: '8px',
-                background: 'white', border: '1px solid #e4e4e7',
+                width: '36px', height: '36px', borderRadius: '50%',
+                background: '#f8fafc', border: '1px solid #e2e8f0',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                cursor: 'pointer', color: '#71717a', flexShrink: 0, transition: 'all 0.15s'
+                cursor: 'pointer', color: '#64748b', flexShrink: 0, transition: 'all 0.2s ease'
               }}
-              onMouseEnter={e => e.currentTarget.style.borderColor = '#2d43e8'}
-              onMouseLeave={e => e.currentTarget.style.borderColor = '#e4e4e7'}
+              onMouseEnter={e => { e.currentTarget.style.background = '#f1f5f9'; e.currentTarget.style.color = '#0f172a'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = '#f8fafc'; e.currentTarget.style.color = '#64748b'; }}
             >
-              <ZoomIn size={14} />
+              <ZoomIn size={16} />
             </button>
-
-            <span style={{
-              fontSize: '0.72rem', fontWeight: 700, color: '#2d43e8',
-              background: 'rgba(45,67,232,0.08)', borderRadius: '6px',
-              padding: '0.25rem 0.55rem', minWidth: '38px', textAlign: 'center',
-              flexShrink: 0
-            }}>
-              {zoomPct}%
-            </span>
           </div>
 
           {/* Action row */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.75rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <button
               onClick={() => setRotation(r => (r + 90) % 360)}
               title="Rotate 90°"
               style={{
-                display: 'flex', alignItems: 'center', gap: '0.4rem',
-                background: 'white', border: '1px solid #e4e4e7', borderRadius: '10px',
-                padding: '0.55rem 0.9rem', fontSize: '0.8rem', fontWeight: 600,
-                cursor: 'pointer', color: '#374151', transition: 'all 0.15s',
+                display: 'flex', alignItems: 'center', gap: '0.5rem',
+                background: 'transparent', border: 'none', borderRadius: '100px',
+                padding: '0.6rem 1rem', fontSize: '0.875rem', fontWeight: 600,
+                cursor: 'pointer', color: '#475569', transition: 'all 0.2s ease',
                 flexShrink: 0
               }}
-              onMouseEnter={e => { e.currentTarget.style.borderColor = '#2d43e8'; e.currentTarget.style.color = '#2d43e8'; }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor = '#e4e4e7'; e.currentTarget.style.color = '#374151'; }}
+              onMouseEnter={e => { e.currentTarget.style.background = '#f1f5f9'; e.currentTarget.style.color = '#0f172a'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#475569'; }}
             >
-              <RotateCw size={14} />
-              <span>Rotate 90°</span>
+              <RotateCw size={16} />
+              <span>Rotate</span>
             </button>
 
-            <div style={{ display: 'flex', gap: '0.5rem', marginLeft: 'auto' }}>
+            <div style={{ display: 'flex', gap: '0.75rem', marginLeft: 'auto' }}>
               <button
                 onClick={onClose}
                 style={{
-                  background: 'white', border: '1px solid #e4e4e7', borderRadius: '10px',
-                  padding: '0.55rem 1.1rem', fontSize: '0.82rem', fontWeight: 600,
-                  cursor: 'pointer', color: '#6b7280', transition: 'all 0.15s'
+                  background: 'transparent', border: 'none', borderRadius: '100px',
+                  padding: '0.75rem 1.25rem', fontSize: '0.875rem', fontWeight: 600,
+                  cursor: 'pointer', color: '#64748b', transition: 'all 0.2s ease'
                 }}
-                onMouseEnter={e => e.currentTarget.style.borderColor = '#94a3b8'}
-                onMouseLeave={e => e.currentTarget.style.borderColor = '#e4e4e7'}
+                onMouseEnter={e => { e.currentTarget.style.background = '#f1f5f9'; e.currentTarget.style.color = '#0f172a'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#64748b'; }}
               >
                 Cancel
               </button>
@@ -221,20 +198,21 @@ export default function ImageCropperModal({
                 onClick={handleSave}
                 disabled={loading}
                 style={{
-                  display: 'flex', alignItems: 'center', gap: '0.45rem',
-                  background: loading ? '#94a3b8' : '#2d43e8',
-                  color: 'white', border: 'none', borderRadius: '10px',
-                  padding: '0.55rem 1.25rem', fontSize: '0.82rem', fontWeight: 700,
+                  display: 'flex', alignItems: 'center', gap: '0.5rem',
+                  background: loading ? '#94a3b8' : '#0f172a',
+                  color: 'white', border: 'none', borderRadius: '100px',
+                  padding: '0.75rem 1.5rem', fontSize: '0.875rem', fontWeight: 700,
                   cursor: loading ? 'not-allowed' : 'pointer',
-                  transition: 'all 0.2s'
+                  transition: 'all 0.2s ease',
+                  boxShadow: '0 4px 12px rgba(15, 23, 42, 0.15)'
                 }}
-                onMouseEnter={e => { if (!loading) e.currentTarget.style.background = '#2536c5'; }}
-                onMouseLeave={e => { if (!loading) e.currentTarget.style.background = '#2d43e8'; }}
+                onMouseEnter={e => { if (!loading) e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 6px 16px rgba(15, 23, 42, 0.2)'; }}
+                onMouseLeave={e => { if (!loading) e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(15, 23, 42, 0.15)'; }}
               >
                 {loading ? (
-                  <><Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} /> Saving…</>
+                  <><Loader2 size={16} style={{ animation: 'spin 1s linear infinite' }} /> Saving…</>
                 ) : (
-                  <><Check size={14} /> Crop &amp; Save</>
+                  <><Check size={16} /> Crop &amp; Save</>
                 )}
               </button>
             </div>
@@ -253,22 +231,38 @@ export default function ImageCropperModal({
 
         .reactEasyCrop_CropArea {
           border: 2px solid rgba(255,255,255,0.9) !important;
-          box-shadow: 0 0 0 9999px rgba(15, 23, 42, 0.7) !important;
+          box-shadow: 0 0 0 9999px rgba(15, 23, 42, 0.75) !important;
         }
 
         .banner-crop-area {
-          border: 2px solid #2d43e8 !important;
-          box-shadow: 0 0 0 9999px rgba(15, 23, 42, 0.7), 0 0 0 4px rgba(45,67,232,0.2) !important;
+          border: 2px solid rgba(255,255,255,0.8) !important;
+          box-shadow: 0 0 0 9999px rgba(15, 23, 42, 0.75) !important;
         }
 
         .avatar-crop-area {
-          border: 2px solid #2d43e8 !important;
-          box-shadow: 0 0 0 9999px rgba(15, 23, 42, 0.7), 0 0 0 4px rgba(45,67,232,0.2) !important;
+          border: 2px solid rgba(255,255,255,0.8) !important;
+          box-shadow: 0 0 0 9999px rgba(15, 23, 42, 0.75) !important;
         }
 
         .reactEasyCrop_Grid::before,
         .reactEasyCrop_Grid::after {
-          border-color: rgba(255,255,255,0.12) !important;
+          border-color: rgba(255,255,255,0.2) !important;
+        }
+
+        /* Custom Range Input */
+        input[type=range]::-webkit-slider-thumb {
+          appearance: none;
+          width: 16px;
+          height: 16px;
+          border-radius: 50%;
+          background: #0f172a;
+          cursor: pointer;
+          border: 2px solid #ffffff;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+          transition: transform 0.1s;
+        }
+        input[type=range]::-webkit-slider-thumb:hover {
+          transform: scale(1.1);
         }
       `}</style>
     </div>

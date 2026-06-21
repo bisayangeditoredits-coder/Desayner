@@ -52,14 +52,4 @@ export async function invalidateOnPublish(redis, { category, username } = {}) {
   await redis.del(...keys);
 }
 
-// ── Community Posts cache keys ────────────────────────────────────────────────
 
-/** Redis key for the community feed page. */
-export function communityFeedKey(sort = 'hot', flair = 'all', page = 1) {
-  return `community_feed:${sort}:${flair}:${page}`;
-}
-
-/** Redis key for a single community post + its first page of comments. */
-export function communityPostKey(id) {
-  return `community_post:${id}`;
-}

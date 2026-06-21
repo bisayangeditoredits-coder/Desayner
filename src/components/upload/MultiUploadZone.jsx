@@ -20,7 +20,7 @@
  */
 
 import { useCallback, useReducer, useRef, useEffect, useState, useId } from 'react';
-import { X, Upload, AlertCircle, CheckCircle2, Loader2 } from 'lucide-react';
+import { X, Upload, AlertCircle, CheckCircle2, Loader2, ChevronLeft, ChevronRight } from 'lucide-react';
 import { processImage } from '@/lib/processImage';
 import { uploadProcessedImages } from '@/lib/uploadToR2';
 
@@ -54,7 +54,7 @@ function formatBytes(bytes) {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-export default function MultiUploadZone({ folder = 'uploads', value = [], onResults, onRemove, label = '', maxFiles = 20 }) {
+export default function MultiUploadZone({ folder = 'uploads', value = [], onResults, onRemove, onMove, label = '', maxFiles = 20 }) {
   const [items, dispatch] = useReducer(reducer, []);
   const [dragging, setDragging] = useToggle(false);
   const inputRef   = useRef(null);
@@ -217,6 +217,24 @@ export default function MultiUploadZone({ folder = 'uploads', value = [], onResu
           {value.map((url, i) => (
             <div key={url} className="gallery-upload-item" style={{ position: 'relative', background: '#f0f0f0', overflow: 'hidden', borderRadius: '6px' }}>
               <img src={url} alt="" style={{ width: '100%', height: 'auto', display: 'block' }} loading="lazy" decoding="async" />
+              {i > 0 && (
+                <button
+                  type="button"
+                  onClick={() => onMove?.(i, i - 1)}
+                  style={{ position: 'absolute', bottom: '5px', left: '5px', background: 'rgba(0,0,0,0.7)', color: 'white', border: 'none', width: '22px', height: '22px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', borderRadius: '4px' }}
+                >
+                  <ChevronLeft size={11} />
+                </button>
+              )}
+              {i < value.length - 1 && (
+                <button
+                  type="button"
+                  onClick={() => onMove?.(i, i + 1)}
+                  style={{ position: 'absolute', bottom: '5px', right: '5px', background: 'rgba(0,0,0,0.7)', color: 'white', border: 'none', width: '22px', height: '22px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', borderRadius: '4px' }}
+                >
+                  <ChevronRight size={11} />
+                </button>
+              )}
               <button
                 type="button"
                 onClick={() => onRemove?.(i)}

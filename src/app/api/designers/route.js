@@ -51,7 +51,7 @@ export async function GET(request) {
         
         const { data: risingData } = await supabase
           .from('profiles')
-          .select('id, username, full_name, avatar_url, bio, followers_count, projects_count, tools, created_at, available_for_work')
+          .select('id, username, full_name, avatar_url, bio, location, followers_count, projects_count, total_project_views, total_project_likes, tools, created_at, available_for_work')
           .gte('created_at', thirtyDaysAgo.toISOString())
           .order('followers_count', { ascending: false })
           .limit(4);
@@ -81,7 +81,7 @@ export async function GET(request) {
         }
       }
 
-      let selectString = 'id, username, full_name, avatar_url, bio, location, followers_count, following_count, projects_count, created_at, tools, available_for_work';
+      let selectString = 'id, username, full_name, avatar_url, bio, location, followers_count, following_count, projects_count, total_project_views, total_project_likes, created_at, tools, available_for_work';
       if (category !== 'All') {
         selectString += ', projects!inner(user_id, category, published)';
       }

@@ -3,6 +3,8 @@ import ProfileClient from './ProfileClient';
 import { cookies } from 'next/headers';
 import { optimizeImage } from '@/lib/utils';
 
+export const revalidate = 60;
+
 export async function generateMetadata({ params }) {
   const { username } = await params;
   const supabase = await createClient();
@@ -55,7 +57,7 @@ export default async function ProfilePage({ params }) {
   
   const { data: profile } = await supabase
     .from('profiles')
-    .select('full_name, username, bio, avatar_url, created_at')
+    .select('*')
     .eq('username', username)
     .single();
 
@@ -83,7 +85,7 @@ export default async function ProfilePage({ params }) {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       )}
-      <ProfileClient />
+      <ProfileClient initialProfile={profile} />
     </>
   );
 }

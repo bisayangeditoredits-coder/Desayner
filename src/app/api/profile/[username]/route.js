@@ -7,7 +7,7 @@ const DEFAULT_LIMIT = 50;
 const MAX_LIMIT     = 50;
 
 const PROJECT_SELECT =
-  'id, title, thumbnail_url, cover_url, category, views_count, likes_count, saves_count, created_at, user_id, profiles!projects_user_id_fkey(username, full_name, avatar_url)';
+  'id, title, thumbnail_url, cover_url, category, views_count, likes_count, saves_count, created_at, user_id';
 
 async function attachUserLikes(admin, userId, projects) {
   if (!userId || !projects.length) return projects;

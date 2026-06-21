@@ -71,12 +71,10 @@ export default function AnnouncementBar() {
       <div className="announcement-bar">
         <div className="announcement-content">
           <Sparkles size={14} style={{ color: '#fbbf24', flexShrink: 0 }} />
-          <span className="announcement-text">Join the Desayner Community! Connect with top creatives worldwide.</span>
-          <span className="announcement-short-text">Join the Desayner Community!</span>
+          <span className="announcement-text">Discover top creative professionals for your next big project.</span>
+          <span className="announcement-short-text">Find top designers!</span>
           <a
-            href="https://discord.gg/3DmJrVcDG8"
-            target="_blank"
-            rel="noreferrer"
+            href="/designers"
             style={{
               color: '#fbbf24',
               textDecoration: 'underline',
@@ -85,7 +83,7 @@ export default function AnnouncementBar() {
               whiteSpace: 'nowrap'
             }}
           >
-            Learn more
+            Explore Designers →
           </a>
         </div>
 

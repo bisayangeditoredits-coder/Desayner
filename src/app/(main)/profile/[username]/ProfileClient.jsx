@@ -6,15 +6,16 @@ import ProjectCard from '@/components/projects/ProjectCard';
 import FollowButton from '@/components/ui/FollowButton';
 import UserAvatar from '@/components/ui/UserAvatar';
 import Link from 'next/link';
-import { Globe, MapPin, Calendar, MessageSquare, ExternalLink, Folder, ArrowLeft, RefreshCw } from 'lucide-react';
+import { Globe, MapPin, Calendar, MessageSquare, ExternalLink, Folder, ArrowLeft, RefreshCw, ShoppingBag, ArrowUpRight, Share2, Eye, Heart } from 'lucide-react';
 import { CREATIVE_TOOLS } from '@/lib/constants';
-import { stripCloudinaryProxy } from '@/lib/utils';
+import { stripCloudinaryProxy, optimizeImage } from '@/lib/utils';
 import ProfileCompletenessCard from '@/components/profile/ProfileCompletenessCard';
 import EmptyState from '@/components/ui/EmptyState';
 import FirstProjectCelebration from '@/components/onboarding/FirstProjectCelebration';
 import dynamic from 'next/dynamic';
 const HireMeModal = dynamic(() => import('@/components/profile/HireMeModal'), { ssr: false });
 import { Suspense } from 'react';
+import ShareProjectModal from '@/components/projects/ShareProjectModal';
 import '../../../App.css';
 
 const PROFILE_PAGE_SIZE = 50;
@@ -49,15 +50,17 @@ function HireMeButton({ profile, onClick }) {
   );
 }
 
-export default function ProfilePage() {
+export default function ProfilePage({ initialProfile = null }) {
   const { username } = useParams();
-  const [profile, setProfile]           = useState(null);
+  const [profile, setProfile]           = useState(initialProfile);
   const [projects, setProjects]         = useState([]);
   const [tab, setTab]                   = useState('projects');
   const [currentUser, setCurrentUser]   = useState(null);
   const [isFollowing, setIsFollowing]   = useState(false);
-  const [followerCount, setFollowerCount] = useState(0);
-  const [loading, setLoading]           = useState(true);
+  const [followerCount, setFollowerCount] = useState(initialProfile?.followers_count || 0);
+  const [loading, setLoading]           = useState(!initialProfile);
+  const [projectsLoading, setProjectsLoading] = useState(true);
+  const [showShareModal, setShowShareModal] = useState(false);
   const [loadingMoreProjects, setLoadingMoreProjects] = useState(false);
   const [hasMoreProjects, setHasMoreProjects] = useState(false);
   const [failedCoverSrc, setFailedCoverSrc] = useState(null);
@@ -67,7 +70,7 @@ export default function ProfilePage() {
 
   useEffect(() => {
     async function load() {
-      setLoading(true);
+      if (!initialProfile) setLoading(true);
       setHasMoreProjects(false);
       try {
         const res = await fetch(
@@ -90,6 +93,7 @@ export default function ProfilePage() {
         console.error('Error loading profile:', err);
       } finally {
         setLoading(false);
+        setProjectsLoading(false);
       }
     }
     load();
@@ -138,7 +142,7 @@ export default function ProfilePage() {
   );
 
   const rawCoverSrc = profile.cover_url || (projects.length > 0 ? projects[0].cover_url : null);
-  const coverSrc = rawCoverSrc ? stripCloudinaryProxy(rawCoverSrc) : null;
+  const coverSrc = rawCoverSrc ? optimizeImage(rawCoverSrc, 1920) : null;
 
   return (
     <div className="profile-v2">
@@ -152,132 +156,299 @@ export default function ProfilePage() {
         </div>
       )}
 
-      {/* ── Cover Banner ── */}
-      <div 
-        className="profile-v2__cover"
-        onClick={() => {
-          if (coverSrc && failedCoverSrc !== coverSrc) {
-            setIsCoverExpanded(true);
+      <style>{`
+        /* Asymmetric Split Profile Layout */
+        .profile-split {
+          max-width: 1500px;
+          margin: 0 auto;
+          padding: 1rem 2rem;
+          display: grid;
+          grid-template-columns: 1fr 1.35fr;
+          gap: 6rem;
+          align-items: center;
+        }
+        .profile-split__left {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+        }
+        .profile-split__avatar {
+          width: 90px;
+          height: 90px;
+          border-radius: 50%;
+          margin-bottom: 1.5rem;
+          box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+        }
+        .profile-split__name {
+          font-size: 2.2rem;
+          font-weight: 800;
+          color: #0f172a;
+          margin: 0 0 0.5rem 0;
+          line-height: 1.1;
+          letter-spacing: -0.03em;
+          font-family: inherit;
+        }
+        .profile-split__tab-count {
+          background: #f1f5f9;
+          color: #64748b;
+          font-size: 0.75rem;
+          padding: 2px 8px;
+          border-radius: 999px;
+          font-weight: 700;
+        }
+
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+        .custom-spinner {
+          width: 40px;
+          height: 40px;
+          border: 3px solid #e0e7ff;
+          border-top-color: #2d43e8;
+          border-radius: 50%;
+          animation: spin 0.8s ease-in-out infinite;
+        }
+        .profile-split__handle {
+          font-size: 1rem;
+          color: #64748b;
+          font-weight: 500;
+          margin: 0 0 2rem 0;
+          font-family: inherit;
+        }
+        .profile-split__bio {
+          font-size: 1.7rem;
+          font-weight: 400;
+          color: #0f172a;
+          line-height: 1.3;
+          margin: 0 0 2rem 0;
+          letter-spacing: -0.01em;
+          font-family: inherit;
+        }
+        .profile-split__bio-placeholder {
+          font-size: 1.7rem;
+          font-weight: 400;
+          color: #0f172a;
+          line-height: 1.3;
+          margin: 0 0 2rem 0;
+          letter-spacing: -0.01em;
+          font-family: inherit;
+        }
+        .profile-split__stats {
+          display: flex;
+          align-items: center;
+          gap: 1.5rem;
+          margin-bottom: 2rem;
+          font-size: 0.95rem;
+          color: #64748b;
+        }
+        .profile-split__stats span {
+          display: flex;
+          align-items: center;
+          gap: 0.4rem;
+        }
+        .profile-split__stats strong {
+          color: #0f172a;
+          font-weight: 800;
+          font-size: 1.15rem;
+        }
+        .profile-split__actions {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+          flex-wrap: wrap;
+        }
+        .split-btn {
+          padding: 0.7rem 1.5rem;
+          border-radius: 999px;
+          font-weight: 700;
+          font-size: 0.9rem;
+          cursor: pointer;
+          display: inline-flex;
+          align-items: center;
+          gap: 0.5rem;
+          transition: all 0.2s;
+          text-decoration: none;
+          border: none;
+          font-family: inherit;
+        }
+        .split-btn--dark {
+          background: #0f172a;
+          color: white;
+        }
+        .split-btn--dark:hover {
+          background: #1e293b;
+        }
+        .split-btn--outline {
+          background: white;
+          color: #0f172a;
+          border: 1px solid #cbd5e1;
+        }
+        .split-btn--outline:hover {
+          background: #f8fafc;
+          border-color: #94a3b8;
+        }
+        .split-btn--icon {
+          padding: 0.7rem;
+          border-radius: 50%;
+          border: 1px solid #cbd5e1;
+          background: white;
+          color: #0f172a;
+        }
+        .split-btn--icon:hover {
+          background: #f8fafc;
+          border-color: #94a3b8;
+        }
+        .profile-split__right {
+          width: 100%;
+        }
+        .profile-split__showcase {
+          width: 100%;
+          aspect-ratio: 16/9;
+          border-radius: 24px;
+          background: linear-gradient(135deg, #e0e7ff, #f8fafc);
+          overflow: hidden;
+          box-shadow: 0 20px 40px -10px rgba(0,0,0,0.1);
+          position: relative;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .profile-split__showcase-img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+        .profile-split__badge-float {
+          position: absolute;
+          bottom: 2rem;
+          left: 2rem;
+          background: rgba(255, 255, 255, 0.9);
+          backdrop-filter: blur(8px);
+          padding: 0.5rem 1rem;
+          border-radius: 12px;
+          font-weight: 800;
+          font-size: 0.8rem;
+          color: #0f172a;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+          font-family: inherit;
+        }
+        .status-dot {
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          background: #22c55e;
+          box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.15);
+          animation: pulse-dot 2s infinite;
+        }
+        @media (max-width: 900px) {
+          .profile-split {
+            grid-template-columns: 1fr;
+            padding: 2rem 1rem;
+            gap: 2rem;
           }
-        }}
-        style={{ cursor: coverSrc && failedCoverSrc !== coverSrc ? 'zoom-in' : 'default' }}
-      >
-        {coverSrc && failedCoverSrc !== coverSrc ? (
-          <img
-            src={coverSrc}
-            alt="Cover"
-            className="profile-v2__cover-img"
-            onError={() => setFailedCoverSrc(coverSrc)}
-          />
-        ) : (
-          <div className="profile-v2__cover-placeholder" />
-        )}
-      </div>
-
-      {/* ── Identity Bar ── */}
-      <div className="profile-v2__identity">
-        <div className="profile-v2__identity-inner">
-
-          {/* Avatar — floated up over cover */}
-          <div className="profile-v2__avatar-wrap">
+          .profile-split__bio {
+            font-size: 1.5rem;
+          }
+          .profile-split__showcase {
+            aspect-ratio: 16/9;
+          }
+        }
+      `}</style>
+      <div className="profile-split">
+        {/* Left Column: Identity & Typography */}
+        <div className="profile-split__left">
+          <div className="profile-split__avatar">
             <UserAvatar
               src={profile.avatar_url}
               name={profile.full_name || profile.username}
-              size={88}
+              size={90}
             />
           </div>
 
-          {/* Name / username / bio / stats — main column */}
-          <div className="profile-v2__identity-text">
-            <div className="profile-v2__name-row">
-              <h1 className="profile-v2__name">{profile.full_name || profile.username}</h1>
-              <span className="profile-v2__badge">Creator</span>
-              {profile.available_for_work && (
-                <span style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  background: 'rgba(34, 197, 94, 0.1)',
-                  color: '#16a34a',
-                  padding: '4px 10px',
-                  borderRadius: '20px',
-                  fontSize: '0.75rem',
-                  fontWeight: 800,
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.05em',
-                  border: '1px solid rgba(34, 197, 94, 0.2)'
-                }}>
-                  <span style={{
-                    width: '6px',
-                    height: '6px',
-                    borderRadius: '50%',
-                    background: '#22c55e',
-                    boxShadow: '0 0 8px #22c55e'
-                  }} />
-                  Available for Work
-                </span>
-              )}
-            </div>
-            <p className="profile-v2__username">@{profile.username}</p>
-            {profile.bio && (
-              <p className="profile-v2__bio">{profile.bio}</p>
-            )}
+          <h1 className="profile-split__name">{profile.full_name || profile.username}</h1>
+          <p className="profile-split__handle">@{profile.username}</p>
 
-            {/* Stats and Actions in one row/area */}
-            <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '2rem', marginTop: '1rem' }}>
-              <div className="profile-v2__stats" style={{ marginTop: 0, borderTop: 'none', paddingTop: 0 }}>
-                <div className="profile-v2__stat">
-                  <span className="profile-v2__stat-num">{followerCount.toLocaleString()}</span>
-                  <span className="profile-v2__stat-label">Followers</span>
-                </div>
-                <div className="profile-v2__stat-divider" />
-                <div className="profile-v2__stat">
-                  <span className="profile-v2__stat-num">{(profile.following_count || 0).toLocaleString()}</span>
-                  <span className="profile-v2__stat-label">Following</span>
-                </div>
-                <div className="profile-v2__stat-divider" />
-                <div className="profile-v2__stat">
-                  <span className="profile-v2__stat-num">{(profile.projects_count || projects.length).toLocaleString()}</span>
-                  <span className="profile-v2__stat-label">Projects</span>
-                </div>
-              </div>
+          {profile.bio ? (
+            <p className="profile-split__bio">{profile.bio}</p>
+          ) : (
+            <p className="profile-split__bio-placeholder">Welcome to my creative space!</p>
+          )}
 
-              {/* Actions moved closer */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap', maxWidth: '100%' }}>
-                {isOwn ? (
-                  <Link href="/settings" className="profile-pill-btn profile-pill-btn-dark">
-                    Edit Profile
-                  </Link>
-                ) : (
-                  <>
-                    <FollowButton
-                      targetUserId={profile.id}
-                      currentUserId={currentUser?.id}
-                      initialFollowing={isFollowing}
-                      compact={true}
-                    />
-                    <HireMeButton profile={profile} onClick={() => setIsHireModalOpen(true)} />
-                  </>
-                )}
-                {profile.website && (
-                  <a
-                    href={profile.website}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="profile-v2__website-btn"
-                    title="Website"
-                    style={{ margin: 0 }}
-                  >
-                    <Globe size={14} style={{ flexShrink: 0 }} />
-                    <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '160px' }}>{profile.website.replace(/^https?:\/\//, '').replace(/\/$/, '')}</span>
-                    <ExternalLink size={11} style={{ opacity: 0.5, flexShrink: 0 }} />
-                  </a>
-                )}
-              </div>
-            </div>
+          <div className="profile-split__stats">
+            <span><strong>{followerCount.toLocaleString()}</strong> Followers</span>
+            <span><strong>{(profile.following_count || 0).toLocaleString()}</strong> Following</span>
+            <span><strong>{(profile.projects_count || projects.length).toLocaleString()}</strong> Projects</span>
+            <span title="Total Project Views" style={{ marginLeft: '0.5rem', color: '#94a3b8' }}>
+              <Eye size={16} /> <strong>{(profile.total_project_views || 0).toLocaleString()}</strong>
+            </span>
+            <span title="Total Project Likes" style={{ color: '#94a3b8' }}>
+              <Heart size={16} /> <strong>{(profile.total_project_likes || 0).toLocaleString()}</strong>
+            </span>
           </div>
 
+          <div className="profile-split__actions">
+            {isOwn ? (
+              <Link href="/settings" className="split-btn split-btn--outline">
+                Edit Profile
+              </Link>
+            ) : (
+              <>
+                <FollowButton
+                  targetUserId={profile.id}
+                  currentUserId={currentUser?.id}
+                  initialFollowing={isFollowing}
+                  compact={false}
+                />
+                {profile.available_for_work && (
+                  <button onClick={() => setIsHireModalOpen(true)} className="split-btn split-btn--dark">
+                    <span className="status-dot"></span> Hire Me
+                  </button>
+                )}
+              </>
+            )}
 
+            {profile.website && (
+              <a href={profile.website} target="_blank" rel="noopener noreferrer" className="split-btn split-btn--icon" title="Website">
+                <Globe size={18} />
+              </a>
+            )}
+            
+            <button 
+              onClick={() => setShowShareModal(true)} 
+              className="split-btn split-btn--icon" 
+              title="Share Profile"
+            >
+              <Share2 size={18} />
+            </button>
+          </div>
+        </div>
+
+        {/* Right Column: Visual Showcase */}
+        <div className="profile-split__right">
+          <div className="profile-split__showcase">
+            {coverSrc && failedCoverSrc !== coverSrc ? (
+              <img
+                src={coverSrc}
+                alt="Showcase Cover"
+                className="profile-split__showcase-img"
+                onError={() => setFailedCoverSrc(coverSrc)}
+              />
+            ) : (
+              <div style={{ color: '#94a3b8', fontWeight: 800, fontSize: '2rem', opacity: 0.5 }}>
+                {profile.full_name || profile.username}
+              </div>
+            )}
+            
+            {profile.available_for_work && (
+              <div className="profile-split__badge-float">
+                <span className="status-dot"></span> Available for new inquiries
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
@@ -306,7 +477,11 @@ export default function ProfilePage() {
       <div className="profile-v2__content">
 
         {tab === 'projects' && (
-          projects.length === 0 ? (
+          projectsLoading ? (
+            <div style={{ display: 'flex', justifyContent: 'center', padding: '4rem 0' }}>
+              <div className="custom-spinner" />
+            </div>
+          ) : projects.length === 0 ? (
             <EmptyState
               icon={Folder}
               title={isOwn ? "You haven't published any projects yet" : `${profile.full_name || profile.username} hasn't shared work yet`}
@@ -324,7 +499,7 @@ export default function ProfilePage() {
             <>
               <div className="projects-masonry">
                 {projects.map(project => (
-                  <ProjectCard key={project.id} project={project} currentUserId={currentUser?.id} />
+                  <ProjectCard key={project.id} project={{...project, profiles: profile}} currentUserId={currentUser?.id} />
                 ))}
               </div>
               {hasMoreProjects && (
@@ -497,6 +672,16 @@ export default function ProfilePage() {
             onClick={(e) => e.stopPropagation()}
           />
         </div>
+      )}
+
+      {showShareModal && (
+        <ShareProjectModal
+          projectUrl={typeof window !== 'undefined' ? window.location.href : `https://desayner.com/profile/${profile.username}`}
+          projectTitle={`${profile.full_name || profile.username}'s Profile on Desayner`}
+          projectImage={profile.avatar_url}
+          type="Profile"
+          onClose={() => setShowShareModal(false)}
+        />
       )}
     </div>
   );

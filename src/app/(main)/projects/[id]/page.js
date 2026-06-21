@@ -3,6 +3,8 @@ import ProjectDetailClient from './ProjectDetailClient';
 import { cookies } from 'next/headers';
 import { optimizeImage } from '@/lib/utils';
 
+export const revalidate = 60;
+
 export async function generateMetadata({ params }) {
   const { id } = await params;
   const supabase = await createClient();
@@ -55,7 +57,14 @@ export default async function ProjectPage({ params }) {
   
   const { data: project } = await supabase
     .from('projects')
-    .select('title, description, cover_url, created_at, profiles(username, full_name)')
+    .select(`
+      id, title, cover_url, thumbnail_url, images, description, tools, tags,
+      likes_count, saves_count, views_count, created_at, user_id, published,
+      profiles!projects_user_id_fkey(
+        id, username, full_name, avatar_url,
+        bio, followers_count, projects_count, website
+      )
+    `)
     .eq('id', id)
     .single();
 
@@ -82,7 +91,7 @@ export default async function ProjectPage({ params }) {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       )}
-      <ProjectDetailClient />
+      <ProjectDetailClient initialProject={project} />
     </>
   );
 }

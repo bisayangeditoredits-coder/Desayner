@@ -6,6 +6,7 @@ import CommentThread from '@/components/projects/CommentThread';
 import FollowButton from '@/components/ui/FollowButton';
 import UserAvatar from '@/components/ui/UserAvatar';
 import SaveToCollectionModal from '@/components/projects/SaveToCollectionModal';
+import ShareProjectModal from '@/components/projects/ShareProjectModal';
 import Link from 'next/link';
 import { Heart, Bookmark, ArrowLeft, Globe, Eye, MessageCircle, Calendar, Share, Edit, Check, Trash2, MessageSquare } from 'lucide-react';
 import { CREATIVE_TOOLS } from '@/lib/constants';
@@ -111,12 +112,12 @@ function ImageGallery({ images, title }) {
 
 // ─── Main page ───────────────────────────────────────────────────────────────
 
-export default function ProjectDetailClient({ isModal = false }) {
+export default function ProjectDetailClient({ initialProject = null, isModal = false }) {
   const { id } = useParams();
   const router = useRouter();
   const supabase = useMemo(() => createClient(), []);
 
-  const [project,        setProject]        = useState(null);
+  const [project,        setProject]        = useState(initialProject);
   const [comments,       setComments]       = useState([]);
   const [commentCount,   setCommentCount]   = useState(0);
   const [commentsHasMore,setCommentsHasMore] = useState(false);
@@ -126,35 +127,48 @@ export default function ProjectDetailClient({ isModal = false }) {
   const addToast = useToastStore((s) => s.addToast);
   const [liked,          setLiked]          = useState(false);
   const [showColModal,   setShowColModal]   = useState(false);
-  const [likeCount,      setLikeCount]      = useState(0);
+  const [likeCount,      setLikeCount]      = useState(initialProject?.likes_count || 0);
   const [isFollowing,    setIsFollowing]    = useState(false);
-  const [loading,        setLoading]        = useState(true);
+  const [loading,        setLoading]        = useState(!initialProject);
   const [shareToast,     setShareToast]     = useState(false);
   const [isDeleting,     setIsDeleting]     = useState(false);
   const [showDeleteModal,setShowDeleteModal] = useState(false);
+  const [showShareModal, setShowShareModal]  = useState(false);
 
   const load = useCallback(async () => {
-    const [authResult, projResult, commsResult] = await Promise.all([
+    const tasks = [
       supabase.auth.getUser(),
-      supabase
-        .from('projects')
-        .select(PROJECT_DETAIL_SELECT)
-        .eq('id', id)
-        .single(),
       supabase
         .from('project_comments')
         .select(COMMENT_SELECT, { count: 'exact' })
         .eq('project_id', id)
         .order('created_at', { ascending: true })
         .range(0, COMMENTS_PAGE_SIZE - 1),
-    ]);
+    ];
+    
+    if (!initialProject) {
+      tasks.push(
+        supabase
+          .from('projects')
+          .select(PROJECT_DETAIL_SELECT)
+          .eq('id', id)
+          .single()
+      );
+    }
+
+    const results = await Promise.all(tasks);
+    const authResult = results[0];
+    const commsResult = results[1];
+    const projResult = initialProject ? { data: initialProject } : results[2];
 
     const user = authResult.data?.user || null;
 
     const proj = projResult.data;
     if (!proj) { setLoading(false); return; }
-    setProject(proj);
-    setLikeCount(proj.likes_count || 0);
+    if (!initialProject) {
+      setProject(proj);
+      setLikeCount(proj.likes_count || 0);
+    }
 
     setComments(commsResult.data || []);
     setCommentCount(commsResult.count || commsResult.data?.length || 0);
@@ -239,9 +253,7 @@ export default function ProjectDetailClient({ isModal = false }) {
   }
 
   function handleShare() {
-    navigator.clipboard.writeText(window.location.href);
-    setShareToast(true);
-    setTimeout(() => setShareToast(false), 2000);
+    setShowShareModal(true);
   }
 
   async function confirmDelete() {
@@ -442,13 +454,9 @@ export default function ProjectDetailClient({ isModal = false }) {
                 <Bookmark size={18} />
               </button>
               <button onClick={handleShare} style={{ width: '40px', height: '40px', borderRadius: '50%', border: '1px solid #e2e8f0', background: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#64748b', transition: 'all 0.2s', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
-                {shareToast ? <Check size={18} color="#1a8a3b" /> : <Share size={18} />}
+                <Share size={18} />
               </button>
-              {author?.website && (
-                <a href={author.website.startsWith('http') ? author.website : `https://${author.website}`} target="_blank" rel="noopener noreferrer" style={{ padding: '0 1.5rem', height: '40px', borderRadius: '20px', border: 'none', background: '#0f172a', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 600, textDecoration: 'none', marginLeft: '0.25rem', fontFamily: '"Inter", "Segoe UI", sans-serif' }}>
-                  Get in touch
-                </a>
-              )}
+
             </div>
 
             <aside className="project-detail__sidebar" style={{ position: 'static', marginTop: 0 }}>
@@ -569,6 +577,15 @@ export default function ProjectDetailClient({ isModal = false }) {
         />
       )}
 
+      {showShareModal && (
+        <ShareProjectModal
+          projectUrl={typeof window !== 'undefined' ? window.location.href : `https://desayner.com/projects/${id}`}
+          projectTitle={project?.title}
+          projectImage={project?.cover_url}
+          onClose={() => setShowShareModal(false)}
+        />
+      )}
+
       {/* Mobile Fixed Action Bar (CSS handles visibility) */}
       <style>{`
         .mobile-actions { display: none !important; }
@@ -587,7 +604,7 @@ export default function ProjectDetailClient({ isModal = false }) {
           <span>Save</span>
         </button>
         <button onClick={handleShare} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.2rem', background: 'none', border: 'none', cursor: 'pointer', color: '#64748b', fontWeight: 600, fontSize: '0.7rem' }}>
-          {shareToast ? <Check size={22} color="#1a8a3b" /> : <Share size={22} />}
+          <Share size={22} />
           <span>Share</span>
         </button>
         {author?.website && (

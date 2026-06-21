@@ -5,7 +5,7 @@ import { createClient } from '@/lib/supabase/client';
 import ImageUpload from '@/components/misc/ImageUpload';
 import TagPill from '@/components/ui/TagPill';
 import Link from 'next/link';
-import { X, Plus, ArrowLeft } from 'lucide-react';
+import { X, Plus, ArrowLeft, ChevronLeft, ChevronRight } from 'lucide-react';
 import { CREATIVE_TOOLS } from '@/lib/constants';
 import '../../../../App.css';
 
@@ -62,6 +62,15 @@ export default function EditProjectPage() {
     e.preventDefault();
     const t = tagInput.trim().toLowerCase().replace(/\s+/g, '-');
     if (t && !tags.includes(t) && tags.length < 8) { setTags(p => [...p, t]); setTagInput(''); }
+  }
+
+  function moveGalleryItem(fromIndex, toIndex) {
+    setGallery((prev) => {
+      const newGallery = [...prev];
+      const [movedItem] = newGallery.splice(fromIndex, 1);
+      newGallery.splice(toIndex, 0, movedItem);
+      return newGallery;
+    });
   }
 
   async function handleSubmit(e) {
@@ -148,9 +157,22 @@ export default function EditProjectPage() {
               {gallery.length > 0 && (
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '0.5rem', marginBottom: '0.75rem' }}>
                   {gallery.map((img, i) => (
-                    <div key={i} style={{ position: 'relative', aspectRatio: '4/3', background: '#f0f0f0', overflow: 'hidden' }}>
+                    <div key={i} style={{ position: 'relative', aspectRatio: '4/3', background: '#f0f0f0', overflow: 'hidden', borderRadius: '6px' }}>
                       <img src={img} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                      <button type="button" onClick={() => setGallery(p => p.filter((_, j) => j !== i))} style={{ position: 'absolute', top: '4px', right: '4px', background: 'rgba(0,0,0,0.7)', color: 'white', border: 'none', width: '22px', height: '22px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+                      
+                      {i > 0 && (
+                        <button type="button" onClick={() => moveGalleryItem(i, i - 1)} style={{ position: 'absolute', bottom: '5px', left: '5px', background: 'rgba(0,0,0,0.7)', color: 'white', border: 'none', width: '22px', height: '22px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', borderRadius: '4px' }}>
+                          <ChevronLeft size={12} />
+                        </button>
+                      )}
+                      
+                      {i < gallery.length - 1 && (
+                        <button type="button" onClick={() => moveGalleryItem(i, i + 1)} style={{ position: 'absolute', bottom: '5px', right: '5px', background: 'rgba(0,0,0,0.7)', color: 'white', border: 'none', width: '22px', height: '22px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', borderRadius: '4px' }}>
+                          <ChevronRight size={12} />
+                        </button>
+                      )}
+
+                      <button type="button" onClick={() => setGallery(p => p.filter((_, j) => j !== i))} style={{ position: 'absolute', top: '5px', right: '5px', background: 'rgba(0,0,0,0.7)', color: 'white', border: 'none', width: '22px', height: '22px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', borderRadius: '4px' }}>
                         <X size={12} />
                       </button>
                     </div>

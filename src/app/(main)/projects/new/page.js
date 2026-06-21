@@ -90,6 +90,15 @@ export default function NewProjectPage() {
     setGallery((prev) => prev.filter((_, i) => i !== index));
   }
 
+  function moveGalleryItem(fromIndex, toIndex) {
+    setGallery((prev) => {
+      const newGallery = [...prev];
+      const [movedItem] = newGallery.splice(fromIndex, 1);
+      newGallery.splice(toIndex, 0, movedItem);
+      return newGallery;
+    });
+  }
+
   function addTag(e) {
     e.preventDefault();
     const t = tagInput.trim().toLowerCase().replace(/\s+/g, '-');
@@ -257,6 +266,7 @@ export default function NewProjectPage() {
                   value={gallery.map((g) => g.thumbnailUrl || g.publicUrl)}
                   onResults={handleGalleryResult}
                   onRemove={removeGalleryItem}
+                  onMove={moveGalleryItem}
                   maxFiles={20}
                 />
               </div>
