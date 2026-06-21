@@ -70,16 +70,6 @@ export default function ProfilePage({ initialProfile = null }) {
   const supabase = useMemo(() => createClient(), []);
   const addToast = useToastStore((s) => s.addToast);
 
-  async function handleCopyProfileLink() {
-    const url = `${window.location.origin}/profile/${profile?.username || username}`;
-    try {
-      await navigator.clipboard.writeText(url);
-      addToast({ type: 'success', title: 'Link copied!', message: 'Profile link copied to clipboard.' });
-    } catch {
-      addToast({ type: 'error', message: 'Could not copy link. Please try manually.' });
-    }
-  }
-
   useEffect(() => {
     async function load() {
       if (!initialProfile) setLoading(true);
@@ -430,9 +420,9 @@ export default function ProfilePage({ initialProfile = null }) {
             )}
             
             <button 
-              onClick={handleCopyProfileLink} 
+              onClick={() => setShowShareModal(true)} 
               className="split-btn split-btn--icon" 
-              title="Copy profile link"
+              title="Share Profile"
             >
               <Share2 size={18} />
             </button>
