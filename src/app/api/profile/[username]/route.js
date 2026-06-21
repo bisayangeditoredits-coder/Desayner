@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
-import { createAnonClient, createAdminClient } from '@/lib/supabase/server';
+import { createAnonClient, createReadClient } from '@/lib/supabase/server';
+import { rateLimit } from '@/middleware/rateLimit';
 import { redis } from '@/lib/redis';
 
 const DEFAULT_LIMIT = 50;
@@ -20,6 +21,9 @@ async function attachUserLikes(admin, userId, projects) {
 }
 
 export async function GET(request, { params }) {
+  // Rate limiting
+  const allowed = await rateLimit(request);
+  if (!allowed) return new Response('Too Many Requests', { status: 429 });
   try {
     const { username } = await params;
     const { searchParams } = new URL(request.url);
@@ -28,8 +32,8 @@ export async function GET(request, { params }) {
 
     // Anon client — only for auth.getUser()
     const anonClient = createAnonClient(request);
-    // Admin client — for all DB reads (bypasses RLS)
-    const admin = createAdminClient();
+    // Read-replica client — for all DB reads (bypasses RLS, routes to replica when available)
+    const admin = createReadClient();
 
     // Fast path: paginated project loads
     if (offset > 0) {

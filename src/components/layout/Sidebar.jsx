@@ -50,8 +50,11 @@ export default function Sidebar({ className = '' }) {
   const supabase = useMemo(() => createClient(), []);
 
   useEffect(() => {
-    if (storeUser) setUser(storeUser);
-    else if (!useProfileStore.getState().loading) setUser(null);
+    const init = async () => {
+      if (storeUser) setUser(storeUser);
+      else if (!useProfileStore.getState().loading) setUser(null);
+    };
+    init();
   }, [storeUser]);
 
   useIsomorphicLayoutEffect(() => {

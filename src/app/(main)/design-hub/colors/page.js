@@ -34,15 +34,18 @@ export default function ColorsPage() {
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
-    setIsClient(true);
-    try {
-      const items = JSON.parse(localStorage.getItem('desayner_palettes') || '[]');
-      setSaved(items);
-      setSavedIds(new Set(items.map((p) => p.id)));
-    } catch {
-      setSaved([]);
-      setSavedIds(new Set());
-    }
+    const init = async () => {
+      setIsClient(true);
+      try {
+        const items = JSON.parse(localStorage.getItem('desayner_palettes') || '[]');
+        setSaved(items);
+        setSavedIds(new Set(items.map((p) => p.id)));
+      } catch {
+        setSaved([]);
+        setSavedIds(new Set());
+      }
+    };
+    init();
   }, []);
   const [loadedFilterKey, setLoadedFilterKey] = useState(null);
 

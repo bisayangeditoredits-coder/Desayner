@@ -12,7 +12,8 @@ import { stripCloudinaryProxy } from '@/lib/utils';
 import ProfileCompletenessCard from '@/components/profile/ProfileCompletenessCard';
 import EmptyState from '@/components/ui/EmptyState';
 import FirstProjectCelebration from '@/components/onboarding/FirstProjectCelebration';
-import HireMeModal from '@/components/profile/HireMeModal';
+import dynamic from 'next/dynamic';
+const HireMeModal = dynamic(() => import('@/components/profile/HireMeModal'), { ssr: false });
 import { Suspense } from 'react';
 import '../../../App.css';
 

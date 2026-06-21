@@ -1,11 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Loader2, Heart, ExternalLink, Link as LinkIcon, Download, Check, ImageOff } from 'lucide-react';
+import Image from 'next/image';
 import { unsplashImageSrc } from '@/lib/utils';
 import useToastStore from '@/store/useToastStore';
 
-export default function StockPhotoCard({
+function StockPhotoCard({
   photo,
   onSave,
   savingId,
@@ -58,25 +59,25 @@ export default function StockPhotoCard({
           <span style={{ fontSize: '0.7rem', fontWeight: 500 }}>Image unavailable</span>
         </div>
       ) : (
-        <img
+        <Image
           src={thumbSrc}
           alt={photo.description || `Photo by ${photo.user.name}`}
-          // lazy for off-screen, eager+high priority for above-the-fold cards
-          loading={priority ? 'eager' : 'lazy'}
-          fetchPriority={priority ? 'high' : 'low'}
-          decoding={priority ? 'sync' : 'async'}
+          // Use Next.js built‑in lazy loading; placeholder blur for LQIP
+          placeholder="blur"
+          blurDataURL={unsplashImageSrc(photo.urls.thumb, 20, 20)}
+          priority={priority}
+          width={photo.width}
+          height={photo.height}
           style={{
             width: '100%',
+            height: 'auto',
             display: 'block',
-            // Fade in from transparent once loaded — eliminates the "glitch" pop
             transition: 'opacity 0.3s ease, transform 0.3s ease',
             opacity: loaded ? 1 : 0,
             transform: 'scale(1)',
           }}
-          onLoad={() => setLoaded(true)}
+          onLoadingComplete={() => setLoaded(true)}
           onError={() => setErrored(true)}
-          onMouseOver={e => { e.currentTarget.style.transform = 'scale(1.02)'; }}
-          onMouseOut={e => { e.currentTarget.style.transform = 'scale(1)'; }}
         />
       )}
 
@@ -231,3 +232,4 @@ export default function StockPhotoCard({
     </div>
   );
 }
+export default React.memo(StockPhotoCard);

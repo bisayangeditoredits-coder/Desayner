@@ -14,7 +14,12 @@ export default function FirstProjectCelebration({ username }) {
   const open = !dismissed && searchParams.get('firstProject') === '1' && !!username;
 
   const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
+  useEffect(() => {
+    const init = async () => {
+      setMounted(true);
+    };
+    init();
+  }, []);
 
   if (!open || !mounted) return null;
 

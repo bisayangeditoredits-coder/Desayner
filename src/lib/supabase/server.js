@@ -45,6 +45,32 @@ export function createAdminClient() {
 }
 
 /**
+ * Read-replica client — routes SELECT queries to the replica for lower latency
+ * and reduced load on the primary database.
+ *
+ * Falls back to the primary (admin) client when SUPABASE_REPLICA_URL is not set.
+ *
+ * Usage:
+ *   const db = createReadClient();
+ *   const { data } = await db.from('projects').select('*');
+ *
+ * IMPORTANT: Do NOT use this for writes (INSERT, UPDATE, DELETE) —
+ * replicas are read-only. Use createAdminClient() for mutations.
+ */
+export function createReadClient() {
+  const replicaUrl = process.env.SUPABASE_REPLICA_URL;
+  if (!replicaUrl) {
+    // No replica configured — fall back to primary
+    return createAdminClient();
+  }
+  return createServerClient(
+    replicaUrl,
+    process.env.SUPABASE_SERVICE_ROLE_KEY,
+    { cookies: { getAll: () => [], setAll: () => {} } }
+  );
+}
+
+/**
  * Verify caller identity and return { user, admin }.
  * @param {import('next/server').NextRequest} request
  * @returns {Promise<{ user: import('@supabase/supabase-js').User|null, admin: import('@supabase/supabase-js').SupabaseClient }>}

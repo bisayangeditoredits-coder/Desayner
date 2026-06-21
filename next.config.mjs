@@ -162,6 +162,10 @@ const nextConfig = {
               "object-src 'none'",
               // Base URI locked to self
               "base-uri 'self'",
+              // Upgrade HTTP → HTTPS automatically
+              "upgrade-insecure-requests",
+              // Report CSP violations to Sentry
+              "report-uri https://o4511511505534976.ingest.de.sentry.io/api/4511511510909008/security/?sentry_key=30abb9b0c146f08e7eacc1388f769719",
             ].join('; ')
           },
         ],

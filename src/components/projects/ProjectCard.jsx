@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Heart, Bookmark, Eye } from 'lucide-react';
@@ -11,7 +11,7 @@ import { optimizeImage } from '@/lib/utils';
 import useToastStore from '@/store/useToastStore';
 const SaveToCollectionModal = dynamic(() => import('./SaveToCollectionModal'), { ssr: false });
 
-export default function ProjectCard({ project, currentUserId, isLiked, isSaved }) {
+const ProjectCard = React.memo(function ProjectCard({ project, currentUserId, isLiked, isSaved }) {
   const [localLiked, setLocalLiked]         = useState(project.user_liked || false);
   const [localSaved, setLocalSaved]         = useState(project.user_saved || false);
   const liked = isLiked !== undefined ? isLiked : localLiked;
@@ -170,4 +170,7 @@ export default function ProjectCard({ project, currentUserId, isLiked, isSaved }
       )}
     </div>
   );
-}
+});
+
+ProjectCard.displayName = 'ProjectCard';
+export default ProjectCard;

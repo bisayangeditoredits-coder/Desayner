@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createAdminClient } from '@/lib/supabase/server';
+import { createReadClient } from '@/lib/supabase/server';
 import { redis } from '@/lib/redis';
 import { buildPublishedProjectsQuery, parseSearchQuery } from '@/lib/projectSearch';
 import { Ratelimit } from '@upstash/ratelimit';
@@ -49,7 +49,7 @@ export async function GET(request) {
     );
   }
 
-  const supabase = createAdminClient();
+  const supabase = createReadClient();
 
   const query = buildPublishedProjectsQuery(supabase, {
     ftsQuery,

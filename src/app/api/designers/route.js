@@ -1,12 +1,15 @@
 import { NextResponse } from 'next/server';
-import { createAdminClient } from '@/lib/supabase/server';
-import { redis } from '@/lib/redis';
+import { createReadClient } from '@/lib/supabase/server';
+import { rateLimit } from '@/middleware/rateLimit';
 import { swrCache } from '@/lib/cache';
 
 export const runtime = 'edge';
 const CACHE_HEADERS = { 'Cache-Control': 's-maxage=10, stale-while-revalidate=30' };
 
 export async function GET(request) {
+  // Rate limiting
+  const allowed = await rateLimit(request);
+  if (!allowed) return new Response('Too Many Requests', { status: 429 });
   try {
     const { searchParams } = new URL(request.url);
     const category = searchParams.get('category') || 'All';
@@ -19,7 +22,7 @@ export async function GET(request) {
     const cacheKey = `designers_feed:${category}:${sort}:${page}`;
 
     const fetcher = async () => {
-      const supabase = createAdminClient();
+      const supabase = createReadClient();
 
       let payload = {
         heroDesigner: null,

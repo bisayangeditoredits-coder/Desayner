@@ -12,9 +12,12 @@ export default function CookieBanner() {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    if (!localStorage.getItem('cookie_consent')) {
-      setIsVisible(true);
-    }
+    const check = async () => {
+      if (!localStorage.getItem('cookie_consent')) {
+        setIsVisible(true);
+      }
+    };
+    check();
   }, []);
 
   if (!isVisible) return null;

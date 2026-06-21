@@ -6,10 +6,13 @@ export default function AnnouncementBar() {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    const isDismissed = sessionStorage.getItem('announcement-dismissed');
-    if (!isDismissed) {
-      setIsVisible(true);
-    }
+    const check = async () => {
+      const isDismissed = sessionStorage.getItem('announcement-dismissed');
+      if (!isDismissed) {
+        setIsVisible(true);
+      }
+    };
+    check();
   }, []);
 
   if (!isVisible) return null;

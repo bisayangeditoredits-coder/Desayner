@@ -134,7 +134,7 @@ export default function PostFeed({ sort, flair }) {
 
       {isReachingEnd && posts.length > 0 && (
         <p style={{ textAlign: 'center', color: '#94a3b8', fontSize: '0.8rem', marginTop: '1.5rem' }}>
-          You've seen all posts
+          You&apos;ve seen all posts
         </p>
       )}
     </div>

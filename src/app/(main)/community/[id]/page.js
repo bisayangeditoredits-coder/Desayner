@@ -56,18 +56,20 @@ export default function PostDetailPage({ params: paramsPromise }) {
 
   // Sync server vote count into local state
   useEffect(() => {
-    if (data?.post) setVoteCount(data.post.votes_count);
-  }, [data?.post?.votes_count]);
+    async function init() {
+      if (data?.post) setVoteCount(data.post.votes_count);
+    }
+    init();
+  }, [data?.post]);
 
   // Check if current user already voted
   useEffect(() => {
-    if (!user || !data?.post) return;
     supabase
-      .from('community_post_votes')
-      .select('post_id')
+      .from('votes')
+      .select('id')
+      .eq('user_id', user?.id)
       .eq('post_id', id)
-      .eq('user_id', user.id)
-      .maybeSingle()
+      .single()
       .then(({ data: v }) => setVoted(!!v));
   }, [user, id, data?.post, supabase]);
 

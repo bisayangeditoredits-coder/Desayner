@@ -1,6 +1,6 @@
 import base from './playwright.config.js';
 
-export default {
+const config = {
   ...base,
   use: {
     ...base.use,
@@ -8,3 +8,5 @@ export default {
   },
   webServer: undefined,
 };
+
+export default config;

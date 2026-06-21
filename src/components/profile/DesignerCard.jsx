@@ -1,4 +1,5 @@
 "use client";
+import React from "react";
 
 import Link from "next/link";
 import UserAvatar from "@/components/ui/UserAvatar";
@@ -26,7 +27,7 @@ export function getDesignerSkills(designer) {
   return Array.from(new Set([...fromProjects, ...fromSkills, ...fromTools])).slice(0, 6);
 }
 
-export default function DesignerCard({ designer, currentUserId }) {
+const DesignerCard = React.memo(function DesignerCard({ designer, currentUserId }) {
   const skills = getDesignerSkills(designer);
   const projects = designer.sampleProjects || [];
   const isNew = isNewMember(designer.created_at);
@@ -402,4 +403,7 @@ export default function DesignerCard({ designer, currentUserId }) {
       `}</style>
     </div>
   );
-}
+});
+
+DesignerCard.displayName = 'DesignerCard';
+export default DesignerCard;
