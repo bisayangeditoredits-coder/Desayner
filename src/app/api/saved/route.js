@@ -64,7 +64,6 @@ export async function GET(request) {
         .select('project_id', { count: 'exact' })
         .eq('collection_id', collectionId)
         .not('project_id', 'is', null)
-        .order('created_at', { ascending: false })
         .range(offset, offset + PAGE_SIZE - 1);
 
       if (itemsError) throw itemsError;
