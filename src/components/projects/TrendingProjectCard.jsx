@@ -87,8 +87,6 @@ export default function TrendingProjectCard({ project, currentUserId, rank }) {
               src={coverSrc}
               alt={project.title || 'Project cover'}
               className="trending-project-card__image img-fade-in"
-              loading="lazy"
-              decoding="async"
               onLoad={(e) => {
                 e.currentTarget.classList.add('loaded');
                 setImageStatus('loaded');
