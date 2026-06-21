@@ -3,7 +3,6 @@
 import React, { useState } from 'react';
 import { Loader2, Heart, ExternalLink, Link as LinkIcon, Download, Check, ImageOff } from 'lucide-react';
 import Image from 'next/image';
-import { unsplashImageSrc } from '@/lib/utils';
 import useToastStore from '@/store/useToastStore';
 
 function StockPhotoCard({
@@ -20,9 +19,8 @@ function StockPhotoCard({
   const [loaded, setLoaded] = useState(false);
   const [errored, setErrored] = useState(false);
 
-  // Use thumbnail-optimised size for card display (saves bandwidth vs full `regular`)
-  // Unsplash Imgix: w=600 serves sharp images up to 300px @2x retina screens
-  const thumbSrc = unsplashImageSrc(photo.urls.small, 600, 75);
+  // Use Unsplash small URL — already sized at ~400px wide by Unsplash's CDN
+  const thumbSrc = photo.urls.small;
 
   return (
     <div
@@ -62,9 +60,6 @@ function StockPhotoCard({
         <Image
           src={thumbSrc}
           alt={photo.description || `Photo by ${photo.user.name}`}
-          // Use Next.js built‑in lazy loading; placeholder blur for LQIP
-          placeholder="blur"
-          blurDataURL={unsplashImageSrc(photo.urls.thumb, 20, 20)}
           priority={priority}
           width={photo.width}
           height={photo.height}
@@ -72,11 +67,10 @@ function StockPhotoCard({
             width: '100%',
             height: 'auto',
             display: 'block',
-            transition: 'opacity 0.3s ease, transform 0.3s ease',
+            transition: 'opacity 0.3s ease',
             opacity: loaded ? 1 : 0,
-            transform: 'scale(1)',
           }}
-          onLoadingComplete={() => setLoaded(true)}
+          onLoad={() => setLoaded(true)}
           onError={() => setErrored(true)}
         />
       )}
