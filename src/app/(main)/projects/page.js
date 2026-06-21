@@ -1,6 +1,5 @@
 'use client';
 
-export const revalidate = 60; // ISR: revalidate every minute
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import ProjectCard from '@/components/projects/ProjectCard';
