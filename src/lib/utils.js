@@ -153,9 +153,9 @@ export function optimizeImage(url, width = 600, quality = 80) {
     }
   }
 
-  // ✅ Cloudflare Image Transformations is now enabled on desayner.com
-  // This resizes + converts to WebP on the fly at Cloudflare's edge — zero Vercel cost.
-  // localhost falls back to raw URL (CF only works on the live domain).
-  const cfOptions = `width=${width},quality=${quality},format=auto,fit=scale-down`;
-  return `/cdn-cgi/image/${cfOptions}/${normalizedUrl}`;
+  // Cloudflare Image Transformations only works for images on the same zone (desayner.com).
+  // Project/avatar images are stored on external Supabase/R2 origins — CF cannot fetch
+  // those unless "Images from any origin" is enabled in the CF Images dashboard.
+  // Until then, serve raw URLs directly (already WebP from upload pipeline).
+  return normalizedUrl;
 }
