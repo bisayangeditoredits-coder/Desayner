@@ -1,17 +1,13 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
-// next/image removed — WelcomeModal uses a local static JPEG that doesn't need
-// Vercel's server-side image optimization (was consuming the 5K/month limit).
 
 export default function WelcomeModal() {
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
-    // Check if user has already seen the welcome modal
     const hasSeenWelcome = localStorage.getItem('hasSeenWelcome');
     if (!hasSeenWelcome) {
-      // Small delay so it pops up after initial render smoothly
       const timer = setTimeout(() => setIsOpen(true), 1000);
       return () => clearTimeout(timer);
     }
@@ -25,120 +21,139 @@ export default function WelcomeModal() {
   if (!isOpen) return null;
 
   return (
-    <div style={{
-      position: 'fixed',
-      inset: 0,
-      zIndex: 9999,
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: '1rem',
-      // High opacity dark background for low-end devices, with subtle blur for high-end
-      background: 'rgba(0,0,0,0.85)',
-      backdropFilter: 'blur(4px)',
-      WebkitBackdropFilter: 'blur(4px)',
-      animation: 'fadeIn 0.3s ease-out'
-    }}>
+    <>
       <style>{`
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        .welcome-modal-container {
+        @keyframes wm-fadeIn  { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes wm-slideUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+
+        .wm-backdrop {
+          position: fixed;
+          inset: 0;
+          z-index: 9999;
           display: flex;
-          background: white;
-          border-radius: 16px;
-          overflow: hidden;
-          width: 100%;
-          max-width: 900px;
-          min-height: 500px;
-          box-shadow: 0 24px 48px rgba(0,0,0,0.3);
-          animation: slideUp 0.4s ease-out;
-          position: relative;
-        }
-        .welcome-modal-left {
-          flex: 1;
-          background: #2d43e8;
-          background-image: linear-gradient(135deg, #2d43e8 0%, #1a22ff 100%);
-          padding: 3rem 2.5rem;
-          color: white;
-          display: flex;
-          flex-direction: column;
+          align-items: center;
           justify-content: center;
+          padding: 1rem;
+          background: rgba(0, 0, 0, 0.82);
+          backdrop-filter: blur(6px);
+          -webkit-backdrop-filter: blur(6px);
+          animation: wm-fadeIn 0.3s ease-out;
+          isolation: isolate;
         }
-        .welcome-modal-right {
-          flex: 1;
+
+        .wm-container {
           position: relative;
-          background: #f0f0f0;
-          display: none;
+          display: flex;
+          width: 100%;
+          max-width: 860px;
+          min-height: 480px;
+          max-height: 90vh;
+          border-radius: 20px;
+          overflow: hidden;
+          box-shadow: 0 32px 64px rgba(0, 0, 0, 0.45);
+          animation: wm-slideUp 0.4s ease-out;
         }
-        @media (min-width: 768px) {
-          .welcome-modal-right {
-            display: block;
-          }
-        }
-        @media (max-width: 767px) {
-          .welcome-modal-container {
-            max-height: 90vh;
-            overflow-y: auto;
-            border-radius: 20px;
-          }
-          .welcome-modal-left {
-            padding: 2.5rem 1.5rem;
-          }
-          .welcome-modal-left h2 {
-            font-size: 2rem !important;
-          }
-          .welcome-modal-left p {
-            font-size: 0.85rem !important;
-            line-height: 1.5 !important;
-            margin-bottom: 1.5rem !important;
-          }
-          .welcome-modal-left img {
-            width: 140px !important;
-          }
-        }
-        .welcome-modal-close {
+
+        /* Single close button — top-right corner of the whole modal */
+        .wm-close {
           position: absolute;
           top: 1rem;
           right: 1rem;
-          background: rgba(255,255,255,0.2);
+          z-index: 20;
+          background: rgba(0, 0, 0, 0.35);
           border: none;
           color: white;
-          width: 32px;
-          height: 32px;
+          width: 34px;
+          height: 34px;
           border-radius: 50%;
           display: flex;
           align-items: center;
           justify-content: center;
           cursor: pointer;
           transition: background 0.2s;
-          z-index: 10;
         }
-        .welcome-modal-close:hover {
-          background: rgba(255,255,255,0.4);
+        .wm-close:hover { background: rgba(0, 0, 0, 0.6); }
+
+        .wm-left {
+          flex: 0 0 50%;
+          width: 50%;
+          background: linear-gradient(135deg, #2d43e8 0%, #1a22ff 100%);
+          padding: 3rem 2.5rem;
+          color: white;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          box-sizing: border-box;
+          overflow: hidden;
+        }
+
+        .wm-right {
+          flex: 0 0 50%;
+          width: 50%;
+          position: relative;
+          background: #111;
+          overflow: hidden;
+        }
+
+        .wm-right img {
+          position: absolute;
+          inset: 0;
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          object-position: center center;
+          display: block;
+        }
+
+        /* Mobile: hide image, full-width left panel */
+        @media (max-width: 640px) {
+          .wm-container { flex-direction: column; max-height: 92vh; overflow-y: auto; }
+          .wm-left { flex: none; width: 100%; padding: 2.5rem 1.5rem 2rem; }
+          .wm-right { display: none; }
+          .wm-close { background: rgba(255, 255, 255, 0.2); }
         }
       `}</style>
 
-      <div className="welcome-modal-container">
-        
-        {/* Left Side: Text Content */}
-        <div className="welcome-modal-left">
-          <div style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'center' }}>
-            <img src="/desayner-logo-white.png" alt="Desayner" style={{ width: '180px', height: 'auto' }} />
-          </div>
+      {/* Clicking backdrop closes modal */}
+      <div className="wm-backdrop" onClick={closeModal}>
+        {/* Stop propagation so clicking inside modal doesn't close it */}
+        <div className="wm-container" onClick={e => e.stopPropagation()}>
 
-          <h2 style={{ fontSize: '2.5rem', fontWeight: 900, margin: '0 0 1rem 0', lineHeight: 1.1 }}>
-            Welcome
-          </h2>
-          
-          <p style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.9)', lineHeight: 1.6, textAlign: 'justify', marginBottom: '1.5rem', whiteSpace: 'pre-line' }}>
-            Welcome to Desayner, the ultimate creative sanctuary built exclusively for passionate designers, digital artists, and visionaries. Dive into our massive, high-quality library of free stock photos, instantly generate infinite aesthetic color palettes, and seamlessly organize your visual inspiration into personalized moodboards. Beyond just tools, Desayner is a thriving platform where you can build your professional portfolio and showcase your latest masterpieces to the world. Whether you are hunting for clients or simply looking for your next big spark of inspiration, you have finally found your home. Your design journey starts right here, right now.
-          </p>
+          {/* Single ✕ button — sits over the image in the top-right corner */}
+          <button className="wm-close" onClick={closeModal} aria-label="Close welcome modal">
+            <X size={16} />
+          </button>
 
-          <div>
-            <button 
+          {/* ── Left: text content ─────────────────────────────────────── */}
+          <div className="wm-left">
+            <div style={{ marginBottom: '1.5rem' }}>
+              <img
+                src="/desayner-logo-white.png"
+                alt="Desayner"
+                style={{ width: '160px', height: 'auto' }}
+              />
+            </div>
+
+            <h2 style={{ fontSize: '2.25rem', fontWeight: 900, margin: '0 0 1rem 0', lineHeight: 1.1 }}>
+              Welcome
+            </h2>
+
+            <p style={{
+              fontSize: '0.875rem',
+              color: 'rgba(255,255,255,0.88)',
+              lineHeight: 1.65,
+              marginBottom: '2rem',
+            }}>
+              Welcome to Desayner — the creative sanctuary for designers, digital artists, and visionaries.
+              Explore our library of free stock photos, generate color palettes, build your portfolio, and
+              showcase your work to the world. Your design journey starts right here.
+            </p>
+
+            <button
               onClick={closeModal}
               style={{
-                background: '#e6e82d', // Yellow button like in the mockup
+                alignSelf: 'flex-start',
+                background: '#e6e82d',
                 color: '#231f20',
                 border: 'none',
                 padding: '0.85rem 2rem',
@@ -146,50 +161,30 @@ export default function WelcomeModal() {
                 fontWeight: 800,
                 fontSize: '1rem',
                 cursor: 'pointer',
-                boxShadow: '0 8px 16px rgba(0,0,0,0.15)',
-                transition: 'transform 0.15s, box-shadow 0.15s'
+                fontFamily: 'inherit',
+                boxShadow: '0 8px 20px rgba(0,0,0,0.2)',
+                transition: 'transform 0.15s, box-shadow 0.15s',
               }}
-              onMouseOver={e => e.currentTarget.style.transform = 'translateY(-2px)'}
-              onMouseOut={e => e.currentTarget.style.transform = 'translateY(0)'}
+              onMouseOver={e => {
+                e.currentTarget.style.transform = 'translateY(-2px)';
+                e.currentTarget.style.boxShadow = '0 12px 24px rgba(0,0,0,0.28)';
+              }}
+              onMouseOut={e => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = '0 8px 20px rgba(0,0,0,0.2)';
+              }}
             >
               Get Started!
             </button>
           </div>
+
+          {/* ── Right: full-bleed image ────────────────────────────────── */}
+          <div className="wm-right">
+            <img src="/welcome-image.jpeg" alt="Designers collaborating" />
+          </div>
+
         </div>
-
-        {/* Right Side: Image */}
-        <div className="welcome-modal-right">
-          <button className="welcome-modal-close" onClick={closeModal} aria-label="Close modal">
-            <X size={18} color="#231f20" />
-          </button>
-          {/* Plain <img> — eliminates Vercel Image Optimization transformation cost.
-               This is a local static JPEG served from /public; no server-side
-               resizing needed since the container is already sized correctly. */}
-          <img
-            src="/welcome-image.jpeg"
-            alt="Designers collaborating"
-            style={{
-              position: 'absolute',
-              inset: 0,
-              width: '100%',
-              height: '100%',
-              objectFit: 'cover',
-              objectPosition: 'right center',
-            }}
-          />
-        </div>
-
-        {/* Mobile close button (only visible on small screens where right side is hidden) */}
-        <button 
-          className="welcome-modal-close" 
-          onClick={closeModal} 
-          style={{ right: '1rem', color: 'white', background: 'rgba(0,0,0,0.2)' }}
-          aria-label="Close modal"
-        >
-          <X size={18} />
-        </button>
-
       </div>
-    </div>
+    </>
   );
 }
