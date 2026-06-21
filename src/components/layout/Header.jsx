@@ -135,6 +135,20 @@ export default function Header() {
     return () => document.removeEventListener('mousedown', onClickOutside);
   }, []);
 
+  // Press '/' anywhere to focus the search bar (like GitHub, Linear, etc.)
+  useEffect(() => {
+    function onSlashKey(e) {
+      const tag = document.activeElement?.tagName;
+      if (e.key === '/' && tag !== 'INPUT' && tag !== 'TEXTAREA' && !e.ctrlKey && !e.metaKey) {
+        e.preventDefault();
+        const input = searchRef.current?.querySelector('input');
+        if (input) { input.focus(); input.select(); }
+      }
+    }
+    document.addEventListener('keydown', onSlashKey);
+    return () => document.removeEventListener('keydown', onSlashKey);
+  }, []);
+
   const pathname = usePathname();
 
   async function toggleNotifs() {
@@ -194,11 +208,11 @@ export default function Header() {
             onChange={handleChange}
             onKeyDown={handleKeyDown}
             onFocus={() => searchQuery.trim() && setDropdownOpen(true)}
-            placeholder="Search projects, designers, tutorials..."
+            placeholder="Search projects, designers..."
             autoComplete="off"
-            style={{ paddingRight: '2.5rem' }}
+            style={{ paddingRight: '3.5rem' }}
           />
-          {searchQuery && (
+          {searchQuery ? (
             <button
               type="button"
               onClick={clearSearch}
@@ -206,6 +220,13 @@ export default function Header() {
             >
               <X size={13} />
             </button>
+          ) : (
+            <kbd style={{
+              position: 'absolute', right: '0.75rem', top: '50%', transform: 'translateY(-50%)',
+              background: '#f1f5f9', border: '1px solid #e2e8f0', borderRadius: '5px',
+              padding: '1px 6px', fontSize: '0.7rem', fontWeight: 700, color: '#94a3b8',
+              fontFamily: 'inherit', pointerEvents: 'none', lineHeight: '1.5'
+            }}>/</kbd>
           )}
 
           {/* Live results dropdown */}

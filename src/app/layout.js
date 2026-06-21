@@ -9,7 +9,9 @@ import "./globals.css";
 import "./messaging.css";
 import "./App.css";
 import PWAInstaller from "@/components/layout/PWAInstaller";
+import FaviconLoader from "@/components/layout/FaviconLoader";
 import Script from "next/script";
+import { Suspense } from "react";
 
 // ── Existing fonts ────────────────────────────────────────────────────────────
 
@@ -125,6 +127,9 @@ export default function RootLayout({ children }) {
           </Script>
         )}
         <PWAInstaller />
+        <Suspense fallback={null}>
+          <FaviconLoader />
+        </Suspense>
         {children}
         <CookieBanner />
       </body>

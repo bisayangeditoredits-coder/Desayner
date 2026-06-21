@@ -37,6 +37,12 @@ export default function FollowButton({ targetUserId, currentUserId, initialFollo
         body: JSON.stringify({ following_id: targetUserId }),
       });
       if (!res.ok) throw new Error('Follow request failed');
+      // ✅ Success feedback
+      if (prev) {
+        addToast({ type: 'info', message: 'Unfollowed successfully.' });
+      } else {
+        addToast({ type: 'follow', title: 'Following!', message: 'You will see their latest work in your feed.' });
+      }
     } catch {
       setFollowing(prev);
       addToast({ type: 'error', message: 'Could not update follow. Please try again.' });

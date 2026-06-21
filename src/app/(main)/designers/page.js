@@ -501,62 +501,69 @@ function DesignersContent() {
         
         {/* Main Grid */}
         {loading && page === 1 ? (
-          <div
-            style={{ display: "flex", flexDirection: "column", gap: "2rem" }}
-          >
-            {[...Array(12)].map((_, i) => (
-              <div
-                key={i}
-                style={{
-                  background: "white",
-                  borderRadius: "16px",
-                  height: "360px",
-                  overflow: "hidden",
-                  border: "1px solid #f0f0f0",
-                }}
-              >
-                <div style={{ height: "180px", background: "#f5f5f5" }} />
+          <>
+            <style>{`
+              @keyframes shimmer {
+                0%   { background-position: -600px 0; }
+                100% { background-position: 600px 0; }
+              }
+              .skeleton-pulse {
+                background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+                background-size: 600px 100%;
+                animation: shimmer 1.4s infinite ease-in-out;
+                border-radius: 8px;
+              }
+              .designers-chunk-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+                gap: 1.5rem;
+              }
+            `}</style>
+            <div className="designers-chunk-grid">
+              {[...Array(8)].map((_, i) => (
                 <div
-                  style={{ padding: "1.5rem", display: "flex", gap: "1rem" }}
+                  key={i}
+                  style={{
+                    background: "white",
+                    borderRadius: "24px",
+                    border: "1px solid rgba(0,0,0,0.05)",
+                    padding: "24px",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "20px",
+                    boxShadow: "0 4px 24px rgba(0,0,0,0.02)",
+                  }}
                 >
-                  <div
-                    style={{
-                      width: "60px",
-                      height: "60px",
-                      borderRadius: "50%",
-                      background: "#f0f0f0",
-                    }}
-                  />
-                  <div
-                    style={{
-                      flex: 1,
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: "0.5rem",
-                      marginTop: "0.5rem",
-                    }}
-                  >
-                    <div
-                      style={{
-                        width: "60%",
-                        height: "14px",
-                        background: "#f0f0f0",
-                        borderRadius: "4px",
-                      }}
-                    />
-                    <div
-                      style={{
-                        width: "40%",
-                        height: "12px",
-                        background: "#f5f5f5",
-                        borderRadius: "4px",
-                      }}
-                    />
+                  {/* Top: avatar + name */}
+                  <div style={{ display: "flex", gap: "14px", alignItems: "center" }}>
+                    <div className="skeleton-pulse" style={{ width: 56, height: 56, borderRadius: "50%", flexShrink: 0 }} />
+                    <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 8 }}>
+                      <div className="skeleton-pulse" style={{ width: "60%", height: 14 }} />
+                      <div className="skeleton-pulse" style={{ width: "40%", height: 12 }} />
+                    </div>
+                    <div className="skeleton-pulse" style={{ width: 80, height: 34, borderRadius: 24 }} />
+                  </div>
+                  {/* Sample images */}
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
+                    <div className="skeleton-pulse" style={{ height: 80, borderRadius: 12 }} />
+                    <div className="skeleton-pulse" style={{ height: 80, borderRadius: 12 }} />
+                    <div className="skeleton-pulse" style={{ height: 80, borderRadius: 12 }} />
+                  </div>
+                  {/* Skills row */}
+                  <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                    <div className="skeleton-pulse" style={{ width: 70, height: 26, borderRadius: 20 }} />
+                    <div className="skeleton-pulse" style={{ width: 90, height: 26, borderRadius: 20 }} />
+                    <div className="skeleton-pulse" style={{ width: 60, height: 26, borderRadius: 20 }} />
+                  </div>
+                  {/* Stats */}
+                  <div style={{ display: "flex", gap: 16 }}>
+                    <div className="skeleton-pulse" style={{ width: 80, height: 12, borderRadius: 6 }} />
+                    <div className="skeleton-pulse" style={{ width: 60, height: 12, borderRadius: 6 }} />
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          </>
         ) : filteredDesigners.length === 0 ? (
           <EmptyState
             icon={Sparkles}
@@ -608,15 +615,13 @@ function DesignersContent() {
         )}
 
         {loading && page > 1 && (
-          <div
-            style={{
-              textAlign: "center",
-              padding: "2rem 0",
-              color: "#9b9b9b",
-              fontWeight: 600,
-            }}
-          >
-            Loading more...
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "0.75rem", padding: "2.5rem 0", color: "#64748b" }}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" style={{ animation: "spin 0.8s linear infinite" }}>
+              <circle cx="12" cy="12" r="10" stroke="#e2e8f0" strokeWidth="3"/>
+              <path d="M12 2a10 10 0 0 1 10 10" stroke="#2d43e8" strokeWidth="3" strokeLinecap="round"/>
+              <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+            </svg>
+            <span style={{ fontSize: "0.9rem", fontWeight: 600 }}>Loading more designers…</span>
           </div>
         )}
       </div>

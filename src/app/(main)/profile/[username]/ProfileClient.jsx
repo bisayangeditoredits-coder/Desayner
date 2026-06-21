@@ -16,6 +16,7 @@ import dynamic from 'next/dynamic';
 const HireMeModal = dynamic(() => import('@/components/profile/HireMeModal'), { ssr: false });
 import { Suspense } from 'react';
 import ShareProjectModal from '@/components/projects/ShareProjectModal';
+import useToastStore from '@/store/useToastStore';
 import '../../../App.css';
 
 const PROFILE_PAGE_SIZE = 50;
@@ -67,6 +68,17 @@ export default function ProfilePage({ initialProfile = null }) {
   const [isHireModalOpen, setIsHireModalOpen] = useState(false);
   const [isCoverExpanded, setIsCoverExpanded] = useState(false);
   const supabase = useMemo(() => createClient(), []);
+  const addToast = useToastStore((s) => s.addToast);
+
+  async function handleCopyProfileLink() {
+    const url = `${window.location.origin}/profile/${profile?.username || username}`;
+    try {
+      await navigator.clipboard.writeText(url);
+      addToast({ type: 'success', title: 'Link copied!', message: 'Profile link copied to clipboard.' });
+    } catch {
+      addToast({ type: 'error', message: 'Could not copy link. Please try manually.' });
+    }
+  }
 
   useEffect(() => {
     async function load() {
@@ -418,9 +430,9 @@ export default function ProfilePage({ initialProfile = null }) {
             )}
             
             <button 
-              onClick={() => setShowShareModal(true)} 
+              onClick={handleCopyProfileLink} 
               className="split-btn split-btn--icon" 
-              title="Share Profile"
+              title="Copy profile link"
             >
               <Share2 size={18} />
             </button>
@@ -478,9 +490,31 @@ export default function ProfilePage({ initialProfile = null }) {
 
         {tab === 'projects' && (
           projectsLoading ? (
-            <div style={{ display: 'flex', justifyContent: 'center', padding: '4rem 0' }}>
-              <div className="custom-spinner" />
-            </div>
+            <>
+              <style>{`
+                @keyframes profile-shimmer {
+                  0%   { background-position: -600px 0; }
+                  100% { background-position: 600px 0; }
+                }
+                .profile-skeleton {
+                  background: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
+                  background-size: 600px 100%;
+                  animation: profile-shimmer 1.4s infinite ease-in-out;
+                  border-radius: 12px;
+                }
+              `}</style>
+              <div className="projects-masonry">
+                {[...Array(6)].map((_, i) => (
+                  <div key={i} style={{ background: 'white', borderRadius: '16px', overflow: 'hidden', border: '1px solid rgba(0,0,0,0.05)' }}>
+                    <div className="profile-skeleton" style={{ height: i % 3 === 0 ? 240 : i % 3 === 1 ? 180 : 210, borderRadius: 0 }} />
+                    <div style={{ padding: '14px', display: 'flex', flexDirection: 'column', gap: 8 }}>
+                      <div className="profile-skeleton" style={{ height: 14, width: '70%' }} />
+                      <div className="profile-skeleton" style={{ height: 12, width: '45%' }} />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
           ) : projects.length === 0 ? (
             <EmptyState
               icon={Folder}
