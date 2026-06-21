@@ -60,6 +60,9 @@ function StockPhotoCard({
         <Image
           src={thumbSrc}
           alt={photo.description || `Photo by ${photo.user.name}`}
+          // Skip Next.js image optimizer — Unsplash already serves resized WebP
+          // via Imgix CDN. Optimizing again hits Vercel's free-tier quota (1k/mo).
+          unoptimized
           priority={priority}
           width={photo.width}
           height={photo.height}
