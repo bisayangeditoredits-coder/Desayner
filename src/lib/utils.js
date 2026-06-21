@@ -153,9 +153,9 @@ export function optimizeImage(url, width = 600, quality = 80) {
     }
   }
 
-  // Cloudflare Image Transformations only works for images on the same zone (desayner.com).
-  // Project/avatar images are stored on external Supabase/R2 origins — CF cannot fetch
-  // those unless "Images from any origin" is enabled in the CF Images dashboard.
-  // Until then, serve raw URLs directly (already WebP from upload pipeline).
-  return normalizedUrl;
+  // ✅ Cloudflare Image Transformations — "Any origin" enabled in CF dashboard.
+  // Resizes + converts to WebP at Cloudflare's edge. Free 5k transformations/month.
+  // On localhost: CF endpoint doesn't exist, so return raw URL instead.
+  const cfOptions = `width=${width},quality=${quality},format=auto,fit=scale-down`;
+  return `/cdn-cgi/image/${cfOptions}/${normalizedUrl}`;
 }
