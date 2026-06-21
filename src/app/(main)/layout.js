@@ -10,7 +10,6 @@ import dynamic from 'next/dynamic';
 const OnboardingChecklist = dynamic(() => import('@/components/onboarding/OnboardingChecklist'));
 const ToastContainer = dynamic(() => import('@/components/ui/ToastContainer'));
 const BackToTop = dynamic(() => import('@/components/layout/BackToTop'));
-import PageTransition from '@/components/layout/PageTransition';
 import AnnouncementBar from '@/components/layout/AnnouncementBar';
 
 import ErrorBoundary from '@/components/ui/ErrorBoundary';
@@ -33,9 +32,7 @@ export default function MainLayout({ children, modal }) {
               <OnboardingChecklist />
               <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
                 <ErrorBoundary>
-                  <PageTransition>
-                    {children}
-                  </PageTransition>
+                  {children}
                 </ErrorBoundary>
               </div>
             </main>
