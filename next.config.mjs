@@ -7,12 +7,10 @@ const nextConfig = {
     optimizePackageImports: ['lucide-react', 'framer-motion'],
   },
   images: {
-    formats: ['image/avif', 'image/webp'],
-    // Larger device sizes to serve sharp images on high-DPI screens
-    deviceSizes: [640, 750, 828, 1080, 1200, 1920],
-    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
-    // Minimum TTL so CDN caches optimized images for 1 day
-    minimumCacheTTL: 86400,
+    // Vercel Image Optimization disabled — free plan only allows 1,000/month
+    // which causes 402 errors at scale. All image sources are already optimized:
+    // Supabase/R2 (WebP on upload), Unsplash (Imgix CDN), Pixabay (proxy route).
+    unoptimized: true,
     // Next.js 16 requires localPatterns for local URLs with query strings
     localPatterns: [
       {

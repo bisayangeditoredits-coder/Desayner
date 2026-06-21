@@ -153,8 +153,9 @@ export function optimizeImage(url, width = 600, quality = 80) {
     }
   }
 
-  // HOTFIX: Disabled Cloudflare Image Resizing (/cdn-cgi/image/) for now
-  // because it requires a paid tier/activation on Cloudflare and is breaking production.
-  // We will just return the original/normalized URL to fix the live site.
-  return normalizedUrl;
+  // ✅ Cloudflare Image Transformations is now enabled on desayner.com
+  // This resizes + converts to WebP on the fly at Cloudflare's edge — zero Vercel cost.
+  // localhost falls back to raw URL (CF only works on the live domain).
+  const cfOptions = `width=${width},quality=${quality},format=auto,fit=scale-down`;
+  return `/cdn-cgi/image/${cfOptions}/${normalizedUrl}`;
 }
