@@ -153,9 +153,9 @@ export function optimizeImage(url, width = 600, quality = 80) {
     }
   }
 
-  // ✅ Cloudflare Image Transformations — "Any origin" enabled in CF dashboard.
-  // Resizes + converts to WebP at Cloudflare's edge. Free 5k transformations/month.
-  // On localhost: CF endpoint doesn't exist, so return raw URL instead.
-  const cfOptions = `width=${width},quality=${quality},format=auto,fit=scale-down`;
-  return `/cdn-cgi/image/${cfOptions}/${normalizedUrl}`;
+  // NOTE: Cloudflare Image Transformations (/cdn-cgi/image/) was tested but returns
+  // 404 for Supabase/R2-hosted images even with "Any origin" enabled. Not worth it —
+  // images are already converted to WebP via processImage() on upload.
+  // Serve raw CDN URLs directly — already optimized, no extra hop needed.
+  return normalizedUrl;
 }
