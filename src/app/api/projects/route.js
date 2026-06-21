@@ -3,9 +3,19 @@ import { createServerClient } from '@supabase/ssr';
 import { swrCache } from '@/lib/cache';
 import { projectsCacheKey } from '@/lib/cacheKeys';
 import { buildPublishedProjectsQuery, parseSearchQuery } from '@/lib/projectSearch';
+import { redis } from '@/lib/redis';
+import { Ratelimit } from '@upstash/ratelimit';
 
 export const runtime = 'edge';
 const CACHE_HEADERS = { 'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=120' };
+
+// Rate limit: 30 searches per 10 seconds per IP
+const searchRateLimit = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(30, '10 s'),
+  analytics: false,
+  prefix: 'rl:search',
+});
 
 export async function GET(request) {
   try {
@@ -19,12 +29,34 @@ export async function GET(request) {
     const ALLOWED_SORTS = ['newest', 'popular', 'trending'];
     const safeSort = ALLOWED_SORTS.includes(sort) ? sort : 'newest';
 
+    const cursor = searchParams.get('cursor') || null;
+
     // Reject searches that sanitize to nothing (e.g. only special characters)
     if (rawQ && !ftsQuery) {
       return NextResponse.json({ projects: [], cached: false }, { headers: CACHE_HEADERS });
     }
 
-    const cacheKey = projectsCacheKey(category, ftsQuery, limit, offset, safeSort);
+    // Apply rate limiting specifically for searches
+    if (ftsQuery) {
+      const ip = request.ip || request.headers.get('x-forwarded-for') || 'anonymous';
+      const { success, remaining } = await searchRateLimit.limit(`ip:${ip}`);
+      
+      if (!success) {
+        return NextResponse.json(
+          { error: 'Too many search requests. Please wait a moment.' },
+          { 
+            status: 429,
+            headers: { 
+              'X-RateLimit-Remaining': String(remaining),
+              ...CACHE_HEADERS
+            }
+          }
+        );
+      }
+    }
+
+    // cacheKey now includes cursor. For fallback sorts, it uses offset.
+    const cacheKey = projectsCacheKey(category, ftsQuery, limit, offset, safeSort, cursor);
 
     const fetcher = async () => {
       const supabase = createServerClient(
@@ -38,12 +70,16 @@ export async function GET(request) {
         },
       );
 
+      // Fetch limit + 1 to check if there is a next page
+      const fetchLimit = safeSort === 'newest' ? limit + 1 : limit;
+
       const query = buildPublishedProjectsQuery(supabase, {
         ftsQuery,
         category,
         sort: safeSort,
         offset,
-        limit,
+        limit: fetchLimit,
+        cursor,
       });
 
       const { data, error } = await query;
@@ -56,7 +92,15 @@ export async function GET(request) {
 
     const { data: items, cached } = await swrCache(cacheKey, 60, fetcher);
 
-    return NextResponse.json({ projects: items, cached }, { headers: CACHE_HEADERS });
+    let resultItems = items;
+    let nextCursor = null;
+
+    if (safeSort === 'newest' && items.length > limit) {
+      nextCursor = items[limit].created_at;
+      resultItems = items.slice(0, limit);
+    }
+
+    return NextResponse.json({ projects: resultItems, cached, nextCursor }, { headers: CACHE_HEADERS });
   } catch (err) {
     console.error('[GET /api/projects Error]:', err);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

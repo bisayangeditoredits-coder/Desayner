@@ -2,8 +2,8 @@ export const TRENDING_CACHE_KEY = 'trending_projects_top_10_v2';
 export const DEFAULT_PAGE_SIZE = 24;
 
 /** Build a Redis key for the projects feed cache. */
-export function projectsCacheKey(category = 'All', q = '', limit = DEFAULT_PAGE_SIZE, offset = 0, sort = 'newest') {
-  return `projects_v2:${category}:${q}:${limit}:${offset}:${sort}`;
+export function projectsCacheKey(category = 'All', q = '', limit = DEFAULT_PAGE_SIZE, offset = 0, sort = 'newest', cursor = null) {
+  return `projects_v2:${category}:${q}:${limit}:${offset}:${sort}:${cursor || 'none'}`;
 }
 
 /**

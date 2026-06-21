@@ -31,18 +31,22 @@ export default function ProjectsPage() {
   }, [supabase]);
 
   // SWR Fetcher definition
-  const fetcher = async ([key, cat, pageIndex]) => {
+  const fetcher = async ([key, cat, pageIndex, cursor]) => {
     const offset = pageIndex * PAGE_SIZE;
-    const res = await fetch(`/api/projects?category=${encodeURIComponent(cat)}&limit=${PAGE_SIZE}&offset=${offset}`);
+    let url = `/api/projects?category=${encodeURIComponent(cat)}&limit=${PAGE_SIZE}&offset=${offset}`;
+    if (cursor) url += `&cursor=${encodeURIComponent(cursor)}`;
+    const res = await fetch(url);
     if (!res.ok) throw new Error('Failed to fetch projects');
-    const { projects } = await res.json();
-    return projects || [];
+    return await res.json();
   };
 
   const getKey = (pageIndex, previousPageData) => {
-    // Reached the end if previous page had fewer items than PAGE_SIZE
-    if (previousPageData && previousPageData.length < PAGE_SIZE) return null;
-    return ['projects_feed', category, pageIndex];
+    if (previousPageData) {
+      const prevProjects = previousPageData.projects || [];
+      if (prevProjects.length < PAGE_SIZE) return null;
+    }
+    const cursor = previousPageData ? previousPageData.nextCursor : null;
+    return ['projects_feed', category, pageIndex, cursor];
   };
 
   const { data, size, setSize, isValidating, error } = useSWRInfinite(getKey, fetcher, {
@@ -50,11 +54,14 @@ export default function ProjectsPage() {
     persistSize: true,
   });
 
-  const projects = useMemo(() => data || [], [data]);
+  const projects = useMemo(() => {
+    if (!data) return [];
+    return data.map(page => page.projects || []).flat();
+  }, [data]);
   const isLoadingInitialData = !data && !error;
   const isLoadingMore = isLoadingInitialData || (size > 0 && data && typeof data[size - 1] === "undefined");
-  const isEmpty = data?.[0]?.length === 0;
-  const hasMore = data ? data[data.length - 1]?.length === PAGE_SIZE : false;
+  const isEmpty = data?.[0]?.projects?.length === 0;
+  const hasMore = data ? (data[data.length - 1]?.projects?.length === PAGE_SIZE) : false;
 
   // Background interaction hydration
   useEffect(() => {

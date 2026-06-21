@@ -49,20 +49,24 @@ export default function Dashboard() {
   }, [supabase]);
 
   // SWR Fetcher definition
-  const fetcher = async ([key, cat, query, sortOpt, pageIndex]) => {
+  const fetcher = async ([key, cat, query, sortOpt, pageIndex, cursor]) => {
     const offset = pageIndex * PAGE_SIZE;
     let url = `/api/projects?category=${encodeURIComponent(cat)}&limit=${PAGE_SIZE}&offset=${offset}&sort=${encodeURIComponent(sortOpt)}`;
     if (query) url += `&q=${encodeURIComponent(query)}`;
+    if (cursor) url += `&cursor=${encodeURIComponent(cursor)}`;
     
     const res = await fetch(url);
     if (!res.ok) throw new Error('Failed to fetch projects');
-    const { projects } = await res.json();
-    return projects || [];
+    return await res.json(); // returns { projects, nextCursor }
   };
 
   const getKey = (pageIndex, previousPageData) => {
-    if (previousPageData && previousPageData.length < PAGE_SIZE) return null;
-    return ['projects_feed', category, searchQuery, sort, pageIndex];
+    if (previousPageData) {
+      const prevProjects = previousPageData.projects || [];
+      if (prevProjects.length < PAGE_SIZE) return null;
+    }
+    const cursor = previousPageData ? previousPageData.nextCursor : null;
+    return ['projects_feed', category, searchQuery, sort, pageIndex, cursor];
   };
 
   const { data, size, setSize, isValidating, error, mutate } = useSWRInfinite(getKey, fetcher, {
@@ -76,16 +80,19 @@ export default function Dashboard() {
   const projects = useMemo(() => {
     if (!data) return [];
     const seen = new Set();
-    return data.flat().filter((p) => {
-      if (seen.has(p.id)) return false;
-      seen.add(p.id);
-      return true;
-    });
+    return data
+      .map(page => page.projects || [])
+      .flat()
+      .filter((p) => {
+        if (seen.has(p.id)) return false;
+        seen.add(p.id);
+        return true;
+      });
   }, [data]);
   const isLoadingInitialData = !data && !error;
   const isLoadingMore = isLoadingInitialData || (size > 0 && data && typeof data[size - 1] === "undefined");
-  const isEmpty = data?.[0]?.length === 0;
-  const hasMore = data ? data[data.length - 1]?.length === PAGE_SIZE : false;
+  const isEmpty = data?.[0]?.projects?.length === 0;
+  const hasMore = data ? (data[data.length - 1]?.projects?.length === PAGE_SIZE) : false;
 
   // Background interaction hydration
   useEffect(() => {
@@ -167,7 +174,7 @@ export default function Dashboard() {
         
         {/* Community Announcement Banner */}
         <div style={{
-          background: '#121212', // A professional sleek dark color
+          background: '#1f2937', // A slightly lighter dark gray instead of pure black
           borderRadius: '8px',
           padding: '0.75rem 1.5rem',
           marginTop: '1.5rem',

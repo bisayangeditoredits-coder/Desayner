@@ -17,6 +17,7 @@ export function buildPublishedProjectsQuery(supabase, {
   sort = 'newest',
   offset = 0,
   limit = 24,
+  cursor = null,
   withCount = false,
 }) {
   const selectOpts = withCount ? { count: 'exact' } : undefined;
@@ -42,6 +43,13 @@ export function buildPublishedProjectsQuery(supabase, {
     query = query.order('trending_score', { ascending: false }).order('created_at', { ascending: false });
   } else {
     query = query.order('created_at', { ascending: false });
+    if (cursor) {
+      query = query.lt('created_at', cursor);
+    }
+  }
+
+  if (sort === 'newest') {
+    return query.limit(limit);
   }
 
   return query.range(offset, offset + limit - 1);
