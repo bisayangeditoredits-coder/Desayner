@@ -4,121 +4,126 @@ import { useEffect, useRef } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
 
 /**
- * FaviconLoader — swaps the favicon with an animated spinner canvas
+ * FaviconLoader — swaps the favicon with a natively animated SVG spinner
  * while navigating between pages, then restores it when done.
- * Works on both desktop and mobile browsers.
+ * Modifies head links in-place to prevent breaking Next.js metadata reconciliation.
  */
 export default function FaviconLoader() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const animFrameRef = useRef(null);
-  const angleRef = useRef(0);
-  const isRunningRef = useRef(false);
   const stopTimerRef = useRef(null);
+  const activeSpinnerRef = useRef(false);
 
-  function getAllFaviconLinks() {
-    // Target ALL favicon-related link tags to ensure cross-browser compatibility
-    return Array.from(
-      document.querySelectorAll("link[rel*='icon']")
-    );
-  }
+  function setFavicon(href, type) {
+    const links = document.querySelectorAll("link[rel*='icon']");
+    // Append unique cache-busting timestamp to force browser tab bar updates instantly
+    const cacheBusterUrl = `${href}?v=${Date.now()}`;
 
-  function setFavicon(href) {
-    const links = getAllFaviconLinks();
     if (links.length === 0) {
-      // Create one if none exists
       const link = document.createElement('link');
       link.rel = 'icon';
-      link.href = href;
+      link.href = cacheBusterUrl;
+      if (type) {
+        link.type = type;
+      }
+      if (type === 'image/svg+xml') {
+        link.setAttribute('sizes', 'any');
+      }
       document.head.appendChild(link);
     } else {
-      links.forEach((link) => { link.href = href; });
+      links.forEach((link) => {
+        link.href = cacheBusterUrl;
+        if (type) {
+          link.setAttribute('type', type);
+        } else {
+          link.removeAttribute('type');
+        }
+        if (type === 'image/svg+xml') {
+          link.setAttribute('sizes', 'any');
+        } else {
+          link.removeAttribute('sizes');
+        }
+      });
     }
-  }
-
-  function drawSpinner(angle) {
-    const size = 64; // higher res for retina screens
-    const canvas = document.createElement('canvas');
-    canvas.width = size;
-    canvas.height = size;
-    const ctx = canvas.getContext('2d');
-    const cx = size / 2;
-    const cy = size / 2;
-    const r = size / 2 - 5;
-    const lw = 6;
-
-    // Track ring
-    ctx.beginPath();
-    ctx.arc(cx, cy, r, 0, 2 * Math.PI);
-    ctx.strokeStyle = 'rgba(45, 67, 232, 0.18)';
-    ctx.lineWidth = lw;
-    ctx.stroke();
-
-    // Spinning arc
-    ctx.beginPath();
-    ctx.arc(cx, cy, r, angle, angle + 1.5);
-    ctx.strokeStyle = '#2d43e8';
-    ctx.lineWidth = lw;
-    ctx.lineCap = 'round';
-    ctx.stroke();
-
-    return canvas.toDataURL('image/png');
   }
 
   function stopSpinner() {
-    isRunningRef.current = false;
-    if (animFrameRef.current) {
-      cancelAnimationFrame(animFrameRef.current);
-      animFrameRef.current = null;
+    if (stopTimerRef.current) {
+      clearTimeout(stopTimerRef.current);
+      stopTimerRef.current = null;
     }
-    setFavicon('/desayner-favicon.png');
+    if (activeSpinnerRef.current) {
+      setFavicon('/desayner-favicon.png', 'image/png');
+      activeSpinnerRef.current = false;
+    }
   }
 
   function startSpinner() {
-    // Always cancel any existing animation first
-    if (animFrameRef.current) {
-      cancelAnimationFrame(animFrameRef.current);
-      animFrameRef.current = null;
-    }
     if (stopTimerRef.current) {
       clearTimeout(stopTimerRef.current);
       stopTimerRef.current = null;
     }
 
-    isRunningRef.current = true;
-    angleRef.current = 0;
+    setFavicon('/favicon-loading.svg', 'image/svg+xml');
+    activeSpinnerRef.current = true;
 
-    function animate() {
-      if (!isRunningRef.current) return;
-      angleRef.current = (angleRef.current + 0.15) % (2 * Math.PI);
-      setFavicon(drawSpinner(angleRef.current));
-      animFrameRef.current = requestAnimationFrame(animate);
-    }
-
-    animFrameRef.current = requestAnimationFrame(animate);
-
-    // Auto-stop after a max of 2s (longer timeout for slow connections)
+    // Revert back to the standard favicon after 1.2s
     stopTimerRef.current = setTimeout(() => {
-      stopSpinner();
-    }, 2000);
+      // Only revert if we are not actively busy loading a route
+      const isBusy = document.documentElement.classList.contains('nprogress-busy');
+      if (!isBusy) {
+        stopSpinner();
+      }
+    }, 1200);
   }
 
-  // Trigger on every route change
+  // 1. Trigger spinner on every route change (fallback visual feedback)
   useEffect(() => {
     startSpinner();
 
     return () => {
-      // Cleanup when effect re-runs (new navigation started)
-      if (stopTimerRef.current) clearTimeout(stopTimerRef.current);
+      stopSpinner();
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname, searchParams]);
 
-  // Cleanup on unmount
+  // 2. Monitor nprogress-busy class on html to start/stop spinner dynamically
   useEffect(() => {
+    const htmlEl = document.documentElement;
+
+    function checkClass() {
+      const isBusy = htmlEl.classList.contains('nprogress-busy');
+      if (isBusy) {
+        if (stopTimerRef.current) {
+          clearTimeout(stopTimerRef.current);
+          stopTimerRef.current = null;
+        }
+        setFavicon('/favicon-loading.svg', 'image/svg+xml');
+        activeSpinnerRef.current = true;
+      } else {
+        stopSpinner();
+      }
+    }
+
+    // Initial check
+    checkClass();
+
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.attributeName === 'class') {
+          checkClass();
+        }
+      });
+    });
+
+    observer.observe(htmlEl, {
+      attributes: true,
+      attributeFilter: ['class'],
+    });
+
     return () => {
-      if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
-      if (stopTimerRef.current) clearTimeout(stopTimerRef.current);
+      observer.disconnect();
+      stopSpinner();
     };
   }, []);
 

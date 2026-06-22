@@ -36,7 +36,8 @@
 html {
   /* Scale down base font size to ~90% (14.4px) to make the UI look zoomed out on desktop */
   font-size: 14.4px;
-  scroll-behavior: smooth;
+  scrollbar-width: none; /* Hide scrollbars in Firefox */
+  -ms-overflow-style: none; /* Hide scrollbars in IE/Edge */
 }
 
 @media (max-width: 768px) {
@@ -74,11 +75,10 @@ input, select, textarea { font-family: var(--font-body); }
   -webkit-text-fill-color: transparent;
 }
 
-/* Scrollbar */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: var(--primary-bg); }
-::-webkit-scrollbar-thumb { background: #d0d0d0; border-radius: 0; }
-::-webkit-scrollbar-thumb:hover { background: #b0b0b0; }
+/* Hide Scrollbar Globally */
+::-webkit-scrollbar {
+  display: none; /* Hide scrollbars in Chrome, Safari, and newer Edge */
+}
 
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
@@ -238,19 +238,40 @@ textarea.input { resize: vertical; min-height: 120px; }
   100% { background-position:  400px 0; }
 }
 
-/* ─── Page Transition: lightweight CSS-only fade-in ─────────────────────────
-   Fires once on page load without remounting components. Zero skeleton flash.
+/* ─── Page Transition: legacy helper ─────────────────────────────────────────
+   Disabled animations here to prevent double-animation under templates.
    ─────────────────────────────────────────────────────────────────────────── */
-@keyframes pageFadeIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to   { opacity: 1; transform: translateY(0); }
+.page-content {
+  /* Animation removed. Layout styling is preserved. */
 }
 
-.page-content {
-  animation: pageFadeIn 0.25s ease-out both;
-  animation-fill-mode: both;
+/* ─── Premium Hardware-Accelerated Page Transitions ─────────────────────────
+   Smooth slide-up transition using CSS keyframes. Zero JS animation frame overhead.
+   ─────────────────────────────────────────────────────────────────────────── */
+@keyframes premiumPageEnter {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 10px, 0);
+  }
+  99% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    opacity: 1;
+    transform: none; /* Clear transform container state so absolute/fixed children behave correctly */
+  }
+}
+
+.page-transition-container {
+  display: block;
+  width: 100%;
+  animation: premiumPageEnter 0.35s cubic-bezier(0.25, 1, 0.5, 1) both;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .page-content { animation: none; }
+  .page-transition-container {
+    animation: none;
+    transform: none;
+  }
 }
