@@ -1,21 +1,24 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
-import { motion } from 'framer-motion';
+import { useState, useEffect } from 'react';
 
 export default function PageTransition({ children }) {
   const pathname = usePathname();
+  const [isAnimating, setIsAnimating] = useState(true);
+
+  useEffect(() => {
+    setIsAnimating(true);
+  }, [pathname]);
 
   return (
-    <motion.div 
+    <div 
       key={pathname}
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3, ease: 'easeOut' }}
-      className="page-transition-container"
+      className={`page-transition-container ${isAnimating ? 'anim-fade-slide-in' : ''}`}
       style={{ width: '100%', minHeight: '100vh' }}
+      onAnimationEnd={() => setIsAnimating(false)}
     >
       {children}
-    </motion.div>
+    </div>
   );
 }
