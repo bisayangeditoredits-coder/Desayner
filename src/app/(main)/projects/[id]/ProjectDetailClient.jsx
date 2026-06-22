@@ -447,10 +447,15 @@ export default function ProjectDetailClient({ initialProject = null, isModal = f
             
             {/* Action Buttons Aligned with Sidebar */}
             <div className="desktop-actions" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
-              <button onClick={toggleLike} style={{ width: '40px', height: '40px', borderRadius: '50%', border: '1px solid #e2e8f0', background: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: liked ? '#ef4444' : '#64748b', transition: 'all 0.2s', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
+              <button onClick={toggleLike} className={liked ? 'anim-heart-pop' : ''} style={{ width: '40px', height: '40px', borderRadius: '50%', border: '1px solid #e2e8f0', background: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: liked ? '#ef4444' : '#64748b', transition: 'all 0.2s', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
                 <Heart size={18} fill={liked ? 'currentColor' : 'none'} />
               </button>
-              <button onClick={() => { if (!currentUser) { router.push('/login?redirectTo=' + encodeURIComponent(window.location.pathname)); } else { setShowColModal(true); } }} style={{ width: '40px', height: '40px', borderRadius: '50%', border: '1px solid #e2e8f0', background: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#64748b', transition: 'all 0.2s', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
+              <button 
+                onMouseDown={(e) => e.currentTarget.classList.add('anim-save-pop')}
+                onAnimationEnd={(e) => e.currentTarget.classList.remove('anim-save-pop')}
+                onClick={() => { if (!currentUser) { router.push('/login?redirectTo=' + encodeURIComponent(window.location.pathname)); } else { setShowColModal(true); } }} 
+                style={{ width: '40px', height: '40px', borderRadius: '50%', border: '1px solid #e2e8f0', background: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#64748b', transition: 'all 0.2s', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}
+              >
                 <Bookmark size={18} />
               </button>
               <button onClick={handleShare} style={{ width: '40px', height: '40px', borderRadius: '50%', border: '1px solid #e2e8f0', background: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#64748b', transition: 'all 0.2s', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
@@ -595,11 +600,16 @@ export default function ProjectDetailClient({ initialProject = null, isModal = f
         }
       `}</style>
       <div className="mobile-actions">
-        <button onClick={toggleLike} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.2rem', background: 'none', border: 'none', cursor: 'pointer', color: liked ? '#ef4444' : '#64748b', fontWeight: 600, fontSize: '0.7rem' }}>
+        <button onClick={toggleLike} className={liked ? 'anim-heart-pop' : ''} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.2rem', background: 'none', border: 'none', cursor: 'pointer', color: liked ? '#ef4444' : '#64748b', fontWeight: 600, fontSize: '0.7rem' }}>
           <Heart size={22} fill={liked ? 'currentColor' : 'none'} />
           <span>{project?.likes_count || 0}</span>
         </button>
-        <button onClick={() => { if (!currentUser) { router.push('/login?redirectTo=' + encodeURIComponent(window.location.pathname)); } else { setShowColModal(true); } }} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.2rem', background: 'none', border: 'none', cursor: 'pointer', color: '#64748b', fontWeight: 600, fontSize: '0.7rem' }}>
+        <button 
+          onMouseDown={(e) => e.currentTarget.classList.add('anim-save-pop')}
+          onAnimationEnd={(e) => e.currentTarget.classList.remove('anim-save-pop')}
+          onClick={() => { if (!currentUser) { router.push('/login?redirectTo=' + encodeURIComponent(window.location.pathname)); } else { setShowColModal(true); } }} 
+          style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.2rem', background: 'none', border: 'none', cursor: 'pointer', color: '#64748b', fontWeight: 600, fontSize: '0.7rem' }}
+        >
           <Bookmark size={22} />
           <span>Save</span>
         </button>

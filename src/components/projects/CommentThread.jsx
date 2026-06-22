@@ -48,7 +48,7 @@ export default function CommentThread({ targetId, targetType = 'project', commen
       {/* Comment list */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', marginBottom: '1.5rem' }}>
         {comments.map(c => (
-          <div key={c.id} style={{ display: 'flex', gap: '0.75rem' }}>
+          <div key={c.id} className="anim-fade-slide-in" style={{ display: 'flex', gap: '0.75rem' }}>
             <UserAvatar src={c.profiles?.avatar_url} name={c.profiles?.full_name || c.profiles?.username} size={32} />
             <div style={{ flex: 1 }}>
               <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.5rem', marginBottom: '0.3rem' }}>
