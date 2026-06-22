@@ -72,6 +72,7 @@ export default function Dashboard() {
   const { data, size, setSize, isValidating, error, mutate } = useSWRInfinite(getKey, fetcher, {
     revalidateFirstPage: false,
     persistSize: true,
+    keepPreviousData: true,
   });
 
   // Flatten pages and deduplicate by ID.
@@ -133,14 +134,18 @@ export default function Dashboard() {
 
   const scrollRestoredRef = useRef(false);
 
-  // Scroll restoration based on previously cached state
+  // Scroll restoration based on previously cached state (Run once on mount when data is ready)
   useEffect(() => {
     if (!scrollRestoredRef.current && projects.length > 0 && scrollPosition > 0) {
       scrollRestoredRef.current = true;
       window.scrollTo({ top: scrollPosition, behavior: 'instant' });
     }
+  }, [projects.length, scrollPosition]);
+
+  // Save scroll position only on unmount
+  useEffect(() => {
     return () => setScrollPosition(window.scrollY);
-  }, [projects.length, scrollPosition, setScrollPosition]);
+  }, [setScrollPosition]);
 
   // Infinite scroll observer
   const observerRef = useRef(null);
