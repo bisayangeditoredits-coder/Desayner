@@ -49,6 +49,7 @@ const SORT_OPTIONS = [
 
 import { Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import useSWR from 'swr';
 
 function VirtualDesignerChunk({ designersChunk, currentUserId, followingIds }) {
   const [isVisible, setIsVisible] = useState(true);
@@ -100,121 +101,87 @@ function DesignersContent() {
   const initialSearch = searchParams.get("q") || "";
   const initialCategory = searchParams.get("category") || "All";
   const initialSort = searchParams.get("sort") || "projects";
-  const [data, setData] = useState({
-    heroDesigner: null,
-    featuredDesigners: [],
-    risingDesigners: [],
-    designers: [],
-  });
-
-  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState(initialSearch);
   const [category, setCategory] = useState(initialCategory);
   const [sort, setSort] = useState(initialSort);
   const [currentUserId, setCurrentUserId] = useState(null);
   const [followingIds, setFollowingIds] = useState(new Set());
-  const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(false);
 
   const supabase = useMemo(() => createClient(), []);
-  const PAGE_SIZE = 24;
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (user) {
         setCurrentUserId(user.id);
-        supabase
-          .from("follows")
-          .select("following_id")
-          .eq("follower_id", user.id)
+        supabase.from('follows').select('following_id').eq('follower_id', user.id)
           .then(({ data }) => {
-            if (data) {
-              setFollowingIds(new Set(data.map((f) => f.following_id)));
-            }
+            if (data) setFollowingIds(new Set(data.map(f => f.following_id)));
           });
       }
     });
   }, [supabase]);
 
-  // Sync search, category & sort to URL
+  // Sync filters to URL
   useEffect(() => {
     const timer = setTimeout(() => {
       const params = new URLSearchParams();
-      if (search) params.set("q", search);
-      if (category !== "All") params.set("category", category);
-      if (sort !== "projects") params.set("sort", sort);
+      if (search) params.set('q', search);
+      if (category !== 'All') params.set('category', category);
+      if (sort !== 'projects') params.set('sort', sort);
       router.replace(`/designers?${params.toString()}`, { scroll: false });
     }, 300);
     return () => clearTimeout(timer);
   }, [search, category, sort, router]);
 
-  const loadDesigners = useCallback(
-    async (
-      pageNum = 1,
-      currentCat = "All",
-      currentSort = "followers",
-      append = false,
-    ) => {
-      if (pageNum === 1) setLoading(true);
+  const swrKey = `/api/designers?category=${encodeURIComponent(category)}&sort=${sort}&page=1`;
 
-      try {
-        const res = await fetch(
-          `/api/designers?category=${encodeURIComponent(currentCat)}&sort=${currentSort}&page=${pageNum}`,
-        );
-        if (!res.ok) {
-          const errText = await res.text().catch(() => '');
-          throw new Error(`Failed to fetch designers: ${res.status} ${res.statusText} - ${errText}`);
-        }
-        const payload = await res.json();
-
-        const newDesigners = (payload.designers || []).filter(
-          (c) => c.id !== currentUserId,
-        );
-        setHasMore(payload.designers?.length === PAGE_SIZE);
-
-        setData((prev) => {
-          if (!append) {
-            return {
-              heroDesigner: payload.heroDesigner || prev.heroDesigner,
-              featuredDesigners:
-                payload.featuredDesigners || prev.featuredDesigners,
-              risingDesigners: payload.risingDesigners || prev.risingDesigners,
-              designers: newDesigners,
-            };
-          }
-
-          const existingIds = new Set(prev.designers.map((c) => c.id));
-          const added = newDesigners.filter((c) => !existingIds.has(c.id));
-          return {
-            ...prev,
-            designers: [...prev.designers, ...added],
-          };
-        });
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    },
-    [currentUserId],
+  const { data: swrData, isLoading, isValidating } = useSWR(
+    swrKey,
+    (url) => fetch(url).then(r => r.json()),
+    {
+      keepPreviousData: true,
+      revalidateOnFocus: false,
+      dedupingInterval: 30000,
+    }
   );
 
-  // Load initial data and handle filter/sort changes
-  useEffect(() => {
-    async function init() {
-      setPage(1);
-      await loadDesigners(1, category, sort, false);
-    }
-    init();
-  }, [category, sort, loadDesigners]);
+  const [extraPages, setExtraPages] = useState([]);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(false);
+  const PAGE_SIZE = 24;
 
-  // Handle pagination
+  // Reset extra pages when filter changes
   useEffect(() => {
-    async function fetchPage() {
-      if (page > 1) await loadDesigners(page, category, sort, true);
+    setExtraPages([]);
+  }, [category, sort]);
+
+  useEffect(() => {
+    if (swrData) setHasMore((swrData.designers?.length ?? 0) === PAGE_SIZE);
+  }, [swrData]);
+
+  const loadMore = useCallback(async () => {
+    if (loadingMore || !hasMore) return;
+    setLoadingMore(true);
+    const nextPage = 2 + extraPages.length;
+    try {
+      const res = await fetch(`/api/designers?category=${encodeURIComponent(category)}&sort=${sort}&page=${nextPage}`);
+      const payload = await res.json();
+      const newDesigners = (payload.designers || []).filter(d => d.id !== currentUserId);
+      setExtraPages(prev => [...prev, ...newDesigners]);
+      setHasMore(newDesigners.length === PAGE_SIZE);
+    } finally {
+      setLoadingMore(false);
     }
-    fetchPage();
-  }, [page, category, sort, loadDesigners]);
+  }, [category, sort, loadingMore, hasMore, extraPages.length, currentUserId]);
+
+  const rawData = swrData || {};
+  const loading = isLoading && !swrData; // only show skeletons on very first load, not on re-visit
+  const data = {
+    heroDesigner: rawData.heroDesigner || null,
+    featuredDesigners: rawData.featuredDesigners || [],
+    risingDesigners: rawData.risingDesigners || [],
+    designers: (rawData.designers || []).filter(d => d.id !== currentUserId),
+  };
 
   // Use featured designers if available in DB, otherwise fallback to rising designers
   let displayDesigners = [];
@@ -248,21 +215,21 @@ function DesignersContent() {
   }
 
   // Handle search (client-side filtering for simplicity, or we could add to API)
+  const allDesigners = [...data.designers, ...extraPages];
   const filteredDesigners = search.trim()
-    ? data.designers.filter(
+    ? allDesigners.filter(
         (c) =>
           c.username.toLowerCase().includes(search.toLowerCase()) ||
           (c.full_name &&
             c.full_name.toLowerCase().includes(search.toLowerCase())),
       )
-    : data.designers;
+    : allDesigners;
 
   return (
     <>
       {/* 1. EDITORIAL HEADER & PREMIUM CAROUSEL */}
       {!loading &&
         displayDesigners.length > 0 &&
-        page === 1 &&
         category === "All" && (
           <div style={{ marginBottom: '1.25rem', overflow: 'hidden' }}>
             <div className="page-content">
@@ -296,8 +263,9 @@ function DesignersContent() {
                         <img
                           src={optimizeImage(creator.banner_url, 800)}
                           alt=""
-                          className="td-card__cover-img"
+                          className="td-card__cover-img img-fade-in"
                           loading="lazy"
+                          onLoad={(e) => e.currentTarget.classList.add('loaded')}
                         />
                       ) : (
                         <div className="td-card__cover-placeholder" />
@@ -500,7 +468,7 @@ function DesignersContent() {
         </div>
         
         {/* Main Grid */}
-        {loading && page === 1 ? (
+        {loading ? (
           <>
             <style>{`
               @keyframes shimmer {
@@ -597,24 +565,19 @@ function DesignersContent() {
         )}
 
         {/* Load more */}
-        {hasMore && !loading && search === "" && (
-          <div style={{ textAlign: "center", marginTop: "4rem" }}>
+        {hasMore && !loadingMore && search === '' && (
+          <div style={{ textAlign: 'center', marginTop: '4rem' }}>
             <button
-              onClick={() => setPage((p) => p + 1)}
+              onClick={loadMore}
               className="btn btn-outline"
-              style={{
-                padding: "0.85rem 3rem",
-                fontSize: "1rem",
-                borderRadius: "30px",
-                fontWeight: 700,
-              }}
+              style={{ padding: '0.85rem 3rem', fontSize: '1rem', borderRadius: '30px', fontWeight: 700 }}
             >
               Discover More Designers
             </button>
           </div>
         )}
 
-        {loading && page > 1 && (
+        {loadingMore && (
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "0.75rem", padding: "2.5rem 0", color: "#64748b" }}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" style={{ animation: "spin 0.8s linear infinite" }}>
               <circle cx="12" cy="12" r="10" stroke="#e2e8f0" strokeWidth="3"/>

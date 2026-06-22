@@ -36,6 +36,7 @@
 html {
   /* Scale down base font size to ~90% (14.4px) to make the UI look zoomed out on desktop */
   font-size: 14.4px;
+  scroll-behavior: smooth;
 }
 
 @media (max-width: 768px) {

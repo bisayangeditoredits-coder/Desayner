@@ -4077,13 +4077,41 @@
   }
 }
 
-/* Image fade-in for cards */
+/* ─── Image Fade-In — Premium Dribbble-style reveal ─────────────────────────
+   Images start invisible, slightly scaled up, and blurred.
+   On load they smoothly transition to full quality.
+   Background shimmer gives a skeleton effect while loading.
+   ─────────────────────────────────────────────────────────────────────────── */
 .img-fade-in {
   opacity: 0;
-  transition: opacity 0.15s ease-out;
+  transform: scale(1.03);
+  filter: blur(4px);
+  transition:
+    opacity 0.4s ease-out,
+    transform 0.4s ease-out,
+    filter 0.35s ease-out;
+  will-change: opacity, transform, filter;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
+  background-size: 400px 100%;
+  animation: shimmer 1.4s infinite ease-in-out;
 }
 .img-fade-in.loaded {
   opacity: 1;
+  transform: scale(1);
+  filter: blur(0px);
+  animation: none;
+  background: none;
+}
+
+/* Respect prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  .img-fade-in {
+    transition: opacity 0.2s ease;
+    transform: none;
+    filter: none;
+    animation: none;
+  }
+  .img-fade-in.loaded { opacity: 1; }
 }
 
 /* Mobile Actions Bar */
