@@ -12,6 +12,7 @@ import PWAInstaller from "@/components/layout/PWAInstaller";
 import FaviconLoader from "@/components/layout/FaviconLoader";
 import Script from "next/script";
 import { Suspense } from "react";
+import NextTopLoader from 'nextjs-toploader';
 
 // ── Existing fonts ────────────────────────────────────────────────────────────
 
@@ -115,6 +116,7 @@ export default function RootLayout({ children }) {
       ].join(' ')}
     >
       <body>
+        <NextTopLoader color="#2d43e8" height={3} showSpinner={false} shadow="0 0 10px #2d43e8,0 0 5px #2d43e8" />
         {process.env.NEXT_PUBLIC_CLARITY_PROJECT_ID && (
           <Script id="clarity-script" strategy="afterInteractive">
             {`

@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
+import { createPortal } from 'react-dom';
 
 export default function WelcomeModal() {
   const [isOpen, setIsOpen] = useState(false);
@@ -20,7 +21,7 @@ export default function WelcomeModal() {
 
   if (!isOpen) return null;
 
-  return (
+  const modalContent = (
     <>
       <style>{`
         @keyframes wm-in  { from { opacity: 0; } to { opacity: 1; } }
@@ -310,4 +311,9 @@ export default function WelcomeModal() {
       </div>
     </>
   );
+
+  if (typeof document !== 'undefined') {
+    return createPortal(modalContent, document.body);
+  }
+  return null;
 }
