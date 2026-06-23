@@ -100,7 +100,7 @@ export default function Header() {
     const q = e.target.value;
     setSearchQuery(q);
     clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(() => liveSearch(q), 280);
+    debounceRef.current = setTimeout(() => liveSearch(q), 600);
   }
 
   function handleSearchSubmit(e) {

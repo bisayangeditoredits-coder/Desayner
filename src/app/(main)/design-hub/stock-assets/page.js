@@ -90,7 +90,7 @@ export default function StockAssetsPage() {
   // Initial load + debounced re-search on query change
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(() => doSearch(query, 1), 400);
+    debounceRef.current = setTimeout(() => doSearch(query, 1), 600);
     return () => clearTimeout(debounceRef.current);
   }, [query, doSearch]);
 

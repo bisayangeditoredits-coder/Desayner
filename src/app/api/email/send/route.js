@@ -4,11 +4,11 @@ import { sendWelcomeEmail } from '@/lib/email';
 import { Ratelimit } from '@upstash/ratelimit';
 import { redis } from '@/lib/redis';
 
-// Strict rate limit: 3 emails per user per hour
 const emailRatelimit = new Ratelimit({
   redis,
   limiter: Ratelimit.slidingWindow(3, '1 h'),
   prefix: 'rl:email:send',
+  analytics: false,
 });
 
 const ALLOWED_TYPES = ['welcome'];

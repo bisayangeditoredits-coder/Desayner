@@ -128,7 +128,7 @@ function FontsInner() {
       setPage(1);
       pushURL(q, category);
       doFetch(q, category, 1);
-    }, 380);
+    }, 600);
   }
 
   function handleClear() {
