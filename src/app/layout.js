@@ -118,7 +118,7 @@ export default function RootLayout({ children }) {
       <body>
         <NextTopLoader color="#2d43e8" height={3} showSpinner={false} shadow="0 0 10px #2d43e8,0 0 5px #2d43e8" />
         {process.env.NEXT_PUBLIC_CLARITY_PROJECT_ID && (
-          <Script id="clarity-script" strategy="afterInteractive">
+          <Script id="clarity-script" strategy="lazyOnload">
             {`
               (function(c,l,a,r,i,t,y){
                   c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};

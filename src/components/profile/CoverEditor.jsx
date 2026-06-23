@@ -1,6 +1,14 @@
 'use client';
 import { useState, useCallback, useRef, useEffect, useId } from 'react';
-import Cropper from 'react-easy-crop';
+import dynamic from 'next/dynamic';
+const Cropper = dynamic(() => import('react-easy-crop'), {
+  ssr: false,
+  loading: () => (
+    <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <Loader2 size={24} style={{ animation: 'spin 1s linear infinite', color: '#94a3b8' }} />
+    </div>
+  ),
+});
 import { Image as ImageIcon, Upload, Loader2, Check, RefreshCw, Crop } from 'lucide-react';
 import getCroppedImg from '@/lib/cropImage';
 import { useUpload } from '@/hooks/useUpload';

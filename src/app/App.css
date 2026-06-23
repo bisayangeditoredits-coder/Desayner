@@ -1966,6 +1966,7 @@
   height: 100%;
   display: block;
   object-fit: cover;
+  will-change: transform;
   transition: transform 0.35s ease;
 }
 

@@ -85,6 +85,8 @@ const ProjectCard = React.memo(function ProjectCard({ project, currentUserId, is
                 src={coverSrc}
                 alt={project.title || 'Project'}
                 className="project-card__img img-fade-in"
+                loading="lazy"
+                decoding="async"
                 onLoad={(e) => {
                   e.currentTarget.classList.add('loaded');
                   setImgStatus('loaded');
