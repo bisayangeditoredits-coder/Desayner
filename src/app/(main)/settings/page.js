@@ -149,6 +149,7 @@ export default function SettingsPage() {
       setSaved(true);
       window.dispatchEvent(new Event('profile_updated'));
       router.refresh();
+      router.push(`/profile/${form.username}`);
     }
     setSaving(false);
   }

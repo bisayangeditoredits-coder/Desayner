@@ -7,6 +7,8 @@ import FollowButton from '@/components/ui/FollowButton';
 import UserAvatar from '@/components/ui/UserAvatar';
 import SaveToCollectionModal from '@/components/projects/SaveToCollectionModal';
 import ShareProjectModal from '@/components/projects/ShareProjectModal';
+import ImageGallery from '@/components/projects/ImageGallery';
+import ProjectSidebar from '@/components/projects/ProjectSidebar';
 import Link from 'next/link';
 import { Heart, Bookmark, ArrowLeft, Globe, Eye, MessageCircle, Calendar, Share, Edit, Check, Trash2, MessageSquare } from 'lucide-react';
 import { CREATIVE_TOOLS } from '@/lib/constants';
@@ -56,56 +58,6 @@ function NotFoundState() {
             ← Back to Projects
           </Link>
         </div>
-    </>
-  );
-}
-
-function ImageGallery({ images, title }) {
-  const [lightbox, setLightbox] = useState(null);
-
-  if (!images.length) return null;
-
-  return (
-    <>
-      <div className="project-detail__gallery">
-        {images.map((img, i) => (
-          <button
-            key={i}
-            className="project-detail__gallery-item"
-            onClick={() => setLightbox(i)}
-          >
-            <img src={img} alt={`${title} — image ${i + 1}`} loading="lazy" decoding="async" />
-          </button>
-        ))}
-      </div>
-
-      {lightbox !== null && (
-        <div
-          className="lightbox"
-          onClick={() => setLightbox(null)}
-          role="dialog"
-          aria-modal="true"
-        >
-          <button className="lightbox__close" onClick={() => setLightbox(null)}>✕</button>
-          <button
-            className="lightbox__nav lightbox__nav--prev"
-            onClick={e => { e.stopPropagation(); setLightbox(i => Math.max(0, i - 1)); }}
-            disabled={lightbox === 0}
-          >‹</button>
-          <img
-            src={images[lightbox]}
-            alt={`${title} — image ${lightbox + 1}`}
-            className="lightbox__img"
-            onClick={e => e.stopPropagation()}
-          />
-          <button
-            className="lightbox__nav lightbox__nav--next"
-            onClick={e => { e.stopPropagation(); setLightbox(i => Math.min(images.length - 1, i + 1)); }}
-            disabled={lightbox === images.length - 1}
-          >›</button>
-          <p className="lightbox__counter">{lightbox + 1} / {images.length}</p>
-        </div>
-      )}
     </>
   );
 }
@@ -345,53 +297,41 @@ export default function ProjectDetailClient({ initialProject = null, isModal = f
   return (
     <>
 
-        {/* Back bar */}
-        <div className="project-detail__topbar" style={isModal ? { position: 'static', borderBottom: 'none' } : {}}>
-          <div style={{ display: 'flex', width: '100%', maxWidth: '1428px', margin: '0 auto', alignItems: 'center' }}>
-            {!isModal ? (
-              <button onClick={goBack} className="project-detail__back" style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: 0 }}>
-                <ArrowLeft size={14} /> Back to Projects
-              </button>
-            ) : <div />}
-            <div style={{ marginLeft: 'auto', display: 'flex', gap: '0.5rem' }}>
-              {currentUser?.id === project.user_id && (
-                <>
-                  <button 
-                    onClick={() => setShowDeleteModal(true)}
-                    disabled={isDeleting}
-                    className="btn btn-danger project-detail__topbar-btn"
-                    style={{ background: '#fef2f2', color: '#ef4444', borderColor: '#fee2e2' }}
-                    title="Delete"
-                  >
-                    <Trash2 size={14} /> 
-                    <span className="btn-text-responsive">{isDeleting ? 'Deleting...' : 'Delete'}</span>
-                  </button>
-                  <button
-                    onClick={() => window.location.href = `/projects/${currentId}/edit`}
-                    className="btn btn-dark project-detail__topbar-btn"
-                    title="Edit Project"
-                    style={{ background: '#231f20', color: 'white', border: '1px solid #231f20', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: 600, fontSize: '0.85rem', padding: '0.5rem 1rem', fontFamily: 'inherit' }}
-                  >
-                    <Edit size={14} /> 
-                    <span className="btn-text-responsive">Edit Project</span>
-                  </button>
-                </>
-              )}
-            </div>
-          </div>
-        </div>
-
         {/* Two-column layout */}
-        <div className="project-detail__body" style={{ marginTop: '0' }}>
+        <div className="project-detail__body" style={{ marginTop: '0', paddingTop: isModal ? '2rem' : '1rem' }}>
 
           {/* ── LEFT: content ─────────────────────────── */}
           <article className="project-detail__main" style={{ width: '100%', minWidth: 0 }}>
 
             {/* Minimal Header (Dribbble Style) perfectly aligned with image */}
             <div style={{ paddingBottom: '1.5rem' }}>
-              <h1 style={{ fontSize: '1.6rem', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.02em', marginBottom: '1.25rem', fontFamily: '"Inter", "Segoe UI", sans-serif' }}>
-                {project.title}
-              </h1>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
+                <h1 style={{ fontSize: '1.8rem', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.02em', marginBottom: '1.25rem', fontFamily: '"Inter", "Segoe UI", sans-serif' }}>
+                  {project.title}
+                </h1>
+                
+                {currentUser?.id === project.user_id && (
+                  <div style={{ display: 'flex', gap: '0.5rem' }}>
+                    <button 
+                      onClick={() => setShowDeleteModal(true)}
+                      disabled={isDeleting}
+                      className="btn btn-danger"
+                      style={{ background: '#fef2f2', color: '#ef4444', border: '1px solid #fee2e2', borderRadius: '8px', padding: '0.5rem 1rem', fontSize: '0.85rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.4rem', cursor: 'pointer' }}
+                    >
+                      <Trash2 size={14} /> 
+                      <span className="btn-text-responsive">{isDeleting ? 'Deleting...' : 'Delete'}</span>
+                    </button>
+                    <button
+                      onClick={() => window.location.href = `/projects/${currentId}/edit`}
+                      className="btn btn-dark"
+                      style={{ background: '#231f20', color: 'white', border: '1px solid #231f20', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: 600, fontSize: '0.85rem', padding: '0.5rem 1rem', fontFamily: 'inherit' }}
+                    >
+                      <Edit size={14} /> 
+                      <span className="btn-text-responsive">Edit</span>
+                    </button>
+                  </div>
+                )}
+              </div>
               
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
                 {/* Author Info */}
@@ -420,232 +360,57 @@ export default function ProjectDetailClient({ initialProject = null, isModal = f
             {project.description && (
               <section className="project-detail__description">
                 <h2 className="project-detail__section-label">About this project</h2>
-                <p className="project-detail__desc-text">{project.description}</p>
+                <div className="project-detail__desc-text" dangerouslySetInnerHTML={{ __html: project.description }} />
               </section>
             )}
 
-            {/* Tags & Tools */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginTop: '2rem', marginBottom: '2rem' }}>
-              {project.tools?.length > 0 && (
-                <div>
-                  <h3 style={{ fontSize: '0.85rem', fontWeight: 700, color: '#6b6b6b', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.5rem' }}>Tools Used</h3>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
-                    {project.tools.map(toolId => {
-                      const t = CREATIVE_TOOLS.find(c => c.id === toolId);
-                      if (!t) return null;
-                      return (
-                        <div key={toolId} style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', padding: '0.3rem 0.75rem', background: '#f5f5f5', border: '1px solid #e8e8e8', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 600, color: '#231f20' }} title={t.name}>
-                          <img src={t.iconPath} alt={t.name} style={{ width: '14px', height: '14px', objectFit: 'contain' }} />
-                          {t.name}
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
-
-              {project.tags?.length > 0 && (
-                <div>
-                  <h3 style={{ fontSize: '0.85rem', fontWeight: 700, color: '#6b6b6b', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.5rem' }}>Tags</h3>
-                  <div className="project-detail__tags" style={{ margin: 0 }}>
-                    {project.tags.map(tag => (
-                      <span key={tag} className="project-detail__tag">#{tag}</span>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-
             {/* Comments */}
-            <section className="project-detail__comments">
-              <h2 className="project-detail__section-label">
-                Comments <span className="project-detail__section-count">({commentCount})</span>
-              </h2>
-              <CommentThread
-                targetId={currentId}
-                targetType="project"
-                comments={comments}
-                currentUser={currentProfile}
-              />
+            <div className="project-detail__comments">
+              <h3 className="project-detail__comments-title">
+                Comments <span className="project-detail__comments-count">({commentCount})</span>
+              </h3>
+              <div className="project-detail__comments-list">
+                {comments.map((comment) => (
+                  <CommentThread
+                    key={comment.id}
+                    comment={comment}
+                    currentUserId={currentUser?.id}
+                    onDelete={(id) => {
+                      setComments(prev => prev.filter(c => c.id !== id));
+                      setCommentCount(c => c - 1);
+                    }}
+                  />
+                ))}
+              </div>
               {commentsHasMore && (
                 <button
-                  type="button"
+                  className="project-detail__load-comments"
                   onClick={loadMoreComments}
                   disabled={loadingComments}
-                  style={{ marginTop: '1rem', padding: '0.5rem 1rem', border: '1px solid #e8e8e8', background: 'white', borderRadius: '8px', fontWeight: 600, fontSize: '0.85rem', cursor: loadingComments ? 'wait' : 'pointer' }}
                 >
-                  {loadingComments ? 'Loading…' : 'Load more comments'}
+                  {loadingComments ? 'Loading...' : 'Load older comments'}
                 </button>
               )}
-            </section>
+            </div>
           </article>
 
-          {/* ── RIGHT: sidebar ────────────────────────── */}
-          <div className="sidebar-sticky-container" style={{ display: 'flex', flexDirection: 'column', gap: '1rem', position: 'sticky', top: '100px' }}>
-            
-
-
-            <aside className="project-detail__sidebar" style={{ position: 'static', marginTop: 0 }}>
-
-            {/* Action Buttons Aligned Inside Sidebar */}
-            <div className="desktop-actions" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', marginBottom: '1.5rem', alignSelf: 'center' }}>
-              <button onClick={toggleLike} className={liked ? 'anim-heart-pop' : ''} style={{ width: '40px', height: '40px', borderRadius: '50%', border: '1px solid #e2e8f0', background: '#f8fafc', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: liked ? '#ef4444' : '#64748b', transition: 'all 0.2s' }}>
-                <Heart size={18} fill={liked ? 'currentColor' : 'none'} />
-              </button>
-              <button 
-                onMouseDown={(e) => e.currentTarget.classList.add('anim-save-pop')}
-                onAnimationEnd={(e) => e.currentTarget.classList.remove('anim-save-pop')}
-                onClick={() => { if (!currentUser) { router.push('/login?redirectTo=' + encodeURIComponent(window.location.pathname)); } else { setShowColModal(true); } }} 
-                style={{ width: '40px', height: '40px', borderRadius: '50%', border: '1px solid #e2e8f0', background: '#f8fafc', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#64748b', transition: 'all 0.2s' }}
-              >
-                <Bookmark size={18} />
-              </button>
-              <button onClick={handleShare} style={{ width: '40px', height: '40px', borderRadius: '50%', border: '1px solid #e2e8f0', background: '#f8fafc', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#64748b', transition: 'all 0.2s' }}>
-                <Share size={18} />
-              </button>
-            </div>
-
-            <div className="project-detail__stats">
-              <div className="project-detail__stat">
-                <Heart size={13} />
-                <span>{project.likes_count || 0} appreciations</span>
-              </div>
-              <div className="project-detail__stat">
-                <Bookmark size={13} />
-                <span>{project.saves_count || 0} saves</span>
-              </div>
-              <div className="project-detail__stat">
-                <MessageCircle size={13} />
-                <span>{commentCount} comments</span>
-              </div>
-              <div className="project-detail__stat">
-                <Calendar size={13} />
-                <span>{formatDate(project.created_at)}</span>
-              </div>
-            </div>
-
-            {/* Author card */}
-            <div className="project-detail__author-card">
-              <Link
-                href={profileHref}
-                className="project-detail__author-avatar-link"
-                onClick={goToAuthorProfile}
-              >
-                <UserAvatar
-                  src={author?.avatar_url}
-                  name={author?.full_name || author?.username}
-                  size={56}
-                />
-              </Link>
-              <Link
-                href={profileHref}
-                className="project-detail__author-name"
-                onClick={goToAuthorProfile}
-                style={{ fontSize: '1.1rem', marginTop: '0.25rem' }}
-              >
-                {author?.full_name || author?.username}
-              </Link>
-              <span className="project-detail__author-handle">@{author?.username}</span>
-
-              {author?.bio && (
-                <p className="project-detail__author-bio">{author.bio}</p>
-              )}
-
-              <div className="project-detail__author-meta">
-                <span><strong>{author?.projects_count || 0}</strong> projects</span>
-                <span><strong>{author?.followers_count || 0}</strong> followers</span>
-              </div>
-
-              {author?.website && (
-                <a
-                  href={author.website}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="project-detail__author-website"
-                >
-                  <Globe size={13} /> {author.website.replace(/^https?:\/\//, '')}
-                </a>
-              )}
-
-              <FollowButton
-                targetUserId={author?.id}
-                currentUserId={currentUser?.id}
-                initialFollowing={isFollowing}
-              />
-
-              {/* Contact Creator — only shown if viewing someone else's project */}
-              {currentUser && currentUser.id !== project.user_id && author?.website && (
-                <a
-                  href={author.website.startsWith('http') ? author.website : `https://${author.website}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="project-detail__action-btn"
-                  style={{
-                    width: '100%',
-                    justifyContent: 'center',
-                    marginTop: '0.5rem',
-                    background: '#2d43e8',
-                    color: 'white',
-                    borderColor: '#2d43e8',
-                    textDecoration: 'none'
-                  }}
-                >
-                  <MessageSquare size={16} />
-                  <span>Contact Creator</span>
-                </a>
-              )}
-            </div>
-
-            {/* More by this creator (Sidebar version) */}
-            {moreByAuthor.length > 0 && (
-              <div style={{ marginTop: '0.5rem', paddingTop: '1.5rem', borderTop: '1px solid #e2e8f0' }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
-                  <h3 style={{ fontSize: '0.9rem', fontWeight: 800, color: '#0f172a', margin: 0, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                    More by {author?.username}
-                  </h3>
-                  <a href={profileHref} onClick={goToAuthorProfile} style={{ fontSize: '0.8rem', fontWeight: 600, color: '#2d43e8', textDecoration: 'none' }}>
-                    View all
-                  </a>
-                </div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
-                  {moreByAuthor.slice(0, 2).map(p => {
-                    const thumb = p.thumbnail_url || p.cover_url;
-                    return (
-                      <div 
-                        key={p.id} 
-                        onClick={() => navigateToProject(p.id)}
-                        style={{ cursor: 'pointer', display: 'block', group: 'true' }}
-                        className="more-project-card"
-                      >
-                        <div style={{ position: 'relative', width: '100%', aspectRatio: '4/3', borderRadius: '6px', overflow: 'hidden', background: '#f1f5f9' }}>
-                          {thumb ? (
-                            <img 
-                              src={stripCloudinaryProxy(thumb)} 
-                              alt={p.title} 
-                              style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.3s ease' }} 
-                              className="more-project-img"
-                            />
-                          ) : (
-                            <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#94a3b8', fontSize: '0.8rem' }}>No Cover</div>
-                          )}
-                          <div className="more-project-overlay" style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 50%)', opacity: 0, transition: 'opacity 0.2s ease', display: 'flex', alignItems: 'flex-end', padding: '0.5rem' }}>
-                            <span style={{ color: 'white', fontWeight: 600, fontSize: '0.75rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.title}</span>
-                          </div>
-                        </div>
-                      </div>
-                    )
-                  })}
-                </div>
-                <style>{`
-                  .more-project-card:hover .more-project-img { transform: scale(1.05); }
-                  .more-project-card:hover .more-project-overlay { opacity: 1 !important; }
-                `}</style>
-              </div>
-            )}
-
-          </aside>
+          <ProjectSidebar 
+            project={project}
+            author={author}
+            currentUser={currentUser}
+            profileHref={profileHref}
+            goToAuthorProfile={goToAuthorProfile}
+            isFollowing={isFollowing}
+            liked={liked}
+            toggleLike={toggleLike}
+            handleShare={handleShare}
+            setShowColModal={setShowColModal}
+            commentCount={commentCount}
+            moreByAuthor={moreByAuthor}
+            navigateToProject={navigateToProject}
+            router={router}
+          />
         </div>
-      </div>
       {showDeleteModal && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
           <div style={{ background: 'white', padding: '2rem', borderRadius: '8px', maxWidth: '400px', width: '90%' }}>
