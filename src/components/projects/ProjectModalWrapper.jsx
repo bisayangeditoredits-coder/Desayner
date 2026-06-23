@@ -6,24 +6,36 @@ import { X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { consumeProjectModalReturn } from '@/lib/projectModalNav';
 
-export default function ProjectModalWrapper({ children }) {
+export default function ProjectModalWrapper({ children, isStandalone = false }) {
   const router = useRouter();
 
   const onDismiss = useCallback(() => {
-    // In Next.js App Router, router.replace to the background URL is a no-op.
-    // The reliable way to close an intercepted modal is router.back().
-    router.back();
-  }, [router]);
+    if (isStandalone) {
+      if (window.history.length > 1) {
+        router.back();
+      } else {
+        router.push('/projects');
+      }
+    } else {
+      router.back();
+    }
+  }, [router, isStandalone]);
 
   useEffect(() => {
+    // Lock body scroll
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
     const onKeyDown = (e) => {
       if (e.key !== 'Escape') return;
-      // Skip if a nested modal (e.g. Save to Collection) is open
       if (document.querySelector('[role="dialog"][aria-modal="true"]')) return;
       onDismiss();
     };
     document.addEventListener('keydown', onKeyDown);
-    return () => document.removeEventListener('keydown', onKeyDown);
+    return () => {
+      document.removeEventListener('keydown', onKeyDown);
+      document.body.style.overflow = originalOverflow;
+    };
   }, [onDismiss]);
 
   return (

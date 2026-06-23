@@ -2234,10 +2234,10 @@
 /* Two-column layout */
 .project-detail__body {
   display: grid;
-  grid-template-columns: 1fr 380px;
-  gap: 1.5rem;
+  grid-template-columns: 1fr 320px;
+  gap: 2rem;
   align-items: start;
-  max-width: 1800px;
+  max-width: 1400px;
   margin: 0 auto;
   padding: 0 2rem;
 }

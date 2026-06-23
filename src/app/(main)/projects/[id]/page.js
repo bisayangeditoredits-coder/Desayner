@@ -91,7 +91,9 @@ export default async function ProjectPage({ params }) {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       )}
-      <ProjectDetailClient initialProject={project} />
+      <div style={{ background: '#f8fafc', minHeight: '100vh', paddingTop: '2rem' }}>
+        <ProjectDetailClient initialProject={project} isModal={false} />
+      </div>
     </>
   );
 }

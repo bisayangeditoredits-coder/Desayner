@@ -113,11 +113,13 @@ function ImageGallery({ images, title }) {
 // ─── Main page ───────────────────────────────────────────────────────────────
 
 export default function ProjectDetailClient({ initialProject = null, isModal = false }) {
-  const { id } = useParams();
+  const params = useParams();
   const router = useRouter();
   const supabase = useMemo(() => createClient(), []);
 
+  const [currentId,      setCurrentId]      = useState(params.id);
   const [project,        setProject]        = useState(initialProject);
+  const [moreByAuthor,   setMoreByAuthor]   = useState([]);
   const [comments,       setComments]       = useState([]);
   const [commentCount,   setCommentCount]   = useState(0);
   const [commentsHasMore,setCommentsHasMore] = useState(false);
@@ -141,17 +143,17 @@ export default function ProjectDetailClient({ initialProject = null, isModal = f
       supabase
         .from('project_comments')
         .select(COMMENT_SELECT, { count: 'exact' })
-        .eq('project_id', id)
+        .eq('project_id', currentId)
         .order('created_at', { ascending: true })
         .range(0, COMMENTS_PAGE_SIZE - 1),
     ];
     
-    if (!initialProject) {
+    if (!initialProject || project?.id !== currentId) {
       tasks.push(
         supabase
           .from('projects')
           .select(PROJECT_DETAIL_SELECT)
-          .eq('id', id)
+          .eq('id', currentId)
           .single()
       );
     }
@@ -159,13 +161,13 @@ export default function ProjectDetailClient({ initialProject = null, isModal = f
     const results = await Promise.all(tasks);
     const authResult = results[0];
     const commsResult = results[1];
-    const projResult = initialProject ? { data: initialProject } : results[2];
+    const projResult = (initialProject && initialProject.id === currentId) ? { data: initialProject } : results[2];
 
     const user = authResult.data?.user || null;
 
     const proj = projResult.data;
     if (!proj) { setLoading(false); return; }
-    if (!initialProject) {
+    if (!initialProject || project?.id !== currentId) {
       setProject(proj);
       setLikeCount(proj.likes_count || 0);
     }
@@ -177,7 +179,7 @@ export default function ProjectDetailClient({ initialProject = null, isModal = f
     if (user) {
       const [likeRes, followRes] = await Promise.all([
         supabase.from('project_likes').select('user_id')
-          .eq('user_id', user.id).eq('project_id', id).maybeSingle(),
+          .eq('user_id', user.id).eq('project_id', currentId).maybeSingle(),
         supabase.from('follows').select('follower_id')
           .eq('follower_id', user.id).eq('following_id', proj.profiles?.id).maybeSingle(),
       ]);
@@ -188,11 +190,23 @@ export default function ProjectDetailClient({ initialProject = null, isModal = f
     fetch('/api/view', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ projectId: id }),
+      body: JSON.stringify({ projectId: currentId }),
     }).catch((err) => console.error('View track failed', err));
 
+    if (proj?.user_id) {
+      supabase
+        .from('projects')
+        .select('id, title, cover_url, thumbnail_url, likes_count, views_count')
+        .eq('user_id', proj.user_id)
+        .neq('id', currentId)
+        .eq('published', true)
+        .order('created_at', { ascending: false })
+        .limit(4)
+        .then(({ data }) => setMoreByAuthor(data || []));
+    }
+
     setLoading(false);
-  }, [id, supabase]);
+  }, [currentId, supabase, initialProject, project?.id]);
 
   const loadMoreComments = useCallback(async () => {
     if (loadingComments || !commentsHasMore) return;
@@ -201,7 +215,7 @@ export default function ProjectDetailClient({ initialProject = null, isModal = f
     const { data, error } = await supabase
       .from('project_comments')
       .select(COMMENT_SELECT)
-      .eq('project_id', id)
+      .eq('project_id', currentId)
       .order('created_at', { ascending: true })
       .range(offset, offset + COMMENTS_PAGE_SIZE - 1);
 
@@ -212,12 +226,32 @@ export default function ProjectDetailClient({ initialProject = null, isModal = f
       setCommentsHasMore(false);
     }
     setLoadingComments(false);
-  }, [comments.length, commentsHasMore, id, loadingComments, supabase]);
+  }, [comments.length, commentsHasMore, currentId, loadingComments, supabase]);
 
   useEffect(() => {
     async function init() { await load(); }
     init();
   }, [load]);
+
+  // Handle in-place navigation for modal
+  function navigateToProject(newId) {
+    if (newId === currentId) return;
+    
+    // Update Next.js router properly so it knows we changed URLs
+    router.push(`/projects/${newId}`, { scroll: false });
+    
+    setProject(null);
+    setComments([]);
+    setCommentCount(0);
+    setLoading(true);
+    setLiked(false);
+    setCurrentId(newId);
+    
+    // Scroll to top
+    const modalContent = document.querySelector('.modal-content > div');
+    if (modalContent) modalContent.scrollTo({ top: 0, behavior: 'smooth' });
+    else window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
 
   function goBack() {
     if (window.history.length > 1) {
@@ -238,10 +272,10 @@ export default function ProjectDetailClient({ initialProject = null, isModal = f
     try {
       if (wasLiked) {
         const { error } = await supabase.from('project_likes').delete()
-          .eq('user_id', currentUser.id).eq('project_id', id);
+          .eq('user_id', currentUser.id).eq('project_id', currentId);
         if (error) throw error;
       } else {
-        const { error } = await supabase.from('project_likes').insert({ user_id: currentUser.id, project_id: id });
+        const { error } = await supabase.from('project_likes').insert({ user_id: currentUser.id, project_id: currentId });
         if (error) throw error;
       }
     } catch (err) {
@@ -261,7 +295,7 @@ export default function ProjectDetailClient({ initialProject = null, isModal = f
       setIsDeleting(true);
       
       // Call the server API to delete the project AND clear the Redis profile cache
-      const res = await fetch(`/api/projects/${id}`, {
+      const res = await fetch(`/api/projects/${currentId}`, {
         method: 'DELETE',
       });
       const data = await res.json();
@@ -330,7 +364,7 @@ export default function ProjectDetailClient({ initialProject = null, isModal = f
                   <span className="btn-text-responsive">{isDeleting ? 'Deleting...' : 'Delete'}</span>
                 </button>
                 <button
-                  onClick={() => window.location.href = `/projects/${id}/edit`}
+                  onClick={() => window.location.href = `/projects/${currentId}/edit`}
                   className="btn btn-dark project-detail__topbar-btn"
                   title="Edit Project"
                   style={{ background: '#231f20', color: 'white', border: '1px solid #231f20', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: 600, fontSize: '0.85rem', padding: '0.5rem 1rem', fontFamily: 'inherit' }}
@@ -424,7 +458,7 @@ export default function ProjectDetailClient({ initialProject = null, isModal = f
                 Comments <span className="project-detail__section-count">({commentCount})</span>
               </h2>
               <CommentThread
-                targetId={id}
+                targetId={currentId}
                 targetType="project"
                 comments={comments}
                 currentUser={currentProfile}
@@ -443,28 +477,29 @@ export default function ProjectDetailClient({ initialProject = null, isModal = f
           </article>
 
           {/* ── RIGHT: sidebar ────────────────────────── */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', position: 'sticky', top: '100px' }}>
+          <div className="sidebar-sticky-container" style={{ display: 'flex', flexDirection: 'column', gap: '1rem', position: 'sticky', top: '100px' }}>
             
-            {/* Action Buttons Aligned with Sidebar */}
-            <div className="desktop-actions" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
-              <button onClick={toggleLike} className={liked ? 'anim-heart-pop' : ''} style={{ width: '40px', height: '40px', borderRadius: '50%', border: '1px solid #e2e8f0', background: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: liked ? '#ef4444' : '#64748b', transition: 'all 0.2s', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
+
+
+            <aside className="project-detail__sidebar" style={{ position: 'static', marginTop: 0 }}>
+
+            {/* Action Buttons Aligned Inside Sidebar */}
+            <div className="desktop-actions" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', marginBottom: '1.5rem', alignSelf: 'center' }}>
+              <button onClick={toggleLike} className={liked ? 'anim-heart-pop' : ''} style={{ width: '40px', height: '40px', borderRadius: '50%', border: '1px solid #e2e8f0', background: '#f8fafc', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: liked ? '#ef4444' : '#64748b', transition: 'all 0.2s' }}>
                 <Heart size={18} fill={liked ? 'currentColor' : 'none'} />
               </button>
               <button 
                 onMouseDown={(e) => e.currentTarget.classList.add('anim-save-pop')}
                 onAnimationEnd={(e) => e.currentTarget.classList.remove('anim-save-pop')}
                 onClick={() => { if (!currentUser) { router.push('/login?redirectTo=' + encodeURIComponent(window.location.pathname)); } else { setShowColModal(true); } }} 
-                style={{ width: '40px', height: '40px', borderRadius: '50%', border: '1px solid #e2e8f0', background: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#64748b', transition: 'all 0.2s', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}
+                style={{ width: '40px', height: '40px', borderRadius: '50%', border: '1px solid #e2e8f0', background: '#f8fafc', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#64748b', transition: 'all 0.2s' }}
               >
                 <Bookmark size={18} />
               </button>
-              <button onClick={handleShare} style={{ width: '40px', height: '40px', borderRadius: '50%', border: '1px solid #e2e8f0', background: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#64748b', transition: 'all 0.2s', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
+              <button onClick={handleShare} style={{ width: '40px', height: '40px', borderRadius: '50%', border: '1px solid #e2e8f0', background: '#f8fafc', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#64748b', transition: 'all 0.2s' }}>
                 <Share size={18} />
               </button>
-
             </div>
-
-            <aside className="project-detail__sidebar" style={{ position: 'static', marginTop: 0 }}>
 
             <div className="project-detail__stats">
               <div className="project-detail__stat">
@@ -502,6 +537,7 @@ export default function ProjectDetailClient({ initialProject = null, isModal = f
                 href={profileHref}
                 className="project-detail__author-name"
                 onClick={goToAuthorProfile}
+                style={{ fontSize: '1.1rem', marginTop: '0.25rem' }}
               >
                 {author?.full_name || author?.username}
               </Link>
@@ -556,6 +592,53 @@ export default function ProjectDetailClient({ initialProject = null, isModal = f
               )}
             </div>
 
+            {/* More by this creator (Sidebar version) */}
+            {moreByAuthor.length > 0 && (
+              <div style={{ marginTop: '0.5rem', paddingTop: '1.5rem', borderTop: '1px solid #e2e8f0' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
+                  <h3 style={{ fontSize: '0.9rem', fontWeight: 800, color: '#0f172a', margin: 0, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                    More by {author?.username}
+                  </h3>
+                  <a href={profileHref} onClick={goToAuthorProfile} style={{ fontSize: '0.8rem', fontWeight: 600, color: '#2d43e8', textDecoration: 'none' }}>
+                    View all
+                  </a>
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
+                  {moreByAuthor.slice(0, 2).map(p => {
+                    const thumb = p.thumbnail_url || p.cover_url;
+                    return (
+                      <div 
+                        key={p.id} 
+                        onClick={() => navigateToProject(p.id)}
+                        style={{ cursor: 'pointer', display: 'block', group: 'true' }}
+                        className="more-project-card"
+                      >
+                        <div style={{ position: 'relative', width: '100%', aspectRatio: '4/3', borderRadius: '6px', overflow: 'hidden', background: '#f1f5f9' }}>
+                          {thumb ? (
+                            <img 
+                              src={stripCloudinaryProxy(thumb)} 
+                              alt={p.title} 
+                              style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.3s ease' }} 
+                              className="more-project-img"
+                            />
+                          ) : (
+                            <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#94a3b8', fontSize: '0.8rem' }}>No Cover</div>
+                          )}
+                          <div className="more-project-overlay" style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 50%)', opacity: 0, transition: 'opacity 0.2s ease', display: 'flex', alignItems: 'flex-end', padding: '0.5rem' }}>
+                            <span style={{ color: 'white', fontWeight: 600, fontSize: '0.75rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.title}</span>
+                          </div>
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+                <style>{`
+                  .more-project-card:hover .more-project-img { transform: scale(1.05); }
+                  .more-project-card:hover .more-project-overlay { opacity: 1 !important; }
+                `}</style>
+              </div>
+            )}
+
           </aside>
         </div>
       </div>
@@ -577,14 +660,14 @@ export default function ProjectDetailClient({ initialProject = null, isModal = f
       {showColModal && (
         <SaveToCollectionModal
           itemType="project"
-          itemId={id}
+          itemId={currentId}
           onClose={() => setShowColModal(false)}
         />
       )}
 
       {showShareModal && (
         <ShareProjectModal
-          projectUrl={typeof window !== 'undefined' ? window.location.href : `https://desayner.com/projects/${id}`}
+          projectUrl={typeof window !== 'undefined' ? window.location.href : `https://desayner.com/projects/${currentId}`}
           projectTitle={project?.title}
           projectImage={project?.cover_url}
           onClose={() => setShowShareModal(false)}

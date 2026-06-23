@@ -9,14 +9,16 @@ export default function PageTransition({ children }) {
 
   useEffect(() => {
     setIsAnimating(true);
+    const timer = setTimeout(() => {
+      setIsAnimating(false);
+    }, 450); // Guaranteed removal after animation duration
+    return () => clearTimeout(timer);
   }, [pathname]);
 
   return (
     <div 
-      key={pathname}
       className={`page-transition-container ${isAnimating ? 'anim-fade-slide-in' : ''}`}
       style={{ width: '100%', minHeight: '100vh' }}
-      onAnimationEnd={() => setIsAnimating(false)}
     >
       {children}
     </div>

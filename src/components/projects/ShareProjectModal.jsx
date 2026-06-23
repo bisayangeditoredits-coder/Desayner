@@ -1,11 +1,22 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { X, Copy, Check, Link as LinkIcon } from 'lucide-react';
 import useToastStore from '@/store/useToastStore';
 
 export default function ShareProjectModal({ projectUrl, projectTitle, projectImage, type = "Project", onClose }) {
   const [copied, setCopied] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const addToast = useToastStore((s) => s.addToast);
+
+  useEffect(() => {
+    setMounted(true);
+    // Prevent scrolling on the body when the modal is open
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, []);
 
   function handleCopy() {
     navigator.clipboard.writeText(projectUrl);
@@ -65,15 +76,18 @@ export default function ShareProjectModal({ projectUrl, projectTitle, projectIma
     }
   ];
 
-  return (
+  if (!mounted) return null;
+
+  return createPortal(
     <div 
       onClick={onClose} 
       style={{ 
         position: 'fixed', 
         inset: 0, 
-        zIndex: 100005, 
-        background: 'rgba(15, 23, 42, 0.6)', 
-        backdropFilter: 'blur(4px)',
+        zIndex: 999999, 
+        background: 'rgba(15, 23, 42, 0.25)', 
+        backdropFilter: 'blur(8px)',
+        WebkitBackdropFilter: 'blur(8px)',
         display: 'flex', 
         alignItems: 'center', 
         justifyContent: 'center',
@@ -84,22 +98,22 @@ export default function ShareProjectModal({ projectUrl, projectTitle, projectIma
         onClick={(e) => e.stopPropagation()} 
         style={{ 
           background: 'white',
-          borderRadius: '16px',
-          boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
-          maxWidth: '400px', 
+          borderRadius: '20px',
+          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+          maxWidth: '480px', 
           width: '100%', 
-          padding: '24px',
+          padding: '28px',
           position: 'relative'
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
-          <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>Share {type}</h2>
-          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '0.25rem', color: '#94a3b8' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.75rem' }}>
+          <h2 style={{ fontSize: '1.35rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>Share {type}</h2>
+          <button onClick={onClose} style={{ background: '#f1f5f9', borderRadius: '50%', border: 'none', cursor: 'pointer', padding: '0.4rem', color: '#64748b', transition: 'background 0.2s' }} onMouseOver={(e) => e.currentTarget.style.background = '#e2e8f0'} onMouseOut={(e) => e.currentTarget.style.background = '#f1f5f9'}>
             <X size={20} />
           </button>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1rem', marginBottom: '2rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1rem', marginBottom: '2.25rem' }}>
           {shareLinks.map((link) => (
             <a
               key={link.name}
@@ -110,14 +124,14 @@ export default function ShareProjectModal({ projectUrl, projectTitle, projectIma
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
-                gap: '0.5rem',
+                gap: '0.6rem',
                 textDecoration: 'none',
-                color: '#64748b'
+                color: '#475569'
               }}
             >
               <div style={{
-                width: '56px',
-                height: '56px',
+                width: '60px',
+                height: '60px',
                 borderRadius: '50%',
                 background: link.bg,
                 color: link.color,
@@ -126,51 +140,54 @@ export default function ShareProjectModal({ projectUrl, projectTitle, projectIma
                 justifyContent: 'center',
                 transition: 'transform 0.15s ease',
               }}
-              onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
+              onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.08)'}
               onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
               >
                 {link.icon}
               </div>
-              <span style={{ fontSize: '0.75rem', fontWeight: 600 }}>{link.name}</span>
+              <span style={{ fontSize: '0.8rem', fontWeight: 600 }}>{link.name}</span>
             </a>
           ))}
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-          <label style={{ fontSize: '0.85rem', fontWeight: 700, color: '#475569' }}>Copy Link</label>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '0.5rem', overflow: 'hidden' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 0.5rem', color: '#94a3b8' }}>
-              <LinkIcon size={16} />
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+          <label style={{ fontSize: '0.9rem', fontWeight: 700, color: '#334155' }}>Copy Link</label>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: '#f8fafc', border: '2px solid #e2e8f0', borderRadius: '10px', padding: '0.6rem', overflow: 'hidden' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 0.5rem', color: '#64748b' }}>
+              <LinkIcon size={18} />
             </div>
             <input 
               type="text" 
               readOnly 
               value={projectUrl} 
-              style={{ flex: 1, border: 'none', background: 'transparent', outline: 'none', fontSize: '0.85rem', color: '#334155', textOverflow: 'ellipsis' }}
+              style={{ flex: 1, border: 'none', background: 'transparent', outline: 'none', fontSize: '0.9rem', color: '#1e293b', textOverflow: 'ellipsis' }}
             />
             <button
               onClick={handleCopy}
               style={{
-                padding: '0.5rem 1rem',
-                background: copied ? '#10b981' : '#231f20',
+                padding: '0.6rem 1.2rem',
+                background: copied ? '#10b981' : '#2d43e8',
                 color: 'white',
                 border: 'none',
-                borderRadius: '6px',
-                fontWeight: 600,
-                fontSize: '0.85rem',
+                borderRadius: '8px',
+                fontWeight: 700,
+                fontSize: '0.9rem',
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '0.4rem',
-                transition: 'background 0.2s'
+                gap: '0.5rem',
+                transition: 'all 0.2s'
               }}
+              onMouseOver={(e) => { if(!copied) e.currentTarget.style.background = '#2538c2' }}
+              onMouseOut={(e) => { if(!copied) e.currentTarget.style.background = '#2d43e8' }}
             >
-              {copied ? <Check size={14} /> : <Copy size={14} />}
+              {copied ? <Check size={16} /> : <Copy size={16} />}
               {copied ? 'Copied' : 'Copy'}
             </button>
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
