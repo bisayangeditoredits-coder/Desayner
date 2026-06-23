@@ -154,10 +154,10 @@ export default function NewProjectPage() {
 
     window.dispatchEvent(new Event('profile_updated'));
 
-    if ((existingCount || 0) === 0 && userProfile?.username) {
-      router.push(`/profile/${userProfile.username}?firstProject=1`);
+    if (userProfile?.username) {
+      router.push(`/profile/${userProfile.username}`);
     } else {
-      router.push('/projects');
+      router.push('/');
     }
     router.refresh();
   }
