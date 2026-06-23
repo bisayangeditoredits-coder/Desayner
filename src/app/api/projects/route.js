@@ -4,14 +4,13 @@ import { swrCache } from '@/lib/cache';
 import { projectsCacheKey } from '@/lib/cacheKeys';
 import { buildPublishedProjectsQuery, parseSearchQuery } from '@/lib/projectSearch';
 import { redis } from '@/lib/redis';
-import { Ratelimit } from '@upstash/ratelimit';
+import { createRateLimit, Ratelimit, safeLimit } from '@/lib/rateLimit';
 
 export const runtime = 'edge';
 const CACHE_HEADERS = { 'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=120' };
 
 // Rate limit: 30 searches per 10 seconds per IP
-const searchRateLimit = new Ratelimit({
-  redis,
+const searchRateLimit = createRateLimit({
   limiter: Ratelimit.slidingWindow(30, '10 s'),
   analytics: false,
   prefix: 'rl:search',
@@ -39,7 +38,9 @@ export async function GET(request) {
     // Apply rate limiting specifically for searches
     if (ftsQuery) {
       const ip = request.ip || request.headers.get('x-forwarded-for') || 'anonymous';
-      const { success, remaining } = await searchRateLimit.limit(`ip:${ip}`);
+      const { success, remaining } = await safeLimit(searchRateLimit, `ip:${ip}`, {
+        logPrefix: 'Projects Search RateLimit',
+      });
       
       if (!success) {
         return NextResponse.json(

@@ -1,20 +1,19 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { X, Copy, Check, Link as LinkIcon } from 'lucide-react';
 import useToastStore from '@/store/useToastStore';
 
-export default function ShareProjectModal({ projectUrl, projectTitle, projectImage, type = "Project", onClose }) {
+export default function ShareProjectModal({ projectUrl, projectTitle, projectImage, type = 'Project', onClose }) {
   const [copied, setCopied] = useState(false);
-  const [mounted, setMounted] = useState(false);
   const addToast = useToastStore((s) => s.addToast);
 
   useEffect(() => {
-    setMounted(true);
-    // Prevent scrolling on the body when the modal is open
+    // Prevent scrolling on the body when the modal is open.
+    const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     return () => {
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = previousOverflow || 'unset';
     };
   }, []);
 
@@ -76,32 +75,32 @@ export default function ShareProjectModal({ projectUrl, projectTitle, projectIma
     }
   ];
 
-  if (!mounted) return null;
+  if (typeof document === 'undefined') return null;
 
   return createPortal(
-    <div 
-      onClick={onClose} 
-      style={{ 
-        position: 'fixed', 
-        inset: 0, 
-        zIndex: 999999, 
-        background: 'rgba(15, 23, 42, 0.25)', 
+    <div
+      onClick={onClose}
+      style={{
+        position: 'fixed',
+        inset: 0,
+        zIndex: 999999,
+        background: 'rgba(15, 23, 42, 0.25)',
         backdropFilter: 'blur(8px)',
         WebkitBackdropFilter: 'blur(8px)',
-        display: 'flex', 
-        alignItems: 'center', 
+        display: 'flex',
+        alignItems: 'center',
         justifyContent: 'center',
         padding: '1rem'
       }}
     >
-      <div 
-        onClick={(e) => e.stopPropagation()} 
-        style={{ 
+      <div
+        onClick={(e) => e.stopPropagation()}
+        style={{
           background: 'white',
           borderRadius: '20px',
           boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
-          maxWidth: '480px', 
-          width: '100%', 
+          maxWidth: '480px',
+          width: '100%',
           padding: '28px',
           position: 'relative'
         }}
@@ -156,30 +155,37 @@ export default function ShareProjectModal({ projectUrl, projectTitle, projectIma
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 0.5rem', color: '#64748b' }}>
               <LinkIcon size={18} />
             </div>
-            <input 
-              type="text" 
-              readOnly 
-              value={projectUrl} 
-              style={{ flex: 1, border: 'none', background: 'transparent', outline: 'none', fontSize: '0.9rem', color: '#1e293b', textOverflow: 'ellipsis' }}
+            <input
+              type="text"
+              value={projectUrl}
+              readOnly
+              style={{
+                border: 'none',
+                background: 'transparent',
+                width: '100%',
+                fontSize: '0.9rem',
+                color: '#0f172a',
+                outline: 'none',
+                padding: '0.4rem 0'
+              }}
             />
             <button
               onClick={handleCopy}
               style={{
-                padding: '0.6rem 1.2rem',
-                background: copied ? '#10b981' : '#2d43e8',
-                color: 'white',
-                border: 'none',
-                borderRadius: '8px',
-                fontWeight: 700,
-                fontSize: '0.9rem',
-                cursor: 'pointer',
-                display: 'flex',
+                display: 'inline-flex',
                 alignItems: 'center',
-                gap: '0.5rem',
-                transition: 'all 0.2s'
+                gap: '0.45rem',
+                padding: '0.65rem 1rem',
+                borderRadius: '8px',
+                border: 'none',
+                background: copied ? '#16a34a' : '#231f20',
+                color: 'white',
+                fontSize: '0.85rem',
+                fontWeight: 700,
+                cursor: 'pointer',
+                flexShrink: 0,
+                transition: 'background 0.2s'
               }}
-              onMouseOver={(e) => { if(!copied) e.currentTarget.style.background = '#2538c2' }}
-              onMouseOut={(e) => { if(!copied) e.currentTarget.style.background = '#2d43e8' }}
             >
               {copied ? <Check size={16} /> : <Copy size={16} />}
               {copied ? 'Copied' : 'Copy'}

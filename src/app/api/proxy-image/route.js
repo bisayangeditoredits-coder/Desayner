@@ -1,97 +1,60 @@
-// Remove Edge runtime because Vercel Edge (which runs on Cloudflare Workers)
-// blocks fetch requests to other Cloudflare-hosted domains (like base44.app).
-// Using the Node.js runtime (AWS Lambda) bypasses this cross-zone blocking.
-import { Ratelimit } from '@upstash/ratelimit';
-import { redis } from '@/lib/redis';
+// Remove Edge runtime because Vercel Edge blocks fetch requests to some Cloudflare-hosted domains.
+// Using the Node.js runtime keeps legacy hotlink-blocked image fetches reliable.
+import { createRateLimit, Ratelimit, safeLimit } from '@/lib/rateLimit';
 
 export const dynamic = 'force-dynamic';
 
-// Raised from 60 → 300 req/min: a single /designers page can trigger 80+ proxy
-// requests in one load. At 60 req/min the limiter was silently replacing real
-// images with a blank SVG placeholder, making user profiles appear "invisible".
-const ratelimit = new Ratelimit({
-  redis,
+const ratelimit = createRateLimit({
   limiter: Ratelimit.slidingWindow(300, '60 s'),
   analytics: false,
   prefix: 'rl:proxy-image',
 });
 
-// ── REDIRECT-SAFE origins ─────────────────────────────────────────────────────
-// These CDNs serve images publicly without hotlink blocking.
-// We issue a 302 redirect so the browser fetches directly → zero Vercel CPU/memory.
-// This is the primary fix for Vercel Fluid Active CPU exhaustion.
 const REDIRECT_SAFE_PATTERNS = [
-  /^.+\.r2\.dev$/i,                       // Cloudflare R2 (our main CDN)
-  /^.+\.supabase\.co$/i,                   // Supabase Storage
-  /^.+\.googleusercontent\.com$/i,          // Google avatars
-  /^avatars\.githubusercontent\.com$/i,     // GitHub avatars
-  /^res\.cloudinary\.com$/i,               // Cloudinary
-  /^.+\.unsplash\.com$/i,                  // Unsplash Imgix
+  /^.+\.r2\.dev$/i,
+  /^.+\.supabase\.co$/i,
+  /^.+\.googleusercontent\.com$/i,
+  /^avatars\.githubusercontent\.com$/i,
+  /^res\.cloudinary\.com$/i,
+  /^.+\.unsplash\.com$/i,
   /^images\.unsplash\.com$/i,
-  /^wsrv\.nl$/i,                           // wsrv.nl image CDN
-  /^cdn\.pixabay\.com$/i,                  // Pixabay
+  /^wsrv\.nl$/i,
+  /^cdn\.pixabay\.com$/i,
   /^pixabay\.com$/i,
 ];
 
-// ── PROXY-REQUIRED origins ────────────────────────────────────────────────────
-// These origins BLOCK direct browser hotlinks and MUST be buffered through Vercel.
 const PROXY_REQUIRED_PATTERNS = [
-  /^base44\.app$/i,  // Legacy image host — blocks hotlinks, requires server-side fetch
+  /^base44\.app$/i,
 ];
 
+const FALLBACK_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128"><rect width="128" height="128" fill="#f8fafc"/><path d="M44 38h40v10H44zm0 20h40v10H44zm0 20h24v10H44z" fill="#cbd5e1"/></svg>`;
+const MAX_SIZE = 10 * 1024 * 1024;
+
 function isRedirectSafe(hostname) {
-  return REDIRECT_SAFE_PATTERNS.some((p) => p.test(hostname));
+  return REDIRECT_SAFE_PATTERNS.some((pattern) => pattern.test(hostname));
 }
 
 function isProxyRequired(hostname) {
-  return PROXY_REQUIRED_PATTERNS.some((p) => p.test(hostname));
+  return PROXY_REQUIRED_PATTERNS.some((pattern) => pattern.test(hostname));
 }
 
-// A simple placeholder SVG shown only when an image truly cannot be fetched.
-const FALLBACK_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128"><rect width="128" height="128" fill="#f8fafc"/><path d="M44 38h40v10H44zm0 20h40v10H44zm0 20h24v10H44z" fill="#cbd5e1"/></svg>`;
-
-function getFallbackResponse() {
+function getFallbackResponse(status = 200, headers = {}) {
   return new Response(FALLBACK_SVG, {
-    status: 200,
+    status,
     headers: {
       'Content-Type': 'image/svg+xml',
-      'Cache-Control': 'public, max-age=86400',
+      'Cache-Control': status === 200 ? 'public, max-age=86400' : 'no-store',
+      ...headers,
     },
   });
 }
 
-const MAX_SIZE = 10 * 1024 * 1024; // 10 MB guard
-
 export async function GET(request) {
   try {
-    const ip = request.headers.get('x-forwarded-for')?.split(',')[0].trim()
-      || request.headers.get('x-real-ip')
-      || 'unknown';
-
-    const { success, reset } = await ratelimit.limit(`ip:${ip}`);
-    if (!success) {
-      // Log so this is visible in Vercel function logs — previously this was silent,
-      // making it look like images were missing/broken instead of rate-limited.
-      const retryAfterSeconds = Math.ceil((reset - Date.now()) / 1000);
-      console.warn(`[proxy-image] Rate limit exceeded for IP ${ip}. Retry after ${retryAfterSeconds}s.`);
-      return new Response(FALLBACK_SVG, {
-        status: 429,
-        headers: {
-          'Content-Type': 'image/svg+xml',
-          'Retry-After': String(retryAfterSeconds),
-          'Cache-Control': 'no-store',
-          'X-Rate-Limited': 'true',
-        },
-      });
-    }
-
     const { searchParams } = new URL(request.url);
     const url = searchParams.get('url');
 
-    if (!url) return getFallbackResponse();
-
-    // Only proxy http(s) URLs for safety
-    if (!/^https?:\/\//i.test(url)) return getFallbackResponse();
+    if (!url || !/^https?:\/\//i.test(url)) return getFallbackResponse();
 
     let parsedUrl;
     try {
@@ -102,18 +65,28 @@ export async function GET(request) {
 
     const { hostname } = parsedUrl;
 
-    // ── Fast path: redirect-safe CDN origins ──────────────────────────────────
-    // Cost: ~0 Vercel CPU. The browser fetches directly from the CDN.
-    // This eliminates the vast majority of serverless function invocations and
-    // is the primary fix for the "Fluid Active CPU exceeded" Vercel resource alert.
     if (isRedirectSafe(hostname)) {
       return Response.redirect(url, 302);
     }
 
-    // ── Slow path: origins that block hotlinks must be buffered ───────────────
     if (!isProxyRequired(hostname)) {
-      // Unknown origin — refuse rather than proxy arbitrary URLs
       return getFallbackResponse();
+    }
+
+    const ip = request.headers.get('x-forwarded-for')?.split(',')[0].trim()
+      || request.headers.get('x-real-ip')
+      || 'unknown';
+
+    const { success, reset } = await safeLimit(ratelimit, `ip:${ip}`, {
+      logPrefix: 'Proxy Image RateLimit',
+    });
+    if (!success) {
+      const retryAfterSeconds = Math.max(1, Math.ceil((reset - Date.now()) / 1000));
+      console.warn(`[proxy-image] Rate limit exceeded for IP ${ip}. Retry after ${retryAfterSeconds}s.`);
+      return getFallbackResponse(429, {
+        'Retry-After': String(retryAfterSeconds),
+        'X-Rate-Limited': 'true',
+      });
     }
 
     const response = await fetch(url, {
@@ -122,21 +95,15 @@ export async function GET(request) {
         'Accept': 'image/webp,image/avif,image/apng,image/*,*/*;q=0.8',
         'Referer': parsedUrl.origin + '/',
       },
-      // Add a timeout so Vercel Serverless doesn't hang indefinitely
-      signal: AbortSignal.timeout ? AbortSignal.timeout(8000) : undefined,
+      signal: AbortSignal.timeout ? AbortSignal.timeout(8_000) : undefined,
     });
 
     if (!response.ok || !response.body) return getFallbackResponse();
 
-    // Guard against giant images hogging server memory
     const contentLength = Number(response.headers.get('content-length') || 0);
     if (contentLength > MAX_SIZE) return getFallbackResponse();
 
     const contentType = response.headers.get('content-type') || 'image/jpeg';
-
-    // Buffer the response instead of streaming. Vercel Node.js Serverless
-    // functions notoriously drop ReadableStreams from fetch() prematurely,
-    // causing 500/504 errors on production. Buffering guarantees delivery.
     const buffer = await response.arrayBuffer();
 
     return new Response(buffer, {

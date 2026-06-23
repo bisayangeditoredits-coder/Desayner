@@ -1,11 +1,10 @@
 import { NextResponse } from 'next/server';
 import { getServerAuth } from '@/lib/supabase/server';
 import { sendWelcomeEmail } from '@/lib/email';
-import { Ratelimit } from '@upstash/ratelimit';
+import { createRateLimit, Ratelimit, safeLimit } from '@/lib/rateLimit';
 import { redis } from '@/lib/redis';
 
-const emailRatelimit = new Ratelimit({
-  redis,
+const emailRatelimit = createRateLimit({
   limiter: Ratelimit.slidingWindow(3, '1 h'),
   prefix: 'rl:email:send',
   analytics: false,
@@ -18,7 +17,9 @@ export async function POST(request) {
     const { user, admin } = await getServerAuth(request);
     if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-    const { success } = await emailRatelimit.limit(`user:${user.id}`);
+    const { success } = await safeLimit(emailRatelimit, `user:${user.id}`, {
+      logPrefix: 'Email RateLimit',
+    });
     if (!success) {
       return NextResponse.json({ error: 'Too many email requests. Try again later.' }, { status: 429 });
     }
@@ -30,7 +31,6 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Invalid email type' }, { status: 400 });
     }
 
-    // Fetch profile for name
     const { data: profile } = await admin
       .from('profiles')
       .select('full_name, username')

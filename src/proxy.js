@@ -13,6 +13,7 @@ if (process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN) 
     redis: redis,
     limiter: Ratelimit.slidingWindow(30, '10 s'),
     analytics: false,
+    ephemeralCache: globalThis.__desaynerProxyRateLimitCache ??= new Map(),
   });
 }
 

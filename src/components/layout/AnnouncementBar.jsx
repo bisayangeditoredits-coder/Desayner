@@ -26,7 +26,7 @@ export default function AnnouncementBar() {
     <>
       <style>{`
         .announcement-bar {
-          background: linear-gradient(90deg, #1e1b4b 0%, #2d43e8 50%, #1e1b4b 100%);
+          background: linear-gradient(90deg, #1b1b1bff 100%);
           color: white;
           padding: 0.6rem 1rem;
           display: flex;

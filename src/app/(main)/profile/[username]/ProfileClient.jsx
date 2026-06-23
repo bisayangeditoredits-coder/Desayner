@@ -72,8 +72,6 @@ export default function ProfilePage({ initialProfile = null }) {
 
   useEffect(() => {
     async function load() {
-      if (!initialProfile) setLoading(true);
-      setHasMoreProjects(false);
       try {
         const res = await fetch(
           `/api/profile/${encodeURIComponent(username)}?limit=${PROFILE_PAGE_SIZE}&offset=0`
@@ -99,7 +97,7 @@ export default function ProfilePage({ initialProfile = null }) {
       }
     }
     load();
-  }, [username]);
+  }, [username, initialProfile, supabase]);
 
   async function loadMoreProjects() {
     if (loadingMoreProjects || !hasMoreProjects) return;

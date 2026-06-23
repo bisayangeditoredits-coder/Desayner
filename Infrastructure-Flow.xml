@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile version="14.6.13">
+  <diagram id="desayner-infra-complex" name="Desayner Enterprise Infrastructure">
+    <mxGraphModel dx="1600" dy="1200" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1200" math="0" shadow="1">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- ======================= -->
+        <!-- LAYER 1: CLIENTS        -->
+        <!-- ======================= -->
+        <mxCell id="Desktop" value="Desktop Users" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="20" y="220" width="40" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="Mobile" value="Mobile Users" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="20" y="420" width="40" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- ======================= -->
+        <!-- LAYER 2: CLOUDFLARE     -->
+        <!-- ======================= -->
+        <mxCell id="GroupCF" value="Cloudflare Edge Network" style="swimlane;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;startSize=20;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="140" y="150" width="180" height="400" as="geometry" />
+        </mxCell>
+        <mxCell id="Turnstile" value="Bot Protection&#xa;(Turnstile)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#b85450;" vertex="1" parent="GroupCF">
+          <mxGeometry x="20" y="40" width="140" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="WAF" value="Web App Firewall&#xa;(WAF)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#b85450;" vertex="1" parent="GroupCF">
+          <mxGeometry x="20" y="140" width="140" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="CDN" value="Global CDN &amp;&#xa;DNS Routing" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#b85450;" vertex="1" parent="GroupCF">
+          <mxGeometry x="20" y="240" width="140" height="120" as="geometry" />
+        </mxCell>
+
+        <!-- ======================= -->
+        <!-- LAYER 3: VERCEL COMPUTE -->
+        <!-- ======================= -->
+        <mxCell id="GroupVercel" value="Vercel Cloud Platform" style="swimlane;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;startSize=20;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="400" y="150" width="200" height="400" as="geometry" />
+        </mxCell>
+        <mxCell id="VEdge" value="Edge Middleware&#xa;(Auth &amp; Rate Limits)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;" vertex="1" parent="GroupVercel">
+          <mxGeometry x="20" y="40" width="160" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="VFrontend" value="Next.js Frontend&#xa;(React Server Components)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;" vertex="1" parent="GroupVercel">
+          <mxGeometry x="20" y="140" width="160" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="VAPI" value="Serverless API Routes&#xa;(Node.js Backend)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;" vertex="1" parent="GroupVercel">
+          <mxGeometry x="20" y="260" width="160" height="100" as="geometry" />
+        </mxCell>
+
+        <!-- ======================= -->
+        <!-- LAYER 4: DATABASES      -->
+        <!-- ======================= -->
+        <mxCell id="UpstashRL" value="Upstash Redis Cluster&#xa;(Global Rate Limiting)" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="700" y="80" width="140" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="UpstashCache" value="Upstash Redis Cache&#xa;(SWR Data Feed)" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="700" y="200" width="140" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="SupabaseAuth" value="Supabase Auth&#xa;(JWT &amp; Sessions)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="700" y="320" width="140" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="SupabaseDB" value="Supabase PostgreSQL&#xa;(Primary Relational DB)" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="700" y="420" width="140" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="SupabaseRT" value="Supabase Realtime&#xa;(WebSockets)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="700" y="540" width="140" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="AWSS3" value="AWS S3 Buckets&#xa;(Image &amp; Asset Storage)" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="700" y="640" width="140" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- ======================= -->
+        <!-- LAYER 5: INTEGRATIONS   -->
+        <!-- ======================= -->
+        <mxCell id="GithubCI" value="GitHub Actions&#xa;(CI/CD Pipeline)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="960" y="100" width="140" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="Sentry" value="Sentry APM&#xa;(Error Tracking)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="960" y="220" width="140" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="ResendAPI" value="Resend API&#xa;(Transactional Emails)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="960" y="340" width="140" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="UnsplashAPI" value="Unsplash API&#xa;(Media Assets)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="960" y="460" width="140" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="PixabayAPI" value="Pixabay API&#xa;(Media Assets)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="960" y="580" width="140" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- ======================= -->
+        <!-- EDGES & CONNECTIONS     -->
+        <!-- ======================= -->
+        <!-- Users to Cloudflare -->
+        <mxCell id="E1" style="endArrow=classic;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;strokeWidth=2;" edge="1" parent="1" source="Desktop" target="CDN">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="E2" style="endArrow=classic;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.75;strokeWidth=2;" edge="1" parent="1" source="Mobile" target="CDN">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Cloudflare Internals -->
+        <mxCell id="E3" style="endArrow=classic;html=1;exitX=0.5;exitY=0;entryX=0.5;entryY=1;strokeWidth=2;dashed=1;" edge="1" parent="GroupCF" source="CDN" target="WAF">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="E4" style="endArrow=classic;html=1;exitX=0.5;exitY=0;entryX=0.5;entryY=1;strokeWidth=2;dashed=1;" edge="1" parent="GroupCF" source="WAF" target="Turnstile">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Cloudflare to Vercel -->
+        <mxCell id="E5" value="Verified Traffic" style="endArrow=classic;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;strokeWidth=2;" edge="1" parent="1" source="Turnstile" target="VEdge">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="E6" value="Cached Assets" style="endArrow=classic;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;strokeWidth=2;" edge="1" parent="1" source="CDN" target="VFrontend">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Vercel Internals -->
+        <mxCell id="E7" style="endArrow=classic;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;strokeWidth=2;dashed=1;" edge="1" parent="GroupVercel" source="VEdge" target="VFrontend">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="E8" value="Fetch Data" style="endArrow=classic;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;strokeWidth=2;" edge="1" parent="GroupVercel" source="VFrontend" target="VAPI">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Vercel to Databases -->
+        <mxCell id="E9" value="Rate Check" style="endArrow=classic;html=1;exitX=1;exitY=0.25;entryX=0;entryY=0.5;strokeWidth=2;" edge="1" parent="1" source="VEdge" target="UpstashRL">
+          <mxGeometry relative="1" as="geometry">
+             <Array as="points">
+                <mxPoint x="640" y="205" />
+                <mxPoint x="640" y="120" />
+             </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="E10" value="SWR Fetch" style="endArrow=classic;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;strokeWidth=2;" edge="1" parent="1" source="VFrontend" target="UpstashCache">
+          <mxGeometry relative="1" as="geometry">
+             <Array as="points">
+                <mxPoint x="640" y="330" />
+                <mxPoint x="640" y="240" />
+             </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="E11" value="Session Validate" style="endArrow=classic;html=1;exitX=1;exitY=0.25;entryX=0;entryY=0.5;strokeWidth=2;" edge="1" parent="1" source="VAPI" target="SupabaseAuth">
+          <mxGeometry relative="1" as="geometry">
+             <Array as="points">
+                <mxPoint x="660" y="435" />
+                <mxPoint x="660" y="350" />
+             </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="E12" value="Read/Write Data" style="endArrow=classic;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;strokeWidth=2;" edge="1" parent="1" source="VAPI" target="SupabaseDB">
+          <mxGeometry relative="1" as="geometry">
+             <Array as="points">
+                <mxPoint x="660" y="460" />
+             </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="E13" value="Upload Media" style="endArrow=classic;html=1;exitX=1;exitY=0.75;entryX=0;entryY=0.5;strokeWidth=2;" edge="1" parent="1" source="VAPI" target="AWSS3">
+          <mxGeometry relative="1" as="geometry">
+             <Array as="points">
+                <mxPoint x="630" y="485" />
+                <mxPoint x="630" y="680" />
+             </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="E14" value="Realtime Events" style="endArrow=classic;html=1;exitX=1;exitY=0.75;entryX=0;entryY=0.5;strokeWidth=2;" edge="1" parent="1" source="VFrontend" target="SupabaseRT">
+          <mxGeometry relative="1" as="geometry">
+             <Array as="points">
+                <mxPoint x="600" y="350" />
+                <mxPoint x="600" y="570" />
+             </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Vercel to Integrations -->
+        <mxCell id="E15" value="Send Errors" style="endArrow=classic;html=1;exitX=0.5;exitY=0;entryX=0;entryY=0.5;strokeWidth=2;dashed=1;" edge="1" parent="1" source="GroupVercel" target="Sentry">
+          <mxGeometry relative="1" as="geometry">
+             <Array as="points">
+                <mxPoint x="500" y="100" />
+                <mxPoint x="920" y="100" />
+                <mxPoint x="920" y="250" />
+             </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="E16" value="Trigger Emails" style="endArrow=classic;html=1;exitX=1;exitY=0.85;entryX=0;entryY=0.5;strokeWidth=2;" edge="1" parent="1" source="VAPI" target="ResendAPI">
+          <mxGeometry relative="1" as="geometry">
+             <Array as="points">
+                <mxPoint x="900" y="495" />
+                <mxPoint x="900" y="370" />
+             </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="E17" value="Fetch Images" style="endArrow=classic;html=1;exitX=1;exitY=0.9;entryX=0;entryY=0.5;strokeWidth=2;" edge="1" parent="1" source="VAPI" target="UnsplashAPI">
+          <mxGeometry relative="1" as="geometry">
+             <Array as="points">
+                <mxPoint x="920" y="500" />
+                <mxPoint x="920" y="490" />
+             </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="E18" value="Fetch Images" style="endArrow=classic;html=1;exitX=1;exitY=0.95;entryX=0;entryY=0.5;strokeWidth=2;" edge="1" parent="1" source="VAPI" target="PixabayAPI">
+          <mxGeometry relative="1" as="geometry">
+             <Array as="points">
+                <mxPoint x="880" y="505" />
+                <mxPoint x="880" y="610" />
+             </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- CI/CD connection -->
+        <mxCell id="E19" value="Deployments" style="endArrow=classic;html=1;exitX=0;exitY=0.5;entryX=0.5;entryY=0;strokeWidth=3;strokeColor=#9673a6;" edge="1" parent="1" source="GithubCI" target="GroupVercel">
+          <mxGeometry relative="1" as="geometry">
+             <Array as="points">
+                <mxPoint x="500" y="130" />
+             </Array>
+          </mxGeometry>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

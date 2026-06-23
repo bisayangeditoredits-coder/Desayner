@@ -2,13 +2,10 @@ import { NextResponse } from 'next/server';
 import { createReadClient } from '@/lib/supabase/server';
 import { redis } from '@/lib/redis';
 import { buildPublishedProjectsQuery, parseSearchQuery } from '@/lib/projectSearch';
-import { Ratelimit } from '@upstash/ratelimit';
+import { createRateLimit, Ratelimit, safeLimit } from '@/lib/rateLimit';
 
 const CACHE_HEADERS = { 'Cache-Control': 's-maxage=60, stale-while-revalidate=30' };
-
-// 30 search requests per user/IP per 60 seconds
-const ratelimit = new Ratelimit({
-  redis,
+const ratelimit = createRateLimit({
   limiter: Ratelimit.slidingWindow(30, '60 s'),
   analytics: false,
   prefix: 'rl:search',
@@ -41,7 +38,9 @@ export async function GET(request) {
   const ip = request.headers.get('x-forwarded-for')?.split(',')[0].trim()
     || request.headers.get('x-real-ip')
     || 'unknown';
-  const { success, remaining } = await ratelimit.limit(`ip:${ip}`);
+  const { success, remaining } = await safeLimit(ratelimit, `ip:${ip}`, {
+    logPrefix: 'Search RateLimit',
+  });
   if (!success) {
     return NextResponse.json(
       { error: 'Too many search requests. Please slow down.' },
@@ -50,7 +49,6 @@ export async function GET(request) {
   }
 
   const supabase = createReadClient();
-
   const query = buildPublishedProjectsQuery(supabase, {
     ftsQuery,
     category: category || 'All',

@@ -11,7 +11,7 @@ import { optimizeImage } from '@/lib/utils';
 import useToastStore from '@/store/useToastStore';
 const SaveToCollectionModal = dynamic(() => import('./SaveToCollectionModal'), { ssr: false });
 
-const ProjectCard = React.memo(function ProjectCard({ project, currentUserId, isLiked, isSaved }) {
+const ProjectCard = React.memo(function ProjectCard({ project, currentUserId, isLiked, isSaved, onImageLoad }) {
   const [localLiked, setLocalLiked]         = useState(project.user_liked || false);
   const [localSaved, setLocalSaved]         = useState(project.user_saved || false);
   const liked = isLiked !== undefined ? isLiked : localLiked;
@@ -90,6 +90,7 @@ const ProjectCard = React.memo(function ProjectCard({ project, currentUserId, is
                 onLoad={(e) => {
                   e.currentTarget.classList.add('loaded');
                   setImgStatus('loaded');
+                  onImageLoad?.(project.id, e.currentTarget.naturalWidth / e.currentTarget.naturalHeight);
                 }}
                 onError={() => setImgStatus('error')}
               />

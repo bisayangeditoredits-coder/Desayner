@@ -3,18 +3,13 @@ import { createServerClient } from '@supabase/ssr';
 import { createClient } from '@supabase/supabase-js';
 import { getServerAuth } from '@/lib/supabase/server';
 import { Resend } from 'resend';
-import { Ratelimit } from '@upstash/ratelimit';
-import { Redis } from '@upstash/redis';
+import { createRateLimit, Ratelimit, safeLimit } from '@/lib/rateLimit';
 
 // Initialize Upstash Redis for Rate Limiting (Max 3 inquiries per hour)
-const redis = new Redis({
-  url: process.env.UPSTASH_REDIS_REST_URL,
-  token: process.env.UPSTASH_REDIS_REST_TOKEN,
-});
-const ratelimit = new Ratelimit({
-  redis: redis,
+const ratelimit = createRateLimit({
   limiter: Ratelimit.slidingWindow(3, "1 h"),
   analytics: false,
+  prefix: 'rl:inquiries',
 });
 
 export async function POST(request) {
@@ -64,7 +59,9 @@ export async function POST(request) {
     }
 
     // --- 4. UPSTASH RATE LIMITING ---
-    const { success: rateLimitSuccess } = await ratelimit.limit(`inquiry_${user.id}`);
+    const { success: rateLimitSuccess } = await safeLimit(ratelimit, `inquiry_${user.id}`, {
+      logPrefix: 'Inquiries RateLimit',
+    });
     if (!rateLimitSuccess) {
       return NextResponse.json({ error: 'You have reached the maximum number of inquiries (3 per hour). Please try again later.' }, { status: 429 });
     }

@@ -269,14 +269,14 @@ export default function WelcomeModal() {
             </div>
 
             <div className="wm-body">
-              <p className="wm-eyebrow">The designer's platform</p>
+              <p className="wm-eyebrow">The designer&apos;s platform</p>
               <h2 className="wm-heading">
                 Where great<br />
                 design <em>lives.</em>
               </h2>
               <p className="wm-desc">
-                Desayner gives you everything you need to grow as a designer. 
-                Build your portfolio, explore free stock photos, generate color palettes, 
+                Desayner gives you everything you need to grow as a designer.
+                Build your portfolio, explore free stock photos, generate color palettes,
                 and connect with a community that understands your craft.
               </p>
               <div className="wm-pills">

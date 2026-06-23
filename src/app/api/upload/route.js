@@ -32,6 +32,7 @@ const ratelimit = new Ratelimit({
   limiter: Ratelimit.slidingWindow(20, '60 s'),
   analytics: false,
   prefix: 'rl:upload',
+  ephemeralCache: globalThis.__desaynerUploadRateLimitCache ??= new Map(),
 });
 
 const ALLOWED_TYPES = ['image/webp'];

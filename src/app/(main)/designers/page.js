@@ -52,37 +52,15 @@ import { useRouter, useSearchParams } from "next/navigation";
 import useSWR from 'swr';
 
 function VirtualDesignerChunk({ designersChunk, currentUserId, followingIds }) {
-  const [isVisible, setIsVisible] = useState(true);
-  const [height, setHeight] = useState(0);
-  const containerRef = useRef(null);
-
-  useEffect(() => {
-    if (isVisible && containerRef.current) {
-      const timer = setTimeout(() => {
-        if (containerRef.current) setHeight(containerRef.current.offsetHeight);
-      }, 500);
-      return () => clearTimeout(timer);
-    }
-  }, [isVisible, designersChunk.length]);
-
-  useEffect(() => {
-    if (!containerRef.current) return;
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (height > 0) setIsVisible(entries[0].isIntersecting);
-      },
-      { rootMargin: '3000px 0px' }
-    );
-    observer.observe(containerRef.current);
-    return () => observer.disconnect();
-  }, [height]);
-
-  if (!isVisible && height > 0) {
-    return <div style={{ height: `${height}px`, width: '100%', marginBottom: '2rem' }} />;
-  }
-
   return (
-    <div ref={containerRef} className="designers-chunk-grid" style={{ marginBottom: "2rem" }}>
+    <div
+      className="designers-chunk-grid"
+      style={{
+        marginBottom: "2rem",
+        contentVisibility: 'auto',
+        containIntrinsicSize: '1px 1800px',
+      }}
+    >
       {designersChunk.map((designer) => (
         <DesignerCard
           key={designer.id}
@@ -94,7 +72,6 @@ function VirtualDesignerChunk({ designersChunk, currentUserId, followingIds }) {
     </div>
   );
 }
-
 function DesignersContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -147,17 +124,21 @@ function DesignersContent() {
 
   const [extraPages, setExtraPages] = useState([]);
   const [loadingMore, setLoadingMore] = useState(false);
-  const [hasMore, setHasMore] = useState(false);
+  const [hasMoreOverride, setHasMoreOverride] = useState(null);
   const PAGE_SIZE = 24;
+  const hasMore = hasMoreOverride ?? ((swrData?.designers?.length ?? 0) === PAGE_SIZE);
 
-  // Reset extra pages when filter changes
-  useEffect(() => {
+  const handleCategoryChange = useCallback((nextCategory) => {
+    setCategory(nextCategory);
     setExtraPages([]);
-  }, [category, sort]);
+    setHasMoreOverride(null);
+  }, []);
 
-  useEffect(() => {
-    if (swrData) setHasMore((swrData.designers?.length ?? 0) === PAGE_SIZE);
-  }, [swrData]);
+  const handleSortChange = useCallback((nextSort) => {
+    setSort(nextSort);
+    setExtraPages([]);
+    setHasMoreOverride(null);
+  }, []);
 
   const loadMore = useCallback(async () => {
     if (loadingMore || !hasMore) return;
@@ -168,7 +149,7 @@ function DesignersContent() {
       const payload = await res.json();
       const newDesigners = (payload.designers || []).filter(d => d.id !== currentUserId);
       setExtraPages(prev => [...prev, ...newDesigners]);
-      setHasMore(newDesigners.length === PAGE_SIZE);
+      setHasMoreOverride(newDesigners.length === PAGE_SIZE);
     } finally {
       setLoadingMore(false);
     }
@@ -443,7 +424,7 @@ function DesignersContent() {
           {SORT_OPTIONS.map((opt) => (
             <button
               key={opt.value}
-              onClick={() => setSort(opt.value)}
+              onClick={() => handleSortChange(opt.value)}
               style={{
                 display: "flex",
                 alignItems: "center",
@@ -546,7 +527,7 @@ function DesignersContent() {
               search || category !== "All"
                 ? () => {
                     setSearch("");
-                    setCategory("All");
+                    handleCategoryChange("All");
                   }
                 : undefined
             }
