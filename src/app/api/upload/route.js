@@ -9,19 +9,26 @@
  *  - Unique keys via UUID: folder/userId/uuid.webp
  */
 
-import { getAssetUrl } from '@/lib/storage/r2';
-import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+import { R2, BUCKET, getAssetUrl } from '@/lib/storage/r2';
+import { PutObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { getServerAuth } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
-import { redis } from '@/lib/redis';
+import { Redis } from '@upstash/redis';
 import { Ratelimit } from '@upstash/ratelimit';
 import * as Sentry from '@sentry/nextjs';
+import { v4 as uuidv4 } from 'uuid';
 
+// Rate limiter requires a Redis instance WITHOUT enableAutoPipelining
+const ratelimitRedis = new Redis({
+  url: process.env.UPSTASH_REDIS_REST_URL,
+  token: process.env.UPSTASH_REDIS_REST_TOKEN,
+  enableAutoPipelining: false,
+});
 
 // 20 uploads per user per 60 seconds
 const ratelimit = new Ratelimit({
-  redis,
+  redis: ratelimitRedis,
   limiter: Ratelimit.slidingWindow(20, '60 s'),
   analytics: false,
   prefix: 'rl:upload',
@@ -38,27 +45,22 @@ export async function POST(request) {
     }
 
     // ── Rate limit ──────────────────────────────────────────────────────────
-    const { success, remaining } = await ratelimit.limit(`user:${user.id}`);
-    if (!success) {
-      return NextResponse.json(
-        { error: 'Too many uploads. Please wait a moment before uploading again.' },
-        {
-          status: 429,
-          headers: { 'X-RateLimit-Remaining': String(remaining) },
-        }
-      );
+    try {
+      const { success, remaining } = await ratelimit.limit(`user:${user.id}`);
+      if (!success) {
+        return NextResponse.json(
+          { error: 'Too many uploads. Please wait a moment before uploading again.' },
+          {
+            status: 429,
+            headers: { 'X-RateLimit-Remaining': String(remaining) },
+          }
+        );
+      }
+    } catch (rlError) {
+      console.warn('[api/upload] Rate limit check failed, bypassing:', rlError.message);
     }
 
-    // ── Configure R2 Client ────────────────────────────────────────────────
-    const R2 = new S3Client({
-      region: 'auto',
-      endpoint: `https://${process.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
-      credentials: {
-        accessKeyId: process.env.R2_ACCESS_KEY_ID,
-        secretAccessKey: process.env.R2_SECRET_ACCESS_KEY,
-      },
-    });
-    const BUCKET = process.env.R2_BUCKET_NAME;
+    // R2 client and BUCKET are imported from @/lib/storage/r2
 
     // ── Parse & validate body ───────────────────────────────────────────────
     let body;
@@ -70,8 +72,8 @@ export async function POST(request) {
     const folder = body.folder || 'uploads';
 
     // ── Generate unique keys ────────────────────────────────────────────────
-    const uid          = crypto.randomUUID();
-    const thumbUid     = crypto.randomUUID();
+    const uid          = uuidv4();
+    const thumbUid     = uuidv4();
     const key          = `${folder}/${user.id}/${uid}.webp`;
     const thumbnailKey = `${folder}/thumbs/${user.id}/${thumbUid}.webp`;
 
