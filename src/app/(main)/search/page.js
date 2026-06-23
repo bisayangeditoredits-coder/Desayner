@@ -4,6 +4,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import ProjectCard from '@/components/projects/ProjectCard';
 import ProjectCardSkeleton from '@/components/projects/ProjectCardSkeleton';
+import MasonryGrid from '@/components/layout/MasonryGrid';
 import UserAvatar from '@/components/ui/UserAvatar';
 import FollowButton from '@/components/ui/FollowButton';
 import TagPill from '@/components/ui/TagPill';
@@ -256,9 +257,7 @@ function SearchResults() {
         {tab === 'projects' && query && (
           <>
             {loadingProjects && page === 1 ? (
-              <div className="projects-masonry">
-                {[...Array(8)].map((_, i) => <ProjectCardSkeleton key={i} />)}
-              </div>
+              <MasonryGrid isLoading={true} skeletonCount={8} />
             ) : projects.length === 0 && !loadingProjects ? (
               <div style={{ textAlign: 'center', padding: '4rem 2rem', background: 'white', border: '1px solid #e2e8f0', borderRadius: '16px' }}>
                 <p style={{ fontWeight: 800, fontSize: '1.2rem', marginBottom: '0.4rem' }}>No projects found for &quot;{query}&quot;</p>
@@ -274,9 +273,19 @@ function SearchResults() {
               </div>
             ) : (
               <>
-                <div className="projects-masonry">
-                  {projects.map(p => <ProjectCard key={p.id} project={p} currentUserId={currentUserId} />)}
-                </div>
+              <MasonryGrid 
+                items={projects} 
+                currentUserId={currentUserId}
+                renderItem={(project, onImageLoad) => (
+                  <div key={project.id} className="projects-masonry__item">
+                    <ProjectCard 
+                      project={project} 
+                      currentUserId={currentUserId} 
+                      onImageLoad={onImageLoad}
+                    />
+                  </div>
+                )}
+              />
                 {hasMore && (
                   <div ref={loadMoreRef} style={{ textAlign: 'center', marginTop: '1.5rem', paddingBottom: '2rem' }}>
                     {loadingProjects && (

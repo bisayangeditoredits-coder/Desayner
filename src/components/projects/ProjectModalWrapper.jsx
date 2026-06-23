@@ -22,9 +22,9 @@ export default function ProjectModalWrapper({ children, isStandalone = false }) 
   }, [router, isStandalone]);
 
   useEffect(() => {
-    // Lock body scroll
-    const originalOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
+    // Lock HTML scroll to avoid body scroll jump
+    const originalOverflow = document.documentElement.style.overflow;
+    document.documentElement.style.overflow = 'hidden';
 
     const onKeyDown = (e) => {
       if (e.key !== 'Escape') return;
@@ -34,7 +34,7 @@ export default function ProjectModalWrapper({ children, isStandalone = false }) 
     document.addEventListener('keydown', onKeyDown);
     return () => {
       document.removeEventListener('keydown', onKeyDown);
-      document.body.style.overflow = originalOverflow;
+      document.documentElement.style.overflow = originalOverflow;
     };
   }, [onDismiss]);
 

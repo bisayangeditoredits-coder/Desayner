@@ -3,6 +3,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import ProjectCard from '@/components/projects/ProjectCard';
+import MasonryGrid from '@/components/layout/MasonryGrid';
 import FollowButton from '@/components/ui/FollowButton';
 import UserAvatar from '@/components/ui/UserAvatar';
 import Link from 'next/link';
@@ -478,31 +479,7 @@ export default function ProfilePage({ initialProfile = null }) {
 
         {tab === 'projects' && (
           projectsLoading ? (
-            <>
-              <style>{`
-                @keyframes profile-shimmer {
-                  0%   { background-position: -600px 0; }
-                  100% { background-position: 600px 0; }
-                }
-                .profile-skeleton {
-                  background: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
-                  background-size: 600px 100%;
-                  animation: profile-shimmer 1.4s infinite ease-in-out;
-                  border-radius: 12px;
-                }
-              `}</style>
-              <div className="projects-masonry">
-                {[...Array(6)].map((_, i) => (
-                  <div key={i} style={{ background: 'white', borderRadius: '16px', overflow: 'hidden', border: '1px solid rgba(0,0,0,0.05)' }}>
-                    <div className="profile-skeleton" style={{ height: i % 3 === 0 ? 240 : i % 3 === 1 ? 180 : 210, borderRadius: 0 }} />
-                    <div style={{ padding: '14px', display: 'flex', flexDirection: 'column', gap: 8 }}>
-                      <div className="profile-skeleton" style={{ height: 14, width: '70%' }} />
-                      <div className="profile-skeleton" style={{ height: 12, width: '45%' }} />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </>
+            <MasonryGrid isLoading={true} skeletonCount={6} />
           ) : projects.length === 0 ? (
             <EmptyState
               icon={Folder}
@@ -519,11 +496,19 @@ export default function ProfilePage({ initialProfile = null }) {
             />
           ) : (
             <>
-              <div className="projects-masonry">
-                {projects.map(project => (
-                  <ProjectCard key={project.id} project={{...project, profiles: profile}} currentUserId={currentUser?.id} />
-                ))}
-              </div>
+              <MasonryGrid 
+                items={projects} 
+                currentUserId={currentUser?.id}
+                renderItem={(project, onImageLoad) => (
+                  <div key={project.id} className="projects-masonry__item">
+                    <ProjectCard 
+                      project={{...project, profiles: profile}} 
+                      currentUserId={currentUser?.id} 
+                      onImageLoad={onImageLoad}
+                    />
+                  </div>
+                )}
+              />
               {hasMoreProjects && (
                 <div style={{ display: 'flex', justifyContent: 'center', marginTop: '2rem' }}>
                   <button

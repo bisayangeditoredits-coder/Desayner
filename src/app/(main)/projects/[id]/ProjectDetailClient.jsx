@@ -329,7 +329,7 @@ export default function ProjectDetailClient({ initialProject = null, isModal = f
     ...(project.images || []).filter(img => img !== project.cover_url),
   ];
   const allImages = rawAllImages.map(stripCloudinaryProxy);
-  const profileHref = author?.username ? `/profile/${author.username}` : '#';
+  const profileHref = author?.username ? `/profile/${author.username}?source=project` : '#';
 
   function goToAuthorProfile(e) {
     if (!author?.username) {

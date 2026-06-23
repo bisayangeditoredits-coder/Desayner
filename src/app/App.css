@@ -18,6 +18,32 @@
   background: var(--card-bg);
   z-index: 1050;
   overflow: hidden;
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.app-layout[data-collapsed="true"] {
+  --sidebar-width: 80px;
+}
+
+.app-layout[data-collapsed="true"] .sidebar-text {
+  opacity: 0;
+  width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  display: none;
+}
+
+.app-layout[data-collapsed="true"] .sidebar-section-discover {
+  display: none;
+}
+
+.app-layout[data-collapsed="true"] .nav-section-label-inner {
+  justify-content: center;
+}
+
+.app-layout[data-collapsed="true"] .nav-item {
+  justify-content: center;
+  padding: 0.8rem;
 }
 
 .sidebar-logo {
@@ -89,6 +115,7 @@
   min-height: 100vh;
   background: var(--primary-bg);
   min-width: 0;
+  transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* ─── Top Header ──────────────────────────────────── */
@@ -439,23 +466,28 @@
 }
 
 /* ─── Projects grid (Behance-style) ────────────────── */
+.projects-grid,
 .projects-masonry {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.75rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
   width: 100%;
-  background: transparent;
 }
 
-.projects-masonry__column {
-  flex: 1 1 0;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
+.project-card__img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+.project-card:hover .project-card__img {
+  transform: scale(1.03);
 }
 
 .projects-masonry__item,
+.projects-grid__item,
 .masonry-item {
   width: 100%;
   min-width: 0;

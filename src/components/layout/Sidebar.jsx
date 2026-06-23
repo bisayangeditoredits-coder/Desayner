@@ -6,12 +6,13 @@ import Image from 'next/image';
 import {
   Home, FolderOpen, Users, Users2, Bookmark, Plus, Settings,
   LogOut, ChevronDown, ChevronUp, Library, MessageSquare, Briefcase, ShoppingBag, Box, PlaySquare, Compass, MessageSquareCode, Image as ImageIcon,
-  Palette, Type, LayoutTemplate
+  Palette, Type, LayoutTemplate, ChevronLeft, ChevronRight
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import UserAvatar from '@/components/ui/UserAvatar';
 import FollowButton from '@/components/ui/FollowButton';
 import { useMobileNav } from '@/components/layout/MobileNavProvider';
+import useLayoutStore from '@/store/useLayoutStore';
 
 import { useRouter } from 'next/navigation';
 import useFeedStore from '@/store/useFeedStore';
@@ -34,6 +35,7 @@ export default function Sidebar({ className = '' }) {
   const [user, setUser] = useState(null);
   const profile = useProfileStore((s) => s.profile);
   const storeUser = useProfileStore((s) => s.user);
+  const { isSidebarCollapsed, toggleSidebar } = useLayoutStore();
   const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect;
 
   useIsomorphicLayoutEffect(() => {
@@ -121,11 +123,24 @@ export default function Sidebar({ className = '' }) {
           aria-label="Close Sidebar"
         />
       )}
-      <aside className={`sidebar ${className} ${isMobileMenuOpen ? 'mobile-open' : ''}`}>
-        <div style={{ padding: '1rem 1rem 0', borderBottom: '1px solid #e8e8e8', paddingBottom: '1rem', marginBottom: '0.25rem', display: 'flex', justifyContent: 'center' }}>
-          <Link href="/">
-            <img src="/desayner-logo.png" alt="Desayner" fetchPriority="high" style={{ width: 'auto', height: '28px', maxWidth: '100%', objectFit: 'contain', display: 'block' }} />
+      <aside className={`sidebar ${className} ${isMobileMenuOpen ? 'mobile-open' : ''}`} data-collapsed={isSidebarCollapsed}>
+        <div style={{ padding: '1rem', borderBottom: '1px solid #e8e8e8', marginBottom: '0.25rem', display: 'flex', flexDirection: isSidebarCollapsed ? 'column' : 'row', justifyContent: 'space-between', alignItems: 'center', gap: isSidebarCollapsed ? '1rem' : '0' }}>
+          <Link href="/" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            {isSidebarCollapsed ? (
+              <img src="/desayner-favicon.png" alt="D" fetchPriority="high" style={{ width: '28px', height: '28px', display: 'block' }} />
+            ) : (
+              <img src="/desayner-logo.png" alt="Desayner" fetchPriority="high" style={{ width: 'auto', height: '28px', maxWidth: '100%', objectFit: 'contain', display: 'block' }} />
+            )}
           </Link>
+          <button 
+            onClick={toggleSidebar}
+            style={{ padding: '0.25rem', background: 'transparent', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', color: '#94a3b8', transition: 'color 0.2s', borderRadius: '4px' }}
+            onMouseOver={e => { e.currentTarget.style.color = '#0f172a'; e.currentTarget.style.background = '#f1f5f9'; }}
+            onMouseOut={e => { e.currentTarget.style.color = '#94a3b8'; e.currentTarget.style.background = 'transparent'; }}
+            title={isSidebarCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
+          >
+            {isSidebarCollapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
+          </button>
         </div>
 
         {/* Create button */}
@@ -134,8 +149,9 @@ export default function Sidebar({ className = '' }) {
             href="/projects/new"
             className="btn btn-primary"
             style={{ width: '100%', justifyContent: 'center', fontSize: '0.8rem', padding: '0.6rem', textDecoration: 'none' }}
+            title="New Project"
           >
-            <Plus size={15} strokeWidth={2.5} /> New Project
+            <Plus size={15} strokeWidth={2.5} /> <span className="sidebar-text">New Project</span>
           </Link>
         </div>
 
@@ -144,21 +160,21 @@ export default function Sidebar({ className = '' }) {
           {MAIN_NAV_ITEMS.map(({ href, icon: Icon, label, reqAuth }) => {
             if (reqAuth && !user) return null;
             return (
-              <Link key={href} href={href} className={`nav-item ${isActive(href) ? 'active' : ''}`}>
-                <Icon size={16} strokeWidth={isActive(href) ? 2.5 : 1.75} />
-                {label}
+              <Link key={href} href={href} className={`nav-item ${isActive(href) ? 'active' : ''}`} title={label}>
+                <Icon size={16} strokeWidth={isActive(href) ? 2.5 : 1.75} style={{ flexShrink: 0 }} />
+                <span className="sidebar-text">{label}</span>
               </Link>
             );
           })}
 
           {/* Discover Categories to fill the empty space */}
-          <div style={{ padding: '0.5rem 1rem', marginTop: '0.5rem' }}>
+          <div style={{ padding: '0.5rem 1rem', marginTop: '0.5rem' }} className="sidebar-section-discover">
             <div style={{ marginBottom: '0.5rem', paddingBottom: '0.5rem' }}>
-              <span style={{ fontSize: '0.7rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#9b9b9b', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                <Compass size={12} /> Discover
+              <span className="nav-section-label-inner" style={{ fontSize: '0.7rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#9b9b9b', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                <Compass size={12} style={{ flexShrink: 0 }} /> <span className="sidebar-text">Discover</span>
               </span>
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }} className="sidebar-text">
               {DISCOVER_CATEGORIES.map(cat => (
                 <Link
                   key={cat}
@@ -186,7 +202,7 @@ export default function Sidebar({ className = '' }) {
 
         {/* Top Designers Sidebar Widget */}
         {suggestedUsers.length > 0 && (
-          <div style={{ padding: '0.5rem 1rem', marginTop: '0.25rem' }}>
+          <div style={{ padding: '0.5rem 1rem', marginTop: '0.25rem' }} className="sidebar-text">
             <div style={{ marginBottom: '0.75rem', paddingBottom: '0.5rem', borderBottom: '1px solid #e8e8e8' }}>
               <span style={{ fontSize: '0.7rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#9b9b9b', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
                 <Users size={12} /> Who to follow
@@ -212,8 +228,8 @@ export default function Sidebar({ className = '' }) {
         )}
 
         {/* --- PROMO WIDGET --- */}
-        <div style={{ padding: '0 1rem', marginTop: '0.75rem', marginBottom: '0.5rem' }}>
-          <div style={{ background: 'linear-gradient(135deg, #5865F2 0%, #4752C4 100%)', borderRadius: '20x', padding: '0.75rem', color: 'white', position: 'relative', overflow: 'hidden', boxShadow: '0 4px 15px rgba(88, 101, 242, 0.2)' }}>
+        <div style={{ padding: '0 1rem', marginTop: '0.75rem', marginBottom: '0.5rem' }} className="sidebar-text">
+          <div style={{ background: 'linear-gradient(135deg, #5865F2 0%, #4752C4 100%)', borderRadius: '20px', padding: '0.75rem', color: 'white', position: 'relative', overflow: 'hidden', boxShadow: '0 4px 15px rgba(88, 101, 242, 0.2)' }}>
             <div style={{ position: 'relative', zIndex: 2 }}>
               <h4 style={{ margin: '0 0 0.25rem 0', fontSize: '0.85rem', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
                 <svg width="15" height="15" viewBox="0 0 127.14 96.36" fill="currentColor">
@@ -234,10 +250,10 @@ export default function Sidebar({ className = '' }) {
         </div>
 
         {/* Bottom user section */}
-        {user && (
+        {user ? (
           <div style={{ borderTop: '1px solid #e8e8e8', padding: '0.5rem 1rem', marginTop: 'auto', position: 'relative' }}>
-            <Link href="/settings" className="nav-item" style={{ marginBottom: '0.25rem' }}>
-              <Settings size={16} strokeWidth={1.75} /> Settings
+            <Link href="/settings" className="nav-item" style={{ marginBottom: '0.25rem' }} title="Settings">
+              <Settings size={16} strokeWidth={1.75} style={{ flexShrink: 0 }} /> <span className="sidebar-text">Settings</span>
             </Link>
 
             {profile ? (
@@ -246,26 +262,21 @@ export default function Sidebar({ className = '' }) {
                   onClick={() => setUserMenuOpen(p => !p)}
                   className="nav-item"
                   style={{ padding: '0.6rem 0.5rem', borderRadius: 0 }}
+                  title="Profile Menu"
                 >
-                  <UserAvatar src={profile.avatar_url} name={profile.full_name || profile.username} size={28} />
-                  <div style={{ flex: 1, textAlign: 'left', overflow: 'hidden' }}>
-                    <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#231f20', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      {profile.full_name || profile.username}
-                    </div>
-                    <div style={{ fontSize: '0.7rem', color: '#9b9b9b', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      @{profile.username}
-                    </div>
-                  </div>
-                  {/* Green dot for online status mimicking the reference */}
-                  <div style={{ width: '8px', height: '8px', background: '#22c55e', borderRadius: '50%', flexShrink: 0, marginRight: '0.5rem' }}></div>
-                  <ChevronDown size={14} color="#9b9b9b" style={{ transform: userMenuOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.15s' }} />
+                  <div style={{ flexShrink: 0 }}><UserAvatar src={profile.avatar_url} name={profile.full_name || profile.username} size={28} /></div>
+                  <span className="sidebar-text" style={{ flex: 1, textAlign: 'left', fontWeight: 600, fontSize: '0.8rem', color: '#231f20', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {profile.full_name || profile.username}
+                  </span>
+                  <ChevronDown size={14} className="sidebar-text" color="#9b9b9b" style={{ transform: userMenuOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.15s' }} />
                 </button>
 
                 {userMenuOpen && (
-                  <div style={{
+                  <div className="sidebar-text" style={{
                     position: 'absolute', bottom: '100%', left: '1rem', right: '1rem',
                     background: 'white', border: '1px solid #e8e8e8',
                     zIndex: 200, padding: '0.25rem 0',
+                    borderRadius: '8px', boxShadow: '0 4px 12px rgba(0,0,0,0.05)'
                   }}>
                     <Link
                       href={`/profile/${profile.username}`}
@@ -280,7 +291,7 @@ export default function Sidebar({ className = '' }) {
                       className="nav-item"
                       style={{ padding: '0.6rem 1rem', fontSize: '0.8rem', color: '#ef4444', width: '100%' }}
                     >
-                      <LogOut size={15} /> Sign Out
+                      <LogOut size={15} style={{ flexShrink: 0 }} /> Sign Out
                     </button>
                   </div>
                 )}
@@ -288,12 +299,18 @@ export default function Sidebar({ className = '' }) {
             ) : (
               <div style={{ padding: '0.6rem 0.5rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                 <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#e2e8f0' }} className="shimmer-box" />
-                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
+                <div className="sidebar-text" style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
                   <div style={{ width: '80%', height: '10px', background: '#e2e8f0', borderRadius: '4px' }} className="shimmer-box" />
                   <div style={{ width: '50%', height: '8px', background: '#e2e8f0', borderRadius: '4px' }} className="shimmer-box" />
                 </div>
               </div>
             )}
+          </div>
+        ) : (
+          <div style={{ padding: '0.5rem 1rem', marginTop: 'auto', borderTop: '1px solid #e8e8e8' }}>
+            <Link href="/login" className="btn btn-dark" style={{ width: '100%', justifyContent: 'center', fontSize: '0.85rem' }} title="Log In">
+              <LogOut size={14} style={{ flexShrink: 0 }} /> <span className="sidebar-text">Log In</span>
+            </Link>
           </div>
         )}
       </aside>

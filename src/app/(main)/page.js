@@ -22,36 +22,7 @@ const BANNERS = [
 const CATEGORIES = ['All', 'Design', 'Illustration', 'Photography', 'Branding', '3D', 'Motion', 'UI/UX', 'Typography', 'Other'];
 const PAGE_SIZE = 24;
 
-const MASONRY_BREAKPOINTS = [
-  { minWidth: 1440, columns: 5 },
-  { minWidth: 1024, columns: 4 },
-  { minWidth: 768, columns: 3 },
-  { minWidth: 0, columns: 2 },
-];
-
-function getMasonryColumnCount(width) {
-  return MASONRY_BREAKPOINTS.find((breakpoint) => width >= breakpoint.minWidth)?.columns ?? 2;
-}
-
-function splitIntoColumns(items, columnCount, getWeight = () => 1) {
-  const totalColumns = Math.max(1, Math.min(columnCount, items.length || columnCount));
-  const columns = Array.from({ length: totalColumns }, () => []);
-  const columnHeights = Array.from({ length: totalColumns }, () => 0);
-
-  items.forEach((item) => {
-    let targetIndex = 0;
-    for (let i = 1; i < totalColumns; i += 1) {
-      if (columnHeights[i] < columnHeights[targetIndex]) {
-        targetIndex = i;
-      }
-    }
-
-    columns[targetIndex].push(item);
-    columnHeights[targetIndex] += getWeight(item);
-  });
-
-  return columns;
-}
+import MasonryGrid from '@/components/layout/MasonryGrid';
 
 export default function Dashboard() {
   const router = useRouter();
@@ -60,12 +31,6 @@ export default function Dashboard() {
   const [currentUserId, setCurrentUserId] = useState(null);
   const [isAuthLoaded, setIsAuthLoaded] = useState(false);
   const [searchInput, setSearchInput] = useState(searchQuery);
-  const [projectRatios, setProjectRatios] = useState({});
-
-  const handleProjectImageLoad = useCallback((projectId, ratio) => {
-    if (!ratio || !Number.isFinite(ratio)) return;
-    setProjectRatios((prev) => (prev[projectId] === ratio ? prev : { ...prev, [projectId]: ratio }));
-  }, []);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -135,40 +100,6 @@ export default function Dashboard() {
   const GUEST_LIMIT = 32;
   const isGuestRestricted = isAuthLoaded && !currentUserId && projects.length >= GUEST_LIMIT;
   const displayProjects = isGuestRestricted ? projects.slice(0, GUEST_LIMIT) : projects;
-  const [masonryColumnCount, setMasonryColumnCount] = useState(5);
-
-  useEffect(() => {
-    const updateColumnCount = () => {
-      const nextCount = getMasonryColumnCount(window.innerWidth);
-      setMasonryColumnCount((currentCount) => (currentCount === nextCount ? currentCount : nextCount));
-    };
-
-    updateColumnCount();
-    window.addEventListener('resize', updateColumnCount, { passive: true });
-
-    return () => {
-      window.removeEventListener('resize', updateColumnCount);
-    };
-  }, []);
-
-  const effectiveMasonryColumnCount = Math.max(
-    2,
-    Math.min(masonryColumnCount, Math.ceil(displayProjects.length / 3) || masonryColumnCount)
-  );
-
-  const estimateProjectHeight = useCallback((project) => {
-    const ratio = projectRatios[project.id] || 1.2;
-    return (1 / ratio) + 0.35;
-  }, [projectRatios]);
-
-  const masonryColumns = useMemo(
-    () => splitIntoColumns(displayProjects, effectiveMasonryColumnCount, estimateProjectHeight),
-    [displayProjects, effectiveMasonryColumnCount, estimateProjectHeight]
-  );
-  const skeletonColumns = useMemo(
-    () => splitIntoColumns(Array.from({ length: 12 }, (_, index) => index), effectiveMasonryColumnCount),
-    [effectiveMasonryColumnCount]
-  );
 
   const lastProjectId = displayProjects[displayProjects.length - 1]?.id;
   const hasMore = data ? (data[data.length - 1]?.projects?.length === PAGE_SIZE) : false;
@@ -391,17 +322,7 @@ export default function Dashboard() {
             </button>
           </div>
         ) : isLoadingInitialData ? (
-          <div className="projects-masonry">
-            {skeletonColumns.map((column, columnIndex) => (
-              <div className="projects-masonry__column" key={`skeleton-column-${columnIndex}`}>
-                {column.map((item) => (
-                  <div className="projects-masonry__item" key={`skeleton-${item}`}>
-                    <ProjectCardSkeleton />
-                  </div>
-                ))}
-              </div>
-            ))}
-          </div>
+          <MasonryGrid isLoading={true} skeletonCount={12} />
         ) : isEmpty ? (
           <div style={{ textAlign: 'center', padding: '6rem 2rem', border: '1px solid #e8e8e8', background: 'white', borderRadius: '12px' }}>
             <p style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '0.5rem' }}>
@@ -427,28 +348,27 @@ export default function Dashboard() {
         ) : (
           <>
             <div style={{ position: 'relative' }}>
-              <div className="projects-masonry">
-                {masonryColumns.map((column, columnIndex) => (
-                  <div className="projects-masonry__column" key={`column-${columnIndex}`}>
-                    {column.map((project) => {
-                      const interact = interactions[project.id] || {};
-                      const isLast = project.id === lastProjectId;
+              <MasonryGrid 
+                items={displayProjects} 
+                isLoading={false} 
+                currentUserId={currentUserId}
+                renderItem={(project, onImageLoad) => {
+                  const interact = interactions[project.id] || {};
+                  const isLast = project.id === lastProjectId;
 
-                      return (
-                        <div key={project.id} className="projects-masonry__item" ref={isLast ? lastElementRef : null}>
-                          <ProjectCard
-                            project={project}
-                            currentUserId={currentUserId}
-                            isLiked={interact.liked}
-                            isSaved={interact.saved}
-                            onImageLoad={handleProjectImageLoad}
-                          />
-                        </div>
-                      );
-                    })}
-                  </div>
-                ))}
-              </div>
+                  return (
+                    <div key={project.id} className="projects-masonry__item" ref={isLast ? lastElementRef : null}>
+                      <ProjectCard
+                        project={project}
+                        currentUserId={currentUserId}
+                        isLiked={interact.liked}
+                        isSaved={interact.saved}
+                        onImageLoad={onImageLoad}
+                      />
+                    </div>
+                  );
+                }}
+              />
 
               {isGuestRestricted && (
                 <div style={{
@@ -486,7 +406,7 @@ export default function Dashboard() {
                     Log in or sign up to view more projects
                   </h2>
 
-                  <Link href="/auth" style={{
+                  <Link href="/signup" style={{
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -514,7 +434,7 @@ export default function Dashboard() {
                     <div style={{ flex: 1, height: '1px', background: '#e2e8f0' }}></div>
                   </div>
 
-                  <Link href="/auth" style={{
+                  <Link href="/signup" style={{
                     display: 'block',
                     width: '100%',
                     padding: '0.75rem 1.25rem',

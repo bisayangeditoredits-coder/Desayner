@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import ProjectCard from '@/components/projects/ProjectCard';
 import ProjectCardSkeleton from '@/components/projects/ProjectCardSkeleton';
+import MasonryGrid from '@/components/layout/MasonryGrid';
 import Link from 'next/link';
 import { Bookmark, Folder, ArrowLeft } from 'lucide-react';
 import useSWR from 'swr';
@@ -113,9 +114,7 @@ export default function SavedPage() {
       </div>
 
       {gridLoading ? (
-        <div className="projects-masonry">
-          {[...Array(6)].map((_, i) => <ProjectCardSkeleton key={i} />)}
-        </div>
+        <MasonryGrid isLoading={true} skeletonCount={6} />
       ) : !selectedCollection && savedTotal === 0 && collections.length === 0 ? (
         <div style={{ textAlign: 'center', padding: '4rem', border: '1px solid #e8e8e8', background: 'white', borderRadius: '12px' }}>
           <Bookmark size={28} style={{ color: '#e0e0e0', display: 'block', margin: '0 auto 1rem' }} />
@@ -138,25 +137,31 @@ export default function SavedPage() {
           </h2>
 
           {loading ? (
-            <div className="projects-masonry">
-              {[...Array(6)].map((_, i) => <ProjectCardSkeleton key={i} />)}
-            </div>
+            <MasonryGrid isLoading={true} skeletonCount={6} />
           ) : projects.length === 0 ? (
             <div style={{ padding: '4rem', textAlign: 'center', background: '#fafafa', borderRadius: '12px', border: '1px solid #e8e8e8' }}>
               <p style={{ fontWeight: 600, fontSize: '0.95rem' }}>No projects in this collection.</p>
             </div>
           ) : (
             <>
-              <div className="projects-masonry">
-                {projects.map((project) => (
-                  <ProjectCard key={project.id} project={project} currentUserId={currentUserId} />
-                ))}
-              </div>
+              <MasonryGrid 
+                items={projects} 
+                currentUserId={currentUserId}
+                renderItem={(project, onImageLoad) => (
+                  <div key={project.id} className="projects-masonry__item">
+                    <ProjectCard 
+                      project={project} 
+                      currentUserId={currentUserId} 
+                      onImageLoad={onImageLoad}
+                    />
+                  </div>
+                )}
+              />
               {hasMore && (
                 <div ref={loadMoreRef} style={{ padding: '2rem', textAlign: 'center' }}>
                   {isValidating && (
-                    <div className="projects-masonry" style={{ marginTop: '1rem' }}>
-                      {[...Array(4)].map((_, i) => <ProjectCardSkeleton key={i} />)}
+                    <div style={{ marginTop: '1rem' }}>
+                      <MasonryGrid isLoading={true} skeletonCount={4} />
                     </div>
                   )}
                 </div>

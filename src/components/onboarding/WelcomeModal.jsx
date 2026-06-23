@@ -42,23 +42,21 @@ export default function WelcomeModal() {
           position: relative;
           display: flex;
           width: 100%;
-          max-width: 840px;
-          min-height: 490px;
-          border-radius: 10px;
+          max-width: 1040px;
+          min-height: 600px;
+          border-radius: 0;
           overflow: hidden;
-          box-shadow: 0 48px 96px -24px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.06);
+          background: #ffffff;
+          box-shadow: 0 25px 50px -12px rgba(0,0,0,0.45);
           animation: wm-up 0.4s cubic-bezier(0.22, 1, 0.36, 1);
         }
 
-        /* ══ LEFT BLUE PANEL ══════════════════════════════ */
+        /* ══ LEFT MINIMAL PANEL ═══════════════════════ */
         .wm-left {
           flex: 0 0 50%;
           width: 50%;
-          background: #1e35e6;
-          background-image:
-            radial-gradient(ellipse 60% 80% at 10% 110%, rgba(255,255,255,0.07) 0%, transparent 70%),
-            radial-gradient(ellipse 50% 50% at 90% -10%, rgba(110,130,255,0.35) 0%, transparent 60%);
-          padding: 2.75rem 2.5rem;
+          background: #ffffff;
+          padding: 3.5rem 3.5rem;
           display: flex;
           flex-direction: column;
           justify-content: space-between;
@@ -71,7 +69,7 @@ export default function WelcomeModal() {
           align-items: center;
         }
         .wm-logo img {
-          width: 150px;
+          width: 170px;
           height: auto;
         }
 
@@ -84,34 +82,34 @@ export default function WelcomeModal() {
         }
 
         .wm-eyebrow {
-          font-size: 0.68rem;
-          font-weight: 700;
-          letter-spacing: 0.12em;
+          font-size: 0.75rem;
+          font-weight: 600;
+          letter-spacing: 0.15em;
           text-transform: uppercase;
-          color: rgba(255,255,255,0.45);
-          margin: 0 0 0.9rem 0;
+          color: #94a3b8;
+          margin: 0 0 1.2rem 0;
         }
 
         .wm-heading {
-          font-size: 2.6rem;
-          font-weight: 900;
-          color: #fff;
-          line-height: 1.05;
-          letter-spacing: -0.03em;
-          margin: 0 0 1.1rem 0;
+          font-size: 3.2rem;
+          font-weight: 800;
+          color: #0f172a;
+          line-height: 1.1;
+          letter-spacing: -0.02em;
+          margin: 0 0 1.5rem 0;
         }
 
         .wm-heading em {
           font-style: normal;
-          color: rgba(255,255,255,0.55);
+          color: #3b82f6;
         }
 
         .wm-desc {
-          font-size: 0.875rem;
-          color: rgba(255,255,255,0.72);
-          line-height: 1.7;
+          font-size: 1rem;
+          line-height: 1.6;
+          color: #475569;
           margin: 0 0 2rem 0;
-          font-weight: 400;
+          max-width: 95%;
         }
 
         .wm-pills {
@@ -122,14 +120,14 @@ export default function WelcomeModal() {
         }
 
         .wm-pill {
-          padding: 0.35rem 0.85rem;
-          border-radius: 100px;
-          background: rgba(255,255,255,0.1);
-          border: 1px solid rgba(255,255,255,0.15);
-          color: rgba(255,255,255,0.82);
-          font-size: 0.72rem;
-          font-weight: 600;
-          letter-spacing: 0.01em;
+          padding: 0.4rem 0.9rem;
+          border-radius: 0;
+          background: transparent;
+          border: 1px solid #e2e8f0;
+          color: #475569;
+          font-size: 0.8rem;
+          font-weight: 500;
+          letter-spacing: 0.02em;
         }
 
         .wm-footer {
@@ -140,34 +138,32 @@ export default function WelcomeModal() {
 
         .wm-btn-start {
           flex: 1;
-          padding: 0.9rem 1rem;
-          background: #e6e82d;
-          color: #09090b;
+          padding: 1rem 1.2rem;
+          background: #2d43e8;
+          color: #ffffff;
           border: none;
-          border-radius: 12px;
-          font-weight: 800;
-          font-size: 0.9375rem;
+          border-radius: 0;
+          font-weight: 600;
+          font-size: 1.05rem;
           font-family: inherit;
           cursor: pointer;
-          letter-spacing: -0.01em;
-          transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
-          box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+          letter-spacing: 0.02em;
+          transition: background 0.2s, transform 0.15s;
         }
         .wm-btn-start:hover {
-          background: #d4d628;
+          background: #1a2ce0;
           transform: translateY(-1px);
-          box-shadow: 0 12px 32px rgba(0,0,0,0.22);
         }
 
         .wm-btn-skip {
           background: transparent;
           border: none;
-          color: rgba(255,255,255,0.45);
-          font-size: 0.8rem;
-          font-weight: 600;
+          color: #94a3b8;
+          font-size: 0.95rem;
+          font-weight: 500;
           font-family: inherit;
           cursor: pointer;
-          padding: 0.5rem;
+          padding: 0.75rem;
           transition: color 0.2s;
           white-space: nowrap;
         }
@@ -218,11 +214,11 @@ export default function WelcomeModal() {
           background: rgba(255,255,255,0.12);
           backdrop-filter: blur(12px);
           -webkit-backdrop-filter: blur(12px);
-          border: 1px solid rgba(255,255,255,0.18);
-          border-radius: 10px;
+          border: 1px solid rgba(255,255,255,0.15);
+          border-radius: 0;
           color: #fff;
           font-size: 0.75rem;
-          font-weight: 600;
+          font-weight: 500;
         }
         .wm-caption-dot {
           width: 6px; height: 6px;
@@ -238,7 +234,7 @@ export default function WelcomeModal() {
           right: 1rem;
           z-index: 30;
           width: 32px; height: 32px;
-          border-radius: 50%;
+          border-radius: 0;
           background: rgba(0,0,0,0.3);
           backdrop-filter: blur(8px);
           border: 1px solid rgba(255,255,255,0.15);
@@ -261,11 +257,11 @@ export default function WelcomeModal() {
       <div className="wm-overlay" onClick={close}>
         <div className="wm-card" onClick={e => e.stopPropagation()}>
 
-          {/* ── Left blue panel ─────────────────── */}
+          {/* ── Left white glass panel ─────────────────── */}
           <div className="wm-left">
 
             <div className="wm-logo">
-              <img src="/desayner-logo-white.png" alt="Desayner" />
+              <img src="/desayner-logo.png" alt="Desayner" />
             </div>
 
             <div className="wm-body">

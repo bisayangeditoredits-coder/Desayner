@@ -11,9 +11,10 @@ const OnboardingChecklist = dynamic(() => import('@/components/onboarding/Onboar
 const ToastContainer = dynamic(() => import('@/components/ui/ToastContainer'));
 const BackToTop = dynamic(() => import('@/components/layout/BackToTop'));
 import AnnouncementBar from '@/components/layout/AnnouncementBar';
-import PageTransition from '@/components/layout/PageTransition';
+
 
 import ErrorBoundary from '@/components/ui/ErrorBoundary';
+import AppLayoutWrapper from '@/components/layout/AppLayoutWrapper';
 
 export default function MainLayout({ children, modal }) {
   return (
@@ -21,7 +22,7 @@ export default function MainLayout({ children, modal }) {
       <MobileNavProvider>
         <ProfileHydrator />
         <OnboardingGuard>
-          <div className="app-layout">
+          <AppLayoutWrapper>
             <ErrorBoundary fallback={<div className="sidebar" style={{ padding: '2rem' }}>Sidebar failed to load.</div>}>
               <Sidebar />
             </ErrorBoundary>
@@ -33,14 +34,12 @@ export default function MainLayout({ children, modal }) {
               <OnboardingChecklist />
               <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
                 <ErrorBoundary>
-                  <PageTransition>
-                    {children}
-                  </PageTransition>
+                  {children}
                 </ErrorBoundary>
               </div>
             </main>
             <MobileBottomNav />
-          </div>
+          </AppLayoutWrapper>
           {modal}
           <ToastContainer />
           <BackToTop />

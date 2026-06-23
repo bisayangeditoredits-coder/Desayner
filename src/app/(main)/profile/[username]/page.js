@@ -51,10 +51,21 @@ export async function generateMetadata({ params }) {
   };
 }
 
-export default async function ProfilePage({ params }) {
+export default async function ProfilePage({ params, searchParams }) {
   const { username } = await params;
+  const { source } = await searchParams;
   const supabase = await createClient();
   
+  const { data: { user }, error: userError } = await supabase.auth.getUser();
+
+  if (!user || userError) {
+    if (source !== 'project') {
+      // Strictly require login to view profiles, unless coming from a project card/page
+      const { redirect } = await import('next/navigation');
+      redirect(`/login?redirectTo=/profile/${username}`);
+    }
+  }
+
   const { data: profile } = await supabase
     .from('profiles')
     .select('*')

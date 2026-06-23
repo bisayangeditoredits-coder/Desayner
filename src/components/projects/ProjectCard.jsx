@@ -72,12 +72,15 @@ const ProjectCard = React.memo(function ProjectCard({ project, currentUserId, is
     <div className="project-card-wrapper">
       <div className="project-card">
         {/* Thumbnail */}
-        <Link
+        <a
           href={`/projects/${project.id}`}
           className="project-card__thumb-link"
-          prefetch={false}
-          scroll={false}
-          onClick={saveProjectModalReturn}
+          onClick={(e) => {
+            // Guarantee no default Next.js scroll-to-top behavior
+            e.preventDefault();
+            saveProjectModalReturn();
+            router.push(`/projects/${project.id}`, { scroll: false });
+          }}
         >
           <div className={`project-card__thumb project-card__thumb--${imgStatus}`}>
             {coverSrc && imgStatus !== 'error' ? (
@@ -126,14 +129,16 @@ const ProjectCard = React.memo(function ProjectCard({ project, currentUserId, is
               </div>
             </div>
           </div>
-        </Link>
+        </a>
 
         {/* Footer */}
         <div className="project-card__footer">
           <Link
-            href={author?.username ? `/profile/${author.username}` : '#'}
+            href={author?.username ? `/profile/${author.username}?source=project` : '#'}
             className="project-card__author"
             style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}
+            target="_blank"
+            rel="noopener noreferrer"
           >
             <UserAvatar
               src={author?.avatar_url}
@@ -168,8 +173,8 @@ const ProjectCard = React.memo(function ProjectCard({ project, currentUserId, is
               className="project-card__action-btn project-card__action-btn--view"
               title="Likes"
             >
-              <Heart size={14} fill={liked ? 'currentColor' : 'none'} stroke={liked ? '#e63946' : 'currentColor'} color={liked ? '#e63946' : 'inherit'} />
-              <span className="font-mono">{likeCount}</span>
+              <Heart size={14} fill={liked ? '#ef4444' : 'transparent'} color={liked ? '#ef4444' : 'currentColor'} />
+              <span className="font-mono" style={{ color: liked ? '#ef4444' : 'inherit' }}>{likeCount}</span>
             </div>
             
             <div

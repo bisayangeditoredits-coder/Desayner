@@ -8,9 +8,9 @@ import Link from 'next/link';
 import { Plus } from 'lucide-react';
 import '../../App.css';
 import useSWRInfinite from 'swr/infinite';
-
 import VirtualGridPage from '@/components/misc/VirtualGridPage';
 import ProjectCardSkeleton from '@/components/projects/ProjectCardSkeleton';
+import MasonryGrid from '@/components/layout/MasonryGrid';
 import useFeedStore from '@/store/useFeedStore';
 
 const CATEGORIES = ['All', 'Design', 'Illustration', 'Photography', 'Branding', '3D', 'Motion', 'UI/UX', 'Typography', 'Other'];
@@ -189,9 +189,7 @@ export default function ProjectsPage() {
         </div>
 
         {isLoadingInitialData ? (
-          <div className="projects-masonry">
-            {[...Array(12)].map((_, i) => <ProjectCardSkeleton key={i} />)}
-          </div>
+          <MasonryGrid isLoading={true} skeletonCount={12} />
         ) : isEmpty ? (
           <div style={{ textAlign: 'center', padding: '6rem 2rem', border: '1px solid #e8e8e8', background: 'white', borderRadius: '12px' }}>
             <p style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '0.5rem' }}>No projects in {category}</p>
@@ -202,26 +200,29 @@ export default function ProjectsPage() {
           </div>
         ) : (
           <>
-            <div className="projects-masonry">
-              {projects.flat().map((project, index, arr) => {
-                  const isLast = index === arr.length - 1;
-                  const interact = interactions?.[project.id] || {};
-                  return (
-                    <div key={project.id} ref={isLast ? lastElementRef : null} style={{ width: '100%', minWidth: 0, breakInside: 'avoid' }}>
-                      <ProjectCard 
-                        project={project} 
-                        currentUserId={currentUserId}
-                        isLiked={interact.liked}
-                        isSaved={interact.saved}
-                      />
-                    </div>
-                  );
-              })}
-            </div>
+            <MasonryGrid 
+              items={projects.flat()} 
+              currentUserId={currentUserId}
+              renderItem={(project, onImageLoad) => {
+                const isLast = project === projects.flat()[projects.flat().length - 1];
+                const interact = interactions?.[project.id] || {};
+                return (
+                  <div key={project.id} className="projects-masonry__item" ref={isLast ? lastElementRef : null}>
+                    <ProjectCard 
+                      project={project} 
+                      currentUserId={currentUserId}
+                      isLiked={interact.liked}
+                      isSaved={interact.saved}
+                      onImageLoad={onImageLoad}
+                    />
+                  </div>
+                );
+              }}
+            />
 
             {isLoadingMore && (
-              <div className="projects-masonry" style={{ marginTop: '0.5rem' }}>
-                {[...Array(4)].map((_, i) => <ProjectCardSkeleton key={i} />)}
+              <div style={{ marginTop: '0.5rem' }}>
+                <MasonryGrid isLoading={true} skeletonCount={4} />
               </div>
             )}
           </>
