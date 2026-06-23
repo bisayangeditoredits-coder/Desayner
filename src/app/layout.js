@@ -67,6 +67,15 @@ export const metadata = {
     canonical: "/",
   },
   manifest: "/site.webmanifest",
+  icons: {
+    icon: [
+      { url: '/favicon.ico?v=2' },
+      { url: '/desayner-favicon.png?v=2', type: 'image/png' }
+    ],
+    apple: [
+      { url: '/apple-touch-icon.png?v=2', sizes: '180x180', type: 'image/png' }
+    ]
+  },
   openGraph: {
     title: "Desayner | The Premier Community for Creative Professionals",
     description: "Desayner is the ultimate platform to showcase your portfolio, discover world-class design inspiration, and connect with top creative talent worldwide.",
