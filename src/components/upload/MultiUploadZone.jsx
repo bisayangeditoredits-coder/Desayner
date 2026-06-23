@@ -20,7 +20,7 @@
  */
 
 import { useCallback, useReducer, useRef, useEffect, useState, useId } from 'react';
-import { X, Upload, AlertCircle, CheckCircle2, Loader2, ChevronLeft, ChevronRight } from 'lucide-react';
+import { X, Upload, AlertCircle, CheckCircle2, Loader2, ChevronLeft, ChevronRight, GripVertical } from 'lucide-react';
 import { processImage } from '@/lib/processImage';
 import { uploadProcessedImages } from '@/lib/uploadToR2';
 
@@ -63,6 +63,10 @@ export default function MultiUploadZone({ folder = 'uploads', value = [], onResu
   const processingRef = useRef(false);
   const cancelRefs = useRef({});       // id → cancel() for active compressions
   const mountedRef = useRef(true);
+
+  // Drag and Drop state
+  const [draggedIdx, setDraggedIdx] = useState(null);
+  const [dragOverIdx, setDragOverIdx] = useState(null);
 
   useEffect(() => {
     mountedRef.current = true;
@@ -200,6 +204,52 @@ export default function MultiUploadZone({ folder = 'uploads', value = [], onResu
     processQueue();
   };
 
+  // ── Drag & Drop Handlers for Reordering ──────────────────────────────────
+  const handleDragStart = (e, index) => {
+    setDraggedIdx(index);
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', index.toString());
+    // Use setTimeout to allow the drag image to be generated before styling the source element
+    setTimeout(() => {
+      if (e.target) e.target.style.opacity = '0.4';
+    }, 0);
+  };
+
+  const handleDragEnter = (e, index) => {
+    e.preventDefault();
+    if (index !== draggedIdx) {
+      setDragOverIdx(index);
+    }
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+  };
+
+  const handleDragLeave = (e, index) => {
+    e.preventDefault();
+    if (dragOverIdx === index) {
+      setDragOverIdx(null);
+    }
+  };
+
+  const handleDropItem = (e, index) => {
+    e.preventDefault();
+    if (draggedIdx !== null && draggedIdx !== index) {
+      onMove?.(draggedIdx, index);
+    }
+    setDraggedIdx(null);
+    setDragOverIdx(null);
+    e.currentTarget.style.opacity = '1';
+  };
+
+  const handleDragEnd = (e) => {
+    setDraggedIdx(null);
+    setDragOverIdx(null);
+    e.currentTarget.style.opacity = '1';
+  };
+
   const allItems = items.filter((i) => i.status !== 'done');
 
   return (
@@ -215,8 +265,71 @@ export default function MultiUploadZone({ folder = 'uploads', value = [], onResu
         <div className="gallery-upload-masonry" style={{ marginBottom: '0.75rem' }}>
           {/* Parent-controlled items */}
           {value.map((url, i) => (
-            <div key={url} className="gallery-upload-item" style={{ position: 'relative', background: '#f0f0f0', overflow: 'hidden', borderRadius: '6px' }}>
-              <img src={url} alt="" style={{ width: '100%', height: 'auto', display: 'block' }} loading="lazy" decoding="async" />
+            <div 
+              key={url} 
+              className="gallery-upload-item" 
+              draggable
+              onDragStart={(e) => handleDragStart(e, i)}
+              onDragEnter={(e) => handleDragEnter(e, i)}
+              onDragOver={handleDragOver}
+              onDragLeave={(e) => handleDragLeave(e, i)}
+              onDrop={(e) => handleDropItem(e, i)}
+              onDragEnd={handleDragEnd}
+              style={{ 
+                position: 'relative', 
+                background: '#f0f0f0', 
+                overflow: 'hidden', 
+                borderRadius: '8px',
+                cursor: 'grab',
+                border: dragOverIdx === i ? '2px dashed #2d43e8' : '2px solid transparent',
+                transform: dragOverIdx === i ? 'scale(1.02)' : 'none',
+                transition: 'transform 0.2s, border 0.2s',
+                opacity: draggedIdx === i ? 0.4 : 1
+              }}
+            >
+              {/* Sequence Indicator Badge */}
+              <div style={{
+                position: 'absolute',
+                top: '8px',
+                left: '8px',
+                background: '#fbbf24', // Modern bright yellow
+                color: '#111827',
+                width: '28px',
+                height: '28px',
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontWeight: '800',
+                fontSize: '0.85rem',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+                zIndex: 10,
+                border: '2px solid white',
+                pointerEvents: 'none'
+              }}>
+                #{i + 1}
+              </div>
+
+              {/* Drag Handle Icon (Optional visual cue) */}
+              <div style={{
+                position: 'absolute',
+                top: '8px',
+                right: '35px',
+                background: 'rgba(0,0,0,0.5)',
+                color: 'white',
+                borderRadius: '4px',
+                width: '22px',
+                height: '22px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                pointerEvents: 'none',
+                opacity: 0.8
+              }}>
+                <GripVertical size={13} />
+              </div>
+
+              <img src={url} alt={`Gallery image ${i + 1}`} style={{ width: '100%', height: 'auto', display: 'block', pointerEvents: 'none' }} loading="lazy" decoding="async" />
               {i > 0 && (
                 <button
                   type="button"

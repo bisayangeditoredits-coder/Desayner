@@ -112,12 +112,12 @@ function ImageGallery({ images, title }) {
 
 // ─── Main page ───────────────────────────────────────────────────────────────
 
-export default function ProjectDetailClient({ initialProject = null, isModal = false }) {
+export default function ProjectDetailClient({ initialProject = null, isModal = false, projectId = null }) {
   const params = useParams();
   const router = useRouter();
   const supabase = useMemo(() => createClient(), []);
 
-  const [currentId,      setCurrentId]      = useState(params.id);
+  const [currentId,      setCurrentId]      = useState(projectId || params?.id);
   const [project,        setProject]        = useState(initialProject);
   const [moreByAuthor,   setMoreByAuthor]   = useState([]);
   const [comments,       setComments]       = useState([]);
@@ -138,6 +138,8 @@ export default function ProjectDetailClient({ initialProject = null, isModal = f
   const [showShareModal, setShowShareModal]  = useState(false);
 
   const load = useCallback(async () => {
+    if (!currentId) return;
+
     const tasks = [
       supabase.auth.getUser(),
       supabase
@@ -345,35 +347,37 @@ export default function ProjectDetailClient({ initialProject = null, isModal = f
 
         {/* Back bar */}
         <div className="project-detail__topbar" style={isModal ? { position: 'static', borderBottom: 'none' } : {}}>
-          {!isModal ? (
-            <button onClick={goBack} className="project-detail__back" style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: 0 }}>
-              <ArrowLeft size={14} /> Back to Projects
-            </button>
-          ) : <div />}
-          <div style={{ marginLeft: 'auto', display: 'flex', gap: '0.5rem' }}>
-            {currentUser?.id === project.user_id && (
-              <>
-                <button 
-                  onClick={() => setShowDeleteModal(true)}
-                  disabled={isDeleting}
-                  className="btn btn-danger project-detail__topbar-btn"
-                  style={{ background: '#fef2f2', color: '#ef4444', borderColor: '#fee2e2' }}
-                  title="Delete"
-                >
-                  <Trash2 size={14} /> 
-                  <span className="btn-text-responsive">{isDeleting ? 'Deleting...' : 'Delete'}</span>
-                </button>
-                <button
-                  onClick={() => window.location.href = `/projects/${currentId}/edit`}
-                  className="btn btn-dark project-detail__topbar-btn"
-                  title="Edit Project"
-                  style={{ background: '#231f20', color: 'white', border: '1px solid #231f20', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: 600, fontSize: '0.85rem', padding: '0.5rem 1rem', fontFamily: 'inherit' }}
-                >
-                  <Edit size={14} /> 
-                  <span className="btn-text-responsive">Edit Project</span>
-                </button>
-              </>
-            )}
+          <div style={{ display: 'flex', width: '100%', maxWidth: '1428px', margin: '0 auto', alignItems: 'center' }}>
+            {!isModal ? (
+              <button onClick={goBack} className="project-detail__back" style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: 0 }}>
+                <ArrowLeft size={14} /> Back to Projects
+              </button>
+            ) : <div />}
+            <div style={{ marginLeft: 'auto', display: 'flex', gap: '0.5rem' }}>
+              {currentUser?.id === project.user_id && (
+                <>
+                  <button 
+                    onClick={() => setShowDeleteModal(true)}
+                    disabled={isDeleting}
+                    className="btn btn-danger project-detail__topbar-btn"
+                    style={{ background: '#fef2f2', color: '#ef4444', borderColor: '#fee2e2' }}
+                    title="Delete"
+                  >
+                    <Trash2 size={14} /> 
+                    <span className="btn-text-responsive">{isDeleting ? 'Deleting...' : 'Delete'}</span>
+                  </button>
+                  <button
+                    onClick={() => window.location.href = `/projects/${currentId}/edit`}
+                    className="btn btn-dark project-detail__topbar-btn"
+                    title="Edit Project"
+                    style={{ background: '#231f20', color: 'white', border: '1px solid #231f20', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: 600, fontSize: '0.85rem', padding: '0.5rem 1rem', fontFamily: 'inherit' }}
+                  >
+                    <Edit size={14} /> 
+                    <span className="btn-text-responsive">Edit Project</span>
+                  </button>
+                </>
+              )}
+            </div>
           </div>
         </div>
 
@@ -381,7 +385,7 @@ export default function ProjectDetailClient({ initialProject = null, isModal = f
         <div className="project-detail__body" style={{ marginTop: '0' }}>
 
           {/* ── LEFT: content ─────────────────────────── */}
-          <article className="project-detail__main" style={{ width: '100%', maxWidth: '1000px', margin: '0 auto' }}>
+          <article className="project-detail__main" style={{ width: '100%', minWidth: 0 }}>
 
             {/* Minimal Header (Dribbble Style) perfectly aligned with image */}
             <div style={{ paddingBottom: '1.5rem' }}>

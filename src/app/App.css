@@ -2234,11 +2234,11 @@
 /* Two-column layout */
 .project-detail__body {
   display: grid;
-  grid-template-columns: 1fr 320px;
-  gap: 2rem;
+  grid-template-columns: minmax(0, 1000px) 380px;
+  justify-content: center;
+  gap: 3rem;
   align-items: start;
-  max-width: 1400px;
-  margin: 0 auto;
+  max-width: 100%;
   padding: 0 2rem;
 }
 
