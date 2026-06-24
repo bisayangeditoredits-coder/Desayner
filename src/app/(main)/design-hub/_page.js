@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 export default function DesignHubRedirect() {
   const router = useRouter();
   useEffect(() => {
-    router.replace('/design-hub/stock-photos');
+    router.replace('/design-hub/colors');
   }, [router]);
   return null;
 }

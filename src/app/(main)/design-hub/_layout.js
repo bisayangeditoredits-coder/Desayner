@@ -5,11 +5,7 @@ import { motion } from 'framer-motion';
 import { Palette, Box, LayoutTemplate, Image as ImageIcon, Type } from 'lucide-react';
 
 const TABS = [
-  { href: '/design-hub/stock-photos', label: 'Stock Photos', icon: ImageIcon },
-  { href: '/design-hub/stock-assets', label: 'Stock Assets', icon: Box },
   { href: '/design-hub/colors',       label: 'Colors',       icon: Palette },
-  { href: '/design-hub/fonts',        label: 'Fonts',        icon: Type },
-  { href: '/design-hub/mockups',      label: 'Free Mockups', icon: LayoutTemplate },
 ];
 
 export default function DesignHubLayout({ children }) {

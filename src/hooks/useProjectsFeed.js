@@ -5,7 +5,7 @@ import useFeedStore from '@/store/useFeedStore';
 
 const PAGE_SIZE = 24;
 
-export default function useProjectsFeed() {
+export default function useProjectsFeed(initialProjects = []) {
   const { category, searchQuery, sort, scrollPosition, interactions, setFeedState, setScrollPosition, setInteractions } = useFeedStore();
   const [currentUserId, setCurrentUserId] = useState(null);
   const [isAuthLoaded, setIsAuthLoaded] = useState(false);
@@ -54,7 +54,12 @@ export default function useProjectsFeed() {
     return ['projects_feed', category, searchQuery, sort, pageIndex, cursor];
   };
 
+  const fallbackData = initialProjects.length > 0 && !searchQuery 
+    ? [{ projects: initialProjects, nextCursor: initialProjects.length === PAGE_SIZE ? PAGE_SIZE : null }] 
+    : undefined;
+
   const { data, size, setSize, isValidating, error, mutate } = useSWRInfinite(getKey, fetcher, {
+    fallbackData,
     revalidateFirstPage: false,
     persistSize: true,
   });

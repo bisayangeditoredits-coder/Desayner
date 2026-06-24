@@ -5428,3 +5428,113 @@
   font-weight: 600;
   font-size: 0.9rem;
 }
+
+/* ─── Jobs Refactored Layout ──────────────────────── */
+.jobs-layout-container {
+  display: flex;
+  flex: 1;
+  background: #f8fafc;
+  height: 100%;
+  overflow: hidden;
+}
+
+.jobs-sidebar-column {
+  width: 400px;
+  min-width: 400px;
+  border-right: 1px solid #e2e8f0;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.jobs-sidebar-header {
+  padding: 2rem 1.5rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.jobs-sidebar-title {
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin: 0 0 0.5rem 0;
+  color: #0f172a;
+}
+
+.jobs-sidebar-subtitle {
+  font-size: 0.95rem;
+  color: #64748b;
+  margin: 0 0 1.5rem 0;
+  font-weight: 500;
+}
+
+.jobs-sidebar-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.jobs-action-btn-secondary {
+  flex: 1;
+  text-align: center;
+  background: #f1f5f9;
+  color: #0f172a;
+  border: none;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+
+.jobs-action-btn-secondary:hover {
+  background: #e2e8f0;
+}
+
+.jobs-action-btn-primary {
+  flex: 1;
+  text-align: center;
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+
+.jobs-action-btn-primary:hover {
+  background: #1d4ed8;
+}
+
+.jobs-list-area {
+  overflow-y: auto;
+  flex: 1;
+  padding: 1.5rem 1rem;
+}
+
+.jobs-details-column {
+  flex: 1;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.jobs-empty-selection {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  color: #94a3b8;
+}

@@ -21,7 +21,7 @@ import useProfileStore from '@/store/useProfileStore';
 const MAIN_NAV_ITEMS = [
   { href: '/', icon: Home, label: 'Inspiration', public: true },
   { href: '/designers', icon: Users2, label: 'Designers', public: true },
-  { href: '/design-hub', icon: Palette, label: 'Design Hub', public: true },
+  { href: '/jobs', icon: Briefcase, label: 'Job Board', public: true },
   { href: '/saved', icon: Bookmark, label: 'Saved', reqAuth: true },
 ];
 
@@ -237,7 +237,7 @@ export default function Sidebar({ className = '' }) {
                 </svg> Join Discord
               </h4>
               <p style={{ margin: '0 0 0.75rem 0', fontSize: '0.7rem', opacity: 0.9, lineHeight: 1.4 }}>
-                Connect with designers, share work, and find jobs.
+                Connect with designers, share work, and collaborate.
               </p>
               <a href="https://discord.gg/3DmJrVcDG8" target="_blank" rel="noreferrer" style={{ display: 'block', textAlign: 'center', background: 'white', color: '#5865F2', border: 'none', padding: '0.4rem 0.75rem', borderRadius: '6px', fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer', width: '100%', transition: 'opacity 0.2s', textDecoration: 'none' }} onMouseOver={e => e.currentTarget.style.opacity = 0.9} onMouseOut={e => e.currentTarget.style.opacity = 1}>
                 Join Server

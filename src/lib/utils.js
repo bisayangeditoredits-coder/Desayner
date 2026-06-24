@@ -142,7 +142,25 @@ export function optimizeImage(url, width = 600, quality = 80) {
     return normalizedUrl;
   }
 
-  // If it's our own proxy, extract the real target to let CF resize the direct image
+  // Bypass wsrv.nl for native CDNs that already serve highly optimized WebP images
+  const fastCdnDomains = [
+    'r2.dev',
+    'supabase.co',
+    'unsplash.com',
+    'pixabay.com',
+    'githubusercontent.com'
+  ];
+
+  try {
+    const parsed = new URL(normalizedUrl);
+    if (fastCdnDomains.some(domain => parsed.hostname.endsWith(domain))) {
+      return normalizedUrl;
+    }
+  } catch (e) {
+    // If it's not a valid URL, just return it
+  }
+
+  // If it's our own proxy, extract the real target
   if (normalizedUrl.startsWith('/api/proxy-image')) {
     try {
       const params = new URLSearchParams(normalizedUrl.split('?')[1]);

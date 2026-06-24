@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { Eye, EyeOff, Loader2, Check } from 'lucide-react';
-import FeatureShowcase from '@/components/marketing/FeatureShowcase';
+import LoginVideoCarousel from '@/components/marketing/LoginVideoCarousel';
 import { Turnstile } from '@marsidev/react-turnstile';
 
 import { checkAuthRateLimit } from '@/app/actions/authRateLimit';
@@ -155,7 +155,7 @@ export default function SignupForm({ isModal = false }) {
         display: 'none', // hidden on mobile, shown via CSS
         background: '#020617',
       }}>
-        <FeatureShowcase />
+        <LoginVideoCarousel />
 
         {/* Content overlay */}
         <div style={{
