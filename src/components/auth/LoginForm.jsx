@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { Eye, EyeOff, Loader2, Check } from 'lucide-react';
-import FeatureShowcase from '@/components/marketing/FeatureShowcase';
+import LoginVideoCarousel from '@/components/marketing/LoginVideoCarousel';
 import { Turnstile } from '@marsidev/react-turnstile';
 
 export default function LoginForm({ isModal = false }) {
@@ -93,7 +93,7 @@ export default function LoginForm({ isModal = false }) {
         display: 'none', // hidden on mobile, shown via CSS
         background: '#020617',
       }}>
-        <FeatureShowcase />
+        <LoginVideoCarousel />
 
         {/* Content overlay */}
         <div style={{

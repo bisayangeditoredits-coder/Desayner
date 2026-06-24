@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useCallback, useRef, useMemo} from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { createClient } from "@/lib/supabase/client";
 import UserAvatar from "@/components/ui/UserAvatar";
 import FollowButton from "@/components/ui/FollowButton";
@@ -199,11 +199,11 @@ function DesignersContent() {
   const allDesigners = [...data.designers, ...extraPages];
   const filteredDesigners = search.trim()
     ? allDesigners.filter(
-        (c) =>
-          c.username.toLowerCase().includes(search.toLowerCase()) ||
-          (c.full_name &&
-            c.full_name.toLowerCase().includes(search.toLowerCase())),
-      )
+      (c) =>
+        c.username.toLowerCase().includes(search.toLowerCase()) ||
+        (c.full_name &&
+          c.full_name.toLowerCase().includes(search.toLowerCase())),
+    )
     : allDesigners;
 
   return (
@@ -221,7 +221,7 @@ function DesignersContent() {
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '26px', height: '26px', borderRadius: '6px', background: '#eff6ff', color: '#3b82f6' }}>
                     <TrendingUp size={14} />
                   </div>
-                  <span style={{ fontSize: '0.75rem', fontWeight: 800, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#3b82f6' }}>
+                  <span style={{ fontSize: '0.75rem', fontWeight: 800, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#000000ff' }}>
                     Trending this week
                   </span>
                 </div>
@@ -447,7 +447,7 @@ function DesignersContent() {
             </button>
           ))}
         </div>
-        
+
         {/* Main Grid */}
         {loading ? (
           <>
@@ -526,9 +526,9 @@ function DesignersContent() {
             onAction={
               search || category !== "All"
                 ? () => {
-                    setSearch("");
-                    handleCategoryChange("All");
-                  }
+                  setSearch("");
+                  handleCategoryChange("All");
+                }
                 : undefined
             }
           />
@@ -561,8 +561,8 @@ function DesignersContent() {
         {loadingMore && (
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "0.75rem", padding: "2.5rem 0", color: "#64748b" }}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" style={{ animation: "spin 0.8s linear infinite" }}>
-              <circle cx="12" cy="12" r="10" stroke="#e2e8f0" strokeWidth="3"/>
-              <path d="M12 2a10 10 0 0 1 10 10" stroke="#2d43e8" strokeWidth="3" strokeLinecap="round"/>
+              <circle cx="12" cy="12" r="10" stroke="#e2e8f0" strokeWidth="3" />
+              <path d="M12 2a10 10 0 0 1 10 10" stroke="#2d43e8" strokeWidth="3" strokeLinecap="round" />
               <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
             </svg>
             <span style={{ fontSize: "0.9rem", fontWeight: 600 }}>Loading more designers…</span>
