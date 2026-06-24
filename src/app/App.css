@@ -482,9 +482,7 @@
   object-fit: cover;
   transition: transform 0.4s ease;
 }
-.project-card:hover .project-card__img {
-  transform: scale(1.03);
-}
+
 
 .projects-masonry__item,
 .projects-grid__item,
@@ -1743,9 +1741,7 @@
   transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
-.project-card:hover .project-card__img {
-  transform: scale(1.04);
-}
+
 
 .project-card__no-cover {
   position: absolute;

@@ -72,15 +72,11 @@ const ProjectCard = React.memo(function ProjectCard({ project, currentUserId, is
     <div className="project-card-wrapper">
       <div className="project-card">
         {/* Thumbnail */}
-        <a
+        <Link
           href={`/projects/${project.id}`}
+          scroll={false}
           className="project-card__thumb-link"
-          onClick={(e) => {
-            // Guarantee no default Next.js scroll-to-top behavior
-            e.preventDefault();
-            saveProjectModalReturn();
-            router.push(`/projects/${project.id}`, { scroll: false });
-          }}
+          onClick={() => saveProjectModalReturn()}
         >
           <div className={`project-card__thumb project-card__thumb--${imgStatus}`}>
             {coverSrc && imgStatus !== 'error' ? (
@@ -129,7 +125,7 @@ const ProjectCard = React.memo(function ProjectCard({ project, currentUserId, is
               </div>
             </div>
           </div>
-        </a>
+        </Link>
 
         {/* Footer */}
         <div className="project-card__footer">

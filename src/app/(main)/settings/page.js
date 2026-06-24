@@ -3,6 +3,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import UserAvatar from '@/components/ui/UserAvatar';
 import ImageUpload from '@/components/misc/ImageUpload';
+import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Save, User, Lock, Trash2, ArrowLeft, X, ShoppingBag, Plus } from 'lucide-react';
@@ -61,6 +62,9 @@ export default function SettingsPage() {
   const [shopError, setShopError]   = useState('');
   const [editingProduct, setEditingProduct] = useState(null); // null | product obj
 
+  const [calendlyLink, setCalendlyLink] = useState('');
+
+  const searchParams = useSearchParams();
   const supabase = useMemo(() => createClient(), []);
   const router = useRouter();
 
@@ -84,6 +88,7 @@ export default function SettingsPage() {
         });
         setAvatarUrl(data.avatar_url || '');
         setCoverUrl(data.cover_url || '');
+        setCalendlyLink(data.calendly_link || '');
         // Load shop data
         const s = data.shop || {};
         setShop({ name: s.name || '', logo_url: s.logo_url || '', products: s.products || [] });
@@ -92,6 +97,19 @@ export default function SettingsPage() {
     }
     load();
   }, [supabase]);
+
+  useEffect(() => {
+    const err = searchParams.get('error');
+    const succ = searchParams.get('success');
+    if (succ === 'calendly_connected') {
+      // Small delay to ensure it renders before alerting or showing toast
+      setTimeout(() => alert('Calendly connected successfully!'), 100);
+      router.replace('/settings', undefined, { shallow: true });
+    } else if (err?.startsWith('calendly_')) {
+      setTimeout(() => alert('Failed to connect Calendly. Please try again.'), 100);
+      router.replace('/settings', undefined, { shallow: true });
+    }
+  }, [searchParams, router]);
 
   async function clearProfileCache(username, oldUsername) {
     try {
@@ -431,6 +449,52 @@ export default function SettingsPage() {
                   If you are available for work, clients can use this email to contact you via the &quot;Hire Me&quot; button.
                 </p>
                 <input style={inputStyle} value={form.public_email} onChange={e => setForm(p => ({ ...p, public_email: e.target.value }))} placeholder="hello@yourdomain.com" type="email" onFocus={e => e.target.style.borderColor = '#231f20'} onBlur={e => e.target.style.borderColor = '#e8e8e8'} />
+              </div>
+            </div>
+
+            {/* Booking Integration (Calendly) */}
+            <div className="settings-row">
+              <div>
+                <label style={labelStyle}>Booking</label>
+                <span style={{ fontSize: '0.75rem', color: '#94a3b8', display: 'block', marginTop: '0.2rem' }}>Integrations</span>
+              </div>
+              <div style={{ width: '100%' }}>
+                <p style={{ fontSize: '0.8rem', color: '#64748b', margin: '0 0 0.65rem' }}>
+                  Connect your Calendly account to allow clients to book meetings directly from your profile.
+                </p>
+                {calendlyLink ? (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '1rem', border: '1px solid #e8e8e8', borderRadius: '12px', background: '#fafafa' }}>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
+                        <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#22c55e' }} />
+                        <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#166534' }}>Calendly Connected</span>
+                      </div>
+                      <a href={calendlyLink} target="_blank" rel="noreferrer" style={{ fontSize: '0.8rem', color: '#3b82f6', textDecoration: 'none' }}>{calendlyLink}</a>
+                    </div>
+                    <button 
+                      type="button"
+                      onClick={async () => {
+                        if (confirm('Disconnect Calendly?')) {
+                          await supabase.from('profiles').update({ calendly_link: null }).eq('id', profile.id);
+                          setCalendlyLink('');
+                          alert('Calendly disconnected');
+                        }
+                      }}
+                      className="btn btn-outline"
+                      style={{ fontSize: '0.8rem', padding: '0.4rem 0.8rem' }}
+                    >
+                      Disconnect
+                    </button>
+                  </div>
+                ) : (
+                  <a 
+                    href="/api/calendly/auth"
+                    className="btn btn-dark"
+                    style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: '#006BFF', borderColor: '#006BFF', color: 'white' }}
+                  >
+                    Connect Calendly
+                  </a>
+                )}
               </div>
             </div>
 

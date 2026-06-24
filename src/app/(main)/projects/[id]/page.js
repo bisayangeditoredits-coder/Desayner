@@ -11,7 +11,7 @@ export async function generateMetadata({ params }) {
   
   const { data: project } = await supabase
     .from('projects')
-    .select('title, description, cover_url, profiles(full_name)')
+    .select('title, description, cover_url, profiles!projects_user_id_fkey(full_name)')
     .eq('id', id)
     .single();
   

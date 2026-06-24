@@ -136,9 +136,9 @@ export function optimizeImage(url, width = 600, quality = 80) {
     return normalizedUrl;
   }
 
-  // If we are in local development, Cloudflare Image Resizing endpoint doesn't exist.
-  // Return the raw URL so images load correctly on localhost.
-  if (process.env.NODE_ENV === 'development' || (typeof window !== 'undefined' && window.location.hostname === 'localhost')) {
+  // Do not use third-party image optimizers if the image is hosted locally,
+  // as the remote CDN (like wsrv.nl) cannot reach your localhost.
+  if (normalizedUrl.includes('localhost') || normalizedUrl.includes('127.0.0.1')) {
     return normalizedUrl;
   }
 

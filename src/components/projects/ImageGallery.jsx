@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { optimizeImage } from '@/lib/utils';
 
 export default function ImageGallery({ images, title }) {
   const [lightbox, setLightbox] = useState(null);
@@ -14,7 +15,7 @@ export default function ImageGallery({ images, title }) {
             className="project-detail__gallery-item"
             onClick={() => setLightbox(i)}
           >
-            <img src={img} alt={`${title} — image ${i + 1}`} loading="lazy" decoding="async" />
+            <img src={optimizeImage(img, 1200)} alt={`${title} — image ${i + 1}`} loading="lazy" decoding="async" />
           </button>
         ))}
       </div>
@@ -33,7 +34,7 @@ export default function ImageGallery({ images, title }) {
             disabled={lightbox === 0}
           >‹</button>
           <img
-            src={images[lightbox]}
+            src={optimizeImage(images[lightbox], 2000)}
             alt={`${title} — image ${lightbox + 1}`}
             className="lightbox__img"
             onClick={e => e.stopPropagation()}

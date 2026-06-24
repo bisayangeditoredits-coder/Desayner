@@ -397,19 +397,24 @@ export default function ProfilePage({ initialProfile = null }) {
                 Edit Profile
               </Link>
             ) : (
-              <>
-                <FollowButton
-                  targetUserId={profile.id}
-                  currentUserId={currentUser?.id}
-                  initialFollowing={isFollowing}
-                  compact={false}
-                />
-                {profile.available_for_work && (
-                  <button onClick={() => setIsHireModalOpen(true)} className="split-btn split-btn--dark">
-                    <span className="status-dot"></span> Hire Me
-                  </button>
-                )}
-              </>
+              <FollowButton
+                targetUserId={profile.id}
+                currentUserId={currentUser?.id}
+                initialFollowing={isFollowing}
+                compact={false}
+              />
+            )}
+            
+            {profile.calendly_link && (
+              <a href={profile.calendly_link} target="_blank" rel="noopener noreferrer" className="split-btn" style={{ background: '#006BFF', color: 'white', border: 'none', boxShadow: '0 4px 14px 0 rgba(0,107,255,0.39)', transition: 'transform 0.2s, box-shadow 0.2s' }} onMouseOver={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(0,107,255,0.45)'; }} onMouseOut={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 4px 14px 0 rgba(0,107,255,0.39)'; }}>
+                <Calendar size={15} /> Book Me
+              </a>
+            )}
+            
+            {profile.available_for_work && (
+              <button onClick={() => setIsHireModalOpen(true)} className="split-btn split-btn--dark">
+                <span className="status-dot"></span> Hire Me
+              </button>
             )}
 
             {profile.website && (
