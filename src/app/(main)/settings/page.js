@@ -10,6 +10,7 @@ import { Save, User, Lock, Trash2, ArrowLeft, X, ShoppingBag, Plus } from 'lucid
 import ProfileCompletenessCard from '@/components/profile/ProfileCompletenessCard';
 import { CREATIVE_TOOLS } from '@/lib/constants';
 import '../../App.css';
+import useToastStore from '@/store/useToastStore';
 
 const TABS = [
   { id: 'profile', label: 'Profile', icon: User },
@@ -41,6 +42,7 @@ const emptyProduct = () => ({
 });
 
 export default function SettingsPage() {
+  const addToast = useToastStore((s) => s.addToast);
   const [tab, setTab]         = useState('profile');
   const [profile, setProfile] = useState(null);
   const [form, setForm]       = useState({ full_name: '', username: '', bio: '', website: '', location: '', tools: [], skills: [], available_for_work: false, public_email: '' });
@@ -103,10 +105,10 @@ export default function SettingsPage() {
     const succ = searchParams.get('success');
     if (succ === 'calendly_connected') {
       // Small delay to ensure it renders before alerting or showing toast
-      setTimeout(() => alert('Calendly connected successfully!'), 100);
+      setTimeout(() => addToast({ type: 'success', message: 'Calendly connected successfully!' }), 100);
       router.replace('/settings', undefined, { shallow: true });
     } else if (err?.startsWith('calendly_')) {
-      setTimeout(() => alert('Failed to connect Calendly. Please try again.'), 100);
+      setTimeout(() => addToast({ type: 'error', message: 'Failed to connect Calendly. Please try again.' }), 100);
       router.replace('/settings', undefined, { shallow: true });
     }
   }, [searchParams, router]);
