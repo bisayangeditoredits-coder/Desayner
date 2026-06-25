@@ -40,7 +40,8 @@ export default function LoginVideoCarousel() {
             src={src}
             muted
             playsInline
-            preload={isActive || idx === 0 ? "auto" : "metadata"}
+            poster={idx === 0 ? "/login-bg.png" : undefined}
+            preload={isActive || idx === 0 ? "auto" : "none"}
             onEnded={() => {
               if (isActive) setCurrentIndex((prev) => (prev + 1) % VIDEOS.length);
             }}

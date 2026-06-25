@@ -28,9 +28,6 @@ export default function FeedHeader({ searchInput, setSearchInput, goToSearch }) 
         </div>
       )}
 
-      {/* Horizontal Features Carousel */}
-      <HorizontalFeatureScroll />
-
       {/* Dribbble-style Search Hero */}
       <div className="feed-header__search-hero">
         <div className="feed-header__search-wrapper">

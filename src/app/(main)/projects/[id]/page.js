@@ -25,10 +25,6 @@ export async function generateMetadata({ params }) {
   const title = `${project.title} by ${project.profiles?.full_name || 'Creator'} | Desayner`;
   const description = project.description || `View "${project.title}" on Desayner, the ultimate design inspiration platform.`;
   
-  const rawUrl = project.cover_url || 'https://desayner.com/default-og.png';
-  const optimizedPath = optimizeImage(rawUrl, 1200, 80);
-  const imageUrl = optimizedPath.startsWith('http') ? optimizedPath : `https://desayner.com${optimizedPath}`;
-
   return {
     title,
     description,
@@ -38,7 +34,6 @@ export async function generateMetadata({ params }) {
     openGraph: {
       title,
       description,
-      images: [{ url: imageUrl }],
       type: 'article',
       url: `https://desayner.com/projects/${id}`,
     },
@@ -46,7 +41,6 @@ export async function generateMetadata({ params }) {
       card: 'summary_large_image',
       title,
       description,
-      images: [imageUrl],
     },
   };
 }

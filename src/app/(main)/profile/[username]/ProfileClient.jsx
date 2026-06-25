@@ -68,6 +68,7 @@ export default function ProfilePage({ initialProfile = null }) {
   const [failedCoverSrc, setFailedCoverSrc] = useState(null);
   const [isHireModalOpen, setIsHireModalOpen] = useState(false);
   const [isCoverExpanded, setIsCoverExpanded] = useState(false);
+  const [selectedCollection, setSelectedCollection] = useState('All');
   const supabase = useMemo(() => createClient(), []);
   const addToast = useToastStore((s) => s.addToast);
 
@@ -144,6 +145,22 @@ export default function ProfilePage({ initialProfile = null }) {
 
   const rawCoverSrc = profile.cover_url || (projects.length > 0 ? projects[0].cover_url : null);
   const coverSrc = rawCoverSrc ? optimizeImage(rawCoverSrc, 1920) : null;
+
+  const collections = useMemo(() => {
+    const colls = new Set();
+    projects.forEach(p => {
+      if (p.collection_name) colls.add(p.collection_name);
+    });
+    return Array.from(colls).sort();
+  }, [projects]);
+
+  const featuredProjects = useMemo(() => projects.filter(p => p.is_featured), [projects]);
+  const otherProjects = useMemo(() => projects.filter(p => !p.is_featured), [projects]);
+  
+  const displayedProjects = useMemo(() => {
+    if (selectedCollection === 'All') return otherProjects;
+    return otherProjects.filter(p => p.collection_name === selectedCollection);
+  }, [otherProjects, selectedCollection]);
 
   return (
     <div className="profile-v2">
@@ -423,6 +440,32 @@ export default function ProfilePage({ initialProfile = null }) {
               </a>
             )}
             
+            {profile.social_links?.twitter && (
+              <a href={profile.social_links.twitter} target="_blank" rel="noopener noreferrer" className="split-btn split-btn--icon" title="Twitter">
+                <Globe size={18} />
+              </a>
+            )}
+            {profile.social_links?.linkedin && (
+              <a href={profile.social_links.linkedin} target="_blank" rel="noopener noreferrer" className="split-btn split-btn--icon" title="LinkedIn">
+                <Globe size={18} />
+              </a>
+            )}
+            {profile.social_links?.dribbble && (
+              <a href={profile.social_links.dribbble} target="_blank" rel="noopener noreferrer" className="split-btn split-btn--icon" title="Dribbble">
+                <Globe size={18} />
+              </a>
+            )}
+            {profile.social_links?.github && (
+              <a href={profile.social_links.github} target="_blank" rel="noopener noreferrer" className="split-btn split-btn--icon" title="GitHub">
+                <Globe size={18} />
+              </a>
+            )}
+            {profile.social_links?.behance && (
+              <a href={profile.social_links.behance} target="_blank" rel="noopener noreferrer" className="split-btn split-btn--icon" title="Behance">
+                <Globe size={18} /> {/* Using Globe icon as fallback for Behance if Behance icon is missing in lucide */}
+              </a>
+            )}
+            
             <button 
               onClick={() => setShowShareModal(true)} 
               className="split-btn split-btn--icon" 
@@ -501,19 +544,86 @@ export default function ProfilePage({ initialProfile = null }) {
             />
           ) : (
             <>
-              <MasonryGrid 
-                items={projects} 
-                currentUserId={currentUser?.id}
-                renderItem={(project, onImageLoad) => (
-                  <div key={project.id} className="projects-masonry__item">
-                    <ProjectCard 
-                      project={{...project, profiles: profile}} 
-                      currentUserId={currentUser?.id} 
-                      onImageLoad={onImageLoad}
-                    />
-                  </div>
-                )}
-              />
+              {featuredProjects.length > 0 && selectedCollection === 'All' && (
+                <div style={{ marginBottom: '4rem' }}>
+                  <h3 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '1.5rem', fontFamily: 'inherit' }}>Featured Work</h3>
+                  <MasonryGrid 
+                    items={featuredProjects} 
+                    currentUserId={currentUser?.id}
+                    renderItem={(project, onImageLoad) => (
+                      <div key={project.id} className="projects-masonry__item">
+                        <ProjectCard 
+                          project={{...project, profiles: profile}} 
+                          currentUserId={currentUser?.id} 
+                          onImageLoad={onImageLoad}
+                        />
+                      </div>
+                    )}
+                  />
+                </div>
+              )}
+              
+              {collections.length > 0 && (
+                <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '2rem', overflowX: 'auto', paddingBottom: '0.5rem', scrollbarWidth: 'none' }}>
+                  <button
+                    onClick={() => setSelectedCollection('All')}
+                    style={{
+                      padding: '0.5rem 1.25rem',
+                      borderRadius: '999px',
+                      fontWeight: 600,
+                      fontSize: '0.9rem',
+                      cursor: 'pointer',
+                      border: 'none',
+                      background: selectedCollection === 'All' ? '#0f172a' : '#f1f5f9',
+                      color: selectedCollection === 'All' ? 'white' : '#475569',
+                      whiteSpace: 'nowrap',
+                      transition: 'all 0.2s'
+                    }}
+                  >
+                    All Work
+                  </button>
+                  {collections.map(c => (
+                    <button
+                      key={c}
+                      onClick={() => setSelectedCollection(c)}
+                      style={{
+                        padding: '0.5rem 1.25rem',
+                        borderRadius: '999px',
+                        fontWeight: 600,
+                        fontSize: '0.9rem',
+                        cursor: 'pointer',
+                        border: 'none',
+                        background: selectedCollection === c ? '#0f172a' : '#f1f5f9',
+                        color: selectedCollection === c ? 'white' : '#475569',
+                        whiteSpace: 'nowrap',
+                        transition: 'all 0.2s'
+                      }}
+                    >
+                      {c}
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {displayedProjects.length === 0 && selectedCollection !== 'All' ? (
+                <div style={{ padding: '4rem 0', textAlign: 'center', color: '#64748b' }}>
+                  No projects in this collection yet.
+                </div>
+              ) : (
+                <MasonryGrid 
+                  items={displayedProjects} 
+                  currentUserId={currentUser?.id}
+                  renderItem={(project, onImageLoad) => (
+                    <div key={project.id} className="projects-masonry__item">
+                      <ProjectCard 
+                        project={{...project, profiles: profile}} 
+                        currentUserId={currentUser?.id} 
+                        onImageLoad={onImageLoad}
+                      />
+                    </div>
+                  )}
+                />
+              )}
               {hasMoreProjects && (
                 <div style={{ display: 'flex', justifyContent: 'center', marginTop: '2rem' }}>
                   <button
@@ -580,6 +690,63 @@ export default function ProfilePage({ initialProfile = null }) {
                         </div>
                       );
                     })}
+                  </div>
+                </section>
+              )}
+
+              {/* Experience */}
+              {profile.experience && profile.experience.length > 0 && (
+                <section className="profile-v2__about-section">
+                  <h3 className="profile-v2__about-label">Experience</h3>
+                  <div className="profile-v2__experience-list" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                    {profile.experience.map((exp, idx) => (
+                      <div key={idx} className="profile-v2__experience-item">
+                        <h4 style={{ margin: '0 0 0.25rem 0', fontSize: '1.1rem', fontWeight: 700 }}>{exp.title}</h4>
+                        <div style={{ color: '#64748b', fontSize: '0.9rem', marginBottom: '0.5rem' }}>
+                          <span style={{ fontWeight: 600, color: '#0f172a' }}>{exp.company}</span> • {exp.startDate} - {exp.endDate || 'Present'}
+                        </div>
+                        {exp.description && <p style={{ margin: 0, fontSize: '0.95rem', color: '#475569', lineHeight: 1.5 }}>{exp.description}</p>}
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              )}
+
+              {/* Services */}
+              {profile.services && profile.services.length > 0 && (
+                <section className="profile-v2__about-section">
+                  <h3 className="profile-v2__about-label">Services & Pricing</h3>
+                  <div className="profile-v2__services-grid" style={{ display: 'grid', gap: '1rem', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))' }}>
+                    {profile.services.map((service, idx) => (
+                      <div key={idx} style={{ padding: '1.5rem', borderRadius: '16px', border: '1px solid #e2e8f0', background: 'white' }}>
+                        <h4 style={{ margin: '0 0 0.5rem 0', fontSize: '1.1rem', fontWeight: 700 }}>{service.title}</h4>
+                        <div style={{ color: '#2d43e8', fontWeight: 800, fontSize: '1.2rem', marginBottom: '0.75rem' }}>
+                          {service.price}
+                        </div>
+                        <p style={{ margin: 0, fontSize: '0.9rem', color: '#64748b', lineHeight: 1.5 }}>{service.description}</p>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              )}
+
+              {/* Testimonials */}
+              {profile.testimonials && profile.testimonials.length > 0 && (
+                <section className="profile-v2__about-section">
+                  <h3 className="profile-v2__about-label">Client Feedback</h3>
+                  <div className="profile-v2__testimonials-list" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                    {profile.testimonials.map((testim, idx) => (
+                      <div key={idx} style={{ padding: '1.5rem', borderRadius: '16px', background: '#f8fafc' }}>
+                        <p style={{ margin: '0 0 1rem 0', fontSize: '1rem', color: '#0f172a', lineHeight: 1.6, fontStyle: 'italic' }}>"{testim.quote}"</p>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                          {testim.avatar && <img src={testim.avatar} alt={testim.clientName} style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover' }} />}
+                          <div>
+                            <div style={{ fontWeight: 700, fontSize: '0.95rem' }}>{testim.clientName}</div>
+                            {testim.clientRole && <div style={{ color: '#64748b', fontSize: '0.85rem' }}>{testim.clientRole}</div>}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </section>
               )}

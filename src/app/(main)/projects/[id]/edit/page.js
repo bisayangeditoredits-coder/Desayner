@@ -28,7 +28,7 @@ export default function EditProjectPage() {
   const router  = useRouter();
   const supabase = useMemo(() => createClient(), []);
 
-  const [form, setForm]         = useState({ title: '', description: '', category: 'Design', published: true });
+  const [form, setForm]         = useState({ title: '', description: '', category: 'Design', published: true, is_featured: false, collection_name: '' });
   const [coverUrl, setCoverUrl] = useState('');
   const [gallery, setGallery]   = useState([]);
   const [tags, setTags]         = useState([]);
@@ -48,7 +48,7 @@ export default function EditProjectPage() {
       if (!proj) { router.push('/projects'); return; }
       if (proj.user_id !== user.id) { setNotOwner(true); setLoading(false); return; }
 
-      setForm({ title: proj.title, description: proj.description || '', category: proj.category || 'Design', published: proj.published });
+      setForm({ title: proj.title, description: proj.description || '', category: proj.category || 'Design', published: proj.published, is_featured: !!proj.is_featured, collection_name: proj.collection_name || '' });
       setCoverUrl(proj.cover_url || '');
       setGallery(proj.images || []);
       setTags(proj.tags || []);
@@ -94,6 +94,8 @@ export default function EditProjectPage() {
       tools,
       category:    form.category,
       published:   form.published,
+      is_featured: form.is_featured,
+      collection_name: form.collection_name.trim() || null,
     }).eq('id', id);
 
     if (err) { setError(err.message); setSubmitting(false); return; }
@@ -232,11 +234,39 @@ export default function EditProjectPage() {
               </div>
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '1rem', background: '#f9f9f9', border: '1px solid #e8e8e8' }}>
-              <input type="checkbox" id="published" checked={form.published} onChange={e => setForm(p => ({ ...p, published: e.target.checked }))} style={{ width: '15px', height: '15px', cursor: 'pointer', accentColor: '#231f20' }} />
-              <label htmlFor="published" style={{ fontSize: '0.875rem', fontWeight: 600, cursor: 'pointer' }}>
-                Published <span style={{ display: 'block', fontSize: '0.75rem', color: '#9b9b9b', fontWeight: 400 }}>Uncheck to make this project draft-only</span>
+            {/* Collection */}
+            <div>
+              <label style={labelStyle}>
+                Collection <span style={{ fontWeight: 400, textTransform: 'none', letterSpacing: 0 }}>(Optional)</span>
               </label>
+              <input
+                style={inputStyle}
+                type="text"
+                value={form.collection_name}
+                onChange={(e) => setForm((p) => ({ ...p, collection_name: e.target.value }))}
+                placeholder="e.g. Logo Design, Web UI"
+                maxLength={50}
+                onFocus={(e) => (e.target.style.borderColor = '#231f20')}
+                onBlur={(e)  => (e.target.style.borderColor = '#d1d5db')}
+              />
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', padding: '1.25rem', background: '#f9f9f9', border: '1px solid #e8e8e8', borderRadius: '12px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                <input type="checkbox" id="published" checked={form.published} onChange={e => setForm(p => ({ ...p, published: e.target.checked }))} style={{ width: '15px', height: '15px', cursor: 'pointer', accentColor: '#231f20' }} />
+                <label htmlFor="published" style={{ fontSize: '0.875rem', fontWeight: 600, cursor: 'pointer' }}>
+                  Published <span style={{ display: 'block', fontSize: '0.75rem', color: '#9b9b9b', fontWeight: 400 }}>Uncheck to make this project draft-only</span>
+                </label>
+              </div>
+
+              <div style={{ height: '1px', background: '#e8e8e8', margin: '0.25rem 0' }} />
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                <input type="checkbox" id="is_featured" checked={form.is_featured} onChange={e => setForm(p => ({ ...p, is_featured: e.target.checked }))} style={{ width: '15px', height: '15px', cursor: 'pointer', accentColor: '#231f20' }} />
+                <label htmlFor="is_featured" style={{ fontSize: '0.875rem', fontWeight: 600, cursor: 'pointer' }}>
+                  Featured <span style={{ display: 'block', fontSize: '0.75rem', color: '#9b9b9b', fontWeight: 400 }}>Pin this project to the top of your profile</span>
+                </label>
+              </div>
             </div>
 
             <div style={{ display: 'flex', gap: '0.75rem' }}>

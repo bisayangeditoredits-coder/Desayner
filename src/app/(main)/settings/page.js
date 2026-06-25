@@ -45,7 +45,7 @@ export default function SettingsPage() {
   const addToast = useToastStore((s) => s.addToast);
   const [tab, setTab]         = useState('profile');
   const [profile, setProfile] = useState(null);
-  const [form, setForm]       = useState({ full_name: '', username: '', bio: '', website: '', location: '', tools: [], skills: [], available_for_work: false, public_email: '' });
+  const [form, setForm]       = useState({ full_name: '', username: '', bio: '', website: '', location: '', tools: [], skills: [], available_for_work: false, public_email: '', social_links: { twitter: '', linkedin: '', dribbble: '', github: '', behance: '' } });
   const [avatarUrl, setAvatarUrl] = useState('');
   const [coverUrl, setCoverUrl]   = useState('');
   const [saving, setSaving]   = useState(false);
@@ -87,6 +87,7 @@ export default function SettingsPage() {
           skills:    data.skills    || [],
           available_for_work: !!data.available_for_work,
           public_email: data.public_email || '',
+          social_links: data.social_links || { twitter: '', linkedin: '', dribbble: '', github: '', behance: '' },
         });
         setAvatarUrl(data.avatar_url || '');
         setCoverUrl(data.cover_url || '');
@@ -150,6 +151,7 @@ export default function SettingsPage() {
       tools:      form.tools,
       available_for_work: form.available_for_work,
       public_email: form.public_email.trim() || null,
+      social_links: form.social_links,
     };
 
     let { error: err } = await supabase.from('profiles').update(payload).eq('id', profile.id);
@@ -413,6 +415,33 @@ export default function SettingsPage() {
               <label style={labelStyle}>Website</label>
               <div style={{ width: '100%' }}>
                 <input style={inputStyle} value={form.website} onChange={e => setForm(p => ({ ...p, website: e.target.value }))} placeholder="https://yourwebsite.com" type="url" onFocus={e => e.target.style.borderColor = '#231f20'} onBlur={e => e.target.style.borderColor = '#e8e8e8'} />
+              </div>
+            </div>
+
+            {/* Social Links */}
+            <div className="settings-row">
+              <label style={labelStyle}>Social Links</label>
+              <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <span style={{ width: '80px', fontSize: '0.8rem', color: '#64748b', fontWeight: 600 }}>Twitter</span>
+                  <input style={inputStyle} value={form.social_links.twitter} onChange={e => setForm(p => ({ ...p, social_links: { ...p.social_links, twitter: e.target.value } }))} placeholder="https://twitter.com/username" type="url" />
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <span style={{ width: '80px', fontSize: '0.8rem', color: '#64748b', fontWeight: 600 }}>LinkedIn</span>
+                  <input style={inputStyle} value={form.social_links.linkedin} onChange={e => setForm(p => ({ ...p, social_links: { ...p.social_links, linkedin: e.target.value } }))} placeholder="https://linkedin.com/in/username" type="url" />
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <span style={{ width: '80px', fontSize: '0.8rem', color: '#64748b', fontWeight: 600 }}>Dribbble</span>
+                  <input style={inputStyle} value={form.social_links.dribbble} onChange={e => setForm(p => ({ ...p, social_links: { ...p.social_links, dribbble: e.target.value } }))} placeholder="https://dribbble.com/username" type="url" />
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <span style={{ width: '80px', fontSize: '0.8rem', color: '#64748b', fontWeight: 600 }}>GitHub</span>
+                  <input style={inputStyle} value={form.social_links.github} onChange={e => setForm(p => ({ ...p, social_links: { ...p.social_links, github: e.target.value } }))} placeholder="https://github.com/username" type="url" />
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <span style={{ width: '80px', fontSize: '0.8rem', color: '#64748b', fontWeight: 600 }}>Behance</span>
+                  <input style={inputStyle} value={form.social_links.behance} onChange={e => setForm(p => ({ ...p, social_links: { ...p.social_links, behance: e.target.value } }))} placeholder="https://behance.net/username" type="url" />
+                </div>
               </div>
             </div>
 

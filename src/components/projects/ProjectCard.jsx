@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Heart, Bookmark, Eye } from 'lucide-react';
+import { Heart, Bookmark, Eye, Star } from 'lucide-react';
 import UserAvatar from '@/components/ui/UserAvatar';
 import { saveProjectModalReturn } from '@/lib/projectModalNav';
 
@@ -79,6 +79,28 @@ const ProjectCard = React.memo(function ProjectCard({ project, currentUserId, is
           onClick={() => saveProjectModalReturn()}
         >
           <div className={`project-card__thumb project-card__thumb--${imgStatus}`}>
+            {project.is_featured && (
+              <div style={{
+                position: 'absolute',
+                top: '10px',
+                left: '10px',
+                background: 'linear-gradient(135deg, #fbbf24 0%, #d97706 100%)',
+                color: '#fff',
+                padding: '4px 10px',
+                borderRadius: '99px',
+                fontSize: '0.65rem',
+                fontWeight: 800,
+                textTransform: 'uppercase',
+                letterSpacing: '0.05em',
+                boxShadow: '0 4px 14px rgba(245, 158, 11, 0.4)',
+                zIndex: 5,
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px'
+              }}>
+                <Star size={10} fill="currentColor" strokeWidth={2.5} /> FEATURED
+              </div>
+            )}
             {coverSrc && imgStatus !== 'error' ? (
               <img
                 src={coverSrc}
